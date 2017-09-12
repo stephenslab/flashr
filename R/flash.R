@@ -9,9 +9,9 @@ flash_r1 = function(Y,init_method=c("svd","random"),tol=1e-2){
   c = get_conv_criteria(f)
   diff = 1
   while(diff > tol){
+    f = flash_update_precision(Y,f)
     f = flash_update_single_factor(Y,f,1)
     f = flash_update_single_loading(Y,f,1)
-    f = flash_update_precision(Y,f)
     cnew = get_conv_criteria(f)
     diff = mean((cnew-c)^2)
     c = cnew

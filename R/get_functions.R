@@ -13,6 +13,12 @@ get_Rk = function(Y,f,k){
   return( Y - f$EL[,-k,drop=FALSE] %*% t(f$EF[,-k,drop=FALSE]) )
 }
 
+#' @title  Get the residuals from data and a flash object
+get_R = function(Y,f){
+  return( Y - flash_get_lf(f) )
+}
+
+
 #' @title  Get the expected squared residuals from a flash object
 get_R2 = function(Y,f){
   LF = f$EL %*% t(f$EF)

@@ -51,7 +51,33 @@ flash_init = function(Y,K=1,method=c("svd","random")){
   else if (method=="random")
     f= flash_init_random(Y,K)
   else stop("illegal method")
-  return(flash_update_precision(Y,f))
+  return(f)
 }
 
+#' @title combine two flash objects
+#' @param f1 first flash object
+#' @param f2 second flash object
+#' @return a flash object whose factors are concatenations of f1 and f2
+flash_combine = function(f1,f2){
+  list(
+    EL = cbind(f1$EL,f2$EL),
+    EF = cbind(f1$EF,f2$EF),
+    EL2 = cbind(f1$EL2,f2$EL2),
+    EF2 = cbind(f1$EF2,f2$EF2),
+    gl = c(f1$gl,f2$gl),
+    gf = c(f1$gf,f2$gf),
+    tau = NULL
+  )
+}
 
+#' @title add a factor to f based on residuals
+#' @param Y an n by p data matrix
+#' @param f a flash object
+#' @details Computes the current residuals from Y and f and adds K new factors based
+#' on a simple initialization scheme applied to these residuals
+flash_add_factor = function(Y,f,K=1,init_method=c("svd","random")){
+  init_method = match.arg(init_method)
+  R = get_R(Y,f)
+  f2 = flash_init(R,K,init_method)
+  flash_combine(f,f2)
+}
