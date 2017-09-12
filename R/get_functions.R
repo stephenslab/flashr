@@ -26,9 +26,22 @@ get_R2 = function(Y,f){
           + LF^2 + f$EL2 %*% t(f$EF2) - f$EL^2 %*% t(f$EF^2) )
 }
 
+#' @details checks whether kth factor/loading combination is tiny
+is_tiny_fl=function(f,k,tol=1e-8){
+    return(sum(f$EL[,k]^2)*sum(f$EF[,k]^2) < tol)
+}
+
 get_l = function(f){f$EL}
 get_f = function(f){f$EF}
+get_k = function(f){ncol(f$EL)}
+get_n = function(f){nrow(f$EL)}
+get_p = function(f){nrow(f$EF)}
 
-get_n = function(f){return(nrow(f$EL))}
-get_p = function(f){return(ncol(f$EF))}
+#' @details computes the factor contributions (analogous to eigenvalues)
+#' for each factor in f
+#' @export
+flash_get_sizes = function(f){
+  colSums(f$EL^2)*colSums(f$EF^2)
+}
+
 get_conv_criteria = function(f){flash_get_lf(f)}
