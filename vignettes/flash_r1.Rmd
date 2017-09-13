@@ -1,0 +1,69 @@
+---
+title: "A simple rank 1 example"
+author: "Matthew Stephens"
+date: "9/13/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# A simple rank 1 simulation
+
+First we will simulate some rank 1 data:
+
+```{r}
+  library("flashr2")
+  set.seed(1)
+  ll = rnorm(100)
+  ff = rnorm(1000)
+  LF = outer(ll,ff)
+  Y = LF + rnorm(100000)
+```
+
+Now add some missing data at 50 percent of entries
+
+```{r}
+  Y.miss = Y
+  for(i in 1:100){ # set half of Y to be missign at random
+    Y.miss[i,sample(1:1000,500)]=NA
+  }
+```
+
+Run flash on the full data
+```{r}
+  data = set_flash_data(Y)
+  f= flash_r1(data)
+  plot(LF,flash_get_lf(f),main="True LF vs fitted value (full data)",xlab="true LF",ylab="fitted LF")
+  abline(a=0,b=1,col="red")
+```
+
+And on missing data
+```{r}  
+  data.miss = set_flash_data(Y.miss)
+  f.miss = flash_r1(data.miss)
+  plot(LF,flash_get_lf(f.miss),main="True LF vs fitted values (missing data)",xlab="true LF",ylab="fitted LF")
+  abline(a=0,b=1,col="red")
+```
+
+And compute overall RMSE of estimated low-rank structure.
+```{r}  
+  sqrt(mean((LF-flash_get_lf(f))^2))
+  sqrt(mean((LF-flash_get_lf(f.miss))^2))
+```
+
+And compare with original flashr:
+```{r}
+  f.orig = flashr::greedy(Y,1)
+  f.orig.na = flashr::greedy(Y.miss,1)
+  
+  plot(f.orig$f,f$EF,main="comparison of flashr and flashr2 factors",xlab="flashr",ylab="flashr2")
+   plot(f.orig$l,f$EL,main="comparison of flashr and flashr2 loadings",xlab="flashr",ylab="flashr2")
+  
+  sqrt(mean((LF-outer(f.orig$l,f.orig$f))^2))
+  sqrt(mean((LF-outer(f.orig.na$l,f.orig.na$f))^2))
+
+```
+
+
