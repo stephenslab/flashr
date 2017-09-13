@@ -4,10 +4,10 @@
 \alias{flash_update_single_factor}
 \title{Update a flash factor}
 \usage{
-flash_update_single_factor(Y, f, k)
+flash_update_single_factor(data, f, k)
 }
 \arguments{
-\item{Y}{an n times p data matrix}
+\item{data}{a flash data object}
 
 \item{f}{a flash object}
 

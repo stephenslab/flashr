@@ -4,10 +4,10 @@
 \alias{flash_update_precision}
 \title{Update precision parameter}
 \usage{
-flash_update_precision(Y, f)
+flash_update_precision(data, f)
 }
 \arguments{
-\item{Y}{an n times p data matrix}
+\item{data}{a flash data object}
 
 \item{f}{a flash object}
 }

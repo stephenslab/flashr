@@ -4,10 +4,10 @@
 \alias{flash_optimize_single_fl}
 \title{Optimize a flash factor-loading combination}
 \usage{
-flash_optimize_single_fl(Y, f, k, tol = 0.01)
+flash_optimize_single_fl(data, f, k, tol = 0.01)
 }
 \arguments{
-\item{Y}{an n times p data matrix}
+\item{data}{a flash data object}
 
 \item{f}{a flash object}
 

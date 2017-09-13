@@ -4,10 +4,10 @@
 \alias{flash_update_single_loading}
 \title{Update a flash loading}
 \usage{
-flash_update_single_loading(Y, f, k)
+flash_update_single_loading(data, f, k)
 }
 \arguments{
-\item{Y}{an n times p data matrix}
+\item{data}{a flash data object}
 
 \item{f}{a flash object}
 

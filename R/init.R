@@ -1,11 +1,4 @@
-# Contains functions related to initializing flash
-
-#' @title set up data for reading into flash
-#' @param Y an n by p data matrix
-#' @return a flash data object
-set_flash_data = function(Y){
-  list(Y=Y)
-}
+# Contains functions related to initializing flash fit object
 
 #' @title  Initialize a flash fit object with K factors
 #' @param data a flash data object

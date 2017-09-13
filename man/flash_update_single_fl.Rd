@@ -4,5 +4,5 @@
 \alias{flash_update_single_fl}
 \title{Update a single flash factor-loading combination (and precision)}
 \usage{
-flash_update_single_fl(Y, f, k)
+flash_update_single_fl(data, f, k)
 }
