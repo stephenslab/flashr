@@ -16,18 +16,20 @@ First we will simulate some rank 1 data:
 ```{r}
   library("flashr2")
   set.seed(1)
-  ll = rnorm(100)
-  ff = rnorm(1000)
+  n=100
+  p=1000
+  ll = rnorm(n)
+  ff = rnorm(p)
   LF = outer(ll,ff)
-  Y = LF + rnorm(100000)
+  Y = LF + rnorm(n*p)
 ```
 
 Now add some missing data at 50 percent of entries
 
 ```{r}
   Y.miss = Y
-  for(i in 1:100){ # set half of Y to be missign at random
-    Y.miss[i,sample(1:1000,500)]=NA
+  for(i in 1:n){ # set half of Y to be missign at random
+    Y.miss[i,sample(1:p,p/2)]=NA
   }
 ```
 
@@ -65,5 +67,6 @@ And compare with original flashr:
   sqrt(mean((LF-outer(f.orig.na$l,f.orig.na$f))^2))
 
 ```
+
 
 
