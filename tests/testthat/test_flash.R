@@ -5,11 +5,12 @@ test_that("flash update improves mean squared error in simple situation", {
   LF = outer(l,f)
   Y = LF + rnorm(5*20)
 
-  f = flash_init(Y,1,"random")
+  data = set_flash_data(Y)
+  f = flash_init(data,1,"random")
   e1 = mean((LF- flash_get_lf(f))^2) # compute mean squared error
-  f = flash_update_precision(Y,f)
-  f = flash_update_single_factor(Y,f,1)
-  f = flash_update_single_loading(Y,f,1)
+  f = flash_update_precision(data,f)
+  f = flash_update_single_factor(data,f,1)
+  f = flash_update_single_loading(data,f,1)
   e2 = mean((LF- flash_get_lf(f))^2) # compute mean squared error
   expect_true(e1>e2)
 }
@@ -22,8 +23,8 @@ test_that("flash update improves mean squared error in simple situation", {
 #   ff = rnorm(100)
 #   LF = outer(ll,ff)
 #   Y = LF + rnorm(20*100)
-#
-#   f = flash_r1(Y,"random")
-#   f = flash_r1(Y,"svd")
+#   data = set_flash_data(data)
+#   f = flash_r1(data,"random")
+#   f = flash_r1(data,"svd")
 # }
 # )
