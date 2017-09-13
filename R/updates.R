@@ -13,10 +13,10 @@ flash_update_single_loading = function(data,f,k){
   if(sum(is.finite(s))>0){ # check some finite values before proceeding
     Rk = get_Rk(data,f,k) #residuals excluding factor k
     x = ((Rk*tau) %*% f$EF[,k]) * s^2
-    a = ashr::ash(as.vector(x),as.vector(s),outputlevel=4,method="shrink")
-    f$EL[,k] = ashr::get_pm(a)
-    f$EL2[,k] = ashr::get_psd(a)^2 + ashr::get_pm(a)^2
-    f$gl[[k]] = ashr::get_fitted_g(a)
+    a = ashr::ash(as.vector(x),as.vector(s),outputlevel=5,mixcompdist="normal",method="shrink")
+    f$EL[,k] = a$flash_data$postmean
+    f$EL2[,k] = a$flash_data$postmean2
+    f$gl[[k]] = a$flash_data$fitted_g
   }
   return(f)
 }
@@ -36,10 +36,10 @@ flash_update_single_factor = function(data,f,k){
   if(sum(is.finite(s))>0){ # check some finite values before proceeding
     Rk = get_Rk(data,f,k) #residuals excluding factor k
     x = (t(Rk*tau) %*% f$EL[,k]) * s^2
-    a = ashr::ash(as.vector(x),as.vector(s),outputlevel=4,method="shrink")
-    f$EF[,k] = ashr::get_pm(a)
-    f$EF2[,k] = ashr::get_psd(a)^2 + ashr::get_pm(a)^2
-    f$gf[[k]] = ashr::get_fitted_g(a)
+    a = ashr::ash(as.vector(x),as.vector(s),outputlevel=5,mixcompdist="normal",method="shrink")
+    f$EF[,k] = a$flash_data$postmean
+    f$EF2[,k] = a$flash_data$postmean2
+    f$gf[[k]] = a$flash_data$fitted_g
   }
   return(f)
 }
