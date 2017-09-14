@@ -13,7 +13,8 @@ flash_update_single_loading = function(data,f,k){
   if(sum(is.finite(s))>0){ # check some finite values before proceeding
     Rk = get_Rk(data,f,k) #residuals excluding factor k
     x = ((Rk*tau) %*% f$EF[,k]) * s^2
-    a = ashr::ash(as.vector(x),as.vector(s),outputlevel=5,mixcompdist="normal",method="shrink")
+    a = ashr::ash(as.vector(x),as.vector(s),
+                  outputlevel=5,mixcompdist="normal",method="shrink")
     f$EL[,k] = a$flash_data$postmean
     f$EL2[,k] = a$flash_data$postmean2
     f$gl[[k]] = a$flash_data$fitted_g
@@ -36,7 +37,8 @@ flash_update_single_factor = function(data,f,k){
   if(sum(is.finite(s))>0){ # check some finite values before proceeding
     Rk = get_Rk(data,f,k) #residuals excluding factor k
     x = (t(Rk*tau) %*% f$EL[,k]) * s^2
-    a = ashr::ash(as.vector(x),as.vector(s),outputlevel=5,mixcompdist="normal",method="shrink")
+    a = ashr::ash(as.vector(x),as.vector(s),
+                  outputlevel=5,mixcompdist="normal",method="shrink")
     f$EF[,k] = a$flash_data$postmean
     f$EF2[,k] = a$flash_data$postmean2
     f$gf[[k]] = a$flash_data$fitted_g
@@ -79,7 +81,11 @@ flash_optimize_single_fl = function(data,f,k,tol=1e-2){
 #' @return an updated flash object
 #' @export
 flash_update_precision = function(data,f){
-  sigma2 = colMeans(get_R2(data,f),na.rm=TRUE)
+  if(data$anyNA){
+    sigma2 = colSums(get_R2(data,f) * !(data$missing)) / colSums(!data$missing)
+  } else {
+    sigma2 = colMeans(get_R2(data,f))
+  }
   f$tau = outer(rep(1,get_n(f)), 1/sigma2)
   return(f)
 }

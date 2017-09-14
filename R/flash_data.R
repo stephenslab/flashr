@@ -10,7 +10,7 @@
 #' @return a flash data object
 #' @export
 set_flash_data = function(Y){
-  data = list(Y=NULL, anyNA=FALSE, missing = NULL) # initialize data
+  data = list(Y=NULL, anyNA=FALSE, missing = FALSE) # initialize data
 
   if(anyNA(Y)){ # deal with missing data: set flags and impute
     data$missing = is.na(Y)
