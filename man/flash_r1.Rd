@@ -5,7 +5,7 @@
 \title{Fit the rank1 FLASH model to data}
 \usage{
 flash_r1(data, init_method = c("svd", "random"), tol = 0.01,
-  ash_param = list())
+  ash_param = list(), verbose = FALSE)
 }
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{set_flash_data}}
@@ -15,6 +15,8 @@ flash_r1(data, init_method = c("svd", "random"), tol = 0.01,
 \item{tol}{specify how much objective can change in a single iteration to be considered not converged}
 
 \item{ash_param}{parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()}
+
+\item{verbose}{if TRUE various output progress updates will be printed}
 }
 \value{
 a fitted flash object

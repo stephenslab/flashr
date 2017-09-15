@@ -3,17 +3,18 @@
 #' @param tol specify how much objective can change in a single iteration to be considered not converged
 #' @param init_method specifies how to initialize the factors. Options include svd on data matrix, or random (N(0,1))
 #' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
+#' @param verbose if TRUE various output progress updates will be printed
 #' @return a fitted flash object
 #' @examples
 #' Y = matrix(rnorm(100),nrow=5,ncol=20)
 #' f = flash_r1(Y)
 #' flash_get_sizes(f)
 #' @export
-flash_r1 = function(data,init_method=c("svd","random"),tol=1e-2,ash_param=list()){
+flash_r1 = function(data,init_method=c("svd","random"),tol=1e-2,ash_param=list(),verbose = FALSE){
   if(is.matrix(data)){data = set_flash_data(data)}
   init_method=match.arg(init_method)
   f = flash_init(data,1,init_method)
-  f = flash_optimize_single_fl(data,f,1,tol,ash_param)
+  f = flash_optimize_single_fl(data,f,1,tol,ash_param,verbose)
   return(f)
 }
 
@@ -26,20 +27,21 @@ flash_r1 = function(data,init_method=c("svd","random"),tol=1e-2,ash_param=list()
 #' @param Kmax the maximum number of factors to consider
 #' @param tol specify how much objective can change in a single iteration to be considered not converged
 #' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
+#' @param verbose if TRUE various output progress updates will be printed
 #' @return a fitted flash object
 #' @examples
 #' Y = matrix(rnorm(100),nrow=5,ncol=20)
 #' f = flash_greedy(Y,10)
 #' flash_get_sizes(f)
 #' @export
-flash_greedy = function(data,Kmax, init_method=c("svd","random"),tol=1e-2,ash_param=list()){
+flash_greedy = function(data,Kmax, init_method=c("svd","random"),tol=1e-2,ash_param=list(),verbose=FALSE){
   if(is.matrix(data)){data = set_flash_data(data)}
   init_method=match.arg(init_method)
   f = flash_r1(data,init_method)
   for(k in 2:Kmax){
     f = flash_add_factor(data, f, 1, init_method)
     message("fitting factor/loading ",k)
-    f = flash_optimize_single_fl(data,f,k,tol,ash_param)
+    f = flash_optimize_single_fl(data,f,k,tol,ash_param,verbose)
     if(is_tiny_fl(f,k)) #test whether the factor/loading combination is effectively 0
       break
   }
@@ -53,6 +55,7 @@ flash_greedy = function(data,Kmax, init_method=c("svd","random"),tol=1e-2,ash_pa
 #' @param f a fitted flash object to be refined
 #' @param tol specify how much objective can change in a single iteration to be considered not converged
 #' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
+#' @param verbose if TRUE various output progress updates will be printed
 #' @return a fitted flash object
 #' @examples
 #' Y = matrix(rnorm(100),nrow=5,ncol=20)
@@ -60,7 +63,7 @@ flash_greedy = function(data,Kmax, init_method=c("svd","random"),tol=1e-2,ash_pa
 #' fb = flash_backfit(Y,fg) # refines fit from greedy by backfitting
 #' flash_get_sizes(fb)
 #' @export
-flash_backfit = function(data,f,tol=1e-2,ash_param=list()){
+flash_backfit = function(data,f,tol=1e-2,ash_param=list(),verbose=FALSE){
   if(is.matrix(data)){data = set_flash_data(data)}
   c = get_conv_criteria(data, f)
   diff = 1
@@ -71,6 +74,9 @@ flash_backfit = function(data,f,tol=1e-2,ash_param=list()){
     cnew = get_conv_criteria(data, f)
     diff = sqrt(mean((cnew-c)^2))
     c = cnew
+    if(verbose){
+      message("objective: ",c)
+    }
   }
   return(f)
 }

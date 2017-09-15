@@ -102,3 +102,21 @@ flash_add_factor = function(data,f,K=1,init_method=c("svd","random")){
   f = flash_combine(f,f2)
   return(flash_update_precision(data,f))
 }
+
+#' @title zero out a factor from f
+#' @param data a flash data object
+#' @param f a flash fit object
+#' @details the specified factor is made to be 0, effectively reducing the rank by 1
+#' @export
+flash_zero_out_factor = function(data,f,k=1){
+  f$EL[,k] = 0
+  f$EL2[,k] = 0
+  f$EF[,k] = 0
+  f$EF2[,k] = 0
+  f$gl[[k]] = ashr::normalmix(1,0,0)
+  f$gf[[k]] = ashr::normalmix(1,0,0)
+  f$KL_l[[k]] = 0
+  f$KL_f[[k]] = 0 #KL divergences for each l and f
+  f=flash_update_precision(data,f)
+  return(f)
+}

@@ -4,7 +4,7 @@
 \alias{flash_backfit}
 \title{Refines a fit of the FLASH model to data by "backfitting"}
 \usage{
-flash_backfit(data, f, tol = 0.01, ash_param = list())
+flash_backfit(data, f, tol = 0.01, ash_param = list(), verbose = FALSE)
 }
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{set_flash_data}}
@@ -14,6 +14,8 @@ flash_backfit(data, f, tol = 0.01, ash_param = list())
 \item{tol}{specify how much objective can change in a single iteration to be considered not converged}
 
 \item{ash_param}{parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()}
+
+\item{verbose}{if TRUE various output progress updates will be printed}
 }
 \value{
 a fitted flash object

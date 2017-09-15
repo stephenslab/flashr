@@ -81,8 +81,9 @@ flash_update_single_fl = function(data,f,k,ash_param=list()){
 #' @param k the index of the factor/loading to optmize
 #' @param tol a tolerance for the optimization
 #' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
+#' @param verbose if TRUE various output progress updates will be printed
 #' @return an updated flash object
-flash_optimize_single_fl = function(data,f,k,tol=1e-2,ash_param=list()){
+flash_optimize_single_fl = function(data,f,k,tol=1e-2,ash_param=list(),verbose=FALSE){
   c = get_conv_criteria(data,f)
   diff = 1
   while(diff > tol){
@@ -90,6 +91,9 @@ flash_optimize_single_fl = function(data,f,k,tol=1e-2,ash_param=list()){
     cnew = get_conv_criteria(data,f)
     diff = sqrt(mean((cnew-c)^2))
     c = cnew
+    if(verbose){
+      message("objective: ",c)
+    }
   }
   return(f)
 }
