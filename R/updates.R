@@ -27,7 +27,7 @@ flash_update_single_loading = function(data,f,k,ash_param=list()){
                        mean=t(a$flash_data$comp_postmean),
                        mean2=t(a$flash_data$comp_postmean2))
     f$KL_l[[k]] = a$flash_data$penloglik -
-      NM_posterior_eloglik(x,s,a$flash_data$postmean,a$flash_data$postmean2)
+      NM_posterior_e_loglik(x,s,a$flash_data$postmean,a$flash_data$postmean2)
   }
   return(f)
 }
@@ -59,7 +59,7 @@ flash_update_single_factor = function(data,f,k,ash_param=list()){
                     mean=t(a$flash_data$comp_postmean),
                     mean2=t(a$flash_data$comp_postmean2))
     f$KL_f[[k]] = a$flash_data$penloglik -
-      NM_posterior_eloglik(x,s,a$flash_data$postmean,a$flash_data$postmean2)
+      NM_posterior_e_loglik(x,s,a$flash_data$postmean,a$flash_data$postmean2)
   }
   return(f)
 }
