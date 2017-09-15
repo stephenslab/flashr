@@ -30,6 +30,9 @@ flash_init_LF = function(LL,FF){
   f$gf = list()
   f$ash_param_l = list()
   f$ash_param_f = list()
+  f$comp_post_l = list() # component posteriors
+  f$comp_post_f = list() # component posteriors
+
   f$tau = NULL
   return(f)
 }
@@ -74,6 +77,8 @@ flash_combine = function(f1,f2){
     gf = c(f1$gf,f2$gf),
     ash_param_l = c(f1$ash_param_l, f2$ash_param_l),
     ash_param_f = c(f1$ash_param_f, f2$ash_param_f),
+    comp_post_l = c(f1$comp_post_l,f2$comp_post_l),
+    comp_post_f = c(f1$comp_post_f,f2$comp_post_f),
     tau = NULL
   )
 }
