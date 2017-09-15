@@ -28,7 +28,8 @@ flash_init_LF = function(LL,FF){
   f$EF2 = f$EF^2
   f$gl = list()
   f$gf = list()
-  f$ash_param = list()
+  f$ash_param_l = list()
+  f$ash_param_f = list()
   f$tau = NULL
   return(f)
 }
@@ -71,7 +72,8 @@ flash_combine = function(f1,f2){
     EF2 = cbind(f1$EF2,f2$EF2),
     gl = c(f1$gl,f2$gl),
     gf = c(f1$gf,f2$gf),
-    ash_param = c(f1$ash_param, f2$ash_param),
+    ash_param_l = c(f1$ash_param_l, f2$ash_param_l),
+    ash_param_f = c(f1$ash_param_f, f2$ash_param_f),
     tau = NULL
   )
 }

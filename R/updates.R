@@ -22,7 +22,7 @@ flash_update_single_loading = function(data,f,k,ash_param=list()){
     f$EL[,k] = a$flash_data$postmean
     f$EL2[,k] = a$flash_data$postmean2
     f$gl[[k]] = a$flash_data$fitted_g
-    f$ash_param[[k]] = ash_param
+    f$ash_param_l[[k]] = ash_param
   }
   return(f)
 }
@@ -49,7 +49,7 @@ flash_update_single_factor = function(data,f,k,ash_param=list()){
     f$EF[,k] = a$flash_data$postmean
     f$EF2[,k] = a$flash_data$postmean2
     f$gf[[k]] = a$flash_data$fitted_g
-    f$ash_param[[k]] = ash_param
+    f$ash_param_f[[k]] = ash_param
   }
   return(f)
 }

@@ -6,8 +6,7 @@
 #' @return a fitted flash object
 #' @examples
 #' Y = matrix(rnorm(100),nrow=5,ncol=20)
-#' data = set_flash_data(Y)
-#' f = flash_r1(data)
+#' f = flash_r1(Y)
 #' flash_get_sizes(f)
 #' @export
 flash_r1 = function(data,init_method=c("svd","random"),tol=1e-2,ash_param=list()){
@@ -30,8 +29,7 @@ flash_r1 = function(data,init_method=c("svd","random"),tol=1e-2,ash_param=list()
 #' @return a fitted flash object
 #' @examples
 #' Y = matrix(rnorm(100),nrow=5,ncol=20)
-#' data = set_flash_data(Y)
-#' f = flash_greedy(data,10)
+#' f = flash_greedy(Y,10)
 #' flash_get_sizes(f)
 #' @export
 flash_greedy = function(data,Kmax, init_method=c("svd","random"),tol=1e-2,ash_param=list()){
@@ -58,9 +56,8 @@ flash_greedy = function(data,Kmax, init_method=c("svd","random"),tol=1e-2,ash_pa
 #' @return a fitted flash object
 #' @examples
 #' Y = matrix(rnorm(100),nrow=5,ncol=20)
-#' data = set_flash_data(Y)
-#' fg = flash_greedy(data,10)
-#' fb = flash_backfit(data,fg) # refines fit from greedy by backfitting
+#' fg = flash_greedy(Y,10)
+#' fb = flash_backfit(Y,fg) # refines fit from greedy by backfitting
 #' flash_get_sizes(fb)
 #' @export
 flash_backfit = function(data,f,tol=1e-2,ash_param=list()){

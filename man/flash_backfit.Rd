@@ -23,8 +23,7 @@ Iterates through the factors of a flash object, updating each until convergence
 }
 \examples{
 Y = matrix(rnorm(100),nrow=5,ncol=20)
-data = set_flash_data(Y)
-fg = flash_greedy(data,10)
-fb = flash_backfit(data,fg) # refines fit from greedy by backfitting
+fg = flash_greedy(Y,10)
+fb = flash_backfit(Y,fg) # refines fit from greedy by backfitting
 flash_get_sizes(fb)
 }

@@ -21,7 +21,6 @@ a fitted flash object
 }
 \examples{
 Y = matrix(rnorm(100),nrow=5,ncol=20)
-data = set_flash_data(Y)
-f = flash_r1(data)
+f = flash_r1(Y)
 flash_get_sizes(f)
 }

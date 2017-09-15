@@ -5,9 +5,10 @@ test_that("passing in and saving ash parameters works", {
   LF = outer(l,f)
   Y = LF + rnorm(5*20)
   f = flash_r1(Y)
-  expect_equal(f$ash_param[[1]],flash_default_ash_param())
+  expect_equal(f$ash_param_l[[1]],flash_default_ash_param())
+  expect_equal(f$ash_param_f[[1]],flash_default_ash_param())
   f = flash_r1(Y,ash_param=list(method="fdr"))
-  expect_equal(f$ash_param[[1]],
+  expect_equal(f$ash_param_l[[1]],
                modifyList(flash_default_ash_param(),list(method="fdr")))
 }
 )

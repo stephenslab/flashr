@@ -26,7 +26,6 @@ Stops when an added factor contributes nothing, or Kmax is reached
 }
 \examples{
 Y = matrix(rnorm(100),nrow=5,ncol=20)
-data = set_flash_data(Y)
-f = flash_greedy(data,10)
+f = flash_greedy(Y,10)
 flash_get_sizes(f)
 }
