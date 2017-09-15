@@ -4,18 +4,21 @@
 \alias{flash_update_single_loading}
 \title{Update a flash loading}
 \usage{
-flash_update_single_loading(data, f, k)
+flash_update_single_loading(data, f, k, ash_param = list())
 }
 \arguments{
 \item{data}{a flash data object}
 
-\item{f}{a flash object}
+\item{f}{a flash fit object}
 
 \item{k}{the index of the loading to update}
+
+\item{ash_param}{parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()}
 }
 \value{
 an updated flash object
 }
 \details{
 Updates loading k of f to increase the objective F
+Updates only the loading, once (not the factor)
 }

@@ -4,7 +4,7 @@
 \alias{flash_optimize_single_fl}
 \title{Optimize a flash factor-loading combination}
 \usage{
-flash_optimize_single_fl(data, f, k, tol = 0.01)
+flash_optimize_single_fl(data, f, k, tol = 0.01, ash_param = list())
 }
 \arguments{
 \item{data}{a flash data object}
@@ -12,6 +12,10 @@ flash_optimize_single_fl(data, f, k, tol = 0.01)
 \item{f}{a flash object}
 
 \item{k}{the index of the factor/loading to optmize}
+
+\item{tol}{a tolerance for the optimization}
+
+\item{ash_param}{parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()}
 }
 \value{
 an updated flash object

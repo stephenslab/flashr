@@ -68,5 +68,12 @@ And compare with original flashr:
 
 ```
 
+And try setting the ash parameters slightly differently:
+```{r}
+  f= flash_r1(data,ash_param = list(method="fdr"))
+  plot(LF,flash_get_lf(f),main="True LF vs fitted value (full data)",xlab="true LF",ylab="fitted LF")
+  abline(a=0,b=1,col="red")
+  sqrt(mean((LF-flash_get_lf(f))^2))
+```
 
 

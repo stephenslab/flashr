@@ -1,11 +1,14 @@
 #' @title  Update a flash loading
 #' @details Updates loading k of f to increase the objective F
+#' Updates only the loading, once (not the factor)
 #' @param data a flash data object
-#' @param f a flash object
+#' @param f a flash fit object
 #' @param k the index of the loading to update
+#' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
 #' @return an updated flash object
 #' @export
-flash_update_single_loading = function(data,f,k){
+flash_update_single_loading = function(data,f,k,ash_param=list()){
+  ash_param=modifyList(flash_default_ash_param(),ash_param)
   tau = f$tau
   if(data$anyNA){tau = tau * !data$missing} #set missing values to have precision 0
 
@@ -13,8 +16,9 @@ flash_update_single_loading = function(data,f,k){
   if(sum(is.finite(s))>0){ # check some finite values before proceeding
     Rk = get_Rk(data,f,k) #residuals excluding factor k
     x = ((Rk*tau) %*% f$EF[,k]) * s^2
-    a = ashr::ash(as.vector(x),as.vector(s),
-                  outputlevel=5,mixcompdist="normal",method="shrink")
+    a = do.call(ashr::ash,
+                c( list(betahat=as.vector(x),sebetahat=as.vector(s)),
+                   ash_param) )
     f$EL[,k] = a$flash_data$postmean
     f$EL2[,k] = a$flash_data$postmean2
     f$gl[[k]] = a$flash_data$fitted_g
@@ -23,13 +27,13 @@ flash_update_single_loading = function(data,f,k){
 }
 
 #' @title  Update a flash factor
-#' @details Updates factor k of f to increase the objective F updates only the factor, once (not the loading)
-#' @param data a flash data object
-#' @param f a flash object
-#' @param k the index of the factor to update
+#' @details Updates factor k of f to increase the objective F.
+#' Updates only the factor, once (not the loading)
+#' @inheritParams flash_update_single_loading
 #' @return an updated flash object
 #' @export
-flash_update_single_factor = function(data,f,k){
+flash_update_single_factor = function(data,f,k,ash_param=list()){
+  ash_param=modifyList(flash_default_ash_param(),ash_param)
   tau = f$tau
   if(data$anyNA){tau = tau * !data$missing} #set missing values to have precision 0
 
@@ -37,8 +41,10 @@ flash_update_single_factor = function(data,f,k){
   if(sum(is.finite(s))>0){ # check some finite values before proceeding
     Rk = get_Rk(data,f,k) #residuals excluding factor k
     x = (t(Rk*tau) %*% f$EL[,k]) * s^2
-    a = ashr::ash(as.vector(x),as.vector(s),
-                  outputlevel=5,mixcompdist="normal",method="shrink")
+    a = do.call(ashr::ash,
+                c( list(betahat=as.vector(x),sebetahat=as.vector(s)),
+                  ash_param) )
+
     f$EF[,k] = a$flash_data$postmean
     f$EF2[,k] = a$flash_data$postmean2
     f$gf[[k]] = a$flash_data$fitted_g
@@ -47,7 +53,8 @@ flash_update_single_factor = function(data,f,k){
 }
 
 #' @title Update a single flash factor-loading combination (and precision)
-flash_update_single_fl = function(data,f,k){
+#' @inheritParams flash_update_single_loading
+flash_update_single_fl = function(data,f,k,ash_param=list()){
   f = flash_update_precision(data,f)
   f = flash_update_single_factor(data,f,k)
   f = flash_update_single_loading(data,f,k)
@@ -60,14 +67,16 @@ flash_update_single_fl = function(data,f,k){
 #' @param data a flash data object
 #' @param f a flash object
 #' @param k the index of the factor/loading to optmize
+#' @param tol a tolerance for the optimization
+#' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
 #' @return an updated flash object
-flash_optimize_single_fl = function(data,f,k,tol=1e-2){
+flash_optimize_single_fl = function(data,f,k,tol=1e-2,ash_param=list()){
   c = get_conv_criteria(f)
   diff = 1
   while(diff > tol){
     f = flash_update_single_fl(data,f,k)
     cnew = get_conv_criteria(f)
-    diff = mean((cnew-c)^2)
+    diff = sqrt(mean((cnew-c)^2))
     c = cnew
   }
   return(f)
@@ -89,3 +98,6 @@ flash_update_precision = function(data,f){
   f$tau = outer(rep(1,get_n(f)), 1/sigma2)
   return(f)
 }
+
+
+

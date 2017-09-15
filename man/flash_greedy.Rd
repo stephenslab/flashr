@@ -4,7 +4,8 @@
 \alias{flash_greedy}
 \title{Fit the FLASH model to data by a greedy approach}
 \usage{
-flash_greedy(data, Kmax, init_method = c("svd", "random"), tol = 0.01)
+flash_greedy(data, Kmax, init_method = c("svd", "random"), tol = 0.01,
+  ash_param = list())
 }
 \arguments{
 \item{data}{a flash data object}
@@ -12,6 +13,8 @@ flash_greedy(data, Kmax, init_method = c("svd", "random"), tol = 0.01)
 \item{Kmax}{the maximum number of factors to consider}
 
 \item{tol}{specify how much objective can change in a single iteration to be considered not converged}
+
+\item{ash_param}{parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()}
 }
 \value{
 a fitted flash object

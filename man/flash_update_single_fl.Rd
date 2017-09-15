@@ -4,5 +4,14 @@
 \alias{flash_update_single_fl}
 \title{Update a single flash factor-loading combination (and precision)}
 \usage{
-flash_update_single_fl(data, f, k)
+flash_update_single_fl(data, f, k, ash_param = list())
+}
+\arguments{
+\item{data}{a flash data object}
+
+\item{f}{a flash fit object}
+
+\item{k}{the index of the loading to update}
+
+\item{ash_param}{parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()}
 }

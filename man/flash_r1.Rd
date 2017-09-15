@@ -4,12 +4,17 @@
 \alias{flash_r1}
 \title{Fit the rank1 FLASH model to data}
 \usage{
-flash_r1(data, init_method = c("svd", "random"), tol = 0.01)
+flash_r1(data, init_method = c("svd", "random"), tol = 0.01,
+  ash_param = list())
 }
 \arguments{
 \item{data}{a flash data object}
 
+\item{init_method}{specifies how to initialize the factors. Options include svd on data matrix, or random (N(0,1))}
+
 \item{tol}{specify how much objective can change in a single iteration to be considered not converged}
+
+\item{ash_param}{parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()}
 }
 \value{
 a fitted flash object
