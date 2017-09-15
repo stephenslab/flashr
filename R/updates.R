@@ -22,6 +22,7 @@ flash_update_single_loading = function(data,f,k,ash_param=list()){
     f$EL[,k] = a$flash_data$postmean
     f$EL2[,k] = a$flash_data$postmean2
     f$gl[[k]] = a$flash_data$fitted_g
+    f$ash_param[[k]] = ash_param
   }
   return(f)
 }
@@ -48,6 +49,7 @@ flash_update_single_factor = function(data,f,k,ash_param=list()){
     f$EF[,k] = a$flash_data$postmean
     f$EF2[,k] = a$flash_data$postmean2
     f$gf[[k]] = a$flash_data$fitted_g
+    f$ash_param[[k]] = ash_param
   }
   return(f)
 }
@@ -56,8 +58,8 @@ flash_update_single_factor = function(data,f,k,ash_param=list()){
 #' @inheritParams flash_update_single_loading
 flash_update_single_fl = function(data,f,k,ash_param=list()){
   f = flash_update_precision(data,f)
-  f = flash_update_single_factor(data,f,k)
-  f = flash_update_single_loading(data,f,k)
+  f = flash_update_single_factor(data,f,k,ash_param)
+  f = flash_update_single_loading(data,f,k,ash_param)
   return(f)
 }
 
@@ -74,7 +76,7 @@ flash_optimize_single_fl = function(data,f,k,tol=1e-2,ash_param=list()){
   c = get_conv_criteria(f)
   diff = 1
   while(diff > tol){
-    f = flash_update_single_fl(data,f,k)
+    f = flash_update_single_fl(data,f,k,ash_param)
     cnew = get_conv_criteria(f)
     diff = sqrt(mean((cnew-c)^2))
     c = cnew

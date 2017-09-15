@@ -7,7 +7,7 @@
 flash_backfit(data, f, tol = 0.01, ash_param = list())
 }
 \arguments{
-\item{data}{a flash data object}
+\item{data}{an n by p matrix or a flash data object created using \code{set_flash_data}}
 
 \item{f}{a fitted flash object to be refined}
 

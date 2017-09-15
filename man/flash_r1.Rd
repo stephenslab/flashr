@@ -8,7 +8,7 @@ flash_r1(data, init_method = c("svd", "random"), tol = 0.01,
   ash_param = list())
 }
 \arguments{
-\item{data}{a flash data object}
+\item{data}{an n by p matrix or a flash data object created using \code{set_flash_data}}
 
 \item{init_method}{specifies how to initialize the factors. Options include svd on data matrix, or random (N(0,1))}
 

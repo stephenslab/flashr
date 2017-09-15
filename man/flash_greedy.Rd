@@ -8,7 +8,7 @@ flash_greedy(data, Kmax, init_method = c("svd", "random"), tol = 0.01,
   ash_param = list())
 }
 \arguments{
-\item{data}{a flash data object}
+\item{data}{an n by p matrix or a flash data object created using \code{set_flash_data}}
 
 \item{Kmax}{the maximum number of factors to consider}
 
