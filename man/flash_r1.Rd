@@ -4,13 +4,17 @@
 \alias{flash_r1}
 \title{Fit the rank1 FLASH model to data}
 \usage{
-flash_r1(data, init_method = c("svd", "random"), tol = 0.01,
-  ash_param = list(), verbose = FALSE)
+flash_r1(data, init_method = c("svd", "random"), nullcheck = TRUE,
+  tol = 0.01, ash_param = list(), verbose = FALSE)
 }
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{set_flash_data}}
 
 \item{init_method}{specifies how to initialize the factors. Options include svd on data matrix, or random (N(0,1))}
+
+\item{nullcheck}{flag whether to check, after running
+hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
+If this check is performed and fails then the factor will be set to 0 in the returned fit.}
 
 \item{tol}{specify how much objective can change in a single iteration to be considered not converged}
 

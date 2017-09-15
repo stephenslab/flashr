@@ -4,13 +4,17 @@
 \alias{flash_greedy}
 \title{Fit the FLASH model to data by a greedy approach}
 \usage{
-flash_greedy(data, Kmax, init_method = c("svd", "random"), tol = 0.01,
-  ash_param = list(), verbose = FALSE)
+flash_greedy(data, Kmax, nullcheck = TRUE, init_method = c("svd", "random"),
+  tol = 0.01, ash_param = list(), verbose = FALSE)
 }
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{set_flash_data}}
 
 \item{Kmax}{the maximum number of factors to consider}
+
+\item{nullcheck}{flag whether to check, after running
+hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
+If this check is performed and fails then the factor will be set to 0 in the returned fit.}
 
 \item{tol}{specify how much objective can change in a single iteration to be considered not converged}
 

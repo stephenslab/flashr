@@ -78,12 +78,15 @@ flash_update_single_fl = function(data,f,k,ash_param=list()){
 #' to convergence of objective (used in the greedy algorithm for example)
 #' @param data a flash data object
 #' @param f a flash object
-#' @param k the index of the factor/loading to optmize
+#' @param k the index of the factor/loading to optimize
+#' @param nullcheck flag whether to check, after running
+#' hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
+#' If this check is performed and fails then the factor will be set to 0 in the returned fit.
 #' @param tol a tolerance for the optimization
 #' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
 #' @param verbose if TRUE various output progress updates will be printed
 #' @return an updated flash object
-flash_optimize_single_fl = function(data,f,k,tol=1e-2,ash_param=list(),verbose=FALSE){
+flash_optimize_single_fl = function(data,f,k,nullcheck=TRUE,tol=1e-2,ash_param=list(),verbose=FALSE){
   c = get_conv_criteria(data,f)
   diff = 1
   while(diff > tol){
@@ -94,6 +97,13 @@ flash_optimize_single_fl = function(data,f,k,tol=1e-2,ash_param=list(),verbose=F
     if(verbose){
       message("objective: ",c)
     }
+  }
+
+  if(nullcheck){
+    f0 = flash_zero_out_factor(data,f,k)
+    F0 = get_F(data,f0)
+    F1 = get_F(data,f)
+    if(F0>F1){f=f0}
   }
   return(f)
 }

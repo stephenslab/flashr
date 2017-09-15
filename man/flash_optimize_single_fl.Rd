@@ -4,15 +4,19 @@
 \alias{flash_optimize_single_fl}
 \title{Optimize a flash factor-loading combination}
 \usage{
-flash_optimize_single_fl(data, f, k, tol = 0.01, ash_param = list(),
-  verbose = FALSE)
+flash_optimize_single_fl(data, f, k, nullcheck = TRUE, tol = 0.01,
+  ash_param = list(), verbose = FALSE)
 }
 \arguments{
 \item{data}{a flash data object}
 
 \item{f}{a flash object}
 
-\item{k}{the index of the factor/loading to optmize}
+\item{k}{the index of the factor/loading to optimize}
+
+\item{nullcheck}{flag whether to check, after running
+hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
+If this check is performed and fails then the factor will be set to 0 in the returned fit.}
 
 \item{tol}{a tolerance for the optimization}
 
