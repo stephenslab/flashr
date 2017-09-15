@@ -1,0 +1,74 @@
+---
+title: "Some simple rank 0 examples"
+author: "Matthew Stephens"
+date: "September 15, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# A single example
+
+First we will simulate some rank 0 data:
+
+```{r}
+  library("flashr2")
+  set.seed(1)
+  n=100
+  p=1000
+  Y = matrix(rnorm(n*p),nrow=n)
+```
+
+
+Run flash. Here `nullcheck=FALSE` tells flash to keep
+the final value of the variational optimization without checking
+it against the rank 0 solution (since we are going to do that
+by hand here.) The `get_F` function yields the objective function.
+```{r}
+  data = set_flash_data(Y)
+  f1= flash_r1(data,nullcheck=FALSE)
+  get_F(data,f1)
+```
+
+Now try deleting the factor - that gives us a rank 0 solution in this case. We can see here that deleting the factor actually increases
+the objective function! That is the optimization did not
+work very well (because deleting the factor is actually a special
+case of the model). 
+```{r}
+  f0 = flash_zero_out_factor(data,f1,1)
+  get_F(data,f0)
+  get_F(data,f1)>get_F(data,f0)
+```
+
+This is actually quite a common occurance (see below).
+So we have implemented this check as the default in flash.
+Here is what happens if you run `flash_r1` with default (`nullcheck=TRUE`): it automatically deletes the factor.
+```{r}
+  f1 = flash_r1(data,verbose=TRUE)
+  flash_get_sizes(f1)
+```
+
+
+# Small simulation study: 
+
+Let's see how often this happens:
+```{r}
+set.seed(1)
+n=100
+p=1000
+F1minusF0 = rep(0,100)
+for(i in 1:100){
+  Y = matrix(rnorm(n*p),nrow=n)
+  data = set_flash_data(Y)
+  f1= flash_r1(data,nullcheck=FALSE)
+  f0 = flash_zero_out_factor(data,f1,1)
+  F1minusF0[i] = (get_F(data,f1)-get_F(data,f0))
+}
+hist(F1minusF0)
+summary(F1minusF0)
+```
+
+
+

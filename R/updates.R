@@ -103,6 +103,13 @@ flash_optimize_single_fl = function(data,f,k,nullcheck=TRUE,tol=1e-2,ash_param=l
     f0 = flash_zero_out_factor(data,f,k)
     F0 = get_F(data,f0)
     F1 = get_F(data,f)
+
+    if(verbose){
+      message("performing nullcheck")
+      message("objective from deleting factor:",F0)
+      message("objective from keeping factor:",F1)
+    }
+
     if(F0>F1){f=f0}
   }
   return(f)
