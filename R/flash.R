@@ -62,14 +62,14 @@ flash_greedy = function(data,Kmax, init_method=c("svd","random"),tol=1e-2,ash_pa
 #' @export
 flash_backfit = function(data,f,tol=1e-2,ash_param=list()){
   if(is.matrix(data)){data = set_flash_data(data)}
-  c = get_conv_criteria(f)
+  c = get_conv_criteria(data, f)
   diff = 1
   while(diff > tol){
     for(k in 1:get_k(f)){
         f = flash_update_single_fl(data,f,k,ash_param)
     }
-    cnew = get_conv_criteria(f)
-    diff = mean((cnew-c)^2)
+    cnew = get_conv_criteria(data, f)
+    diff = sqrt(mean((cnew-c)^2))
     c = cnew
   }
   return(f)

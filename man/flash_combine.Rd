@@ -13,5 +13,5 @@ flash_combine(f1, f2)
 }
 \value{
 a flash fit object whose factors are concatenations of f1 and f2
-The precision (tau) of the combined fit is undefined (set to NULL)
+The precision (tau) of the combined fit is inherited from f1
 }

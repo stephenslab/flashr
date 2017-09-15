@@ -47,4 +47,7 @@ flash_get_sizes = function(f){
   colSums(f$EL^2)*colSums(f$EF^2)
 }
 
-get_conv_criteria = function(f){flash_get_lf(f)}
+#get_conv_criteria = function(f){flash_get_lf(f)}
+get_conv_criteria = function(data,f){
+  get_F(data,f)
+}

@@ -45,7 +45,9 @@ flash_init_LF = function(LL,FF){
 flash_init_svd = function(data,K=1){
   Y.svd = svd(data$Y,nu=K,nv=K)
   LL = t(Y.svd$d[1:K,drop=FALSE] * t(Y.svd$u))
-  return(flash_init_LF(LL,Y.svd$v))
+  f = flash_init_LF(LL,Y.svd$v)
+  f=flash_update_precision(data,f)
+  return(f)
 }
 
 
@@ -58,7 +60,9 @@ flash_init_random = function(data,K=1){
   p = ncol(data$Y)
   LL = matrix(rnorm(n*K),ncol=K)
   FF = matrix(rnorm(p*K),ncol=K)
-  return(flash_init_LF(LL,FF))
+  f = flash_init_LF(LL,FF)
+  f=flash_update_precision(data,f)
+  return(f)
 }
 
 
@@ -67,7 +71,7 @@ flash_init_random = function(data,K=1){
 #' @param f1 first flash fit object
 #' @param f2 second flash fit object
 #' @return a flash fit object whose factors are concatenations of f1 and f2
-#' The precision (tau) of the combined fit is undefined (set to NULL)
+#' The precision (tau) of the combined fit is inherited from f1
 flash_combine = function(f1,f2){
   list(
     EL = cbind(f1$EL,f2$EL),
@@ -82,7 +86,7 @@ flash_combine = function(f1,f2){
     comp_post_f = c(f1$comp_post_f,f2$comp_post_f),
     KL_l = c(f1$KL_l,f2$KL_l),
     KL_f = c(f1$KL_f,f2$KL_f),
-    tau = NULL
+    tau = f1$tau
   )
 }
 
@@ -95,5 +99,6 @@ flash_add_factor = function(data,f,K=1,init_method=c("svd","random")){
   init_method = match.arg(init_method)
   R = get_R(data,f)
   f2 = flash_init(set_flash_data(R),K,init_method)
-  flash_combine(f,f2)
+  f = flash_combine(f,f2)
+  return(flash_update_precision(data,f))
 }
