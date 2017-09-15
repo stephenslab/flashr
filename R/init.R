@@ -32,7 +32,8 @@ flash_init_LF = function(LL,FF){
   f$ash_param_f = list()
   f$comp_post_l = list() # component posteriors
   f$comp_post_f = list() # component posteriors
-
+  f$KL_l = list()
+  f$KL_f = list() #KL divergences for each l and f
   f$tau = NULL
   return(f)
 }
@@ -79,6 +80,8 @@ flash_combine = function(f1,f2){
     ash_param_f = c(f1$ash_param_f, f2$ash_param_f),
     comp_post_l = c(f1$comp_post_l,f2$comp_post_l),
     comp_post_f = c(f1$comp_post_f,f2$comp_post_f),
+    KL_l = c(f1$KL_l,f2$KL_l),
+    KL_f = c(f1$KL_f,f2$KL_f),
     tau = NULL
   )
 }
