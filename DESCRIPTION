@@ -1,8 +1,8 @@
 Package: flashr2
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
+Title: Empirical Bayes Shrinkage for Factor Analysis 
+Version: 0.1-1
+Author: Wei Wang, Matthew Stephens 
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
