@@ -4,7 +4,7 @@
 \alias{set_flash_data}
 \title{set up data for reading into flash}
 \usage{
-set_flash_data(Y)
+set_flash_data(Y, init = c("softimpute", "mean"))
 }
 \arguments{
 \item{Y}{an n by p data matrix}
