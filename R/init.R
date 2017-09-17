@@ -40,6 +40,19 @@ flash_init_LF = function(LL,FF){
   return(f)
 }
 
+
+#' @title  Initialize a flash fit object from a list with elements (u,d,v)
+#' @param s list with elements (u,v,d)
+#' @param K number of factors to use
+#' @return a flash fit object
+flash_init_fromsvd = function(s){
+  s$u = as.matrix(s$u) # deals with case these are vectors (K=1)
+  s$v = as.matrix(s$v)
+  LL = t(s$d * t(s$u))
+  f = flash_init_LF(LL,s$v)
+  return(f)
+}
+
 #' @title  Initialize a flash fit object from data using softimpute (without penalty - lambda=0)
 #' @param data a flash data object
 #' @param K number of factors to use
@@ -48,11 +61,8 @@ flash_init_softImpute = function(data,K=1){
   # if missing values, need to use the original data to initialize
   if(data$anyNA){Y.si = softImpute::softImpute(data$Yorig, rank.max = K, type = "als",lambda = 0)}
   else{Y.si = softImpute::softImpute(data$Y, rank.max = K, type = "als",lambda = 0)}
-  Y.si$u = as.matrix(Y.si$u)
-  Y.si$v = as.matrix(Y.si$v)
-  LL = t(Y.si$d * t(Y.si$u))
-  f = flash_init_LF(LL,Y.si$v)
-  f=flash_update_precision(data,f)
+  f = flash_init_fromsvd(Y.si)
+  f = flash_update_precision(data,f)
   return(f)
 }
 
@@ -63,9 +73,9 @@ flash_init_softImpute = function(data,K=1){
 flash_init_svd = function(data,K=1){
   if(data$anyNA){stop("svd initialization can't be used with missing data")}
   Y.svd = svd(data$Y,nu=K,nv=K)
-  LL = t(Y.svd$d[1:K,drop=FALSE] * t(Y.svd$u))
-  f = flash_init_LF(LL,Y.svd$v)
-  f=flash_update_precision(data,f)
+  Y.svd$d = Y.svd$d[1:K,drop=FALSE]
+  f = flash_init_fromsvd(Y.svd)
+  f = flash_update_precision(data,f)
   return(f)
 }
 
