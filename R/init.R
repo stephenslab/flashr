@@ -6,9 +6,11 @@
 #' @param method indicated how to initialize: can be "svd" or "random"
 #' @return a flash fit object, with loadings and factors initialized
 #' @export
-flash_init = function(data,K=1,method=c("svd","random")){
+flash_init = function(data,K=1,method=c("softImpute","svd","random")){
   method = match.arg(method)
-  if(method=="svd")
+  if(method=="softImpute")
+    f=flash_init_softImpute(data,K)
+  else if(method=="svd")
     f=flash_init_svd(data,K)
   else if (method=="random")
     f= flash_init_random(data,K)
@@ -38,11 +40,28 @@ flash_init_LF = function(LL,FF){
   return(f)
 }
 
+#' @title  Initialize a flash fit object from data using softimpute (without penalty - lambda=0)
+#' @param data a flash data object
+#' @param K number of factors to use
+#' @return a flash fit object, initialized using first K components of softimpute
+flash_init_softImpute = function(data,K=1){
+  # if missing values, need to use the original data to initialize
+  if(data$anyNA){Y.si = softImpute::softImpute(data$Yorig, rank.max = K, type = "als",lambda = 0)}
+  else{Y.si = softImpute::softImpute(data$Y, rank.max = K, type = "als",lambda = 0)}
+  Y.si$u = as.matrix(Y.si$u)
+  Y.si$v = as.matrix(Y.si$v)
+  LL = t(Y.si$d * t(Y.si$u))
+  f = flash_init_LF(LL,Y.si$v)
+  f=flash_update_precision(data,f)
+  return(f)
+}
+
 #' @title  Initialize a flash fit object from data using SVD
 #' @param data a flash data object
 #' @param K number of factors to use
 #' @return a flash fit object, initialized using first K components of SVD
 flash_init_svd = function(data,K=1){
+  if(data$anyNA){stop("svd initialization can't be used with missing data")}
   Y.svd = svd(data$Y,nu=K,nv=K)
   LL = t(Y.svd$d[1:K,drop=FALSE] * t(Y.svd$u))
   f = flash_init_LF(LL,Y.svd$v)
@@ -95,7 +114,7 @@ flash_combine = function(f1,f2){
 #' @param f a flash fit object
 #' @details Computes the current residuals from data and f and adds K new factors based
 #' on a simple initialization scheme applied to these residuals
-flash_add_factor = function(data,f,K=1,init_method=c("svd","random")){
+flash_add_factor = function(data,f,K=1,init_method=c("softImpute","svd","random")){
   init_method = match.arg(init_method)
   R = get_R(data,f)
   f2 = flash_init(set_flash_data(R),K,init_method)

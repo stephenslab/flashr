@@ -15,17 +15,14 @@ set_flash_data = function(Y, init=c("softimpute","mean")){
 
   if(anyNA(Y)){ # deal with missing data: set flags and impute
     data$missing = is.na(Y)
+    data$anyNA=TRUE
+    data$Yorig = Y # save original data with missingness
+
     if(any(rowSums(!data$missing)==0)){
       stop("data must not have all missing rows")}
     if(any(colSums(!data$missing)==0)){
       stop("data must not have all missing columns")}
-
-    data$anyNA=TRUE
-    if(init=="mean"){Y[data$missing] = mean(Y,na.rm=TRUE)}
-    if(init=="softimpute"){
-      m= softImpute::softImpute(Y, rank.max = 1,type = "als",lambda = 30)
-      simple_impute = outer(as.vector(m$u),as.vector(m$d * m$v))
-      Y[data$missing] = simple_impute[data$missing] }
+    Y[data$missing] = 0
   }
   data$Y=Y
   return(data)

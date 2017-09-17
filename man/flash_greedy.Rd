@@ -4,8 +4,8 @@
 \alias{flash_greedy}
 \title{Fit the FLASH model to data by a greedy approach}
 \usage{
-flash_greedy(data, Kmax, nullcheck = TRUE, init_method = c("svd", "random"),
-  tol = 0.01, ash_param = list(), verbose = FALSE)
+flash_greedy(data, Kmax, nullcheck = TRUE, init_method = c("softImpute",
+  "svd", "random"), tol = 0.01, ash_param = list(), verbose = FALSE)
 }
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{set_flash_data}}

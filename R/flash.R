@@ -13,7 +13,7 @@
 #' f = flash_r1(Y)
 #' flash_get_sizes(f)
 #' @export
-flash_r1 = function(data,init_method=c("svd","random"),nullcheck=TRUE,tol=1e-2,ash_param=list(),verbose = FALSE){
+flash_r1 = function(data,init_method=c("softImpute","svd","random"),nullcheck=TRUE,tol=1e-2,ash_param=list(),verbose = FALSE){
   if(is.matrix(data)){data = set_flash_data(data)}
   init_method=match.arg(init_method)
   f = flash_init(data,1,init_method)
@@ -40,7 +40,7 @@ flash_r1 = function(data,init_method=c("svd","random"),nullcheck=TRUE,tol=1e-2,a
 #' f = flash_greedy(Y,10)
 #' flash_get_sizes(f)
 #' @export
-flash_greedy = function(data,Kmax, nullcheck=TRUE,init_method=c("svd","random"),tol=1e-2,ash_param=list(),verbose=FALSE){
+flash_greedy = function(data,Kmax, nullcheck=TRUE,init_method=c("softImpute","svd","random"),tol=1e-2,ash_param=list(),verbose=FALSE){
   if(is.matrix(data)){data = set_flash_data(data)}
   init_method=match.arg(init_method)
   f = flash_r1(data,init_method,nullcheck)

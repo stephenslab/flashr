@@ -4,8 +4,8 @@
 \alias{flash_r1}
 \title{Fit the rank1 FLASH model to data}
 \usage{
-flash_r1(data, init_method = c("svd", "random"), nullcheck = TRUE,
-  tol = 0.01, ash_param = list(), verbose = FALSE)
+flash_r1(data, init_method = c("softImpute", "svd", "random"),
+  nullcheck = TRUE, tol = 0.01, ash_param = list(), verbose = FALSE)
 }
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{set_flash_data}}

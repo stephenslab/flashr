@@ -4,7 +4,8 @@
 \alias{flash_add_factor}
 \title{add a factor to f based on residuals}
 \usage{
-flash_add_factor(data, f, K = 1, init_method = c("svd", "random"))
+flash_add_factor(data, f, K = 1, init_method = c("softImpute", "svd",
+  "random"))
 }
 \arguments{
 \item{data}{a flash data object}

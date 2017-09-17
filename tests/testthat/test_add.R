@@ -8,7 +8,7 @@ test_that("adding factor based on svd does same as using 2 svd factors", {
   data = set_flash_data(Y)
   f1 = flash_init(data,1,"svd")
   f2 = flash_init(data,2,"svd")
-  f3 = flash_add_factor(data,f1,1)
+  f3 = flash_add_factor(data,f1,1,init_method="svd")
   expect_equal(flash_get_lf(f3),flash_get_lf(f2))
 }
 )

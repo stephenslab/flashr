@@ -4,7 +4,7 @@
 \alias{flash_init}
 \title{Initialize a flash fit object with K factors}
 \usage{
-flash_init(data, K = 1, method = c("svd", "random"))
+flash_init(data, K = 1, method = c("softImpute", "svd", "random"))
 }
 \arguments{
 \item{data}{a flash data object}
