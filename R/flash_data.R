@@ -28,4 +28,7 @@ set_flash_data = function(Y, init=c("softimpute","mean")){
   return(data)
 }
 
-
+get_Yorig = function(data){
+  if(data$anyNA){return(data$Yorig)}
+  return(data$Y)
+}

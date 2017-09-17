@@ -6,7 +6,7 @@ test_that("flash update improves mean squared error in simple situation", {
   Y = LF + rnorm(5*20)
 
   data = set_flash_data(Y)
-  f = flash_init(data,1,"random")
+  f = flash_init_fn(data,udv_random,1)
   e1 = mean((LF- flash_get_lf(f))^2) # compute mean squared error
   f = flash_update_precision(data,f)
   f = flash_update_single_factor(data,f,1)

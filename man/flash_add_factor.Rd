@@ -4,15 +4,18 @@
 \alias{flash_add_factor}
 \title{add a factor to f based on residuals}
 \usage{
-flash_add_factor(data, f, K = 1, init_method = c("softImpute", "svd",
-  "random"))
+flash_add_factor(data, f, init_fn, K = 1)
 }
 \arguments{
 \item{data}{a flash data object}
 
 \item{f}{a flash fit object}
+
+\item{init_fn}{the function to use to initialize new factors}
+
+\item{K}{number of factors}
 }
 \details{
 Computes the current residuals from data and f and adds K new factors based
-on a simple initialization scheme applied to these residuals
+on init_fn applied to these residuals
 }

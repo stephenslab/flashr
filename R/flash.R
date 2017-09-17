@@ -1,22 +1,26 @@
 #' @title Fit the rank1 FLASH model to data
 #' @param data an n by p matrix or a flash data object created using \code{set_flash_data}
+#' @param tol specify how much objective can change in a single iteration to be considered not converged
+#' @param init_fn function to be used to initialize the factor. This function should take parameters (Y,K)
+#' where Y is an n by p matrix of data (or a flash data object) and K is a number of factors.
+#' It should output a list with elements (u,d,v) where u is n by K matrix
+#' v is a p by K matrix  and d is a K vector. See \code{udv_si} for an example.
+#' (If the input data includes missing values then this function must be able
+#' to deal with missing values in its input matrix.)
+#' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
+#' @param verbose if TRUE various output progress updates will be printed
 #' @param nullcheck flag whether to check, after running
 #' hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
 #' If this check is performed and fails then the factor will be set to 0 in the returned fit.
-#' @param tol specify how much objective can change in a single iteration to be considered not converged
-#' @param init_method specifies how to initialize the factors. Options include svd on data matrix, or random (N(0,1))
-#' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
-#' @param verbose if TRUE various output progress updates will be printed
 #' @return a fitted flash object
 #' @examples
 #' Y = matrix(rnorm(100),nrow=5,ncol=20)
 #' f = flash_r1(Y)
 #' flash_get_sizes(f)
 #' @export
-flash_r1 = function(data,init_method=c("softImpute","svd","random"),nullcheck=TRUE,tol=1e-2,ash_param=list(),verbose = FALSE){
+flash_r1 = function(data,init_fn = "udv_si",tol=1e-2,ash_param=list(),verbose = FALSE, nullcheck=TRUE){
   if(is.matrix(data)){data = set_flash_data(data)}
-  init_method=match.arg(init_method)
-  f = flash_init(data,1,init_method)
+  f = flash_init_fn(data,init_fn)
   f = flash_optimize_single_fl(data,f,1,nullcheck,tol,ash_param,verbose)
   return(f)
 }
@@ -25,31 +29,45 @@ flash_r1 = function(data,init_method=c("softImpute","svd","random"),nullcheck=TR
 #' @title Fit the FLASH model to data by a greedy approach
 #' @details Fits the model by adding a factor and then optimizing it.
 #' It is "greedy" in that it does not return to re-optimize previous factors.
-#' Stops when an added factor contributes nothing, or Kmax is reached
+#' The function stops when an added factor contributes nothing, or Kmax is reached.
+#' Each new factor is intialized by applying the function `init_fn` to the residuals
+#' after removing previously-fitted factors.
 #' @param data an n by p matrix or a flash data object created using \code{set_flash_data}
 #' @param Kmax the maximum number of factors to consider
-#' @param nullcheck flag whether to check, after running
-#' hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
-#' If this check is performed and fails then the factor will be set to 0 in the returned fit.
+#' @param init_fn function to be used to initialize each factor when added. This function should take as
+#' input an n by p matrix of data (or a flash data object)
+#' and output a list with elements (u,d,v) where u is an n-vector,
+#' v is a p-vector and d is a scalar. See \code{udv_si} for an example,
+#' and examples below. (If the input data includes missing values then this function must be able
+#' to deal with missing values in its input matrix.)
 #' @param tol specify how much objective can change in a single iteration to be considered not converged
 #' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
 #' @param verbose if TRUE various output progress updates will be printed
+#' @param nullcheck flag whether to check, after running
+#' hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
+#' If this check is performed and fails then the factor will be set to 0 in the returned fit.
 #' @return a fitted flash object
 #' @examples
-#' Y = matrix(rnorm(100),nrow=5,ncol=20)
+#' l = rnorm(100)
+#' f = rnorm(10)
+#' Y = outer(l,f) + matrix(rnorm(1000),nrow=100)
 #' f = flash_greedy(Y,10)
 #' flash_get_sizes(f)
+#' # example to show how to use a different initialization function
+#' f2 = flash_greedy(Y,10,function(x,K=1){softImpute::softImpute(x,K,lambda=10)})
 #' @export
-flash_greedy = function(data,Kmax, nullcheck=TRUE,init_method=c("softImpute","svd","random"),tol=1e-2,ash_param=list(),verbose=FALSE){
+flash_greedy = function(data,Kmax=1,init_fn="udv_si",tol=1e-2,ash_param=list(),verbose=FALSE,nullcheck=TRUE){
   if(is.matrix(data)){data = set_flash_data(data)}
-  init_method=match.arg(init_method)
-  f = flash_r1(data,init_method,nullcheck)
-  for(k in 2:Kmax){
-    f = flash_add_factor(data, f, 1, init_method)
-    message("fitting factor/loading ",k)
-    f = flash_optimize_single_fl(data,f,k,nullcheck,tol,ash_param,verbose)
-    if(is_tiny_fl(f,k)) #test whether the factor/loading combination is effectively 0
-      break
+  message("fitting factor/loading ",1)
+  f = flash_r1(data,init_fn,tol,ash_param,verbose,nullcheck)
+  if(Kmax>1 & !is_tiny_fl(f,1)){ #if the first factor is big enough
+    for(k in 2:Kmax){
+      f = flash_add_factor(data, f, init_fn)
+      message("fitting factor/loading ",k)
+      f = flash_optimize_single_fl(data,f,k,nullcheck,tol,ash_param,verbose)
+      if(is_tiny_fl(f,k)) #test whether the factor/loading combination is effectively 0
+        break
+    }
   }
   return(f)
 }
@@ -68,6 +86,9 @@ flash_greedy = function(data,Kmax, nullcheck=TRUE,init_method=c("softImpute","sv
 #' fg = flash_greedy(Y,10)
 #' fb = flash_backfit(Y,fg) # refines fit from greedy by backfitting
 #' flash_get_sizes(fb)
+#' fsi = flash_init_fn(data,"udv_si",5)
+#' fb2 = flash_backfit(Y,fsi)
+#' flash_get_sizes(fb2)
 #' @export
 flash_backfit = function(data,f,tol=1e-2,ash_param=list(),verbose=FALSE){
   if(is.matrix(data)){data = set_flash_data(data)}

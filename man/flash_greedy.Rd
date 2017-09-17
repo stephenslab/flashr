@@ -4,23 +4,30 @@
 \alias{flash_greedy}
 \title{Fit the FLASH model to data by a greedy approach}
 \usage{
-flash_greedy(data, Kmax, nullcheck = TRUE, init_method = c("softImpute",
-  "svd", "random"), tol = 0.01, ash_param = list(), verbose = FALSE)
+flash_greedy(data, Kmax = 1, init_fn = "udv_si", tol = 0.01,
+  ash_param = list(), verbose = FALSE, nullcheck = TRUE)
 }
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{set_flash_data}}
 
 \item{Kmax}{the maximum number of factors to consider}
 
-\item{nullcheck}{flag whether to check, after running
-hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
-If this check is performed and fails then the factor will be set to 0 in the returned fit.}
+\item{init_fn}{function to be used to initialize each factor when added. This function should take as
+input an n by p matrix of data (or a flash data object)
+and output a list with elements (u,d,v) where u is an n-vector,
+v is a p-vector and d is a scalar. See \code{udv_si} for an example,
+and examples below. (If the input data includes missing values then this function must be able
+to deal with missing values in its input matrix.)}
 
 \item{tol}{specify how much objective can change in a single iteration to be considered not converged}
 
 \item{ash_param}{parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()}
 
 \item{verbose}{if TRUE various output progress updates will be printed}
+
+\item{nullcheck}{flag whether to check, after running
+hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
+If this check is performed and fails then the factor will be set to 0 in the returned fit.}
 }
 \value{
 a fitted flash object
@@ -28,10 +35,16 @@ a fitted flash object
 \details{
 Fits the model by adding a factor and then optimizing it.
 It is "greedy" in that it does not return to re-optimize previous factors.
-Stops when an added factor contributes nothing, or Kmax is reached
+The function stops when an added factor contributes nothing, or Kmax is reached.
+Each new factor is intialized by applying the function `init_fn` to the residuals
+after removing previously-fitted factors.
 }
 \examples{
-Y = matrix(rnorm(100),nrow=5,ncol=20)
+l = rnorm(100)
+f = rnorm(10)
+Y = outer(l,f) + matrix(rnorm(1000),nrow=100)
 f = flash_greedy(Y,10)
 flash_get_sizes(f)
+# example to show how to use a different initialization function
+f2 = flash_greedy(Y,10,function(x,K=1){softImpute::softImpute(x,K,lambda=10)})
 }

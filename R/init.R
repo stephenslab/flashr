@@ -40,57 +40,64 @@ flash_init_LF = function(LL,FF){
   return(f)
 }
 
+#' @title  Initialize a flash fit object from a list with elements (u,d,v)
+#' @param data a flash data object
+#' @param r1_fn an initialization function, which takes as input an (n by p matrix, or flash data object)
+#' and K, a number of factors, and and outputs a list with elements (u,d,v)
+#' @return a flash fit object
+#' @export
+flash_init_fn = function(data,init_fn,K=1){
+  s = do.call(init_fn,list(get_Yorig(data),K))
+  f = flash_init_udv(s,K)
+  f = flash_update_precision(data,f)
+  return(f)
+}
+
+#' @title udv_si
+#' @details provides a simple wrapper to \code{softImpute} to provide a rank 1 initialization
+#' @param Y an n by p matrix
+#' @param K number of factors to use
+#' @return a list with components (u,d,v)
+#' @export
+udv_si = function(Y,K=1){
+  softImpute::softImpute(Y, rank.max = K, type = "als",lambda = 0)
+}
+
+#' @title udv_svd
+#' @details provides a simple wrapper to svd
+#' @param Y an n by p matrix
+#' @param K number of factors to use
+#' @return a list with components (u,d,v)
+#' @export
+udv_svd = function(Y,K=1){
+  svd(Y,K,K)
+}
+
+#' @title udv_random
+#' @details provides a random initialization of factors
+#' @param Y an n by p matrix
+#' @param K number of factors
+#' @return a list with components (u,d,v), with elements of u and v iid N(0,1)
+#' @export
+udv_random = function(Y,K=1){
+  n = nrow(Y)
+  p = ncol(Y)
+  list(u=matrix(rnorm(n*K),ncol=K),d=1,v=matrix(rnorm(p*K),ncol=K))
+}
+
 
 #' @title  Initialize a flash fit object from a list with elements (u,d,v)
 #' @param s list with elements (u,v,d)
-#' @param K number of factors to use
-#' @return a flash fit object
-flash_init_fromsvd = function(s){
-  s$u = as.matrix(s$u) # deals with case these are vectors (K=1)
+#' @param K the number of factors to use (factors 1:K are used)
+#' @return a flash fit object ready for optimization
+flash_init_udv = function(s,K=1){
+  s$u = as.matrix(s$u)
   s$v = as.matrix(s$v)
-  LL = t(s$d * t(s$u))
-  f = flash_init_LF(LL,s$v)
-  return(f)
-}
+  if(ncol(s$u)>K){s$u = s$u[,1:K,drop=FALSE]} # deals with case these are vectors (K=1)
+  if(ncol(s$v)>K){s$v = s$v[,1:K,drop=FALSE]}
+  if(length(s$d)>K){s$d = s$d[1:K]}
 
-#' @title  Initialize a flash fit object from data using softimpute (without penalty - lambda=0)
-#' @param data a flash data object
-#' @param K number of factors to use
-#' @return a flash fit object, initialized using first K components of softimpute
-flash_init_softImpute = function(data,K=1){
-  # if missing values, need to use the original data to initialize
-  if(data$anyNA){Y.si = softImpute::softImpute(data$Yorig, rank.max = K, type = "als",lambda = 0)}
-  else{Y.si = softImpute::softImpute(data$Y, rank.max = K, type = "als",lambda = 0)}
-  f = flash_init_fromsvd(Y.si)
-  f = flash_update_precision(data,f)
-  return(f)
-}
-
-#' @title  Initialize a flash fit object from data using SVD
-#' @param data a flash data object
-#' @param K number of factors to use
-#' @return a flash fit object, initialized using first K components of SVD
-flash_init_svd = function(data,K=1){
-  if(data$anyNA){stop("svd initialization can't be used with missing data")}
-  Y.svd = svd(data$Y,nu=K,nv=K)
-  Y.svd$d = Y.svd$d[1:K,drop=FALSE]
-  f = flash_init_fromsvd(Y.svd)
-  f = flash_update_precision(data,f)
-  return(f)
-}
-
-
-#' @title  Initialize a flash fit object using random N(0,1) factors
-#' @param data a flash data object
-#' @param K a number of factors to initialize
-#' @return a flash fit object, with loadings and factors initialized randomly iid N(0,1)
-flash_init_random = function(data,K=1){
-  n = nrow(data$Y)
-  p = ncol(data$Y)
-  LL = matrix(rnorm(n*K),ncol=K)
-  FF = matrix(rnorm(p*K),ncol=K)
-  f = flash_init_LF(LL,FF)
-  f=flash_update_precision(data,f)
+  f = flash_init_LF(t(s$d * t(s$u)) , s$v)
   return(f)
 }
 
@@ -122,12 +129,13 @@ flash_combine = function(f1,f2){
 #' @title add a factor to f based on residuals
 #' @param data a flash data object
 #' @param f a flash fit object
+#' @param init_fn the function to use to initialize new factors
+#' @param K number of factors
 #' @details Computes the current residuals from data and f and adds K new factors based
-#' on a simple initialization scheme applied to these residuals
-flash_add_factor = function(data,f,K=1,init_method=c("softImpute","svd","random")){
-  init_method = match.arg(init_method)
+#' on init_fn applied to these residuals
+flash_add_factor = function(data,f,init_fn,K=1){
   R = get_R(data,f)
-  f2 = flash_init(set_flash_data(R),K,init_method)
+  f2 = flash_init_fn(set_flash_data(R),init_fn,K)
   f = flash_combine(f,f2)
   return(flash_update_precision(data,f))
 }

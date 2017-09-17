@@ -4,23 +4,28 @@
 \alias{flash_r1}
 \title{Fit the rank1 FLASH model to data}
 \usage{
-flash_r1(data, init_method = c("softImpute", "svd", "random"),
-  nullcheck = TRUE, tol = 0.01, ash_param = list(), verbose = FALSE)
+flash_r1(data, init_fn = "udv_si", tol = 0.01, ash_param = list(),
+  verbose = FALSE, nullcheck = TRUE)
 }
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{set_flash_data}}
 
-\item{init_method}{specifies how to initialize the factors. Options include svd on data matrix, or random (N(0,1))}
-
-\item{nullcheck}{flag whether to check, after running
-hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
-If this check is performed and fails then the factor will be set to 0 in the returned fit.}
+\item{init_fn}{function to be used to initialize the factor. This function should take parameters (Y,K)
+where Y is an n by p matrix of data (or a flash data object) and K is a number of factors.
+It should output a list with elements (u,d,v) where u is n by K matrix
+v is a p by K matrix  and d is a K vector. See \code{udv_si} for an example.
+(If the input data includes missing values then this function must be able
+to deal with missing values in its input matrix.)}
 
 \item{tol}{specify how much objective can change in a single iteration to be considered not converged}
 
 \item{ash_param}{parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()}
 
 \item{verbose}{if TRUE various output progress updates will be printed}
+
+\item{nullcheck}{flag whether to check, after running
+hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
+If this check is performed and fails then the factor will be set to 0 in the returned fit.}
 }
 \value{
 a fitted flash object

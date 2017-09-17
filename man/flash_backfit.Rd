@@ -28,4 +28,7 @@ Y = matrix(rnorm(100),nrow=5,ncol=20)
 fg = flash_greedy(Y,10)
 fb = flash_backfit(Y,fg) # refines fit from greedy by backfitting
 flash_get_sizes(fb)
+fsi = flash_init_fn(data,"udv_si",5)
+fb2 = flash_backfit(Y,fsi)
+flash_get_sizes(fb2)
 }
