@@ -47,6 +47,18 @@ flash_get_sizes = function(f){
   colSums(f$EL^2)*colSums(f$EF^2)
 }
 
+#' @title flash_get_udv
+#' @details returns the normalized factors and weights in the same form as svd
+#' That is, as a list, with elements u, d and v, where the columns of u and v are normalized to have length 1
+#' @export
+flash_get_udv = function(f){
+  u = scale(f$EL,center=FALSE,scale=sqrt(colSums(f$EL^2)))
+  v = scale(f$EF,center=FALSE,scale=sqrt(colSums(f$EF^2)))
+  d = colSums(f$EL^2)*colSums(f$EF^2)
+  return(list(u=u,d=d,v=v))
+}
+
+
 #get_conv_criteria = function(f){flash_get_lf(f)}
 get_conv_criteria = function(data,f){
   get_F(data,f)

@@ -3,6 +3,7 @@
 export(flash_backfit)
 export(flash_get_lf)
 export(flash_get_sizes)
+export(flash_get_udv)
 export(flash_greedy)
 export(flash_init)
 export(flash_r1)
