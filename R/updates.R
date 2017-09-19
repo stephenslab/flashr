@@ -116,21 +116,5 @@ flash_optimize_single_fl = function(data,f,k,nullcheck=TRUE,tol=1e-2,ash_param=l
 }
 
 
-#' @title  Update precision parameter
-#' @details Updates precision estimate to increase the objective F
-#' @param data a flash data object
-#' @param f a flash object
-#' @return an updated flash object
-#' @export
-flash_update_precision = function(data,f){
-  if(data$anyNA){
-    sigma2 = colSums(get_R2(data,f) * !(data$missing)) / colSums(!data$missing)
-  } else {
-    sigma2 = colMeans(get_R2(data,f))
-  }
-  f$tau = outer(rep(1,get_n(f)), 1/sigma2)
-  return(f)
-}
-
 
 

@@ -10,7 +10,8 @@ set_flash_data(Y, S = 0)
 \item{Y}{an n by p data matrix}
 
 \item{S}{an n by p matrix of the standard errors of observations of Y.
-(Can be a scalar if all elements of the matrix are equal.)}
+(Can be a scalar if all elements of the matrix are equal.)
+Currently S is ignored as we have not yet implemented methods for this.}
 }
 \value{
 a flash data object
