@@ -4,10 +4,13 @@
 \alias{set_flash_data}
 \title{set up data for reading into flash}
 \usage{
-set_flash_data(Y, init = c("softimpute", "mean"))
+set_flash_data(Y, S = 0)
 }
 \arguments{
 \item{Y}{an n by p data matrix}
+
+\item{S}{an n by p matrix of the standard errors of observations of Y.
+(Can be a scalar if all elements of the matrix are equal.)}
 }
 \value{
 a flash data object

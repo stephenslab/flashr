@@ -2,6 +2,9 @@
 
 #' @title set up data for reading into flash
 #' @param Y an n by p data matrix
+#' @param S an n by p matrix of the standard errors of observations of Y.
+#'  (Can be a scalar if all elements of the matrix are equal.)
+#'  Currently S is ignored as we have not yet implemented methods for this.
 #' @details Y can have missing data, but no column or row can be entirely missing
 #' The flash data object contains flags for dealing with missing data
 #' and a (naively) imputed version of the original data matrix so that
@@ -9,21 +12,17 @@
 #' ii) data$Y * data$missing is 0 if the original data were missing
 #' @return a flash data object
 #' @export
-set_flash_data = function(Y, init=c("softimpute","mean")){
-  init = match.arg(init)
-  data = list(Y=NULL, anyNA=FALSE, missing = FALSE) # initialize data
+set_flash_data = function(Y, S = 0){
+  data = list(Yorig = Y, S=S, anyNA=anyNA(Y), missing = is.na(Y)) # initialize data
 
-  if(anyNA(Y)){ # deal with missing data: set flags and impute
-    data$missing = is.na(Y)
-    data$anyNA=TRUE
-    data$Yorig = Y # save original data with missingness
-
+  if(anyNA(Y)){ # replace missing data with 0s
     if(any(rowSums(!data$missing)==0)){
       stop("data must not have all missing rows")}
     if(any(colSums(!data$missing)==0)){
       stop("data must not have all missing columns")}
     Y[data$missing] = 0
   }
+
   data$Y=Y
   return(data)
 }
