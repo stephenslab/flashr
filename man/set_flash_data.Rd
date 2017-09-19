@@ -4,7 +4,8 @@
 \alias{set_flash_data}
 \title{set up data for reading into flash}
 \usage{
-set_flash_data(Y, init = c("softimpute", "mean"))
+set_flash_data(Y, init = c("softimpute", "mean"), noise_type = c("constant",
+  "known", "Bayes_var", "var_col", "noisy", "noisy_col"), sigmae2_tilde = NA)
 }
 \arguments{
 \item{Y}{an n by p data matrix}

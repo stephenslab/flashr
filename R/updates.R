@@ -67,7 +67,8 @@ flash_update_single_factor = function(data,f,k,ash_param=list()){
 #' @title Update a single flash factor-loading combination (and precision)
 #' @inheritParams flash_update_single_loading
 flash_update_single_fl = function(data,f,k,ash_param=list()){
-  f = flash_update_precision(data,f)
+  # f = flash_update_precision(data,f)
+  f = tau_est(f,data)
   f = flash_update_single_factor(data,f,k,ash_param)
   f = flash_update_single_loading(data,f,k,ash_param)
   return(f)
@@ -131,6 +132,4 @@ flash_update_precision = function(data,f){
   f$tau = outer(rep(1,get_n(f)), 1/sigma2)
   return(f)
 }
-
-
 

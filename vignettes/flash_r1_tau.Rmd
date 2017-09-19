@@ -1,0 +1,168 @@
+---
+title: "test the variance estimation"
+author: "Wei Wang"
+date: "9/19/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+sim_K = function(K, N, P, SF, SL, signal,noise){
+  E = matrix(rnorm(N*P,0,noise),nrow=N)
+  Y = E
+  L_true = array(0, dim = c(N,K))
+  F_true = array(0, dim = c(P,K))
+  
+  for(k in 1:K){
+    lstart = rnorm(N, 0, signal*(k/K))
+    fstart = rnorm(P, 0, signal*(k/K))
+    
+    index = sample(seq(1:N),(N*SL))
+    lstart[index] = 0
+    index = sample(seq(1:P),(P*SF))
+    fstart[index] = 0
+    
+    L_true[,k] = lstart
+    F_true[,k] = fstart
+    
+    Y = Y + lstart %*% t(fstart)
+  }
+  return(list(Y = Y, L_true = L_true, F_true = F_true, Error = E))
+}
+
+sim_hd = function(N, P, SF, SL, signal, a = rchisq(N,3),b = rchisq(P,1),mu = 0){
+  
+  E = matrix(rep(0,N*P),nrow=N)
+  sig2_true = matrix(rep(0,N*P),nrow=N)
+  for(i in 1:N){
+    for(j in 1:P){
+      sig2_true[i,j] = mu + a[i] * b[j]
+      E[i,j] = rnorm(1,0,sqrt(mu + a[i] * b[j]))
+    }
+  }
+  lstart = rnorm(N, 0, signal)
+  fstart = rnorm(P, 0, signal)
+  
+  index = sample(seq(1:N),(N*SL))
+  lstart[index] = 0
+  index = sample(seq(1:P),(P*SF))
+  fstart[index] = 0
+  
+  Y = lstart %*% t(fstart) + E
+  
+  return(list(Y = Y, L_true = lstart, F_true = fstart, Error = E,sig2_true = sig2_true))
+}
+
+```
+
+
+```{r}
+library(flashr2)
+```
+
+### constant variance 
+
+```{r}
+set.seed(99)
+N = 100
+P = 200
+dat = sim_K(K=1,N, P, SF = 0.8, SL = 0.5, signal = 1,noise = 0.5)
+Y = dat$Y
+E = dat$Error
+
+data = set_flash_data(Y)
+f= flash_r1(data,verbose=F)
+
+```
+
+this version is already tested
+
+### non-constant variance
+
+In the following situations, we simulate the data with rank one structure with sparsity on both factor and loading.
+The variance of error term is 
+$$\sigma_{e_{ij}}^2 = \mu + a_ib_j$$
+
+#### columnwise variance
+
+we set $\mu = 0$ and $a = \bf{1}$, so the $\sigma_{e_{ij}}^2 = b_j$
+
+```{r}
+set.seed(99)
+N = 100
+P = 200
+dat = sim_hd(N, P, SF = 0.5, SL=0.5, signal =1, a = rep(1,N), b = rchisq(P,1), mu = 0)
+Y = dat$Y
+E = dat$Error
+
+data = set_flash_data(Y,noise_type = "var_col")
+f= flash_r1(data,verbose=F)
+
+plot(dat$sig2_true[1,],as.vector(1/f$tau[1,]))
+abline(0,1)
+```
+
+#### Kronecker product variance
+
+we set $\mu = 0$, so the $\sigma_{e_{ij}}^2 = a_ib_j$
+
+```{r}
+set.seed(99)
+N = 100
+P = 200
+dat = sim_hd(N, P, SF = 0.5, SL=0.5, signal =1, a = rchisq(N,3),b = rchisq(P,1),mu = 0)
+Y = dat$Y
+E = dat$Error
+
+data = set_flash_data(Y,noise_type = "B")
+f= flash_r1(data,verbose=F)
+
+
+plot(as.vector(dat$sig2_true),as.vector(1/f$tau))
+abline(0,1)
+```
+
+#### Known variance matrix 
+
+```{r}
+set.seed(99)
+N = 100
+P = 200
+dat = sim_hd(N, P, SF = 0.5, SL=0.5, signal =1, a = rchisq(N,3),b = rchisq(P,1),mu = 0)
+Y = dat$Y
+E = dat$Error
+
+data = set_flash_data(Y,noise_type = "k",sigmae2_tilde =  dat$sig2_true)
+f= flash_r1(data,verbose=F)
+
+
+plot(as.vector(dat$sig2_true),as.vector(1/f$tau))
+abline(0,1)
+```
+
+
+#### Noisy variance 
+
+we set $\mu = 0.9$, so the $\sigma_{e_{ij}}^2 = a_ib_j + 0.9$. We assume that $a_ib_j$ is known, so we set `sigmae2_tilde =  (dat$sig2_true - 0.9)`
+
+To test the estimation, we use `1/f$tau - sigmae2_tilde` where `sigmae2_tilde = (dat$sig2_true - 0.9) = (a_ib_j)`. We expect `1/f$tau - sigmae2_tilde` to be a matrix of a constant around 0.9.
+
+
+```{r}
+set.seed(99)
+N = 100
+P = 200
+dat = sim_hd(N, P, SF = 0.5, SL=0.5, signal =1, a = rchisq(N,3),b = rchisq(P,1),mu = 0.9)
+Y = dat$Y
+E = dat$Error
+
+data = set_flash_data(Y,noise_type = "noisy",sigmae2_tilde =  (dat$sig2_true - 0.9))
+f= flash_r1(data,verbose=F)
+
+(1/f$tau - (dat$sig2_true - 0.9))[1:10,1:10]
+
+```
+

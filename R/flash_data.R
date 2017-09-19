@@ -9,7 +9,11 @@
 #' ii) data$Y * data$missing is 0 if the original data were missing
 #' @return a flash data object
 #' @export
-set_flash_data = function(Y, init=c("softimpute","mean")){
+set_flash_data = function(Y, init=c("softimpute","mean"),
+                          noise_type = c("constant","known","Bayes_var","var_col","noisy","noisy_col"),
+                          sigmae2_tilde = NA){
+  noise_type = match.arg(noise_type, c("constant","known","Bayes_var","var_col","noisy","noisy_col"))
+  
   init = match.arg(init)
   data = list(Y=NULL, anyNA=FALSE, missing = FALSE) # initialize data
 
@@ -25,6 +29,8 @@ set_flash_data = function(Y, init=c("softimpute","mean")){
     Y[data$missing] = 0
   }
   data$Y=Y
+  data$sigmae2_tilde = sigmae2_tilde
+  data$noise_type = noise_type
   return(data)
 }
 
