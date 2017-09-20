@@ -6,7 +6,6 @@
 #' @param k the index of the loading to update
 #' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
 #' @return an updated flash object
-#' @export
 flash_update_single_loading = function(data,f,k,ash_param=list()){
   ash_param=modifyList(flash_default_ash_param(),ash_param)
   tau = f$tau
@@ -37,7 +36,6 @@ flash_update_single_loading = function(data,f,k,ash_param=list()){
 #' Updates only the factor, once (not the loading)
 #' @inheritParams flash_update_single_loading
 #' @return an updated flash object
-#' @export
 flash_update_single_factor = function(data,f,k,ash_param=list()){
   ash_param=modifyList(flash_default_ash_param(),ash_param)
   tau = f$tau
@@ -66,8 +64,8 @@ flash_update_single_factor = function(data,f,k,ash_param=list()){
 
 #' @title Update a single flash factor-loading combination (and precision)
 #' @inheritParams flash_update_single_loading
-flash_update_single_fl = function(data,f,k,ash_param=list()){
-  f = flash_update_precision(data,f)
+flash_update_single_fl = function(data,f,k,var_type,ash_param=list()){
+  f = flash_update_precision(data,f,var_type)
   f = flash_update_single_factor(data,f,k,ash_param)
   f = flash_update_single_loading(data,f,k,ash_param)
   return(f)
@@ -79,6 +77,7 @@ flash_update_single_fl = function(data,f,k,ash_param=list()){
 #' @param data a flash data object
 #' @param f a flash object
 #' @param k the index of the factor/loading to optimize
+#' @param var_type type of variance structure to assume for residuals.
 #' @param nullcheck flag whether to check, after running
 #' hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
 #' If this check is performed and fails then the factor will be set to 0 in the returned fit.
@@ -86,11 +85,11 @@ flash_update_single_fl = function(data,f,k,ash_param=list()){
 #' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
 #' @param verbose if TRUE various output progress updates will be printed
 #' @return an updated flash object
-flash_optimize_single_fl = function(data,f,k,nullcheck=TRUE,tol=1e-2,ash_param=list(),verbose=FALSE){
+flash_optimize_single_fl = function(data,f,k,var_type,nullcheck=TRUE,tol=1e-2,ash_param=list(),verbose=FALSE){
   c = get_conv_criteria(data,f)
   diff = 1
   while(diff > tol){
-    f = flash_update_single_fl(data,f,k,ash_param)
+    f = flash_update_single_fl(data,f,k,var_type,ash_param)
     cnew = get_conv_criteria(data,f)
     diff = sqrt(mean((cnew-c)^2))
     c = cnew

@@ -4,11 +4,13 @@
 \alias{flash_r1}
 \title{Fit the rank1 FLASH model to data}
 \usage{
-flash_r1(data, init_fn = "udv_si", tol = 0.01, ash_param = list(),
-  verbose = FALSE, nullcheck = TRUE)
+flash_r1(data, var_type = c("by_column", "constant"), init_fn = "udv_si",
+  tol = 0.01, ash_param = list(), verbose = FALSE, nullcheck = TRUE)
 }
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{set_flash_data}}
+
+\item{var_type}{type of variance structure to assume for residuals.}
 
 \item{init_fn}{function to be used to initialize the factor. This function should take parameters (Y,K)
 where Y is an n by p matrix of data (or a flash data object) and K is a number of factors.

@@ -4,12 +4,15 @@
 \alias{flash_backfit}
 \title{Refines a fit of the FLASH model to data by "backfitting"}
 \usage{
-flash_backfit(data, f, tol = 0.01, ash_param = list(), verbose = FALSE)
+flash_backfit(data, f, var_type = c("by_column", "constant"), tol = 0.01,
+  ash_param = list(), verbose = FALSE)
 }
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{set_flash_data}}
 
 \item{f}{a fitted flash object to be refined}
+
+\item{var_type}{type of variance structure to assume for residuals.}
 
 \item{tol}{specify how much objective can change in a single iteration to be considered not converged}
 

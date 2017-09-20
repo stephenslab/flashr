@@ -4,7 +4,7 @@
 \alias{flash_optimize_single_fl}
 \title{Optimize a flash factor-loading combination}
 \usage{
-flash_optimize_single_fl(data, f, k, nullcheck = TRUE, tol = 0.01,
+flash_optimize_single_fl(data, f, k, var_type, nullcheck = TRUE, tol = 0.01,
   ash_param = list(), verbose = FALSE)
 }
 \arguments{
@@ -13,6 +13,8 @@ flash_optimize_single_fl(data, f, k, nullcheck = TRUE, tol = 0.01,
 \item{f}{a flash object}
 
 \item{k}{the index of the factor/loading to optimize}
+
+\item{var_type}{type of variance structure to assume for residuals.}
 
 \item{nullcheck}{flag whether to check, after running
 hill-climbing updates, whether the achieved optimum is better than setting factor to 0.

@@ -1,5 +1,6 @@
 #' @title Fit the rank1 FLASH model to data
 #' @param data an n by p matrix or a flash data object created using \code{set_flash_data}
+#' @param var_type type of variance structure to assume for residuals.
 #' @param tol specify how much objective can change in a single iteration to be considered not converged
 #' @param init_fn function to be used to initialize the factor. This function should take parameters (Y,K)
 #' where Y is an n by p matrix of data (or a flash data object) and K is a number of factors.
@@ -18,10 +19,11 @@
 #' f = flash_r1(Y)
 #' flash_get_sizes(f)
 #' @export
-flash_r1 = function(data,init_fn = "udv_si",tol=1e-2,ash_param=list(),verbose = FALSE, nullcheck=TRUE){
+flash_r1 = function(data,var_type = c("by_column","constant"), init_fn = "udv_si",tol=1e-2,ash_param=list(),verbose = FALSE, nullcheck=TRUE){
   if(is.matrix(data)){data = set_flash_data(data)}
+  var_type=match.arg(var_type)
   f = flash_init_fn(data,init_fn)
-  f = flash_optimize_single_fl(data,f,1,nullcheck,tol,ash_param,verbose)
+  f = flash_optimize_single_fl(data,f,1,var_type,nullcheck,tol,ash_param,verbose)
   return(f)
 }
 
@@ -34,6 +36,7 @@ flash_r1 = function(data,init_fn = "udv_si",tol=1e-2,ash_param=list(),verbose = 
 #' after removing previously-fitted factors.
 #' @param data an n by p matrix or a flash data object created using \code{set_flash_data}
 #' @param Kmax the maximum number of factors to consider
+#' @param var_type type of variance structure to assume for residuals.
 #' @param init_fn function to be used to initialize each factor when added. This function should take as
 #' input an n by p matrix of data (or a flash data object)
 #' and output a list with elements (u,d,v) where u is an n-vector,
@@ -56,15 +59,16 @@ flash_r1 = function(data,init_fn = "udv_si",tol=1e-2,ash_param=list(),verbose = 
 #' # example to show how to use a different initialization function
 #' f2 = flash_greedy(Y,10,function(x,K=1){softImpute::softImpute(x,K,lambda=10)})
 #' @export
-flash_greedy = function(data,Kmax=1,init_fn="udv_si",tol=1e-2,ash_param=list(),verbose=FALSE,nullcheck=TRUE){
+flash_greedy = function(data,Kmax=1,var_type = c("by_column","constant"),init_fn="udv_si",tol=1e-2,ash_param=list(),verbose=FALSE,nullcheck=TRUE){
   if(is.matrix(data)){data = set_flash_data(data)}
+  var_type=match.arg(var_type)
   message("fitting factor/loading ",1)
   f = flash_r1(data,init_fn,tol,ash_param,verbose,nullcheck)
   if(Kmax>1 & !is_tiny_fl(f,1)){ #if the first factor is big enough
     for(k in 2:Kmax){
       f = flash_add_factor(data, f, init_fn)
       message("fitting factor/loading ",k)
-      f = flash_optimize_single_fl(data,f,k,nullcheck,tol,ash_param,verbose)
+      f = flash_optimize_single_fl(data,f,k,var_type,nullcheck,tol,ash_param,verbose)
       if(is_tiny_fl(f,k)) #test whether the factor/loading combination is effectively 0
         break
     }
@@ -77,6 +81,7 @@ flash_greedy = function(data,Kmax=1,init_fn="udv_si",tol=1e-2,ash_param=list(),v
 #' @details Iterates through the factors of a flash object, updating each until convergence
 #' @param data an n by p matrix or a flash data object created using \code{set_flash_data}
 #' @param f a fitted flash object to be refined
+#' @param var_type type of variance structure to assume for residuals.
 #' @param tol specify how much objective can change in a single iteration to be considered not converged
 #' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
 #' @param verbose if TRUE various output progress updates will be printed
@@ -90,13 +95,14 @@ flash_greedy = function(data,Kmax=1,init_fn="udv_si",tol=1e-2,ash_param=list(),v
 #' fb2 = flash_backfit(Y,fsi)
 #' flash_get_sizes(fb2)
 #' @export
-flash_backfit = function(data,f,tol=1e-2,ash_param=list(),verbose=FALSE){
+flash_backfit = function(data,f,var_type = c("by_column","constant"),tol=1e-2,ash_param=list(),verbose=FALSE){
   if(is.matrix(data)){data = set_flash_data(data)}
+  var_type=match.arg(var_type)
   c = get_conv_criteria(data, f)
   diff = 1
   while(diff > tol){
     for(k in 1:get_k(f)){
-        f = flash_update_single_fl(data,f,k,ash_param)
+        f = flash_update_single_fl(data,f,k,var_type,ash_param)
     }
     cnew = get_conv_criteria(data, f)
     diff = sqrt(mean((cnew-c)^2))

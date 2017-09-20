@@ -4,7 +4,7 @@
 \alias{flash_update_single_fl}
 \title{Update a single flash factor-loading combination (and precision)}
 \usage{
-flash_update_single_fl(data, f, k, ash_param = list())
+flash_update_single_fl(data, f, k, var_type, ash_param = list())
 }
 \arguments{
 \item{data}{a flash data object}
