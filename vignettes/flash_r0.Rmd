@@ -38,6 +38,7 @@ work very well (because deleting the factor is actually a special
 case of the model). 
 ```{r}
   f0 = flash_zero_out_factor(data,f1,1)
+  f0 = flash_update_precision(data,f)
   get_F(data,f0)
   get_F(data,f1)>get_F(data,f0)
 ```
@@ -64,6 +65,7 @@ for(i in 1:100){
   data = set_flash_data(Y)
   f1= flash_r1(data,nullcheck=FALSE)
   f0 = flash_zero_out_factor(data,f1,1)
+  f0 = flash_update_precision(data,f)
   F1minusF0[i] = (get_F(data,f1)-get_F(data,f0))
 }
 hist(F1minusF0)
