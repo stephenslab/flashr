@@ -117,7 +117,7 @@ flash_optimize_single_fl = function(data,f,k,var_type,nullcheck=TRUE,tol=1e-2,as
 #' @return a flash object
 perform_nullcheck=function(data,f,k,var_type,verbose){
   f0 = flash_zero_out_factor(data,f,k)
-  f0 = flash_update_precision(data,f,var_type)
+  f0 = flash_update_precision(data,f0,var_type)
   F0 = get_F(data,f0)
   F1 = get_F(data,f)
 
