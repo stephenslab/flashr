@@ -60,7 +60,7 @@ flash_init_fn = function(data,init_fn,K=1){
 #' @return a list with components (u,d,v)
 #' @export
 udv_si = function(Y,K=1){
-  softImpute::softImpute(Y, rank.max = K, type = "als",lambda = 0)
+  softImpute::softImpute(Y, rank.max = K, type = "svd",lambda = 0)
 }
 
 #' @title udv_svd
