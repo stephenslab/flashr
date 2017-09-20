@@ -99,21 +99,36 @@ flash_optimize_single_fl = function(data,f,k,var_type,nullcheck=TRUE,tol=1e-2,as
   }
 
   if(nullcheck){
-    f0 = flash_zero_out_factor(data,f,k)
-    F0 = get_F(data,f0)
-    F1 = get_F(data,f)
-
-    if(verbose){
-      message("performing nullcheck")
-      message("objective from deleting factor:",F0)
-      message("objective from keeping factor:",F1)
-    }
-
-    if(F0>F1){f=f0}
+    f = perform_nullcheck(data,f,k,var_type,verbose)
   }
+
   return(f)
 }
 
+#' @title  Check whether zeroing out a factor improves the objective
+#' @details If zeroing out factor k improves the objective then returns
+#' flash object with factor k set to 0 (and precision updated);
+#' otherwise returns original flash object
+#' @param data a flash data object
+#' @param f a flash object
+#' @param k the index of the factor/loading to optimize
+#' @param var_type type of variance structure to assume for residuals.
+#' @param verbose if TRUE various output progress updates will be printed
+#' @return a flash object
+perform_nullcheck=function(data,f,k,var_type,verbose){
+  f0 = flash_zero_out_factor(data,f,k)
+  f0 = flash_update_precision(data,f,var_type)
+  F0 = get_F(data,f0)
+  F1 = get_F(data,f)
 
+  if(verbose){
+    message("performing nullcheck")
+    message("objective from deleting factor:",F0)
+    message("objective from keeping factor:",F1)
+  }
+
+  if(F0>F1){return(f0)}
+  else{return(f)}
+}
 
 
