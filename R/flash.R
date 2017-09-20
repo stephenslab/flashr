@@ -35,8 +35,11 @@ flash_r1 = function(data,var_type = c("by_column","constant"), init_fn = "udv_si
 #' Each new factor is intialized by applying the function `init_fn` to the residuals
 #' after removing previously-fitted factors.
 #' @param data an n by p matrix or a flash data object created using \code{set_flash_data}
-#' @param Kmax the maximum number of factors to consider
+#' @param Kmax the maximum number of factors to be considered
 #' @param var_type type of variance structure to assume for residuals.
+#' @param f_init a flash fit object to start the greedy algorithm: the greedy algorithm iteratively adds factors
+#' to this initial fit. (If NULL then the greedy algorithm starts with 0 factors)
+#' (Note: if f_init already contains at least Kmax factors then this function returns f_init)
 #' @param init_fn function to be used to initialize each factor when added. This function should take as
 #' input an n by p matrix of data (or a flash data object)
 #' and output a list with elements (u,d,v) where u is an n-vector,
@@ -59,13 +62,21 @@ flash_r1 = function(data,var_type = c("by_column","constant"), init_fn = "udv_si
 #' # example to show how to use a different initialization function
 #' f2 = flash_greedy(Y,10,function(x,K=1){softImpute::softImpute(x,K,lambda=10)})
 #' @export
-flash_greedy = function(data,Kmax=1,var_type = c("by_column","constant"),init_fn="udv_si",tol=1e-2,ash_param=list(),verbose=FALSE,nullcheck=TRUE){
+flash_greedy = function(data,Kmax=1,var_type = c("by_column","constant"),f_init = NULL, init_fn="udv_si",tol=1e-2,ash_param=list(),verbose=FALSE,nullcheck=TRUE){
   if(is.matrix(data)){data = set_flash_data(data)}
   var_type=match.arg(var_type)
-  message("fitting factor/loading ",1)
-  f = flash_r1(data,init_fn,tol,ash_param,verbose,nullcheck)
-  if(Kmax>1 & !is_tiny_fl(f,1)){ #if the first factor is big enough
-    for(k in 2:Kmax){
+
+  if(is.null(f_init)){
+    message("fitting factor/loading ",1)
+    f = flash_r1(data,var_type,init_fn,tol,ash_param,verbose,nullcheck)
+    if(is_tiny_fl(f,1)){return(f)} #finish if not even rank 1
+  } else { #if initial value specified, set it
+    f = f_init
+  }
+
+  k_init = get_k(f)
+  if(k_init<Kmax){ #if we still have factors to add
+    for(k in (k_init+1):Kmax){
       f = flash_add_factor(data, f, init_fn)
       message("fitting factor/loading ",k)
       f = flash_optimize_single_fl(data,f,k,var_type,nullcheck,tol,ash_param,verbose)

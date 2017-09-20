@@ -5,8 +5,8 @@
 \title{Fit the FLASH model to data by a greedy approach}
 \usage{
 flash_greedy(data, Kmax = 1, var_type = c("by_column", "constant"),
-  init_fn = "udv_si", tol = 0.01, ash_param = list(), verbose = FALSE,
-  nullcheck = TRUE)
+  f_init = NULL, init_fn = "udv_si", tol = 0.01, ash_param = list(),
+  verbose = FALSE, nullcheck = TRUE)
 }
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{set_flash_data}}
@@ -14,6 +14,9 @@ flash_greedy(data, Kmax = 1, var_type = c("by_column", "constant"),
 \item{Kmax}{the maximum number of factors to consider}
 
 \item{var_type}{type of variance structure to assume for residuals.}
+
+\item{f_init}{a flash fit object to start the greedy algorithm: the greedy algorithm iteratively adds factors
+to this initial fit. (If NULL then the greedy algorithm starts with 0 factors)}
 
 \item{init_fn}{function to be used to initialize each factor when added. This function should take as
 input an n by p matrix of data (or a flash data object)
