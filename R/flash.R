@@ -102,7 +102,7 @@ flash_greedy = function(data,Kmax=1,var_type = c("by_column","constant"),f_init 
 #' fg = flash_greedy(Y,10)
 #' fb = flash_backfit(Y,fg) # refines fit from greedy by backfitting
 #' flash_get_sizes(fb)
-#' fsi = flash_init_fn(data,"udv_si",5)
+#' fsi = flash_init_fn(set_flash_data(Y),"udv_si",4)
 #' fb2 = flash_backfit(Y,fsi)
 #' flash_get_sizes(fb2)
 #' @export
@@ -111,17 +111,28 @@ flash_backfit = function(data,f,var_type = c("by_column","constant"),tol=1e-2,as
   var_type=match.arg(var_type)
   c = get_conv_criteria(data, f)
   diff = 1
+
   while(diff > tol){
-    for(k in 1:get_k(f)){
+    diff = 1
+    while(diff > tol){
+      for(k in 1:get_k(f)){
         f = flash_update_single_fl(data,f,k,var_type,ash_param)
+      }
+      cnew = get_conv_criteria(data, f)
+      diff = sqrt(mean((cnew-c)^2))
+      c = cnew
+      if(verbose){
+        message("objective: ",c)
+      }
     }
+
+    kset = 1:get_k(f) #now remove factors that actually hurt objective
+    f = perform_nullcheck(data,f,kset,var_type,verbose)
     cnew = get_conv_criteria(data, f)
     diff = sqrt(mean((cnew-c)^2))
     c = cnew
-    if(verbose){
-      message("objective: ",c)
-    }
   }
+
   return(f)
 }
 

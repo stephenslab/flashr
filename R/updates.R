@@ -105,30 +105,49 @@ flash_optimize_single_fl = function(data,f,k,var_type,nullcheck=TRUE,tol=1e-2,as
   return(f)
 }
 
-#' @title  Check whether zeroing out a factor improves the objective
-#' @details If zeroing out factor k improves the objective then returns
-#' flash object with factor k set to 0 (and precision updated);
-#' otherwise returns original flash object
+#' @title  Zeros out factors when that improves the objective
+#' @details Sometimes zeroing out a factor can improve the objective.
+#' This function iterates over factors with indices in kset
+#' and checks whether zeroing it out will improve the objective; if so then that factor
+#' is set to 0 (and precision is updated). Returns the final flash fit object obtained when this iterative process stops
+#' (ie a complete pass is performed with no factor being zerod)
 #' @param data a flash data object
 #' @param f a flash object
-#' @param k the index of the factor/loading to optimize
+#' @param kset the indices of the factor/loading to check
 #' @param var_type type of variance structure to assume for residuals.
 #' @param verbose if TRUE various output progress updates will be printed
 #' @return a flash object
-perform_nullcheck=function(data,f,k,var_type,verbose){
-  f0 = flash_zero_out_factor(data,f,k)
-  f0 = flash_update_precision(data,f0,var_type)
-  F0 = get_F(data,f0)
-  F1 = get_F(data,f)
+perform_nullcheck=function(data,f,kset,var_type,verbose){
 
-  if(verbose){
-    message("performing nullcheck")
-    message("objective from deleting factor:",F0)
-    message("objective from keeping factor:",F1)
+  f_changed = TRUE #we are going to iterate until f does not change
+  while(f_changed){
+
+    f_changed = FALSE
+    for(k in kset){
+
+      f0 = flash_zero_out_factor(data,f,k)
+      f0 = flash_update_precision(data,f0,var_type)
+      F0 = get_F(data,f0)
+      F1 = get_F(data,f)
+
+      if(verbose){
+        message("performing nullcheck")
+        message("objective from deleting factor:",F0)
+        message("objective from keeping factor:",F1)
+      }
+
+      if(F0>F1){
+        if(verbose){
+          message("factor zeroed out")
+        }
+        f=f0
+        f_changed = TRUE
+      }
+
+    }
   }
 
-  if(F0>F1){return(f0)}
-  else{return(f)}
+  return(f)
 }
 
 

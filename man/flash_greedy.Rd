@@ -11,12 +11,13 @@ flash_greedy(data, Kmax = 1, var_type = c("by_column", "constant"),
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{set_flash_data}}
 
-\item{Kmax}{the maximum number of factors to consider}
+\item{Kmax}{the maximum number of factors to be considered}
 
 \item{var_type}{type of variance structure to assume for residuals.}
 
 \item{f_init}{a flash fit object to start the greedy algorithm: the greedy algorithm iteratively adds factors
-to this initial fit. (If NULL then the greedy algorithm starts with 0 factors)}
+to this initial fit. (If NULL then the greedy algorithm starts with 0 factors)
+(Note: if f_init already contains at least Kmax factors then this function returns f_init)}
 
 \item{init_fn}{function to be used to initialize each factor when added. This function should take as
 input an n by p matrix of data (or a flash data object)

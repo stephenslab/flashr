@@ -2,16 +2,16 @@
 % Please edit documentation in R/updates.R
 \name{perform_nullcheck}
 \alias{perform_nullcheck}
-\title{Check whether zeroing out a factor improves the objective}
+\title{Zeros out factors when that improves the objective}
 \usage{
-perform_nullcheck(data, f, k, var_type, verbose)
+perform_nullcheck(data, f, kset, var_type, verbose)
 }
 \arguments{
 \item{data}{a flash data object}
 
 \item{f}{a flash object}
 
-\item{k}{the index of the factor/loading to optimize}
+\item{kset}{the indices of the factor/loading to check}
 
 \item{var_type}{type of variance structure to assume for residuals.}
 
@@ -21,7 +21,9 @@ perform_nullcheck(data, f, k, var_type, verbose)
 a flash object
 }
 \details{
-If zeroing out factor k improves the objective then returns
-flash object with factor k set to 0 (and precision updated);
-otherwise returns original flash object
+Sometimes zeroing out a factor can improve the objective.
+This function iterates over factors with indices in kset
+and checks whether zeroing it out will improve the objective; if so then that factor
+is set to 0 (and precision is updated). Returns the final flash fit object obtained when this iterative process stops
+(ie a complete pass is performed with no factor being zerod)
 }
