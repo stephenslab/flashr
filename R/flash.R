@@ -77,7 +77,7 @@ flash_greedy = function(data,Kmax=1,var_type = c("by_column","constant"),f_init 
   k_init = get_k(f)
   if(k_init<Kmax){ #if we still have factors to add
     for(k in (k_init+1):Kmax){
-      f = flash_add_factor(data, f, init_fn)
+      f = flash_add_factor_from_residuals(data, f, init_fn)
       message("fitting factor/loading ",k)
       f = flash_optimize_single_fl(data,f,k,var_type,nullcheck,tol,ash_param,verbose)
       if(is_tiny_fl(f,k)) #test whether the factor/loading combination is effectively 0

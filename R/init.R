@@ -138,7 +138,7 @@ flash_combine = function(f1,f2){
 #' @param K number of factors
 #' @details Computes the current residuals from data and f and adds K new factors based
 #' on init_fn applied to these residuals
-flash_add_factor = function(data,f,init_fn,K=1){
+flash_add_factor_from_residuals = function(data,f,init_fn,K=1){
   R = get_R(data,f)
   f2 = flash_init_fn(set_flash_data(R),init_fn,K)
   f = flash_combine(f,f2)
@@ -166,3 +166,5 @@ flash_zero_out_factor = function(data,f,k=1){
   f=flash_update_precision(data,f)
   return(f)
 }
+
+
