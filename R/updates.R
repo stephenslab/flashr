@@ -7,23 +7,27 @@
 #' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
 #' @return an updated flash object
 flash_update_single_loading = function(data,f,k,ash_param=list()){
-  ash_param=modifyList(flash_default_ash_param(),ash_param)
-  tau = f$tau
-  if(data$anyNA){tau = tau * !data$missing} #set missing values to have precision 0
+  subset = which(!f$fixl[,k]) # check which elements are not fixed
+  if(length(subset)>0){ # and only do the update if some elements are not fixed
 
-  s = sqrt(1/(tau %*% f$EF2[,k]))
-  if(sum(is.finite(s))>0){ # check some finite values before proceeding
-    Rk = get_Rk(data,f,k) #residuals excluding factor k
-    x = ((Rk*tau) %*% f$EF[,k]) * s^2
-    a = do.call(ashr::ash,
+    ash_param=modifyList(flash_default_ash_param(),ash_param)
+    tau = f$tau[subset,]
+
+    if(data$anyNA){tau = tau * !data$missing[subset,]} #set missing values to have precision 0
+    s = sqrt(1/(tau %*% f$EF2[,k]))
+    if(sum(is.finite(s))>0){ # check some finite values before proceeding
+      Rk = get_Rk(data,f,k)[subset,] #residuals excluding factor k
+      x = ((Rk*tau) %*% f$EF[,k]) * s^2
+      a = do.call(ashr::ash,
                 c( list(betahat=as.vector(x),sebetahat=as.vector(s)),
                    ash_param) )
-    f$EL[,k] = a$flash_data$postmean
-    f$EL2[,k] = a$flash_data$postmean2
-    f$gl[[k]] = a$flash_data$fitted_g
-    f$ash_param_l[[k]] = ash_param
-    f$KL_l[[k]] = a$flash_data$penloglik -
-      NM_posterior_e_loglik(x,s,a$flash_data$postmean,a$flash_data$postmean2)
+      f$EL[subset,k] = a$flash_data$postmean
+      f$EL2[subset,k] = a$flash_data$postmean2
+      f$gl[[k]] = a$flash_data$fitted_g
+      f$ash_param_l[[k]] = ash_param
+      f$KL_l[[k]] = a$flash_data$penloglik -
+        NM_posterior_e_loglik(x,s,a$flash_data$postmean,a$flash_data$postmean2)
+    }
   }
   return(f)
 }
@@ -34,24 +38,28 @@ flash_update_single_loading = function(data,f,k,ash_param=list()){
 #' @inheritParams flash_update_single_loading
 #' @return an updated flash object
 flash_update_single_factor = function(data,f,k,ash_param=list()){
-  ash_param=modifyList(flash_default_ash_param(),ash_param)
-  tau = f$tau
-  if(data$anyNA){tau = tau * !data$missing} #set missing values to have precision 0
+  subset = which(!f$fixf[,k]) # check which elements are not fixed
+  if(length(subset)>0){ # and only do the update if some elements are not fixed
 
-  s = sqrt(1/(t(tau) %*% f$EL2[,k]))
-  if(sum(is.finite(s))>0){ # check some finite values before proceeding
-    Rk = get_Rk(data,f,k) #residuals excluding factor k
-    x = (t(Rk*tau) %*% f$EL[,k]) * s^2
-    a = do.call(ashr::ash,
+    ash_param=modifyList(flash_default_ash_param(),ash_param)
+    tau = f$tau[,subset]
+    if(data$anyNA){tau = tau * !data$missing[,subset]} #set missing values to have precision 0
+
+    s = sqrt(1/(t(tau) %*% f$EL2[,k]))
+    if(sum(is.finite(s))>0){ # check some finite values before proceeding
+      Rk = get_Rk(data,f,k)[,subset] #residuals excluding factor k
+      x = (t(Rk*tau) %*% f$EL[,k]) * s^2
+      a = do.call(ashr::ash,
                 c( list(betahat=as.vector(x),sebetahat=as.vector(s)),
                   ash_param) )
 
-    f$EF[,k] = a$flash_data$postmean
-    f$EF2[,k] = a$flash_data$postmean2
-    f$gf[[k]] = a$flash_data$fitted_g
-    f$ash_param_f[[k]] = ash_param
-    f$KL_f[[k]] = a$flash_data$penloglik -
-      NM_posterior_e_loglik(x,s,a$flash_data$postmean,a$flash_data$postmean2)
+      f$EF[subset,k] = a$flash_data$postmean
+      f$EF2[subset,k] = a$flash_data$postmean2
+      f$gf[[k]] = a$flash_data$fitted_g
+      f$ash_param_f[[k]] = ash_param
+      f$KL_f[[k]] = a$flash_data$penloglik -
+        NM_posterior_e_loglik(x,s,a$flash_data$postmean,a$flash_data$postmean2)
+    }
   }
   return(f)
 }

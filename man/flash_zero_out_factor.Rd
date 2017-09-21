@@ -10,7 +10,12 @@ flash_zero_out_factor(data, f, k = 1)
 \item{data}{a flash data object}
 
 \item{f}{a flash fit object}
+
+\item{k}{index of factor/loading to zero out}
 }
 \details{
-the specified factor is made to be 0, effectively reducing the rank by 1
+The factor and loadings of the kth factor of f are made to be zero.
+(Except for elements of the factor/loading that are designated to be fixed)
+This effectively reduces the rank by 1, although the zero factor/loading is kept in f
+so the number and indexing of factor/loading matrices in f remains the same
 }

@@ -22,18 +22,25 @@ flash_init = function(data,K=1,method=c("softImpute","svd","random")){
 #' @title  Initialize a flash fit object from the results of a factor analysis
 #' @param LL the loadings, an n by K matrix
 #' @param FF the factors, a p by K matrix
+#' @param fixl an n by K matrix of TRUE/FALSE values indicating which elements of LL should be considered fixed and not changed during updates.
+#' Useful for including a mean factor for example.
+#' @param fixf a p by K matrix of TRUE/FALSE values; same as fixl but for factors FF.
 #' @return a flash fit object, with factors initialized using L and F
-flash_init_LF = function(LL,FF){
+flash_init_LF = function(LL,FF, fixl = NULL, fixf = NULL){
   assertthat::assert_that(ncol(LL)==ncol(FF))
-  f = list(EL = LL, EF = FF)
+  if(is.null(fixl)){fixl = matrix(FALSE,ncol=ncol(LL),nrow=nrow(LL))}
+  if(is.null(fixf)){fixf = matrix(FALSE,ncol=ncol(FF),nrow=nrow(FF))}
+
+  f = list(EL = LL, EF = FF, fixl = fixl, fixf=fixf)
+
   f$EL2 = f$EL^2
   f$EF2 = f$EF^2
   f$gl = list()
   f$gf = list()
   f$ash_param_l = list()
   f$ash_param_f = list()
-  f$KL_l = list()
-  f$KL_f = list() #KL divergences for each l and f
+  f$KL_l = as.list(rep(0,get_k(f)))
+  f$KL_f = as.list(rep(0,get_k(f))) #KL divergences for each l and f
   f$tau = NULL
   return(f)
 }
@@ -112,6 +119,8 @@ flash_combine = function(f1,f2){
     EF = cbind(f1$EF,f2$EF),
     EL2 = cbind(f1$EL2,f2$EL2),
     EF2 = cbind(f1$EF2,f2$EF2),
+    fixl = cbind(f1$fixl, f2$fixl),
+    fixf = cbind(f1$fixf, f2$fixf),
     gl = c(f1$gl,f2$gl),
     gf = c(f1$gf,f2$gf),
     ash_param_l = c(f1$ash_param_l, f2$ash_param_l),
@@ -139,13 +148,17 @@ flash_add_factor = function(data,f,init_fn,K=1){
 #' @title zero out a factor from f
 #' @param data a flash data object
 #' @param f a flash fit object
-#' @details the specified factor is made to be 0, effectively reducing the rank by 1
+#' @param k index of factor/loading to zero out
+#' @details The factor and loadings of the kth factor of f are made to be zero.
+#' (Except for elements of the factor/loading that are designated to be fixed)
+#' This effectively reduces the rank by 1, although the zero factor/loading is kept in f
+#' so the number and indexing of factor/loading matrices in f remains the same
 #' @export
 flash_zero_out_factor = function(data,f,k=1){
-  f$EL[,k] = 0
-  f$EL2[,k] = 0
-  f$EF[,k] = 0
-  f$EF2[,k] = 0
+  f$EL[!f$fixl[,k],k] = 0
+  f$EL2[!f$fixl[,k],k] = 0
+  f$EF[!f$fixf[,k],k] = 0
+  f$EF2[!f$fixf[,k],k] = 0
   f$gl[[k]] = ashr::normalmix(1,0,0)
   f$gf[[k]] = ashr::normalmix(1,0,0)
   f$KL_l[[k]] = 0

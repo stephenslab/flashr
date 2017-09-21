@@ -4,12 +4,17 @@
 \alias{flash_init_LF}
 \title{Initialize a flash fit object from the results of a factor analysis}
 \usage{
-flash_init_LF(LL, FF)
+flash_init_LF(LL, FF, fixl = NULL, fixf = NULL)
 }
 \arguments{
 \item{LL}{the loadings, an n by K matrix}
 
 \item{FF}{the factors, a p by K matrix}
+
+\item{fixl}{an n by K matrix of TRUE/FALSE values indicating which elements of LL should be considered fixed and not changed during updates.
+Useful for including a mean factor for example.}
+
+\item{fixf}{a p by K matrix of TRUE/FALSE values; same as fixl but for factors FF.}
 }
 \value{
 a flash fit object, with factors initialized using L and F
