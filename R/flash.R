@@ -77,7 +77,7 @@ flash_greedy = function(data,Kmax=1,var_type = c("by_column","constant"),f_init 
   k_init = get_k(f)
   if(k_init<Kmax){ #if we still have factors to add
     for(k in (k_init+1):Kmax){
-      f = flash_add_factor_from_residuals(data, f, init_fn)
+      f = flash_add_factors_from_residuals(data, f, init_fn)
       message("fitting factor/loading ",k)
       f = flash_optimize_single_fl(data,f,k,var_type,nullcheck,tol,ash_param,verbose)
       if(is_tiny_fl(f,k)) #test whether the factor/loading combination is effectively 0
@@ -92,6 +92,7 @@ flash_greedy = function(data,Kmax=1,var_type = c("by_column","constant"),f_init 
 #' @details Iterates through the factors of a flash object, updating each until convergence
 #' @param data an n by p matrix or a flash data object created using \code{set_flash_data}
 #' @param f a fitted flash object to be refined
+#' @param kset the indices of factors to be optimized (NULL indicates all factors)
 #' @param var_type type of variance structure to assume for residuals.
 #' @param tol specify how much objective can change in a single iteration to be considered not converged
 #' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
@@ -106,16 +107,18 @@ flash_greedy = function(data,Kmax=1,var_type = c("by_column","constant"),f_init 
 #' fb2 = flash_backfit(Y,fsi)
 #' flash_get_sizes(fb2)
 #' @export
-flash_backfit = function(data,f,var_type = c("by_column","constant"),tol=1e-2,ash_param=list(),verbose=FALSE){
+flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),tol=1e-2,ash_param=list(),verbose=FALSE){
   if(is.matrix(data)){data = set_flash_data(data)}
+  if(is.null(kset)){kset = 1:get_k(f)}
   var_type=match.arg(var_type)
+  if(is.null(f$tau)){f=flash_update_precision(data,f,var_type)} # need to do this in case f hasn't been fit at all yet
   c = get_conv_criteria(data, f)
   diff = 1
 
   while(diff > tol){
     diff = 1
     while(diff > tol){
-      for(k in 1:get_k(f)){
+      for(k in kset){
         f = flash_update_single_fl(data,f,k,var_type,ash_param)
       }
       cnew = get_conv_criteria(data, f)
@@ -131,6 +134,41 @@ flash_backfit = function(data,f,var_type = c("by_column","constant"),tol=1e-2,as
     cnew = get_conv_criteria(data, f)
     diff = sqrt(mean((cnew-c)^2))
     c = cnew
+  }
+
+  return(f)
+}
+
+#' @title Main flash function
+#' @details Performs Empirical Bayes factor analysis with adaptive shrinkage on both factors and loadings.
+#' @param data an n by p matrix or a flash data object created using \code{set_flash_data}
+#' @param Kmax the maximum total number of factors to use (including the r1+r2 covariates)
+#' @param column_covariates an n by r1 matrix of covariates (eg could be a column of all 1s to allow an intercept for each column)
+#' @param row_covariates a p by r2 matrix of covariates (eg could be a vector of p 1s to allow an intercept for each row)
+#' @param init_fn function used to initialize factors and loadings,
+#' @param f_init a previously fitted flash object to be added to or refined
+#' @param var_type type of variance structure to assume for residuals.
+#' @param tol specify how much objective can change in a single iteration to be considered not converged
+#' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
+#' @param verbose if TRUE various output progress updates will be printed
+#' @return a fitted flash object
+#' @export
+flash = function(data,Kmax,column_covariates = NULL,row_covariates = NULL,f_init = NULL,init_fn=NULL, var_type = c("by_column","constant"),tol=1e-2,ash_param=list(),verbose=FALSE){
+  if(is.matrix(data)){data = set_flash_data(data)}
+  var_type=match.arg(var_type)
+  f=f_init
+  if(is.null(f)){f = flash_init_null()}
+
+
+  if(!is.null(column_covariates)){
+    f = flash_combine(f, flash_init_from_L(column_covariates,fixl))
+  }
+  # this not yet written
+
+  # need to have initialization from L or F alone, with ability to fix
+  # also need to think about how to initialize factors from a given sparsity pattern
+  if(!is.null(row_covariates)){
+    f = flash_combine(f, flash_init_from_F(row_covariates,fixf))
   }
 
   return(f)

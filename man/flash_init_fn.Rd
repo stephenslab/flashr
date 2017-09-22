@@ -2,14 +2,14 @@
 % Please edit documentation in R/init.R
 \name{flash_init_fn}
 \alias{flash_init_fn}
-\title{Initialize a flash fit object from a list with elements (u,d,v)}
+\title{Initialize a flash fit object by applying a function to data}
 \usage{
 flash_init_fn(data, init_fn, K = 1)
 }
 \arguments{
 \item{data}{a flash data object}
 
-\item{r1_fn}{an initialization function, which takes as input an (n by p matrix, or flash data object)
+\item{init_fn}{an initialization function, which takes as input an (n by p matrix, or flash data object)
 and K, a number of factors, and and outputs a list with elements (u,d,v)}
 }
 \value{
