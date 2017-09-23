@@ -18,8 +18,8 @@ flash_init_lf = function(LL,FF, fixl = NULL, fixf = NULL){
   f$gf = list()
   f$ash_param_l = list()
   f$ash_param_f = list()
-  f$KL_l = as.list(rep(0,get_k(f)))
-  f$KL_f = as.list(rep(0,get_k(f))) #KL divergences for each l and f
+  f$KL_l = list()
+  f$KL_f = list() #KL divergences for each l and f
   f$tau = NULL
   return(f)
 }

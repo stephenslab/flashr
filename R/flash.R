@@ -101,11 +101,12 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
   if(is.null(kset)){kset = 1:get_k(f)}
   var_type=match.arg(var_type)
   if(is.null(f$tau)){f=flash_update_precision(data,f,var_type)} # need to do this in case f hasn't been fit at all yet
-  c = flash_get_F(data, f)
+  c = -Inf # in general can't rely on f being a fit object...
   diff = 1
   fit_got_worse = FALSE #flag used to check for occassional
   #issues with fit getting slightly worse due to numerics. If so we will stop iterating
   # to avoid potential infinite loop.
+
   while(diff > tol & !fit_got_worse){
     diff = 1
     while(diff > tol){
@@ -120,7 +121,7 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
       }
     }
 
-    if(diff<0){fit_got_worse=TRUE}
+    if(diff<0){fit_got_worse=TRUE; warning("fit got worse this iteration by ", -diff)}
 
     if(nullcheck){
       kset = 1:get_k(f) #now remove factors that actually hurt objective
