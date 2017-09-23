@@ -9,9 +9,9 @@ flash(data, Kmax, column_covariates = NULL, row_covariates = NULL,
   tol = 0.01, ash_param = list(), verbose = FALSE)
 }
 \arguments{
-\item{data}{an n by p matrix or a flash data object created using \code{set_flash_data}}
+\item{data}{an n by p matrix or a flash data object created using \code{flash_set_data}}
 
-\item{Kmax}{the maximum total number of factors to use (including the r1+r2 covariates)}
+\item{Kmax}{the maximum total number of factors to use}
 
 \item{column_covariates}{an n by r1 matrix of covariates (eg could be a column of all 1s to allow an intercept for each column)}
 

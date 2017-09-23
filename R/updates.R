@@ -54,7 +54,7 @@ flash_update_single_factor = function(data,f,k,ash_param=list()){
                   ash_param) )
 
       f$EF[subset,k] = a$flash_data$postmean
-      f$EF2[subset,k] = a$flash_data$postmean2
+     f$EF2[subset,k] = a$flash_data$postmean2
       f$gf[[k]] = a$flash_data$fitted_g
       f$ash_param_f[[k]] = ash_param
       f$KL_f[[k]] = a$flash_data$penloglik -
@@ -129,8 +129,8 @@ perform_nullcheck=function(data,f,kset,var_type,verbose){
 
       f0 = flash_zero_out_factor(data,f,k)
       f0 = flash_update_precision(data,f0,var_type)
-      F0 = get_F(data,f0)
-      F1 = get_F(data,f)
+      F0 = flash_get_F(data,f0)
+      F1 = flash_get_F(data,f)
 
       if(verbose){
         message("performing nullcheck")
@@ -148,7 +148,9 @@ perform_nullcheck=function(data,f,kset,var_type,verbose){
 
     }
   }
-
+  if(verbose){
+    message("nullcheck complete, objective:",flash_get_F(data,f))
+  }
   return(f)
 }
 

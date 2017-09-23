@@ -1,5 +1,5 @@
 #' @title Fit the rank1 FLASH model to data
-#' @param data an n by p matrix or a flash data object created using \code{set_flash_data}
+#' @param data an n by p matrix or a flash data object created using \code{flash_set_data}
 #' @param var_type type of variance structure to assume for residuals.
 #' @param tol specify how much objective can change in a single iteration to be considered not converged
 #' @param init_fn function to be used to initialize the factor. This function should take parameters (Y,K)
@@ -19,27 +19,26 @@
 #' f = flash_r1(Y)
 #' flash_get_sizes(f)
 #' @export
-flash_r1 = function(data,var_type = c("by_column","constant"), init_fn = "udv_si",tol=1e-2,ash_param=list(),verbose = FALSE, nullcheck=TRUE){
-  if(is.matrix(data)){data = set_flash_data(data)}
+flash_r1 = function(data,f_init=NULL,var_type = c("by_column","constant"), init_fn = "udv_si",tol=1e-2,ash_param=list(),verbose = FALSE, nullcheck=TRUE){
+  if(is.matrix(data)){data = flash_set_data(data)}
   var_type=match.arg(var_type)
-  f = flash_init_fn(data,init_fn)
-  f = flash_optimize_single_fl(data,f,1,var_type,nullcheck,tol,ash_param,verbose)
+  f = flash_add_factors_from_data(data,f_init = f_init, init_fn=init_fn,K=1)
+  f = flash_optimize_single_fl(data,f,get_k(f),var_type,nullcheck,tol,ash_param,verbose)
   return(f)
 }
 
 
-#' @title Fit the FLASH model to data by a greedy approach
-#' @details Fits the model by adding a factor and then optimizing it.
+#' @title Adds factors to a flash object by a greedy approach
+#' @details Adds factors iteratively, at each time adding a new factor and then optimizing it.
 #' It is "greedy" in that it does not return to re-optimize previous factors.
 #' The function stops when an added factor contributes nothing, or Kmax is reached.
 #' Each new factor is intialized by applying the function `init_fn` to the residuals
 #' after removing previously-fitted factors.
-#' @param data an n by p matrix or a flash data object created using \code{set_flash_data}
-#' @param Kmax the maximum number of factors to be considered
-#' @param var_type type of variance structure to assume for residuals.
-#' @param f_init a flash fit object to start the greedy algorithm: the greedy algorithm iteratively adds factors
+#' @param data an n by p matrix or a flash data object created using \code{flash_set_data}
+#' @param Kmax the maximum number of factors to add to f_init
+#' @param f_init a flash fit object to start the greedy algorithm: the greedy algorithm iteratively adds up to Kmax factors
 #' to this initial fit. (If NULL then the greedy algorithm starts with 0 factors)
-#' (Note: if f_init already contains at least Kmax factors then this function returns f_init)
+#' @param var_type type of variance structure to assume for residuals.
 #' @param init_fn function to be used to initialize each factor when added. This function should take as
 #' input an n by p matrix of data (or a flash data object)
 #' and output a list with elements (u,d,v) where u is an n-vector,
@@ -57,40 +56,30 @@ flash_r1 = function(data,var_type = c("by_column","constant"), init_fn = "udv_si
 #' l = rnorm(100)
 #' f = rnorm(10)
 #' Y = outer(l,f) + matrix(rnorm(1000),nrow=100)
-#' f = flash_greedy(Y,10)
+#' f = flash_add_greedy(Y,10)
 #' flash_get_sizes(f)
 #' # example to show how to use a different initialization function
-#' f2 = flash_greedy(Y,10,function(x,K=1){softImpute::softImpute(x,K,lambda=10)})
+#' f2 = flash_add_greedy(Y,10,function(x,K=1){softImpute::softImpute(x,K,lambda=10)})
 #' @export
-flash_greedy = function(data,Kmax=1,var_type = c("by_column","constant"),f_init = NULL, init_fn="udv_si",tol=1e-2,ash_param=list(),verbose=FALSE,nullcheck=TRUE){
-  if(is.matrix(data)){data = set_flash_data(data)}
+flash_add_greedy = function(data,Kmax=1,f_init = NULL,var_type = c("by_column","constant"), init_fn="udv_si",tol=1e-2,ash_param=list(),verbose=FALSE,nullcheck=TRUE){
+  if(is.matrix(data)){data = flash_set_data(data)}
   var_type=match.arg(var_type)
+  f = f_init
 
-  if(is.null(f_init)){
-    message("fitting factor/loading ",1)
-    f = flash_r1(data,var_type,init_fn,tol,ash_param,verbose,nullcheck)
-    if(is_tiny_fl(f,1)){return(f)} #finish if not even rank 1
-  } else { #if initial value specified, set it
-    f = f_init
+  for(k in 1:Kmax){
+    message("fitting factor/loading ",k)
+    f = flash_r1(data,f,var_type,init_fn,tol,ash_param,verbose,nullcheck)
+    if(is_tiny_fl(f,get_k(f))) #test whether the factor/loading combination is effectively 0
+      break
   }
 
-  k_init = get_k(f)
-  if(k_init<Kmax){ #if we still have factors to add
-    for(k in (k_init+1):Kmax){
-      f = flash_add_factors_from_residuals(data, f, init_fn)
-      message("fitting factor/loading ",k)
-      f = flash_optimize_single_fl(data,f,k,var_type,nullcheck,tol,ash_param,verbose)
-      if(is_tiny_fl(f,k)) #test whether the factor/loading combination is effectively 0
-        break
-    }
-  }
   return(f)
 }
 
 
 #' @title Refines a fit of the FLASH model to data by "backfitting"
 #' @details Iterates through the factors of a flash object, updating each until convergence
-#' @param data an n by p matrix or a flash data object created using \code{set_flash_data}
+#' @param data an n by p matrix or a flash data object created using \code{flash_set_data}
 #' @param f a fitted flash object to be refined
 #' @param kset the indices of factors to be optimized (NULL indicates all factors)
 #' @param var_type type of variance structure to assume for residuals.
@@ -103,36 +92,42 @@ flash_greedy = function(data,Kmax=1,var_type = c("by_column","constant"),f_init 
 #' fg = flash_greedy(Y,10)
 #' fb = flash_backfit(Y,fg) # refines fit from greedy by backfitting
 #' flash_get_sizes(fb)
-#' fsi = flash_init_fn(set_flash_data(Y),"udv_si",4)
+#' fsi = flash_init_fn(flash_set_data(Y),"udv_si",4)
 #' fb2 = flash_backfit(Y,fsi)
 #' flash_get_sizes(fb2)
 #' @export
-flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),tol=1e-2,ash_param=list(),verbose=FALSE){
-  if(is.matrix(data)){data = set_flash_data(data)}
+flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),tol=1e-2,ash_param=list(),verbose=FALSE,nullcheck=TRUE){
+  if(is.matrix(data)){data = flash_set_data(data)}
   if(is.null(kset)){kset = 1:get_k(f)}
   var_type=match.arg(var_type)
   if(is.null(f$tau)){f=flash_update_precision(data,f,var_type)} # need to do this in case f hasn't been fit at all yet
-  c = get_conv_criteria(data, f)
+  c = flash_get_F(data, f)
   diff = 1
-
-  while(diff > tol){
+  fit_got_worse = FALSE #flag used to check for occassional
+  #issues with fit getting slightly worse due to numerics. If so we will stop iterating
+  # to avoid potential infinite loop.
+  while(diff > tol & !fit_got_worse){
     diff = 1
     while(diff > tol){
       for(k in kset){
         f = flash_update_single_fl(data,f,k,var_type,ash_param)
       }
-      cnew = get_conv_criteria(data, f)
-      diff = sqrt(mean((cnew-c)^2))
+      cnew = flash_get_F(data, f)
+      diff = cnew-c
       c = cnew
       if(verbose){
         message("objective: ",c)
       }
     }
 
-    kset = 1:get_k(f) #now remove factors that actually hurt objective
-    f = perform_nullcheck(data,f,kset,var_type,verbose)
-    cnew = get_conv_criteria(data, f)
-    diff = sqrt(mean((cnew-c)^2))
+    if(diff<0){fit_got_worse=TRUE}
+
+    if(nullcheck){
+      kset = 1:get_k(f) #now remove factors that actually hurt objective
+      f = perform_nullcheck(data,f,kset,var_type,verbose)
+    }
+    cnew = flash_get_F(data, f)
+    diff = cnew-c
     c = cnew
   }
 
@@ -141,8 +136,8 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
 
 #' @title Main flash function
 #' @details Performs Empirical Bayes factor analysis with adaptive shrinkage on both factors and loadings.
-#' @param data an n by p matrix or a flash data object created using \code{set_flash_data}
-#' @param Kmax the maximum total number of factors to use (including the r1+r2 covariates)
+#' @param data an n by p matrix or a flash data object created using \code{flash_set_data}
+#' @param Kmax the maximum total number of factors to use
 #' @param column_covariates an n by r1 matrix of covariates (eg could be a column of all 1s to allow an intercept for each column)
 #' @param row_covariates a p by r2 matrix of covariates (eg could be a vector of p 1s to allow an intercept for each row)
 #' @param init_fn function used to initialize factors and loadings,
@@ -154,7 +149,7 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
 #' @return a fitted flash object
 #' @export
 flash = function(data,Kmax,column_covariates = NULL,row_covariates = NULL,f_init = NULL,init_fn=NULL, var_type = c("by_column","constant"),tol=1e-2,ash_param=list(),verbose=FALSE){
-  if(is.matrix(data)){data = set_flash_data(data)}
+  if(is.matrix(data)){data = flash_set_data(data)}
   var_type=match.arg(var_type)
   f=f_init
   if(is.null(f)){f = flash_init_null()}

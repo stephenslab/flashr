@@ -35,7 +35,7 @@ Now add some missing data at 50 percent of entries
 
 Run flash on the full data
 ```{r}
-  data = set_flash_data(Y)
+  data = flash_set_data(Y)
   f= flash_r1(data,verbose=TRUE)
   plot(LF,flash_get_lf(f),main="True LF vs fitted value (full data)",xlab="true LF",ylab="fitted LF")
   abline(a=0,b=1,col="red")
@@ -43,7 +43,7 @@ Run flash on the full data
 
 And on missing data
 ```{r}  
-  data.miss = set_flash_data(Y.miss)
+  data.miss = flash_set_data(Y.miss)
   f.miss = flash_r1(data.miss,verbose=TRUE)
   plot(LF,flash_get_lf(f.miss),main="True LF vs fitted values (missing data)",xlab="true LF",ylab="fitted LF")
   abline(a=0,b=1,col="red")

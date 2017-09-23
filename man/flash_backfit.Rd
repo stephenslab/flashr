@@ -5,10 +5,10 @@
 \title{Refines a fit of the FLASH model to data by "backfitting"}
 \usage{
 flash_backfit(data, f, kset = NULL, var_type = c("by_column", "constant"),
-  tol = 0.01, ash_param = list(), verbose = FALSE)
+  tol = 0.01, ash_param = list(), verbose = FALSE, nullcheck = TRUE)
 }
 \arguments{
-\item{data}{an n by p matrix or a flash data object created using \code{set_flash_data}}
+\item{data}{an n by p matrix or a flash data object created using \code{flash_set_data}}
 
 \item{f}{a fitted flash object to be refined}
 
@@ -33,7 +33,7 @@ Y = matrix(rnorm(100),nrow=5,ncol=20)
 fg = flash_greedy(Y,10)
 fb = flash_backfit(Y,fg) # refines fit from greedy by backfitting
 flash_get_sizes(fb)
-fsi = flash_init_fn(set_flash_data(Y),"udv_si",4)
+fsi = flash_init_fn(flash_set_data(Y),"udv_si",4)
 fb2 = flash_backfit(Y,fsi)
 flash_get_sizes(fb2)
 }

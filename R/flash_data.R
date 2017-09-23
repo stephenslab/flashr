@@ -12,7 +12,7 @@
 #' ii) data$Y * data$missing is 0 if the original data were missing
 #' @return a flash data object
 #' @export
-set_flash_data = function(Y, S = 0){
+flash_set_data = function(Y, S = 0){
   data = list(Yorig = Y, S=S, anyNA=anyNA(Y), missing = is.na(Y)) # initialize data
 
   if(anyNA(Y)){ # replace missing data with 0s
