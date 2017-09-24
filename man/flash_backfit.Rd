@@ -5,7 +5,8 @@
 \title{Refines a fit of the FLASH model to data by "backfitting"}
 \usage{
 flash_backfit(data, f, kset = NULL, var_type = c("by_column", "constant"),
-  tol = 0.01, ash_param = list(), verbose = FALSE, nullcheck = TRUE)
+  tol = 0.01, ash_param = list(), verbose = FALSE, nullcheck = TRUE,
+  maxiter = 1000)
 }
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{flash_set_data}}
@@ -21,6 +22,8 @@ flash_backfit(data, f, kset = NULL, var_type = c("by_column", "constant"),
 \item{ash_param}{parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()}
 
 \item{verbose}{if TRUE various output progress updates will be printed}
+
+\item{maxiter}{a maximum number of iterations to perform (in the inner loop). To perform just one iteration we suggest setting maxiter=1 and nullcheck=FALSE}
 }
 \value{
 a fitted flash object

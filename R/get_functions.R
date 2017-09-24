@@ -37,8 +37,8 @@ get_R2 = function(data,f){
   if(is.null(f$EL)){return(data$Y^2)}
   else{
     LF = f$EL %*% t(f$EF)
-    return( data$Y^2 - 2 * data$Y * LF
-          + LF^2 + f$EL2 %*% t(f$EF2) - f$EL^2 %*% t(f$EF^2) )
+    return( (data$Y - LF)^2 +
+          f$EL2 %*% t(f$EF2) - f$EL^2 %*% t(f$EF^2) )
   }
 }
 
@@ -75,7 +75,13 @@ flash_get_k = function(f){get_k(f)}
 
 get_l = function(f){f$EL}
 get_f = function(f){f$EF}
-get_k = function(f){ncol(f$EL)}
+
+get_k = function(f){
+  k=ncol(f$EL)
+  if(is.null(k)){return(0)}
+  else{return(k)}
+}
+
 get_n = function(f){nrow(f$EL)}
 get_p = function(f){nrow(f$EF)}
 
@@ -95,6 +101,7 @@ flash_get_sizes = function(f){
 flash_get_pve = function(f){
   s = flash_get_sizes(f)
   s/(sum(s)+sum(1/f$tau))
+# wei's version  (sapply(seq(1,K),function(x){ sum(f$EL2[,x] %*% t(f$EF2[,x])) }))/sum(Y^2)
 }
 
 #' @title flash_get_udv

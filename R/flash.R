@@ -86,6 +86,7 @@ flash_add_greedy = function(data,Kmax=1,f_init = NULL,var_type = c("by_column","
 #' @param tol specify how much objective can change in a single iteration to be considered not converged
 #' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
 #' @param verbose if TRUE various output progress updates will be printed
+#' @param maxiter a maximum number of iterations to perform (in the inner loop). To perform just one iteration we suggest setting maxiter=1 and nullcheck=FALSE
 #' @return a fitted flash object
 #' @examples
 #' Y = matrix(rnorm(100),nrow=5,ncol=20)
@@ -96,12 +97,18 @@ flash_add_greedy = function(data,Kmax=1,f_init = NULL,var_type = c("by_column","
 #' fb2 = flash_backfit(Y,fsi)
 #' flash_get_sizes(fb2)
 #' @export
-flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),tol=1e-2,ash_param=list(),verbose=FALSE,nullcheck=TRUE){
+flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),tol=1e-2,ash_param=list(),verbose=FALSE,nullcheck=TRUE,maxiter = 1000){
   if(is.matrix(data)){data = flash_set_data(data)}
   if(is.null(kset)){kset = 1:get_k(f)}
   var_type=match.arg(var_type)
-  if(is.null(f$tau)){f=flash_update_precision(data,f,var_type)} # need to do this in case f hasn't been fit at all yet
-  c = -Inf # in general can't rely on f being a fit object...
+
+  if(verbose){message("iteration: 1")}
+  flash_update_precision(data,f,var_type)
+  for(k in kset){
+    f = flash_update_single_fl(data,f,k,var_type,ash_param)
+  }
+
+  c = flash_get_F(data,f)
   diff = 1
   fit_got_worse = FALSE #flag used to check for occassional
   #issues with fit getting slightly worse due to numerics. If so we will stop iterating
@@ -109,7 +116,10 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
 
   while(diff > tol & !fit_got_worse){
     diff = 1
-    while(diff > tol){
+    iteration = 1
+    while((diff > tol) & (iteration < maxiter)){
+      iteration = iteration + 1
+      if(verbose){message("iteration:", iteration)}
       for(k in kset){
         f = flash_update_single_fl(data,f,k,var_type,ash_param)
       }

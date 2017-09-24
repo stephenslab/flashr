@@ -1,10 +1,8 @@
 #' @title Get objective function from flash data and flash fit objects
 #' @param data a flash data object
 #' @param f a flash fit object
-#' @details returns -Inf if f is not in a valid state (ie has only been initialized and not fit)
 #' @export
 flash_get_F = function(data,f){
-  if(length(f$KL_l)!=get_k(f)){return(-Inf)}
   return(sum(unlist(f$KL_l))+sum(unlist(f$KL_f))+e_loglik(data,f))
 }
 

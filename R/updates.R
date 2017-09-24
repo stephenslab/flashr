@@ -88,6 +88,7 @@ flash_update_single_fl = function(data,f,k,var_type,ash_param=list()){
 #' @param verbose if TRUE various output progress updates will be printed
 #' @return an updated flash object
 flash_optimize_single_fl = function(data,f,k,var_type,nullcheck=TRUE,tol=1e-2,ash_param=list(),verbose=FALSE){
+  f = flash_update_single_fl(data,f,k,var_type,ash_param) #do an update first so that we can get a valid c
   c = get_conv_criteria(data,f)
   diff = 1
   while(diff > tol){
