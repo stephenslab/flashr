@@ -1,8 +1,10 @@
 # flashr2
 repo for refactoring flashr code
 
-A minimal example - code is currently very much in development and untested! Do not use for applications!
+This code is currently very much in development, and the interface may change
+under you! 
 
+For a minimal example
 ```
 set.seed(1)
 l = rnorm(5)
@@ -10,8 +12,13 @@ f = rnorm(20)
 LF = outer(l,f)
 Y = LF + rnorm(5*20)
 
-data = set_flash_data(Y)
-f1 = flash_r1(data,"svd")
-fg = flash_greedy(data,10)
+data = flash_set_data(Y)
+f1 = flash_r1(data)
+fg = flash_add_greedy(data,10)
 fb = flash_backfit(data,fg)
+flash_get_l(fb)
+flash_get_l(fg)
 ```
+
+For more see 
+(https://github.com/stephenslab/flashr2/blob/master/vignettes/flash_intro.Rmd)
