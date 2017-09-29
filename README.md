@@ -4,8 +4,10 @@ repo for refactoring flashr code
 This code is currently very much in development, and the interface may change
 under you! 
 
-For a minimal example
+For a minimal example, install the `devtools` package and then:
 ```
+devtools::install_github("stephenslab/flashr2")
+library("flashr2")
 set.seed(1)
 l = rnorm(5)
 f = rnorm(20)
