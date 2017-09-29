@@ -9,7 +9,7 @@
 #' @details plots each factor and loading as a barplot.
 #' @importFrom ggplot2 ggplot
 #' @export
-plot_factors = function(data,f,k = 1,loading_label = FALSE,factor_label = FALSE){
+flash_plot_factors = function(data,f,k = 1,loading_label = FALSE,factor_label = FALSE){
   library(ggplot2)
   Y = get_Yorig(data)
   sample_name = rownames(Y)
@@ -29,7 +29,7 @@ plot_factors = function(data,f,k = 1,loading_label = FALSE,factor_label = FALSE)
   }else{
     plot_l = plot_one_factor(flash_get_l(f,k),pve[k],k,f_labels =NA,y_lab = "loading values")
   }
-  return(list(plot_pve = plot_pve,plot_f = plot_f,plot_l = plot_l))
+  return(list(plot_f = plot_f,plot_l = plot_l))
 }
 
 
