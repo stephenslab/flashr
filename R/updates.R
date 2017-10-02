@@ -21,6 +21,7 @@ flash_update_single_loading = function(data,f,k,ash_param=list()){
       a = do.call(ashr::ash,
                 c( list(betahat=as.vector(x),sebetahat=as.vector(s)),
                    ash_param) )
+      if(is.null(a$flash_data$postmean)){stop("Your version of ashr is not compatible with this version of flashr; try updating ashr to latest version")}
       f$EL[subset,k] = a$flash_data$postmean
       f$EL2[subset,k] = a$flash_data$postmean2
       f$gl[[k]] = a$flash_data$fitted_g
@@ -52,9 +53,9 @@ flash_update_single_factor = function(data,f,k,ash_param=list()){
       a = do.call(ashr::ash,
                 c( list(betahat=as.vector(x),sebetahat=as.vector(s)),
                   ash_param) )
-
+      if(is.null(a$flash_data$postmean)){stop("Your version of ashr is not compatible with this version of flashr; try updating ashr to latest version")}
       f$EF[subset,k] = a$flash_data$postmean
-     f$EF2[subset,k] = a$flash_data$postmean2
+      f$EF2[subset,k] = a$flash_data$postmean2
       f$gf[[k]] = a$flash_data$fitted_g
       f$ash_param_f[[k]] = ash_param
       f$KL_f[[k]] = a$flash_data$penloglik -
