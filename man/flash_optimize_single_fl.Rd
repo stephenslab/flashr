@@ -5,7 +5,7 @@
 \title{Optimize a flash factor-loading combination}
 \usage{
 flash_optimize_single_fl(data, f, k, var_type, nullcheck = TRUE, tol = 0.01,
-  ash_param = list(), verbose = FALSE)
+  ebnm_fn = ashr::ash, ebnm_param = list(), verbose = FALSE)
 }
 \arguments{
 \item{data}{a flash data object}
@@ -22,7 +22,9 @@ If this check is performed and fails then the factor will be set to 0 in the ret
 
 \item{tol}{a tolerance for the optimization}
 
-\item{ash_param}{parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()}
+\item{ebnm_fn}{function to solve the Empirical Bayes normal means problem}
+
+\item{ebnm_param}{parameters to be passed to ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()}
 
 \item{verbose}{if TRUE various output progress updates will be printed}
 }

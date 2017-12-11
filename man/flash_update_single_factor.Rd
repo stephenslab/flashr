@@ -4,7 +4,8 @@
 \alias{flash_update_single_factor}
 \title{Update a flash factor}
 \usage{
-flash_update_single_factor(data, f, k, ash_param = list())
+flash_update_single_factor(data, f, k, ebnm_fn = ashr::ash,
+  ebnm_param = list())
 }
 \arguments{
 \item{data}{a flash data object}
@@ -13,7 +14,9 @@ flash_update_single_factor(data, f, k, ash_param = list())
 
 \item{k}{the index of the loading to update}
 
-\item{ash_param}{parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()}
+\item{ebnm_fn}{function to solve the Empirical Bayes normal means problem}
+
+\item{ebnm_param}{parameters to be passed to ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()}
 }
 \value{
 an updated flash object

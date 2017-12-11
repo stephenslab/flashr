@@ -2,11 +2,11 @@
 % Please edit documentation in R/flash.R
 \name{flash_r1}
 \alias{flash_r1}
-\title{Fit the rank1 FLASH model to data}
+\title{Fit the rank1 flash model to data}
 \usage{
 flash_r1(data, f_init = NULL, var_type = c("by_column", "constant"),
-  init_fn = "udv_si", tol = 0.01, ash_param = list(), verbose = FALSE,
-  nullcheck = TRUE)
+  init_fn = "udv_si", tol = 0.01, ebnm_fn = ashr::ash,
+  ebnm_param = list(), verbose = FALSE, nullcheck = TRUE)
 }
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{flash_set_data}}
@@ -22,7 +22,9 @@ to deal with missing values in its input matrix.)}
 
 \item{tol}{specify how much objective can change in a single iteration to be considered not converged}
 
-\item{ash_param}{parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()}
+\item{ebnm_fn}{function to solve the Empirical Bayes Normal Means problem}
+
+\item{ebnm_param}{parameters to be passed to ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()}
 
 \item{verbose}{if TRUE various output progress updates will be printed}
 

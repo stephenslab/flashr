@@ -1,4 +1,4 @@
-#' @title Fit the rank1 FLASH model to data
+#' @title Fit the rank1 flash model to data
 #' @param data an n by p matrix or a flash data object created using \code{flash_set_data}
 #' @param var_type type of variance structure to assume for residuals.
 #' @param tol specify how much objective can change in a single iteration to be considered not converged
@@ -8,7 +8,8 @@
 #' v is a p by K matrix  and d is a K vector. See \code{udv_si} for an example.
 #' (If the input data includes missing values then this function must be able
 #' to deal with missing values in its input matrix.)
-#' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
+#' @param ebnm_fn function to solve the Empirical Bayes Normal Means problem
+#' @param ebnm_param parameters to be passed to ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()
 #' @param verbose if TRUE various output progress updates will be printed
 #' @param nullcheck flag whether to check, after running
 #' hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
@@ -19,11 +20,11 @@
 #' f = flash_r1(Y)
 #' flash_get_sizes(f)
 #' @export
-flash_r1 = function(data,f_init=NULL,var_type = c("by_column","constant"), init_fn = "udv_si",tol=1e-2,ash_param=list(),verbose = FALSE, nullcheck=TRUE){
+flash_r1 = function(data,f_init=NULL,var_type = c("by_column","constant"), init_fn = "udv_si",tol=1e-2,ebnm_fn = ashr::ash, ebnm_param=list(),verbose = FALSE, nullcheck=TRUE){
   if(is.matrix(data)){data = flash_set_data(data)}
   var_type=match.arg(var_type)
   f = flash_add_factors_from_data(data,f_init = f_init, init_fn=init_fn,K=1)
-  f = flash_optimize_single_fl(data,f,get_k(f),var_type,nullcheck,tol,ash_param,verbose)
+  f = flash_optimize_single_fl(data,f,get_k(f),var_type,nullcheck,tol,ebnm_fn,ebnm_param,verbose)
   return(f)
 }
 
@@ -46,7 +47,8 @@ flash_r1 = function(data,f_init=NULL,var_type = c("by_column","constant"), init_
 #' and examples below. (If the input data includes missing values then this function must be able
 #' to deal with missing values in its input matrix.)
 #' @param tol specify how much objective can change in a single iteration to be considered not converged
-#' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
+#' @param ebnm_fn function to solve the Empirical Bayes Normal Means problem
+#' @param ebnm_param parameters to be passed to ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()
 #' @param verbose if TRUE various output progress updates will be printed
 #' @param nullcheck flag whether to check, after running
 #' hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
@@ -61,14 +63,14 @@ flash_r1 = function(data,f_init=NULL,var_type = c("by_column","constant"), init_
 #' # example to show how to use a different initialization function
 #' f2 = flash_add_greedy(Y,10,function(x,K=1){softImpute::softImpute(x,K,lambda=10)})
 #' @export
-flash_add_greedy = function(data,Kmax=1,f_init = NULL,var_type = c("by_column","constant"), init_fn="udv_si",tol=1e-2,ash_param=list(),verbose=FALSE,nullcheck=TRUE){
+flash_add_greedy = function(data,Kmax=1,f_init = NULL,var_type = c("by_column","constant"), init_fn="udv_si",tol=1e-2,ebnm_fn = ashr::ash, ebnm_param=list(),verbose=FALSE,nullcheck=TRUE){
   if(is.matrix(data)){data = flash_set_data(data)}
   var_type=match.arg(var_type)
   f = f_init
 
   for(k in 1:Kmax){
     message("fitting factor/loading ",k)
-    f = flash_r1(data,f,var_type,init_fn,tol,ash_param,verbose,nullcheck)
+    f = flash_r1(data,f,var_type,init_fn,tol,ebnm_fn,ebnm_param,verbose,nullcheck)
     if(is_tiny_fl(f,get_k(f))) #test whether the factor/loading combination is effectively 0
       break
   }
@@ -77,14 +79,15 @@ flash_add_greedy = function(data,Kmax=1,f_init = NULL,var_type = c("by_column","
 }
 
 
-#' @title Refines a fit of the FLASH model to data by "backfitting"
+#' @title Refines a fit of the flash model to data by "backfitting"
 #' @details Iterates through the factors of a flash object, updating each until convergence
 #' @param data an n by p matrix or a flash data object created using \code{flash_set_data}
 #' @param f a fitted flash object to be refined
 #' @param kset the indices of factors to be optimized (NULL indicates all factors)
 #' @param var_type type of variance structure to assume for residuals.
 #' @param tol specify how much objective can change in a single iteration to be considered not converged
-#' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
+#' @param ebnm_fn function to solve the Empirical Bayes Normal Means problem
+#' @param ebnm_param parameters to be passed to ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()
 #' @param verbose if TRUE various output progress updates will be printed
 #' @param maxiter a maximum number of iterations to perform (in the inner loop). To perform just one iteration we suggest setting maxiter=1 and nullcheck=FALSE
 #' @return a fitted flash object
@@ -97,7 +100,7 @@ flash_add_greedy = function(data,Kmax=1,f_init = NULL,var_type = c("by_column","
 #' fb2 = flash_backfit(Y,fsi)
 #' flash_get_sizes(fb2)
 #' @export
-flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),tol=1e-2,ash_param=list(),verbose=FALSE,nullcheck=TRUE,maxiter = 1000){
+flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),tol=1e-2,ebnm_fn = ashr::ash, ebnm_param=list(),verbose=FALSE,nullcheck=TRUE,maxiter = 1000){
   if(is.matrix(data)){data = flash_set_data(data)}
   if(is.null(kset)){kset = 1:get_k(f)}
   var_type=match.arg(var_type)
@@ -105,7 +108,7 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
   if(verbose){message("iteration:1")}
   flash_update_precision(data,f,var_type)
   for(k in kset){
-    f = flash_update_single_fl(data,f,k,var_type,ash_param)
+    f = flash_update_single_fl(data,f,k,var_type,ebnm_fn,ebnm_param)
   }
 
   c = flash_get_F(data,f)
@@ -121,7 +124,7 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
       iteration = iteration + 1
       if(verbose){message("iteration:", iteration)}
       for(k in kset){
-        f = flash_update_single_fl(data,f,k,var_type,ash_param)
+        f = flash_update_single_fl(data,f,k,var_type,ebnm_fn,ebnm_param)
       }
       cnew = flash_get_F(data, f)
       diff = cnew-c
@@ -155,11 +158,12 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
 #' @param f_init a previously fitted flash object to be added to or refined
 #' @param var_type type of variance structure to assume for residuals.
 #' @param tol specify how much objective can change in a single iteration to be considered not converged
-#' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
+#' @param ebnm_fn function to solve the Empirical Bayes Normal Means problem
+#' @param ebnm_param parameters to be passed to ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()
 #' @param verbose if TRUE various output progress updates will be printed
 #' @return a fitted flash object
 #' @export
-flash = function(data,Kmax,column_covariates = NULL,row_covariates = NULL,f_init = NULL,init_fn=NULL, var_type = c("by_column","constant"),tol=1e-2,ash_param=list(),verbose=FALSE){
+flash = function(data,Kmax,column_covariates = NULL,row_covariates = NULL,f_init = NULL,init_fn=NULL, var_type = c("by_column","constant"),tol=1e-2,ebnm_fn = NULL, ebnm_param=list(),verbose=FALSE){
   if(is.matrix(data)){data = flash_set_data(data)}
   var_type=match.arg(var_type)
   f=f_init

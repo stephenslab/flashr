@@ -4,13 +4,14 @@
 #' @param data a flash data object
 #' @param f a flash fit object
 #' @param k the index of the loading to update
-#' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
+#' @param ebnm_fn function to solve the Empirical Bayes normal means problem
+#' @param ebnm_param parameters to be passed to ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()
 #' @return an updated flash object
-flash_update_single_loading = function(data,f,k,ash_param=list()){
+flash_update_single_loading = function(data,f,k,ebnm_fn = ashr::ash, ebnm_param=list()){
   subset = which(!f$fixl[,k]) # check which elements are not fixed
   if(length(subset)>0){ # and only do the update if some elements are not fixed
 
-    ash_param=modifyList(flash_default_ash_param(),ash_param)
+    ebnm_param=modifyList(flash_default_ebnm_param(),ebnm_param)
     tau = f$tau[subset,]
 
     if(data$anyNA){tau = tau * !data$missing[subset,]} #set missing values to have precision 0
@@ -18,14 +19,14 @@ flash_update_single_loading = function(data,f,k,ash_param=list()){
     if(sum(is.finite(s))>0){ # check some finite values before proceeding
       Rk = get_Rk(data,f,k)[subset,] #residuals excluding factor k
       x = ((Rk*tau) %*% f$EF[,k]) * s^2
-      a = do.call(ashr::ash,
+      a = do.call(ebnm_fn,
                 c( list(betahat=as.vector(x),sebetahat=as.vector(s)),
-                   ash_param) )
+                   ebnm_param) )
       if(is.null(a$flash_data$postmean)){stop("Your version of ashr is not compatible with this version of flashr; try updating ashr to latest version")}
       f$EL[subset,k] = a$flash_data$postmean
       f$EL2[subset,k] = a$flash_data$postmean2
       f$gl[[k]] = a$flash_data$fitted_g
-      f$ash_param_l[[k]] = ash_param
+      f$ebnm_param_l[[k]] = ebnm_param
       f$KL_l[[k]] = a$flash_data$penloglik -
         NM_posterior_e_loglik(x,s,a$flash_data$postmean,a$flash_data$postmean2)
     }
@@ -38,11 +39,11 @@ flash_update_single_loading = function(data,f,k,ash_param=list()){
 #' Updates only the factor, once (not the loading)
 #' @inheritParams flash_update_single_loading
 #' @return an updated flash object
-flash_update_single_factor = function(data,f,k,ash_param=list()){
+flash_update_single_factor = function(data,f,k,ebnm_fn = ashr::ash, ebnm_param=list()){
   subset = which(!f$fixf[,k]) # check which elements are not fixed
   if(length(subset)>0){ # and only do the update if some elements are not fixed
 
-    ash_param=modifyList(flash_default_ash_param(),ash_param)
+    ebnm_param=modifyList(flash_default_ebnm_param(),ebnm_param)
     tau = f$tau[,subset]
     if(data$anyNA){tau = tau * !data$missing[,subset]} #set missing values to have precision 0
 
@@ -50,14 +51,14 @@ flash_update_single_factor = function(data,f,k,ash_param=list()){
     if(sum(is.finite(s))>0){ # check some finite values before proceeding
       Rk = get_Rk(data,f,k)[,subset] #residuals excluding factor k
       x = (t(Rk*tau) %*% f$EL[,k]) * s^2
-      a = do.call(ashr::ash,
+      a = do.call(ebnm_fn,
                 c( list(betahat=as.vector(x),sebetahat=as.vector(s)),
-                  ash_param) )
+                  ebnm_param) )
       if(is.null(a$flash_data$postmean)){stop("Your version of ashr is not compatible with this version of flashr; try updating ashr to latest version")}
       f$EF[subset,k] = a$flash_data$postmean
       f$EF2[subset,k] = a$flash_data$postmean2
       f$gf[[k]] = a$flash_data$fitted_g
-      f$ash_param_f[[k]] = ash_param
+      f$ebnm_param_f[[k]] = ebnm_param
       f$KL_f[[k]] = a$flash_data$penloglik -
         NM_posterior_e_loglik(x,s,a$flash_data$postmean,a$flash_data$postmean2)
     }
@@ -67,10 +68,10 @@ flash_update_single_factor = function(data,f,k,ash_param=list()){
 
 #' @title Update a single flash factor-loading combination (and precision)
 #' @inheritParams flash_update_single_loading
-flash_update_single_fl = function(data,f,k,var_type,ash_param=list()){
+flash_update_single_fl = function(data,f,k,var_type,ebnm_fn=ashr::ash,ebnm_param=list()){
   f = flash_update_precision(data,f,var_type)
-  f = flash_update_single_factor(data,f,k,ash_param)
-  f = flash_update_single_loading(data,f,k,ash_param)
+  f = flash_update_single_factor(data,f,k,ebnm_fn,ebnm_param)
+  f = flash_update_single_loading(data,f,k,ebnm_fn,ebnm_param)
   return(f)
 }
 
@@ -85,15 +86,16 @@ flash_update_single_fl = function(data,f,k,var_type,ash_param=list()){
 #' hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
 #' If this check is performed and fails then the factor will be set to 0 in the returned fit.
 #' @param tol a tolerance for the optimization
-#' @param ash_param parameters to be passed to ashr when optimizing; defaults set by flash_default_ash_param()
+#' @param ebnm_fn function to solve the Empirical Bayes normal means problem
+#' @param ebnm_param parameters to be passed to ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()
 #' @param verbose if TRUE various output progress updates will be printed
 #' @return an updated flash object
-flash_optimize_single_fl = function(data,f,k,var_type,nullcheck=TRUE,tol=1e-2,ash_param=list(),verbose=FALSE){
-  f = flash_update_single_fl(data,f,k,var_type,ash_param) #do an update first so that we can get a valid c
+flash_optimize_single_fl = function(data,f,k,var_type,nullcheck=TRUE,tol=1e-2,ebnm_fn = ashr::ash, ebnm_param=list(),verbose=FALSE){
+  f = flash_update_single_fl(data,f,k,var_type,ebnm_fn,ebnm_param) #do an update first so that we can get a valid c
   c = get_conv_criteria(data,f)
   diff = 1
   while(diff > tol){
-    f = flash_update_single_fl(data,f,k,var_type,ash_param)
+    f = flash_update_single_fl(data,f,k,var_type,ebnm_fn,ebnm_param)
     cnew = get_conv_criteria(data,f)
     diff = sqrt(mean((cnew-c)^2))
     c = cnew
