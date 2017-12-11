@@ -4,7 +4,7 @@
 \alias{flash_update_single_fl}
 \title{Update a single flash factor-loading combination (and precision)}
 \usage{
-flash_update_single_fl(data, f, k, var_type, ebnm_fn = ashr::ash,
+flash_update_single_fl(data, f, k, var_type, ebnm_fn = ebnm_ash,
   ebnm_param = list())
 }
 \arguments{

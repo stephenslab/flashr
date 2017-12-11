@@ -4,7 +4,7 @@
 \alias{flash_update_single_factor}
 \title{Update a flash factor}
 \usage{
-flash_update_single_factor(data, f, k, ebnm_fn = ashr::ash,
+flash_update_single_factor(data, f, k, ebnm_fn = ebnm_ash,
   ebnm_param = list())
 }
 \arguments{

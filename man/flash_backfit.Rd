@@ -5,7 +5,7 @@
 \title{Refines a fit of the flash model to data by "backfitting"}
 \usage{
 flash_backfit(data, f, kset = NULL, var_type = c("by_column", "constant"),
-  tol = 0.01, ebnm_fn = ashr::ash, ebnm_param = list(), verbose = FALSE,
+  tol = 0.01, ebnm_fn = ebnm_ash, ebnm_param = list(), verbose = FALSE,
   nullcheck = TRUE, maxiter = 1000)
 }
 \arguments{

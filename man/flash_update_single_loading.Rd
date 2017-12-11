@@ -4,7 +4,7 @@
 \alias{flash_update_single_loading}
 \title{Update a flash loading}
 \usage{
-flash_update_single_loading(data, f, k, ebnm_fn = ashr::ash,
+flash_update_single_loading(data, f, k, ebnm_fn = ebnm_ash,
   ebnm_param = list())
 }
 \arguments{

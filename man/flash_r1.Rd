@@ -5,7 +5,7 @@
 \title{Fit the rank1 flash model to data}
 \usage{
 flash_r1(data, f_init = NULL, var_type = c("by_column", "constant"),
-  init_fn = "udv_si", tol = 0.01, ebnm_fn = ashr::ash,
+  init_fn = "udv_si", tol = 0.01, ebnm_fn = ebnm_ash,
   ebnm_param = list(), verbose = FALSE, nullcheck = TRUE)
 }
 \arguments{

@@ -5,7 +5,7 @@
 \title{Adds factors to a flash object by a greedy approach}
 \usage{
 flash_add_greedy(data, Kmax = 1, f_init = NULL, var_type = c("by_column",
-  "constant"), init_fn = "udv_si", tol = 0.01, ebnm_fn = ashr::ash,
+  "constant"), init_fn = "udv_si", tol = 0.01, ebnm_fn = ebnm_ash,
   ebnm_param = list(), verbose = FALSE, nullcheck = TRUE)
 }
 \arguments{
