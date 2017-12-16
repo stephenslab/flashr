@@ -107,6 +107,8 @@ flash_combine = function(f1,f2){
     ash_param_f = c(f1$ash_param_f, f2$ash_param_f),
     KL_l = c(f1$KL_l,f2$KL_l),
     KL_f = c(f1$KL_f,f2$KL_f),
+    penloglik_l = c(f1$penloglik_l,f2$penloglik_l),
+    penloglik_f = c(f1$penloglik_f,f2$penloglik_f),
     tau = f2$tau
   )
 }

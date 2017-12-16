@@ -6,7 +6,8 @@
 \usage{
 flash_r1(data, f_init = NULL, var_type = c("by_column", "constant"),
   init_fn = "udv_si", tol = 0.01, ebnm_fn = ebnm_ash,
-  ebnm_param = list(), verbose = FALSE, nullcheck = TRUE)
+  ebnm_param = flash_default_ash_param(), verbose = FALSE,
+  nullcheck = TRUE)
 }
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{flash_set_data}}
