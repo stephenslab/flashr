@@ -5,7 +5,7 @@
 \title{Update a flash loading}
 \usage{
 flash_update_single_loading(data, f, k, ebnm_fn = ebnm_ash,
-  ebnm_param = list())
+  ebnm_param = flash_default_ash_param())
 }
 \arguments{
 \item{data}{a flash data object}
@@ -16,7 +16,7 @@ flash_update_single_loading(data, f, k, ebnm_fn = ebnm_ash,
 
 \item{ebnm_fn}{function to solve the Empirical Bayes normal means problem}
 
-\item{ebnm_param}{parameters to be passed to ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()}
+\item{ebnm_param}{parameters to be passed to ebnm_fn when optimizing}
 }
 \value{
 an updated flash object

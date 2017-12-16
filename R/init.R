@@ -20,6 +20,8 @@ flash_init_lf = function(LL,FF, fixl = NULL, fixf = NULL){
   f$ash_param_f = list()
   f$KL_l = as.list(rep(0,get_k(f)))
   f$KL_f = as.list(rep(0,get_k(f))) #KL divergences for each l and f
+  f$penloglik_l = as.list(rep(0,get_k(f)))
+  f$penloglik_f = as.list(rep(0,get_k(f)))
   f$tau = NULL
   return(f)
 }
@@ -43,7 +45,7 @@ flash_init_null = function(){
 #' @return a list with components (u,d,v)
 #' @export
 udv_si = function(Y,K=1){
-  softImpute::softImpute(Y, rank.max = K, type = "svd",lambda = 0)
+  softImpute::softImpute(Y, rank.max = K, type = "als",lambda = 0)
 }
 
 #' @title udv_svd

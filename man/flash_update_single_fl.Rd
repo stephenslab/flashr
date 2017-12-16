@@ -5,7 +5,7 @@
 \title{Update a single flash factor-loading combination (and precision)}
 \usage{
 flash_update_single_fl(data, f, k, var_type, ebnm_fn = ebnm_ash,
-  ebnm_param = list())
+  ebnm_param = flash_default_ash_param())
 }
 \arguments{
 \item{data}{a flash data object}
@@ -16,5 +16,5 @@ flash_update_single_fl(data, f, k, var_type, ebnm_fn = ebnm_ash,
 
 \item{ebnm_fn}{function to solve the Empirical Bayes normal means problem}
 
-\item{ebnm_param}{parameters to be passed to ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()}
+\item{ebnm_param}{parameters to be passed to ebnm_fn when optimizing}
 }
