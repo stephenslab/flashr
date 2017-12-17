@@ -2,6 +2,7 @@
 
 export(ebnm_ash)
 export(ebnm_pl)
+export(ebnm_pn)
 export(flash)
 export(flash_add_factors_from_data)
 export(flash_add_fixed_f)

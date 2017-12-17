@@ -11,10 +11,25 @@ ebnm_ash = function(x,s,ash_param){
 }
 
 # EBNM using point-laplace prior, from ebnm package
-#' @details a wrapper to the ebnm function for flash
+#' @title ebnm_pl
+#' @details a wrapper to the function ebnm::point_laplace
+#' @param x a vector of observations
+#' @param s a vector of standard errors
+#' @param ebnm_param a list of parameters to be passed to the function ebnm_point_laplace
 #' @export
 ebnm_pl = function(x,s,ebnm_param){
   res = do.call(ebnm::ebnm_point_laplace,c(list(x=as.vector(x),s=as.vector(s)),ebnm_param) )
+  return(list(postmean = res$result$PosteriorMean, postmean2 = res$result$PosteriorMean2, fitted_g = res$fitted_g, penloglik = res$loglik))
+}
+
+#' @title ebnm_pn
+#' @details a wrapper to the function ebnm::point_normal
+#' @param x a vector of observations
+#' @param s a vector of standard errors
+#' @param ebnm_param a list of parameters to be passed to the function ebnm_point_normal
+#' @export
+ebnm_pn = function(x,s,ebnm_param){
+  res = do.call(ebnm::ebnm_point_normal,c(list(x=as.vector(x),s=as.vector(s)),ebnm_param) )
   return(list(postmean = res$result$PosteriorMean, postmean2 = res$result$PosteriorMean2, fitted_g = res$fitted_g, penloglik = res$loglik))
 }
 

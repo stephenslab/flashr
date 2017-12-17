@@ -5,7 +5,7 @@
 \title{Update a single flash factor-loading combination (and precision)}
 \usage{
 flash_update_single_fl(data, f, k, var_type, ebnm_fn = ebnm_ash,
-  ebnm_param = flash_default_ash_param())
+  ebnm_param = flash_default_ebnm_param(ebnm_fn))
 }
 \arguments{
 \item{data}{a flash data object}

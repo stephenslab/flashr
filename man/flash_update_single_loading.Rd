@@ -5,7 +5,7 @@
 \title{Update a flash loading}
 \usage{
 flash_update_single_loading(data, f, k, ebnm_fn = ebnm_ash,
-  ebnm_param = flash_default_ash_param())
+  ebnm_param = flash_default_ebnm_param(ebnm_fn))
 }
 \arguments{
 \item{data}{a flash data object}

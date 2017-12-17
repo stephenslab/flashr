@@ -6,8 +6,8 @@
 \usage{
 flash(data, Kmax, column_covariates = NULL, row_covariates = NULL,
   f_init = NULL, init_fn = NULL, var_type = c("by_column", "constant"),
-  tol = 0.01, ebnm_fn = ebnm_ash, ebnm_param = flash_default_ash_param(),
-  verbose = FALSE)
+  tol = 0.01, ebnm_fn = ebnm_ash,
+  ebnm_param = flash_default_ebnm_param(ebnm_fn), verbose = FALSE)
 }
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{flash_set_data}}

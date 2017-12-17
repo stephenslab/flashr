@@ -20,7 +20,7 @@
 #' f = flash_r1(Y)
 #' flash_get_sizes(f)
 #' @export
-flash_r1 = function(data,f_init=NULL,var_type = c("by_column","constant"), init_fn = "udv_si",tol=1e-2,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ash_param(),verbose = FALSE, nullcheck=TRUE){
+flash_r1 = function(data,f_init=NULL,var_type = c("by_column","constant"), init_fn = "udv_si",tol=1e-2,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn),verbose = FALSE, nullcheck=TRUE){
   if(is.matrix(data)){data = flash_set_data(data)}
   var_type=match.arg(var_type)
   f = flash_add_factors_from_data(data,f_init = f_init, init_fn=init_fn,K=1)
@@ -63,7 +63,7 @@ flash_r1 = function(data,f_init=NULL,var_type = c("by_column","constant"), init_
 #' # example to show how to use a different initialization function
 #' f2 = flash_add_greedy(Y,10,function(x,K=1){softImpute::softImpute(x,K,lambda=10)})
 #' @export
-flash_add_greedy = function(data,Kmax=1,f_init = NULL,var_type = c("by_column","constant"), init_fn="udv_si",tol=1e-2,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ash_param(),verbose=FALSE,nullcheck=TRUE){
+flash_add_greedy = function(data,Kmax=1,f_init = NULL,var_type = c("by_column","constant"), init_fn="udv_si",tol=1e-2,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn),verbose=FALSE,nullcheck=TRUE){
   if(is.matrix(data)){data = flash_set_data(data)}
   var_type=match.arg(var_type)
   f = f_init
@@ -100,7 +100,7 @@ flash_add_greedy = function(data,Kmax=1,f_init = NULL,var_type = c("by_column","
 #' fb2 = flash_backfit(Y,fsi)
 #' flash_get_sizes(fb2)
 #' @export
-flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),tol=1e-2,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ash_param(),verbose=FALSE,nullcheck=TRUE,maxiter = 1000){
+flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),tol=1e-2,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn),verbose=FALSE,nullcheck=TRUE,maxiter = 1000){
   if(is.matrix(data)){data = flash_set_data(data)}
   if(is.null(kset)){kset = 1:get_k(f)}
   var_type=match.arg(var_type)
@@ -163,7 +163,7 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
 #' @param verbose if TRUE various output progress updates will be printed
 #' @return a fitted flash object
 #' @export
-flash = function(data,Kmax,column_covariates = NULL,row_covariates = NULL,f_init = NULL,init_fn=NULL, var_type = c("by_column","constant"),tol=1e-2,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ash_param(),verbose=FALSE){
+flash = function(data,Kmax,column_covariates = NULL,row_covariates = NULL,f_init = NULL,init_fn=NULL, var_type = c("by_column","constant"),tol=1e-2,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn),verbose=FALSE){
   if(is.matrix(data)){data = flash_set_data(data)}
   var_type=match.arg(var_type)
   f=f_init

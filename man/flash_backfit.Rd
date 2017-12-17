@@ -5,8 +5,9 @@
 \title{Refines a fit of the flash model to data by "backfitting"}
 \usage{
 flash_backfit(data, f, kset = NULL, var_type = c("by_column", "constant"),
-  tol = 0.01, ebnm_fn = ebnm_ash, ebnm_param = flash_default_ash_param(),
-  verbose = FALSE, nullcheck = TRUE, maxiter = 1000)
+  tol = 0.01, ebnm_fn = ebnm_ash,
+  ebnm_param = flash_default_ebnm_param(ebnm_fn), verbose = FALSE,
+  nullcheck = TRUE, maxiter = 1000)
 }
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{flash_set_data}}

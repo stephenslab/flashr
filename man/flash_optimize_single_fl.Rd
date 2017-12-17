@@ -5,7 +5,7 @@
 \title{Optimize a flash factor-loading combination}
 \usage{
 flash_optimize_single_fl(data, f, k, var_type, nullcheck = TRUE, tol = 0.01,
-  ebnm_fn = ebnm_ash, ebnm_param = flash_default_ash_param(),
+  ebnm_fn = ebnm_ash, ebnm_param = flash_default_ebnm_param(ebnm_fn),
   verbose = FALSE)
 }
 \arguments{

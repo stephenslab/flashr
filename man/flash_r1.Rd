@@ -6,7 +6,7 @@
 \usage{
 flash_r1(data, f_init = NULL, var_type = c("by_column", "constant"),
   init_fn = "udv_si", tol = 0.01, ebnm_fn = ebnm_ash,
-  ebnm_param = flash_default_ash_param(), verbose = FALSE,
+  ebnm_param = flash_default_ebnm_param(ebnm_fn), verbose = FALSE,
   nullcheck = TRUE)
 }
 \arguments{
