@@ -7,7 +7,7 @@
 #' @param ebnm_fn function to solve the Empirical Bayes normal means problem
 #' @param ebnm_param parameters to be passed to ebnm_fn when optimizing
 #' @return an updated flash object
-flash_update_single_loading = function(data,f,k,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ash_param()){
+flash_update_single_loading = function(data,f,k,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn)){
   subset = which(!f$fixl[,k]) # check which elements are not fixed
   if(length(subset)>0){ # and only do the update if some elements are not fixed
 
@@ -35,7 +35,7 @@ flash_update_single_loading = function(data,f,k,ebnm_fn = ebnm_ash, ebnm_param=f
 #' Updates only the factor, once (not the loading)
 #' @inheritParams flash_update_single_loading
 #' @return an updated flash object
-flash_update_single_factor = function(data,f,k,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ash_param()){
+flash_update_single_factor = function(data,f,k,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn)){
   subset = which(!f$fixf[,k]) # check which elements are not fixed
   if(length(subset)>0){ # and only do the update if some elements are not fixed
 
@@ -61,7 +61,7 @@ flash_update_single_factor = function(data,f,k,ebnm_fn = ebnm_ash, ebnm_param=fl
 
 #' @title Update a single flash factor-loading combination (and precision)
 #' @inheritParams flash_update_single_loading
-flash_update_single_fl = function(data,f,k,var_type,ebnm_fn=ebnm_ash,ebnm_param=flash_default_ash_param()){
+flash_update_single_fl = function(data,f,k,var_type,ebnm_fn=ebnm_ash,ebnm_param=flash_default_ebnm_param(ebnm_fn)){
   f = flash_update_precision(data,f,var_type)
   f = flash_update_single_factor(data,f,k,ebnm_fn,ebnm_param)
   f = flash_update_single_loading(data,f,k,ebnm_fn,ebnm_param)
@@ -83,14 +83,14 @@ flash_update_single_fl = function(data,f,k,var_type,ebnm_fn=ebnm_ash,ebnm_param=
 #' @param ebnm_param parameters to be passed to ebnm_fn when optimizing;
 #' @param verbose if TRUE various output progress updates will be printed
 #' @return an updated flash object
-flash_optimize_single_fl = function(data,f,k,var_type,nullcheck=TRUE,tol=1e-2,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ash_param(),verbose=FALSE){
+flash_optimize_single_fl = function(data,f,k,var_type,nullcheck=TRUE,tol=1e-2,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn),verbose=FALSE){
   f = flash_update_single_fl(data,f,k,var_type,ebnm_fn,ebnm_param) #do an update first so that we can get a valid c
   c = get_conv_criteria(data,f)
   diff = 1
   while(diff > tol){
     f = flash_update_single_fl(data,f,k,var_type,ebnm_fn,ebnm_param)
     cnew = get_conv_criteria(data,f)
-    diff = sqrt(mean((cnew-c)^2))
+    diff = cnew-c
     c = cnew
     if(verbose){
       message("objective: ",c)

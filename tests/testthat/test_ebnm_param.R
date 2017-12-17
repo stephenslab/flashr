@@ -5,9 +5,11 @@ test_that("passing in and saving ebnm parameters works", {
   LF = outer(l,f)
   Y = LF + rnorm(5*20)
   f = flash_r1(Y,nullcheck=FALSE)
-  expect_equal(f$ebnm_param_l[[1]],flash_default_ash_param())
-  expect_equal(f$ebnm_param_f[[1]],flash_default_ash_param())
+  expect_equal(f$ebnm_param_l[[1]],flash_default_ebnm_param(ebnm_ash))
+  expect_equal(f$ebnm_param_f[[1]],flash_default_ebnm_param(ebnm_ash))
   f = flash_r1(Y,ebnm_param=list(mixcompdist="uniform",method="shrink"),nullcheck=FALSE)
   expect_equal(f$ebnm_param_l[[1]],list(mixcompdist="uniform",method="shrink"))
+  f = flash_r1(Y,ebnm_fn = ebnm_pn,nullcheck=FALSE)
+  expect_equal(f$ebnm_param_l[[1]],list())
 }
 )
