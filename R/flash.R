@@ -19,6 +19,7 @@
 #' Y = matrix(rnorm(100),nrow=5,ncol=20)
 #' f = flash_r1(Y)
 #' flash_get_sizes(f)
+#' f2 = flash_r1(ebnm_fn=ebnm_pn) # run with the faster ebnm function (uses point-normal prior)
 #' @export
 flash_r1 = function(data,f_init=NULL,var_type = c("by_column","constant"), init_fn = "udv_si",tol=1e-2,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn),verbose = FALSE, nullcheck=TRUE){
   if(is.matrix(data)){data = flash_set_data(data)}
