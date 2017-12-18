@@ -22,5 +22,8 @@ flash_get_l(fb)
 flash_get_l(fg)
 ```
 
+If you want to use the faster `ebnm_pn` function (instead of the default adaptive shrinkage approach) you will have to install 
+[*ebnm*](https://github.com/stephenslab/ebnm/)
+
 For more see 
 (https://github.com/stephenslab/flashr2/blob/master/vignettes/flash_intro.Rmd)
