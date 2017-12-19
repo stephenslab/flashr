@@ -1,0 +1,51 @@
+---
+title: "Simple test"
+author: "Matthew Stephens"
+date: "December 19, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Rank 1 test
+
+```{r}
+# simulate with f normal and l an equal mixture of 0s and double-exponential
+sim_rank1 =function(n=100,p=200,pve=0.5){
+  f = rnorm(p)
+  half_n = trunc(n/2)
+  l = c(rep(0,half_n),(-1)^rbinom(n-half_n,1,0.5)*(rexp(n-half_n)))
+  LF = l %*% t(f)
+  vLF = var(as.vector(LF))
+  Y = LF + sqrt(vLF * ((1-pve)/pve)) * matrix(rnorm(n*p),nrow=n,ncol=p)  
+  return(list(Y=Y,LF=LF))
+}
+
+# runs some simple simulations and computes mean squared error for estimate
+# of LF 
+test_sims = function(flash_fn=flashr2::flash_add_greedy,flash_param = list(),simfn = sim_rank1, ntest=20){
+  rmse = rep(0,ntest)
+  for(i in 1:ntest){
+    set.seed(i)
+    d = sim_rank1()
+    f = do.call(flash_fn,modifyList(flash_param,list(data=d$Y)))
+    rmse[i] = sqrt(mean((flashr2::flash_get_lf(f)-d$LF)^2))
+  }
+  return(rmse)
+}
+
+res = list()
+res[[1]] = test_sims(flash_param = list(Kmax=4))
+res[[2]]= test_sims(flash_param=list(Kmax=4,init_fn=flashr2::udv_si_svd))
+res[[3]] = test_sims(flash_param =list(Kmax=4,ebnm_fn =flashr2::ebnm_pn))
+
+boxplot(res)
+lapply(res,mean)
+```
+
+```{r}
+sessionInfo()
+```
+

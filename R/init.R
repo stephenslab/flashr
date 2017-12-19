@@ -39,13 +39,23 @@ flash_init_null = function(){
 
 
 #' @title udv_si
-#' @details provides a simple wrapper to \code{softImpute} to provide a rank 1 initialization
+#' @details provides a simple wrapper to \code{softImpute} to provide a rank 1 initialization. Uses type="als" option.
 #' @param Y an n by p matrix
 #' @param K number of factors to use
 #' @return a list with components (u,d,v)
 #' @export
 udv_si = function(Y,K=1){
   softImpute::softImpute(Y, rank.max = K, type = "als",lambda = 0)
+}
+
+#' @title udv_si
+#' @details provides a simple wrapper to \code{softImpute} to provide a rank 1 initialization. Uses type="svd" option.
+#' @param Y an n by p matrix
+#' @param K number of factors to use
+#' @return a list with components (u,d,v)
+#' @export
+udv_si_svd = function(Y,K=1){
+  softImpute::softImpute(Y, rank.max = K, type = "svd",lambda = 0)
 }
 
 #' @title udv_svd
