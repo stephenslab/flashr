@@ -43,9 +43,9 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
     tau[missing] = 0 # for missing values set precision to 0
 
     if(length(f_subset)>0){
-      s2 = 1/( t(l2) %*% tau[,f_subset])
+      s2 = 1/( t(l2) %*% tau[,f_subset,drop=FALSE])
       if(any(is.finite(s2))){ # check some finite values before proceeding
-        x = (t(l) %*% (R[,f_subset]*tau)) * s2
+        x = (t(l) %*% (R[,f_subset,drop=FALSE]*tau[,f_subset,drop=FALSE])) * s2
         ebnm_f = ebnm_fn(x,sqrt(s2),ebnm_param)
         f[f_subset] = ebnm_f$postmean
         f2[f_subset] = ebnm_f$postmean2
@@ -57,9 +57,9 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
     }
 
     if(length(l_subset)>0){
-      s2 = 1/(tau[l_subset,] %*% f2)
+      s2 = 1/(tau[l_subset,,drop=FALSE] %*% f2)
       if(any(is.finite(s2))){ # check some finite values before proceeding
-        x = ((R[l_subset,]*tau) %*% f) * s2
+        x = ((R[l_subset,,drop=FALSE]*tau[l_subset,,drop=FALSE]) %*% f) * s2
         ebnm_l = ebnm_fn(x,sqrt(s2),ebnm_param)
         l[l_subset] = ebnm_l$postmean
         l2[l_subset] = ebnm_l$postmean2
