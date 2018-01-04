@@ -10,15 +10,17 @@ flash_update_precision = function(data,f,var_type=c("by_column","constant","by_r
 
   R2 = get_R2(data,f)
   R2[data$missing] = NA
-  var_type= match.arg(var_type)
 
-  if(var_type=="by_column"){f$tau = mle_precision_by_column(R2)}
-  else if(var_type=="constant"){f$tau = mle_precision_constant(R2)}
-  else(stop("that var_type not yet implemented"))
-
+  f$tau = compute_precision(R2,var_type)
   return(f)
 }
 
+compute_precision = function(R2,var_type=c("by_column","constant","by_row","kroneker")){
+  var_type= match.arg(var_type)
+  if(var_type=="by_column"){return(mle_precision_by_column(R2))}
+  else if(var_type=="constant"){return(mle_precision_constant(R2))}
+  else(stop("that var_type not yet implemented"))
+}
 
 
 #' @title  mle for precision (separate parameter for each column)
