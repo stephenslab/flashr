@@ -11,7 +11,7 @@ flash_update_single_loading = function(data,f,k,ebnm_fn = ebnm_ash, ebnm_param=f
   subset = which(!f$fixl[,k]) # check which elements are not fixed
   if(length(subset)>0){ # and only do the update if some elements are not fixed
 
-    tau = f$tau[subset,]
+    tau = f$tau[subset,,drop=FALSE]
 
     if(data$anyNA){tau = tau * !data$missing[subset,]} #set missing values to have precision 0
     s = sqrt(1/(tau %*% f$EF2[,k]))
@@ -39,7 +39,7 @@ flash_update_single_factor = function(data,f,k,ebnm_fn = ebnm_ash, ebnm_param=fl
   subset = which(!f$fixf[,k]) # check which elements are not fixed
   if(length(subset)>0){ # and only do the update if some elements are not fixed
 
-    tau = f$tau[,subset]
+    tau = f$tau[,subset,drop=FALSE]
     if(data$anyNA){tau = tau * !data$missing[,subset]} #set missing values to have precision 0
 
     s = sqrt(1/(t(tau) %*% f$EL2[,k]))
