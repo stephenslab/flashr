@@ -1,5 +1,6 @@
 #' @title Fit the rank1 flash model to data
 #' @param data an n by p matrix or a flash data object created using \code{flash_set_data}
+#' @param f_init if supplied, a flash object to which a single new factor is to be added
 #' @param var_type type of variance structure to assume for residuals.
 #' @param tol specify how much objective can change in a single iteration to be considered not converged
 #' @param init_fn function to be used to initialize the factor. This function should take parameters (Y,K)
