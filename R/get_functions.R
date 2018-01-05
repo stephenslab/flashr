@@ -42,6 +42,15 @@ get_R2 = function(data,f){
   }
 }
 
+#' @title  Get the expected squared residuals from a flash data and fit object excluding factor k
+get_R2k = function(data,f,k){
+  if(is.null(f$EL)){return(data$Y^2)}
+  else{
+    return( get_Rk(data,f,k)^2 + f$EL2[,-k,drop=FALSE] %*% t(f$EF2[,-k,drop=FALSE]) -
+              f$EL[,-k,drop=FALSE]^2 %*% t(f$EF[,-k,drop=FALSE]^2) )
+  }
+}
+
 #' @title is_tiny_fl
 #' @details checks whether kth factor/loading combination is tiny
 is_tiny_fl=function(f,k,tol=1e-8){

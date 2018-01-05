@@ -12,6 +12,8 @@ flash_r1(data, f_init = NULL, var_type = c("by_column", "constant"),
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{flash_set_data}}
 
+\item{f_init}{if supplied, a flash object to which a single new factor is to be added}
+
 \item{var_type}{type of variance structure to assume for residuals.}
 
 \item{init_fn}{function to be used to initialize the factor. This function should take parameters (Y,K)

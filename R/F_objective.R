@@ -11,7 +11,7 @@ flash_get_F = function(data,f){
 #' @param data a flash data object
 #' @param f a flash fit object
 e_loglik = function(data,f){
-    -0.5 * sum( (log((2*pi)/f$tau) + f$tau * get_R2(data,f)) * !data$missing)
+    -0.5 * sum( (log((2*pi)/f$tau[!data$missing]) + f$tau[!data$missing] * get_R2(data,f)[!data$missing]))
 }
 
 

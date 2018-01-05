@@ -14,10 +14,11 @@
 #' @param tol a tolerance on changes in l and f to diagnose convergence
 #' @param calc_F whether to compute the objective function (useful for testing purposes)
 #' @param missing an n times matrix of TRUE/FALSE indicating which elements of R and R2 should be considered missing (note neither R nor R2 must have missing values; eg set them to 0)
+#' @param verbose if true then trace of objective function is printed
 #' @return an updated flash object
 r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 1:length(l_init),f_subset=1:length(f_init),
                   ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn),
-                  var_type=c("by_column","constant","by_row","kroneker"),tol=1e-3,calc_F = FALSE, missing=NULL){
+                  var_type=c("by_column","constant","by_row","kroneker"),tol=1e-3,calc_F = TRUE, missing=NULL,verbose=FALSE){
 
   message("todo: check r1_opt deals properly with missing data")
   message("todo: maybe provide ability to initialize l2 and f2?")
@@ -51,7 +52,7 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
         f2[f_subset] = ebnm_f$postmean2
 
         if(calc_F){
-          f_KL = ebnm_f$penloglik - NM_posterior_e_loglik(x,sqrt(s2),ebnm_f$postmean,ebnm_f$postmean2)
+          KL_f = ebnm_f$penloglik - NM_posterior_e_loglik(x,sqrt(s2),ebnm_f$postmean,ebnm_f$postmean2)
         }
       }
     }
@@ -65,34 +66,68 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
         l2[l_subset] = ebnm_l$postmean2
 
         if(calc_F){
-          l_KL = ebnm_l$penloglik - NM_posterior_e_loglik(x,sqrt(s2),ebnm_l$postmean,ebnm_l$postmean2)
+          KL_l = ebnm_l$penloglik - NM_posterior_e_loglik(x,sqrt(s2),ebnm_l$postmean,ebnm_l$postmean2)
         }
       }
     }
 
-    #normalize l and f so that f has unit norm
-    norm = sqrt(sum(f^2))
-    f = f/norm
-    f2 = f2/(norm^2)
-    l = l*norm
-    l2 = l2*(norm^2)
 
     R2new = R2 - 2*outer(l,f)*R + outer(l2,f2)
 
-    diff = max(abs(c(l,f)-c(l_old,f_old)))
-
     if(calc_F){
-      Fnew = sum(l_KL) + sum(f_KL) + e_loglik_from_R2_and_tau(R2new,tau)
-      print(paste0("Objective:",Fnew))
-      #diff = abs(F_obj - Fnew)
+      Fnew = sum(KL_l) + sum(KL_f) + e_loglik_from_R2_and_tau(R2new,tau,missing)
+      if(verbose){
+        message(paste0("Objective:",Fnew))
+      }
+      diff = abs(F_obj - Fnew)
       F_obj = Fnew
+    } else { # check convergence by percentage changes in l and f
+      #normalize l and f so that f has unit norm
+      # note that this messes up stored log-likelihoods etc... so not recommended
+      warning("renormalization step not fully tested; be careful!")
+      norm = sqrt(sum(f^2))
+      f = f/norm
+      f2 = f2/(norm^2)
+      l = l*norm
+      l2 = l2*(norm^2)
+
+      diff = max(abs(c(l,f)/c(l_old,f_old) - 1))
+    }
+    if(verbose){
+      message(paste0("diff:",diff))
     }
   }
 
-  return(list(l=l,f=f,l2=l2,f2=f2,tau=tau,F_obj=F_obj))
+  return(list(l=l,f=f,l2=l2,f2=f2,tau=tau,F_obj=F_obj,KL_l = KL_l, KL_f = KL_f,
+              gl = ebnm_l$fitted_g, gf = ebnm_f$fitted_g,
+              penloglik_l = ebnm_l$penloglik, penloglik_f = ebnm_f$penloglik,
+              ebnm_param = ebnm_param))
 }
 
-# compute the expected log-likelihood based on expected squared residuals and tau
-e_loglik_from_R2_and_tau = function(R2,tau){
-  -0.5 * sum(log((2*pi)/tau) + tau * R2)
+# put the results into f
+update_f_from_r1_opt_results = function(f,k,res){
+  f$EL[,k] = res$l
+  f$EF[,k] = res$f
+  f$EL2[,k] = res$l2
+  f$EF2[,k] = res$f2
+  f$tau = res$tau
+
+  f$gf[[k]] = res$gf
+  f$gl[[k]] = res$gl
+
+  f$ebnm_param_f[[k]] = res$ebnm_param
+  f$ebnm_param_l[[k]] = res$ebnm_param
+
+  f$KL_f[[k]] = res$KL_f
+  f$KL_l[[k]] = res$KL_l
+
+  f$penloglik_f[[k]] = res$penloglik_f
+  f$penloglik_l[[k]] = res$penloglik_l
+  return(f)
+}
+
+# compute the expected log-likelihood (at non-missing locations)
+# based on expected squared residuals and tau
+e_loglik_from_R2_and_tau = function(R2,tau,missing){
+  -0.5 * sum(log((2*pi)/tau[!missing]) + tau[!missing] * R2[!missing])
 }
