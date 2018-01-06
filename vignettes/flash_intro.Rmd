@@ -2,8 +2,13 @@
 title: "Flash introduction"
 author: "Matthew Stephens"
 date: "September 23, 2017"
-output: html_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -141,7 +146,7 @@ and will be updated during a fit.)
 
 For example, the following creates a flash fit object with a fixed intercept loading.
 (so when fit it will estimate a corresponding factor, which should be interpreted as a column-specific mean). Then it adds 10 data-based factors and loadings, and then it fits the model. Note how the first loading (the mean) does not change during the fit.
-(Notice also that the corresponding factor is 0 - correct since we did not add a non-zero mean to the simulation.)
+(Notice also that the corresponding factor is 0 - correct since we did not add a non-zero mean to the simulation.) 
 ```{r}
 f = flash_add_fixed_l(data,LL = cbind(rep(1,n)))
 f = flash_add_factors_from_data(data,K=10,f_init=f)
