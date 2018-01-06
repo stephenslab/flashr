@@ -15,6 +15,8 @@
 #' @param nullcheck flag whether to check, after running
 #' hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
 #' If this check is performed and fails then the factor will be set to 0 in the returned fit.
+#' @param seed a random number seed to use before running method - for reproducibility. Set to NULL if you don't want seed set.
+#' (The seed can affect initialization when there are missing data; otherwise the algorithm is deterministic)
 #' @return a fitted flash object
 #' @examples
 #' Y = matrix(rnorm(100),nrow=5,ncol=20)
@@ -22,7 +24,8 @@
 #' flash_get_sizes(f)
 #' f2 = flash_r1(ebnm_fn=ebnm_pn) # run with the faster ebnm function (uses point-normal prior)
 #' @export
-flash_r1 = function(data,f_init=NULL,var_type = c("by_column","constant"), init_fn = "udv_si",tol=1e-2,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn),verbose = FALSE, nullcheck=TRUE){
+flash_r1 = function(data,f_init=NULL,var_type = c("by_column","constant"), init_fn = "udv_si",tol=1e-2,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn),verbose = FALSE, nullcheck=TRUE,seed=123){
+  if(!is.null(seed)){set.seed(seed)}
   if(is.matrix(data)){data = flash_set_data(data)}
   var_type=match.arg(var_type)
   f = flash_add_factors_from_data(data,f_init = f_init, init_fn=init_fn,K=1)
@@ -55,6 +58,8 @@ flash_r1 = function(data,f_init=NULL,var_type = c("by_column","constant"), init_
 #' @param nullcheck flag whether to check, after running
 #' hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
 #' If this check is performed and fails then the factor will be set to 0 in the returned fit.
+#' @param seed a seed for the random number to be set before running, for reproducibility. Set to NULL if you don't want seed set.
+#' (The seed can affect initialization when there are missing data; otherwise the algorithm is deterministic)
 #' @return a fitted flash object
 #' @examples
 #' l = rnorm(100)
@@ -65,14 +70,15 @@ flash_r1 = function(data,f_init=NULL,var_type = c("by_column","constant"), init_
 #' # example to show how to use a different initialization function
 #' f2 = flash_add_greedy(Y,10,function(x,K=1){softImpute::softImpute(x,K,lambda=10)})
 #' @export
-flash_add_greedy = function(data,Kmax=1,f_init = NULL,var_type = c("by_column","constant"), init_fn="udv_si",tol=1e-2,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn),verbose=FALSE,nullcheck=TRUE){
+flash_add_greedy = function(data,Kmax=1,f_init = NULL,var_type = c("by_column","constant"), init_fn="udv_si",tol=1e-2,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn),verbose=FALSE,nullcheck=TRUE,seed=123){
+  if(!is.null(seed)){set.seed(seed)}
   if(is.matrix(data)){data = flash_set_data(data)}
   var_type=match.arg(var_type)
   f = f_init
 
   for(k in 1:Kmax){
     message("fitting factor/loading ",k)
-    f = flash_r1(data,f,var_type,init_fn,tol,ebnm_fn,ebnm_param,verbose,nullcheck)
+    f = flash_r1(data,f,var_type,init_fn,tol,ebnm_fn,ebnm_param,verbose,nullcheck,seed=NULL)
     if(is_tiny_fl(f,get_k(f))) #test whether the factor/loading combination is effectively 0
       break
   }

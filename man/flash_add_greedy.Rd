@@ -7,7 +7,7 @@
 flash_add_greedy(data, Kmax = 1, f_init = NULL, var_type = c("by_column",
   "constant"), init_fn = "udv_si", tol = 0.01, ebnm_fn = ebnm_ash,
   ebnm_param = flash_default_ebnm_param(ebnm_fn), verbose = FALSE,
-  nullcheck = TRUE)
+  nullcheck = TRUE, seed = 123)
 }
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{flash_set_data}}
@@ -37,6 +37,9 @@ to deal with missing values in its input matrix.)}
 \item{nullcheck}{flag whether to check, after running
 hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
 If this check is performed and fails then the factor will be set to 0 in the returned fit.}
+
+\item{seed}{a seed for the random number to be set before running, for reproducibility. Set to NULL if you don't want seed set.
+(The seed can affect initialization when there are missing data; otherwise the algorithm is deterministic)}
 }
 \value{
 a fitted flash object

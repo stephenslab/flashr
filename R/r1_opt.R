@@ -20,8 +20,6 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
                   ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn),
                   var_type=c("by_column","constant","by_row","kroneker"),tol=1e-3,calc_F = TRUE, missing=NULL,verbose=FALSE){
 
-  message("todo: check r1_opt deals properly with missing data")
-  message("todo: maybe provide ability to initialize l2 and f2?")
   message("todo: check works for subset of length 1")
 
   l = l_init
@@ -40,8 +38,7 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
     l_old = l
     f_old = f
 
-    tau = compute_precision(R2new,var_type)
-    tau[missing] = 0 # for missing values set precision to 0
+    tau = compute_precision(R2new,missing,var_type)
 
     if(length(f_subset)>0){
       s2 = 1/( t(l2) %*% tau[,f_subset,drop=FALSE])
@@ -92,9 +89,9 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
       l2 = l2*(norm^2)
 
       diff = max(abs(c(l,f)/c(l_old,f_old) - 1))
-    }
-    if(verbose){
-      message(paste0("diff:",diff))
+      if(verbose){
+        message(paste0("diff:",diff))
+      }
     }
   }
 
