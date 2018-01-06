@@ -20,8 +20,6 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
                   ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn),
                   var_type=c("by_column","constant","by_row","kroneker"),tol=1e-3,calc_F = TRUE, missing=NULL,verbose=FALSE){
 
-  message("todo: check works for subset of length 1")
-
   l = l_init
   f = f_init
   l2 = l2_init

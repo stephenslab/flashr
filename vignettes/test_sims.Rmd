@@ -13,13 +13,18 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 # simulate with f normal and l an equal mixture of 0s and double-exponential
-sim_rank1 =function(n=100,p=200,pve=0.5){
+# if missing, add missing data at half of positions
+sim_rank1 =function(n=100,p=200,pve=0.5,missing=FALSE){
   f = rnorm(p)
   half_n = trunc(n/2)
   l = c(rep(0,half_n),(-1)^rbinom(n-half_n,1,0.5)*(rexp(n-half_n)))
   LF = l %*% t(f)
   vLF = var(as.vector(LF))
   Y = LF + sqrt(vLF * ((1-pve)/pve)) * matrix(rnorm(n*p),nrow=n,ncol=p)  
+  if(missing){
+    miss = matrix(rbinom(n*p,1,0.5),nrow=n)
+    Y[miss==1] = NA
+  }
   return(list(Y=Y,LF=LF))
 }
 
@@ -29,19 +34,31 @@ test_sims = function(flash_fn=flashr2::flash_add_greedy,flash_param = list(),sim
   rmse = rep(0,ntest)
   for(i in 1:ntest){
     set.seed(i)
-    d = sim_rank1()
+    d = simfn()
+    #print(d$Y)
     f = do.call(flash_fn,modifyList(flash_param,list(data=d$Y)))
     rmse[i] = sqrt(mean((flashr2::flash_get_lf(f)-d$LF)^2))
   }
   return(rmse)
 }
+```
 
+Run without missing data
+```{r}
 res = list()
 res[[1]] = test_sims(flash_param = list(Kmax=4))
 res[[2]]= test_sims(flash_param=list(Kmax=4,init_fn=flashr2::udv_si_svd))
 res[[3]] = test_sims(flash_param =list(Kmax=4,ebnm_fn =flashr2::ebnm_pn))
 
 boxplot(res)
+lapply(res,mean)
+```
+
+
+And some with missing data
+```{r}
+res = list()
+res[[1]] = test_sims(flash_param = list(Kmax=4),simfn = function(...){sim_rank1(...,missing=TRUE)})
 lapply(res,mean)
 ```
 
