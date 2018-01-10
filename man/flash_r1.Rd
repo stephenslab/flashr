@@ -27,7 +27,7 @@ to deal with missing values in its input matrix.)}
 
 \item{ebnm_fn}{function to solve the Empirical Bayes Normal Means problem}
 
-\item{ebnm_param}{parameters to be passed to ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()}
+\item{ebnm_param}{named list containing parameters to be passed to ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()}
 
 \item{verbose}{if TRUE various output progress updates will be printed}
 
@@ -45,5 +45,7 @@ a fitted flash object
 Y = matrix(rnorm(100),nrow=5,ncol=20)
 f = flash_r1(Y)
 flash_get_sizes(f)
-f2 = flash_r1(ebnm_fn=ebnm_pn) # run with the faster ebnm function (uses point-normal prior)
+f2 = flash_r1(Y,ebnm_fn=ebnm_pn) # run with the faster ebnm function (uses point-normal prior)
+# example to show how to pass parameters to ash
+f3 = flash_r1(Y,ebnm_fn = ebnm_ash, ebnm_param = list(mixcompdist = "normal",method="fdr"))
 }

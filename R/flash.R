@@ -10,7 +10,7 @@
 #' (If the input data includes missing values then this function must be able
 #' to deal with missing values in its input matrix.)
 #' @param ebnm_fn function to solve the Empirical Bayes Normal Means problem
-#' @param ebnm_param parameters to be passed to ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()
+#' @param ebnm_param named list containing parameters to be passed to ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()
 #' @param verbose if TRUE various output progress updates will be printed
 #' @param nullcheck flag whether to check, after running
 #' hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
@@ -22,7 +22,9 @@
 #' Y = matrix(rnorm(100),nrow=5,ncol=20)
 #' f = flash_r1(Y)
 #' flash_get_sizes(f)
-#' f2 = flash_r1(ebnm_fn=ebnm_pn) # run with the faster ebnm function (uses point-normal prior)
+#' f2 = flash_r1(Y,ebnm_fn=ebnm_pn) # run with the faster ebnm function (uses point-normal prior)
+#' # example to show how to pass parameters to ash
+#' f3 = flash_r1(Y,ebnm_fn = ebnm_ash, ebnm_param = list(mixcompdist = "normal",method="fdr"))
 #' @export
 flash_r1 = function(data,f_init=NULL,var_type = c("by_column","constant"), init_fn = "udv_si",tol=1e-2,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn),verbose = FALSE, nullcheck=TRUE,seed=123){
   if(!is.null(seed)){set.seed(seed)}
