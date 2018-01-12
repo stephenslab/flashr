@@ -116,7 +116,6 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
   var_type=match.arg(var_type)
 
   if(verbose){message("iteration:1")}
-  flash_update_precision(data,f,var_type)
   for(k in kset){
     f = flash_update_single_fl(data,f,k,var_type,ebnm_fn,ebnm_param)
   }
