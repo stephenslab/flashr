@@ -8,6 +8,8 @@
 #' @param f_init the initial value of the factor for iterative scheme (p vector)
 #' @param l2_init initial value of l2 (optional)
 #' @param f2_init initial value of f2 (optional)
+#' @param l_subset vector of indices of l to update (default is all)
+#' @param f_subset vector of indices of f to update (default is all)
 #' @param ebnm_fn function to solve the Empirical Bayes normal means problem
 #' @param ebnm_param parameters to be passed to ebnm_fn when optimizing
 #' @param var_type the type of variance structure to assume
@@ -15,10 +17,11 @@
 #' @param calc_F whether to compute the objective function (useful for testing purposes)
 #' @param missing an n times matrix of TRUE/FALSE indicating which elements of R and R2 should be considered missing (note neither R nor R2 must have missing values; eg set them to 0)
 #' @param verbose if true then trace of objective function is printed
+#' @param maxiter an upper bound on the number of iterations before terminating
 #' @return an updated flash object
 r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 1:length(l_init),f_subset=1:length(f_init),
                   ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn),
-                  var_type=c("by_column","constant","by_row","kroneker"),tol=1e-3,calc_F = TRUE, missing=NULL,verbose=FALSE){
+                  var_type=c("by_column","constant","by_row","kroneker"),tol=1e-3,calc_F = TRUE, missing=NULL,verbose=FALSE,maxiter=5000){
 
   l = l_init
   f = f_init
@@ -31,8 +34,10 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
 
   diff = 1
   R2new = R2 - 2*outer(l,f)*R + outer(l2,f2) # expected squared residuals with l and f included
+  iter = 0
 
-  while(diff > tol){
+  while((diff > tol) & (iter<maxiter)){
+    iter = iter+1
     l_old = l
     f_old = f
 

@@ -8,7 +8,7 @@ r1_opt(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
   l_subset = 1:length(l_init), f_subset = 1:length(f_init),
   ebnm_fn = ebnm_ash, ebnm_param = flash_default_ebnm_param(ebnm_fn),
   var_type = c("by_column", "constant", "by_row", "kroneker"), tol = 0.001,
-  calc_F = TRUE, missing = NULL, verbose = FALSE)
+  calc_F = TRUE, missing = NULL, verbose = FALSE, maxiter = 5000)
 }
 \arguments{
 \item{R}{an n times p matrix of data (expected residuals)}
@@ -23,6 +23,10 @@ r1_opt(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
 
 \item{f2_init}{initial value of f2 (optional)}
 
+\item{l_subset}{vector of indices of l to update (default is all)}
+
+\item{f_subset}{vector of indices of f to update (default is all)}
+
 \item{ebnm_fn}{function to solve the Empirical Bayes normal means problem}
 
 \item{ebnm_param}{parameters to be passed to ebnm_fn when optimizing}
@@ -36,6 +40,8 @@ r1_opt(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
 \item{missing}{an n times matrix of TRUE/FALSE indicating which elements of R and R2 should be considered missing (note neither R nor R2 must have missing values; eg set them to 0)}
 
 \item{verbose}{if true then trace of objective function is printed}
+
+\item{maxiter}{an upper bound on the number of iterations before terminating}
 }
 \value{
 an updated flash object
