@@ -16,8 +16,8 @@ flash_init_lf = function(LL,FF, fixl = NULL, fixf = NULL){
 
   f$gl = list()
   f$gf = list()
-  f$ash_param_l = list()
-  f$ash_param_f = list()
+  f$ebnm_param_l = list()
+  f$ebnm_param_f = list()
   f$KL_l = as.list(rep(0,get_k(f)))
   f$KL_f = as.list(rep(0,get_k(f))) #KL divergences for each l and f
   f$penloglik_l = as.list(rep(0,get_k(f)))
@@ -32,8 +32,8 @@ flash_init_lf = function(LL,FF, fixl = NULL, fixf = NULL){
 flash_init_null = function(){
   f = list(EL = NULL, EF = NULL, fixl = NULL,
            fixf=NULL, EL2=NULL, EF2=NULL,
-           gl =NULL, gf = NULL, ash_param_l = NULL,
-           ash_param_f = NULL, KL_l = NULL, KL_f = NULL, tau=NULL)
+           gl =NULL, gf = NULL, ebnm_param_l = NULL,
+           ebnm_param_f = NULL, KL_l = NULL, KL_f = NULL, tau=NULL)
   return(f)
 }
 
@@ -113,8 +113,8 @@ flash_combine = function(f1,f2){
     fixf = cbind(f1$fixf, f2$fixf),
     gl = c(f1$gl,f2$gl),
     gf = c(f1$gf,f2$gf),
-    ash_param_l = c(f1$ash_param_l, f2$ash_param_l),
-    ash_param_f = c(f1$ash_param_f, f2$ash_param_f),
+    ebnm_param_l = c(f1$ebnm_param_l, f2$ebnm_param_l),
+    ebnm_param_f = c(f1$ebnm_param_f, f2$ebnm_param_f),
     KL_l = c(f1$KL_l,f2$KL_l),
     KL_f = c(f1$KL_f,f2$KL_f),
     penloglik_l = c(f1$penloglik_l,f2$penloglik_l),
