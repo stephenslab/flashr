@@ -1,8 +1,8 @@
 Package: flashr2
 Type: Package
 Title: Empirical Bayes Factor Analysis 
-Version: 0.4-1
-Author: Wei Wang, Matthew Stephens 
+Version: 0.4-2
+Author: Wei Wang, Matthew Stephens, Jason Willwerscheid 
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
