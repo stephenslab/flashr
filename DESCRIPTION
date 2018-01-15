@@ -1,7 +1,7 @@
-Package: flashr2
+Package: flashr
 Type: Package
 Title: Empirical Bayes Factor Analysis 
-Version: 0.4-2
+Version: 0.4-3
 Author: Wei Wang, Matthew Stephens, Jason Willwerscheid 
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
