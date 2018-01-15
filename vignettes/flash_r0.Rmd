@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 First we will simulate some rank 0 data:
 
 ```{r}
-  library("flashr2")
+  library("flashr")
   set.seed(1)
   n=100
   p=1000

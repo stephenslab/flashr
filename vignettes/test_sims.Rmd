@@ -30,14 +30,14 @@ sim_rank1 =function(n=100,p=200,pve=0.5,missing=FALSE){
 
 # runs some simple simulations and computes mean squared error for estimate
 # of LF 
-test_sims = function(flash_fn=flashr2::flash_add_greedy,flash_param = list(),simfn = sim_rank1, ntest=20){
+test_sims = function(flash_fn=flashr::flash_add_greedy,flash_param = list(),simfn = sim_rank1, ntest=20){
   rmse = rep(0,ntest)
   for(i in 1:ntest){
     set.seed(i)
     d = simfn()
     #print(d$Y)
     f = do.call(flash_fn,modifyList(flash_param,list(data=d$Y)))
-    rmse[i] = sqrt(mean((flashr2::flash_get_lf(f)-d$LF)^2))
+    rmse[i] = sqrt(mean((flashr::flash_get_lf(f)-d$LF)^2))
   }
   return(rmse)
 }
@@ -47,8 +47,8 @@ Run without missing data
 ```{r}
 res = list()
 res[[1]] = test_sims(flash_param = list(Kmax=4))
-res[[2]]= test_sims(flash_param=list(Kmax=4,init_fn=flashr2::udv_si_svd))
-res[[3]] = test_sims(flash_param =list(Kmax=4,ebnm_fn =flashr2::ebnm_pn))
+res[[2]]= test_sims(flash_param=list(Kmax=4,init_fn=flashr::udv_si_svd))
+res[[3]] = test_sims(flash_param =list(Kmax=4,ebnm_fn =flashr::ebnm_pn))
 
 boxplot(res)
 lapply(res,mean)

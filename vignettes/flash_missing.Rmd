@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 Here we will do a quick comparison with softImpute.
 First the rank 1 case.
 ```{r}
-library("flashr2")
+library("flashr")
 set.seed(1)
 n = 100
 p = 500
