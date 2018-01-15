@@ -1,13 +1,12 @@
-# flashr2
-repo for refactoring flashr code
+# flashr
 
-This code is currently very much in development, and the interface may change
+This code is in development, and the interface may change
 under you! 
 
 For a minimal example, install the `devtools` package and then:
 ```
-devtools::install_github("stephenslab/flashr2")
-library("flashr2")
+devtools::install_github("stephenslab/flashr")
+library("flashr")
 set.seed(1)
 l = rnorm(5)
 f = rnorm(20)
@@ -26,4 +25,4 @@ If you want to use the faster `ebnm_pn` function (instead of the default adaptiv
 [*ebnm*](https://github.com/stephenslab/ebnm/)
 
 For more see 
-(https://github.com/stephenslab/flashr2/blob/master/vignettes/flash_intro.Rmd)
+(https://github.com/stephenslab/flashr/blob/master/vignettes/flash_intro.Rmd)
