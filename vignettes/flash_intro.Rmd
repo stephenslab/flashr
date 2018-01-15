@@ -14,9 +14,9 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Introduction to flashr2
+# Introduction to flashr
 
-This is a brief introduction to the `flashr2` package, which is an
+This is a brief introduction to the `flashr` package, which is an
 in-progress refactoring of the original `flashr` code. It is aimed
 at people who might want to see some of the more "advanced" options.
 We will want a simple single function interface for novice users.
@@ -29,7 +29,7 @@ without notice. You have been warned!
 First we will simulate some data for illustration (in this case the loadings
 and factors are not at all sparse, so the benefits of flash over other methods might be limited.)
 ```{r}
-library(flashr2)
+library(flashr)
 set.seed(1)
 n = 100
 p = 500

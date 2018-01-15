@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 First we will simulate some rank 1 data:
 
 ```{r}
-  library("flashr2")
+  library("flashr")
   set.seed(1)
   n=100
   p=1000
@@ -60,8 +60,8 @@ And compare with original flashr:
   f.orig = flashr::greedy(Y,1)
   f.orig.na = flashr::greedy(Y.miss,1)
   
-  plot(f.orig$f,f$EF,main="comparison of flashr and flashr2 factors",xlab="flashr",ylab="flashr2")
-   plot(f.orig$l,f$EL,main="comparison of flashr and flashr2 loadings",xlab="flashr",ylab="flashr2")
+  plot(f.orig$f,f$EF,main="comparison of flashr and flashr factors",xlab="flashr",ylab="flashr")
+   plot(f.orig$l,f$EL,main="comparison of flashr and flashr loadings",xlab="flashr",ylab="flashr")
   
   sqrt(mean((LF-outer(f.orig$l,f.orig$f))^2))
   sqrt(mean((LF-outer(f.orig.na$l,f.orig.na$f))^2))
