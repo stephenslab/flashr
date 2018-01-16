@@ -134,9 +134,9 @@ flash_add_sparse_l = function(data, nonnull_LL, f_init=NULL, init_fn="udv_si", f
     subset = nonnull_LL[,i]
     subf = flash_subset_l(f, subset)
     subdata = flash_subset_l_data(data, subset)
-    next_ll = matrix(0, nrow=n, ncol=1)
 
     subf = flash_add_factors_from_data(subdata, 1, subf, init_fn)
+    next_ll = matrix(0, nrow=n, ncol=1)
     next_ll[subset,] = subf$EL[,ncol(subf$EL)]
     next_ff = matrix(subf$EF[,ncol(subf$EF)], ncol=1)
 
@@ -186,9 +186,9 @@ flash_add_sparse_f = function(data, nonnull_FF, f_init=NULL, init_fn="udv_si", f
     subset = nonnull_FF[,i]
     subf = flash_subset_f(f, subset)
     subdata = flash_subset_f_data(data, subset)
-    next_ff = matrix(0, nrow=p, ncol=1)
 
     subf = flash_add_factors_from_data(subdata, 1, subf, init_fn)
+    next_ff = matrix(0, nrow=p, ncol=1)
     next_ff[subset,] = subf$EF[,ncol(subf$EF)]
     next_ll = matrix(subf$EL[,ncol(subf$EL)], ncol=1)
 
