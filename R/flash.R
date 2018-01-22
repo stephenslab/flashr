@@ -120,7 +120,7 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
     f = flash_update_single_fl(data,f,k,var_type,ebnm_fn,ebnm_param)
   }
 
-  c = flash_get_F(data,f)
+  c = flash_get_objective(data,f)
   diff = 1
   fit_got_worse = FALSE #flag used to check for occassional
   #issues with fit getting slightly worse due to numerics. If so we will stop iterating
@@ -135,7 +135,7 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
       for(k in kset){
         f = flash_update_single_fl(data,f,k,var_type,ebnm_fn,ebnm_param)
       }
-      cnew = flash_get_F(data, f)
+      cnew = flash_get_objective(data, f)
       diff = cnew-c
       c = cnew
       if(verbose){
@@ -149,7 +149,7 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
       kset = 1:get_k(f) #now remove factors that actually hurt objective
       f = perform_nullcheck(data,f,kset,var_type,verbose)
     }
-    cnew = flash_get_F(data, f)
+    cnew = flash_get_objective(data, f)
     diff = cnew-c
     c = cnew
   }
