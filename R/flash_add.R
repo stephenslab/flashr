@@ -133,7 +133,7 @@ flash_add_sparse_l = function(data, nonnull_LL, f_init=NULL, init_fn="udv_si", f
   for (i in 1:K) {
     subset = nonnull_LL[,i]
     subf = flash_subset_l(f, subset)
-    subdata = flash_subset_data_rows(data, subset)
+    subdata = flash_subset_l_data(data, subset)
 
     subf = flash_add_factors_from_data(subdata, 1, subf, init_fn)
     next_ll = matrix(0, nrow=n, ncol=1)
@@ -185,7 +185,7 @@ flash_add_sparse_f = function(data, nonnull_FF, f_init=NULL, init_fn="udv_si", f
   for (i in 1:K) {
     subset = nonnull_FF[,i]
     subf = flash_subset_f(f, subset)
-    subdata = flash_subset_data_cols(data, subset)
+    subdata = flash_subset_f_data(data, subset)
 
     subf = flash_add_factors_from_data(subdata, 1, subf, init_fn)
     next_ff = matrix(0, nrow=p, ncol=1)
@@ -238,7 +238,7 @@ flash_subset_f = function(f, subset){
 #' @param f a flash fit object
 #' @param subset the subset of rows to be retained
 #' @return a subsetted flash data object
-flash_subset_data_rows = function(data, subset){
+flash_subset_l_data = function(data, subset){
   subdata = data
   subdata$Yorig = subdata$Yorig[subset,,drop=F]
   subdata$anyNA = anyNA(subdata$Yorig)
@@ -252,7 +252,7 @@ flash_subset_data_rows = function(data, subset){
 #' @param f a flash fit object
 #' @param subset the subset of columns to be retained
 #' @return a subsetted flash data object
-flash_subset_data_cols = function(data, subset){
+flash_subset_f_data = function(data, subset){
   subdata = data
   subdata$Yorig = subdata$Yorig[,subset,drop=F]
   subdata$anyNA = anyNA(subdata$Yorig)
