@@ -123,9 +123,6 @@ flash_add_sparse_l = function(data, nonnull_LL, f_init=NULL, init_fn="udv_si", f
   f = f_init
   if(is.null(f)){f = flash_init_null()}
 
-  assertthat::assert_that(sum(colSums(nonnull_LL == TRUE) < 2) == 0,
-                          msg = "Each loadings vector must contain at least two non-null elements")
-
   n = nrow(nonnull_LL)
   K = ncol(nonnull_LL)
   fixl = NULL
@@ -135,6 +132,9 @@ flash_add_sparse_l = function(data, nonnull_LL, f_init=NULL, init_fn="udv_si", f
     subf = flash_subset_l(f, subset)
     subdata = flash_subset_l_data(data, subset)
     next_ll = matrix(0, nrow=n, ncol=1)
+
+    assertthat::assert_that(sum(subset == TRUE) > 1,
+                            msg = "Each loadings vector must contain at least two non-null elements")
 
     subf = flash_add_factors_from_data(subdata, 1, subf, init_fn)
     next_ll[subset,] = subf$EL[,ncol(subf$EL)]
@@ -175,9 +175,6 @@ flash_add_sparse_f = function(data, nonnull_FF, f_init=NULL, init_fn="udv_si", f
   f = f_init
   if(is.null(f)){f = flash_init_null()}
 
-  assertthat::assert_that(sum(colSums(nonnull_FF == TRUE) < 2) == 0,
-                          msg = "Each loadings vector must contain at least two non-null elements")
-
   p = nrow(nonnull_FF)
   K = ncol(nonnull_FF)
   fixf = NULL
@@ -187,6 +184,9 @@ flash_add_sparse_f = function(data, nonnull_FF, f_init=NULL, init_fn="udv_si", f
     subf = flash_subset_f(f, subset)
     subdata = flash_subset_f_data(data, subset)
     next_ff = matrix(0, nrow=p, ncol=1)
+
+    assertthat::assert_that(sum(subset == TRUE) > 1,
+                            msg = "Each factor vector must contain at least two non-null elements")
 
     subf = flash_add_factors_from_data(subdata, 1, subf, init_fn)
     next_ff[subset,] = subf$EF[,ncol(subf$EF)]
