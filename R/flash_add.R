@@ -33,7 +33,6 @@ flash_add_factors_from_data = function(data,K,f_init=NULL,init_fn="udv_si"){
 }
 
 
-
 #' @title  Add a set of fixed loadings to a flash fit object
 #' @param data a flash data object
 #' @param LL the loadings, an n by K matrix. Missing values will be initialized by the mean of the relevant column (but will generally be
@@ -71,23 +70,9 @@ flash_add_fixed_l = function(data, LL, f_init=NULL, fixl = NULL){
 #' Default is to fix all non-missing values, so missing values will be updated when f is updated.
 #' @return a flash fit object, with factors initialized from FF, and corresponding loadings initialized to 0.
 #' @export
-flash_add_fixed_f = function(data, FF, f_init=NULL, fixf = NULL){
-  if(is.null(f_init)){f_init = flash_init_null()}
-  if(is.null(fixf)){fixf = !is.na(FF)}
-  FF = fill_missing_with_column_mean(FF)
-  LL = matrix(0,nrow=nrow(data$Y),ncol=ncol(FF))
-
-  f_new = flash_init_lf(LL,FF,fixf=fixf)
-  f = flash_combine(f_init,f_new)
-
-  # maybe in future we want to give a fit option? But then would
-  # need to pass in var_type? possibly not needed.
-  # if(fit){
-  #   k1 = get_k(f_init)
-  #   k2 = get_k(f)
-  #   f = flash_backfit(data,f,kset=((k1+1):k2),var_type=xx)
-  # }
-  return(f)
+flash_add_fixed_f = function(data,FF,f_init=NULL,fixf=NULL){
+  tf = flash_add_fixed_l(flash_transpose_data(data), FF, flash_transpose(f_init), fixf)
+  return(flash_transpose(tf))
 }
 
 NA2mean <- function(x) replace(x, is.na(x), mean(x, na.rm = TRUE))

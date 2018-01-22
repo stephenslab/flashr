@@ -1,13 +1,14 @@
 #' @title  Update a flash loading
-#' @details Updates loading k of f to increase the objective F
-#' Updates only the loading, once (not the factor)
+#' @details Updates loading k of f to increase the objective F.
+#' Updates only the loading, once (not the factor).
 #' @param data a flash data object
 #' @param f a flash fit object
 #' @param k the index of the loading to update
 #' @param ebnm_fn function to solve the Empirical Bayes normal means problem
 #' @param ebnm_param parameters to be passed to ebnm_fn when optimizing
 #' @return an updated flash object
-flash_update_single_loading = function(data,f,k,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn)){
+flash_update_single_loading = function(data,f,k,ebnm_fn=ebnm_ash,
+                                       ebnm_param=flash_default_ebnm_param(ebnm_fn)){
   subset = which(!f$fixl[,k]) # check which elements are not fixed
   if(length(subset)>0){ # and only do the update if some elements are not fixed
 
@@ -32,31 +33,14 @@ flash_update_single_loading = function(data,f,k,ebnm_fn = ebnm_ash, ebnm_param=f
 
 #' @title  Update a flash factor
 #' @details Updates factor k of f to increase the objective F.
-#' Updates only the factor, once (not the loading)
+#' Updates only the factor, once (not the loading).
 #' @inheritParams flash_update_single_loading
 #' @return an updated flash object
-flash_update_single_factor = function(data,f,k,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn)){
-  subset = which(!f$fixf[,k]) # check which elements are not fixed
-  if(length(subset)>0){ # and only do the update if some elements are not fixed
-
-    tau = f$tau[,subset,drop=FALSE]
-    if(data$anyNA){tau = tau * !data$missing[,subset]} #set missing values to have precision 0
-
-    s = sqrt(1/(t(tau) %*% f$EL2[,k]))
-    if(sum(is.finite(s))>0){ # check some finite values before proceeding
-      Rk = get_Rk(data,f,k)[,subset] #residuals excluding factor k
-      x = (t(Rk*tau) %*% f$EL[,k]) * s^2
-      a = ebnm_fn(x,s,ebnm_param)
-
-      f$EF[subset,k] = a$postmean
-      f$EF2[subset,k] = a$postmean2
-      f$gf[[k]] = a$fitted_g
-      f$ebnm_param_f[[k]] = ebnm_param
-      f$KL_f[[k]] = a$penloglik - NM_posterior_e_loglik(x,s,a$postmean,a$postmean2)
-      f$penloglik_f[[k]] = a$penloglik
-    }
-  }
-  return(f)
+flash_update_single_factor = function(data,f,k,ebnm_fn=ebnm_ash,
+                                      ebnm_param=flash_default_ebnm_param(ebnm_fn)){
+  tf = flash_update_single_loading(flash_transpose_data(data), flash_transpose(f), k,
+                                   ebnm_fn, ebnm_param)
+  return(flash_transpose(tf))
 }
 
 #' @title Update a single flash factor-loading combination (and precision)
