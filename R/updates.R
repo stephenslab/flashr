@@ -88,7 +88,8 @@ flash_optimize_single_fl = function(data,f,k,var_type,nullcheck=TRUE,tol=1e-2,eb
   f_subset = which(!f$fixf[,k])
   l_subset = which(!f$fixl[,k])
   res = r1_opt(get_Rk(data,f,k),get_R2k(data,f,k),f$EL[,k],f$EF[,k],f$EL2[,k],f$EF2[,k],
-               l_subset,f_subset,ebnm_fn,ebnm_param,var_type,tol,calc_F = TRUE, missing = data$missing,verbose=verbose)
+               l_subset,f_subset,ebnm_fn,ebnm_param,var_type,tol,calc_F = TRUE, missing = data$missing,
+               verbose=verbose,KLobj = sum(unlist(f$KL_l))+sum(unlist(f$KL_f)))
 
   f = update_f_from_r1_opt_results(f,k,res)
 
