@@ -17,7 +17,7 @@ test_that("results from r1_opt match old results", {
 
   data.miss = flash_set_data(Y.miss)
   f= flash_r1(data.miss,verbose=FALSE)
-  f.old= flashr2:::flash_r1_old(data.miss,verbose=FALSE)
+  f.old= flash_r1_old(data.miss,verbose=FALSE)
   expect_true(all.equal(f,f.old,tol=1e-3))
 
 

@@ -88,7 +88,8 @@ flash_optimize_single_fl = function(data,f,k,var_type,nullcheck=TRUE,tol=1e-2,eb
   f_subset = which(!f$fixf[,k])
   l_subset = which(!f$fixl[,k])
   res = r1_opt(get_Rk(data,f,k),get_R2k(data,f,k),f$EL[,k],f$EF[,k],f$EL2[,k],f$EF2[,k],
-               l_subset,f_subset,ebnm_fn,ebnm_param,var_type,tol,calc_F = TRUE, missing = data$missing,verbose=verbose)
+               l_subset,f_subset,ebnm_fn,ebnm_param,var_type,tol,calc_F = TRUE, missing = data$missing,
+               verbose=verbose,KLobj = sum(unlist(f$KL_l))+sum(unlist(f$KL_f)))
 
   f = update_f_from_r1_opt_results(f,k,res)
 
@@ -121,8 +122,8 @@ perform_nullcheck=function(data,f,kset,var_type,verbose){
 
       f0 = flash_zero_out_factor(data,f,k)
       f0 = flash_update_precision(data,f0,var_type)
-      F0 = flash_get_F(data,f0)
-      F1 = flash_get_F(data,f)
+      F0 = flash_get_objective(data,f0)
+      F1 = flash_get_objective(data,f)
 
       if(verbose){
         message("performing nullcheck")
@@ -141,7 +142,7 @@ perform_nullcheck=function(data,f,kset,var_type,verbose){
     }
   }
   if(verbose){
-    message("nullcheck complete, objective:",flash_get_F(data,f))
+    message("nullcheck complete, objective:",flash_get_objective(data,f))
   }
   return(f)
 }
