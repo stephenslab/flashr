@@ -80,13 +80,13 @@ Having fit the model we might want to extract the fitted factors and loadings.
 You can do that using functions like `flash_get_l` to get the loadings and
 `flash_get_f` to get the factors. Also `flash_get_lf` gets the product (LF').
 And `flash_get_pve` gives a rough summary of the proportion of variance in Y 
-explained by each factor-loading combination. And `flash_get_F` will return the 
-measure of goodness-of-fit achieved (the variational lower bound, F). This can
+explained by each factor-loading combination. And `flash_get_objective` will return 
+the measure of goodness-of-fit achieved (the variational lower bound, F). This can
 be helpful for comparing multiple fits to the same data.
 ```{r}
 plot(flash_get_lf(f), LL %*% t(FF), main="compare fitted values with true LF'")
 flash_get_pve(f)
-flash_get_F(data,f)
+flash_get_objective(data,f)
 ```
 
 # Greedy addition of factors
@@ -98,7 +98,7 @@ the fit, so you need to specify a maximum number to consider.
 ```{r}
 f_greedy = flash_add_greedy(data,Kmax=10)
 flash_get_pve(f_greedy)
-flash_get_F(data,f_greedy)
+flash_get_objective(data,f_greedy)
 ```
 
 After adding factors in this way it is a good idea to use backfitting to try
@@ -107,7 +107,7 @@ than the original (although it maybe took longer?)
 ```{r}
 f_greedy_bf = flash_backfit(data,f_greedy)
 flash_get_pve(f_greedy_bf)
-flash_get_F(data,f_greedy_bf)
+flash_get_objective(data,f_greedy_bf)
 ```
 
 # Setting loadings and factors directly
@@ -118,7 +118,7 @@ the loadings and factors to the "truth" to see how it affects the convergence.
 f_true = flash_add_lf(data, LL=LL, FF=FF)
 f_cheat = flash_backfit(data,f_true)
 flash_get_pve(f_cheat)
-flash_get_F(data,f_cheat)
+flash_get_objective(data,f_cheat)
 ```
 
 Unexpectedly (to me) the objective achieved from this initialization

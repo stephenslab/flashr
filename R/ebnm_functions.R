@@ -6,7 +6,7 @@
 ebnm_ash = function(x,s,ash_param){
   ash_param = modifyList(ash_param, list(outputlevel=5))
   a = do.call(ashr::ash,c(list(betahat=as.vector(x),sebetahat=as.vector(s)),ash_param))
-  if(is.null(a$flash_data$postmean)){stop("ashr is not outputting flashr data. Maybe your version of ashr needs updating to latest version?")}
+  if(is.null(a$flash_data$postmean)){stop("ashr is not outputting flashr data in the right format. Maybe your version of ashr needs updating to latest version?")}
   return(a$flash_data)
 }
 

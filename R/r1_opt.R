@@ -18,10 +18,11 @@
 #' @param missing an n times matrix of TRUE/FALSE indicating which elements of R and R2 should be considered missing (note neither R nor R2 must have missing values; eg set them to 0)
 #' @param verbose if true then trace of objective function is printed
 #' @param maxiter an upper bound on the number of iterations before terminating
+#' @param KLobj the value of the KL part of the objective for the other factors not being optimized (optional, but allows objective to be computed accurately)
 #' @return an updated flash object
 r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 1:length(l_init),f_subset=1:length(f_init),
                   ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn),
-                  var_type=c("by_column","constant","by_row","kroneker"),tol=1e-3,calc_F = TRUE, missing=NULL,verbose=FALSE,maxiter=5000){
+                  var_type=c("by_column","constant","by_row","kroneker"),tol=1e-3,calc_F = TRUE, missing=NULL,verbose=FALSE,maxiter=5000,KLobj = 0){
 
   l = l_init
   f = f_init
@@ -75,7 +76,7 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
     R2new = R2 - 2*outer(l,f)*R + outer(l2,f2)
 
     if(calc_F){
-      Fnew = sum(KL_l) + sum(KL_f) + e_loglik_from_R2_and_tau(R2new,tau,missing)
+      Fnew = KLobj + KL_l + KL_f + e_loglik_from_R2_and_tau(R2new,tau,missing)
       if(verbose){
         message(paste0("Objective:",Fnew))
       }

@@ -2,7 +2,7 @@
 #' @param data a flash data object
 #' @param f a flash fit object
 #' @export
-flash_get_F = function(data,f){
+flash_get_objective = function(data,f){
   return(sum(unlist(f$KL_l))+sum(unlist(f$KL_f))+e_loglik(data,f))
 }
 
