@@ -55,7 +55,6 @@ flash_combine = function(f1,f2){
   )
 }
 
-
 #' @title zero out a factor from f
 #' @param data a flash data object
 #' @param f a flash fit object
