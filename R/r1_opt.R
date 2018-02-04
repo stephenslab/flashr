@@ -31,7 +31,7 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
   if(is.null(l2)){l2 = l^2} # default initialization of l2 and f2
   if(is.null(f2)){f2 = f^2}
 
-  F_obj = Inf #variable to store value of objective function
+  F_obj = -Inf #variable to store value of objective function
 
   diff = 1
   R2new = R2 - 2*outer(l,f)*R + outer(l2,f2) # expected squared residuals with l and f included
@@ -80,7 +80,13 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
       if(verbose){
         message(paste0("Objective:",Fnew))
       }
-      diff = abs(F_obj - Fnew)
+      diff = Fnew - F_obj
+
+      if(diff<0 & verbose){
+        warning("An iteration decreased the objective. This happens occassionally, perhaps due to numeric reasons.
+You could ignore this warning, but you might like to check out https://github.com/stephenslab/flashr/issues/26
+                for more details")
+      }
       F_obj = Fnew
     } else { # check convergence by percentage changes in l and f
       #normalize l and f so that f has unit norm
