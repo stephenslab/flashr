@@ -127,5 +127,5 @@ flash_get_udv = function(f){
 
 #get_conv_criteria = function(f){flash_get_lf(f)}
 get_conv_criteria = function(data,f){
-  flash_get_F(data,f)
+  flash_get_objective(data,f)
 }
