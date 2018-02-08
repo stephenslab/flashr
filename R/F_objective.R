@@ -16,7 +16,7 @@ e_loglik = function(data,f){
 
 
 #' @title expected log likelihood for normal means model
-#' @details The likelihood is for x | theta \sim N(theta, s^2);
+#' @details The likelihood is for x | theta ~ N(theta, s^2);
 #' The expectation is taken over the posterior on theta
 #' @param x observations in normal means
 #' @param s standard errors of x
