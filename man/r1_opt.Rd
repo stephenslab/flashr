@@ -8,7 +8,8 @@ r1_opt(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
   l_subset = 1:length(l_init), f_subset = 1:length(f_init),
   ebnm_fn = ebnm_ash, ebnm_param = flash_default_ebnm_param(ebnm_fn),
   var_type = c("by_column", "constant", "by_row", "kroneker"), tol = 0.001,
-  calc_F = TRUE, missing = NULL, verbose = FALSE, maxiter = 5000)
+  calc_F = TRUE, missing = NULL, verbose = FALSE, maxiter = 5000,
+  KLobj = 0)
 }
 \arguments{
 \item{R}{an n times p matrix of data (expected residuals)}
@@ -42,6 +43,8 @@ r1_opt(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
 \item{verbose}{if true then trace of objective function is printed}
 
 \item{maxiter}{an upper bound on the number of iterations before terminating}
+
+\item{KLobj}{the value of the KL part of the objective for the other factors not being optimized (optional, but allows objective to be computed accurately)}
 }
 \value{
 an updated flash object
