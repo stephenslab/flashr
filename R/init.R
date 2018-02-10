@@ -45,7 +45,8 @@ flash_init_null = function(){
 #' @return a list with components (u,d,v)
 #' @export
 udv_si = function(Y,K=1){
-  softImpute::softImpute(Y, rank.max = K, type = "als",lambda = 0)
+  suppressWarnings(res <- softImpute::softImpute(Y, rank.max = K, type = "als",lambda = 0))
+  return(res)
 }
 
 #' @title udv_si
@@ -55,7 +56,8 @@ udv_si = function(Y,K=1){
 #' @return a list with components (u,d,v)
 #' @export
 udv_si_svd = function(Y,K=1){
-  softImpute::softImpute(Y, rank.max = K, type = "svd",lambda = 0)
+  suppressWarnings(res <- softImpute::softImpute(Y, rank.max = K, type = "svd",lambda = 0))
+  return(res)
 }
 
 #' @title udv_svd

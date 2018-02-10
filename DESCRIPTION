@@ -1,12 +1,11 @@
 Package: flashr
 Type: Package
-Title: Empirical Bayes Factor Analysis 
-Version: 0.4-4
+Title: Empirical Bayes Matrix Factorization
+Version: 0.4-6
 Author: Wei Wang, Matthew Stephens, Jason Willwerscheid 
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Maintainer: <mstephens@uchicago.edu>
+Description: Implements Empirical Bayes Matrix Factorization methods from Wang and Stephens (2017) 
+License: BSD-3
 Encoding: UTF-8
 LazyData: true
 Suggests: testthat

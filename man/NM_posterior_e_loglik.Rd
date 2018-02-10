@@ -16,6 +16,6 @@ NM_posterior_e_loglik(x, s, Et, Et2)
 \item{Em2}{posterior second moment of theta}
 }
 \details{
-The likelihood is for x | theta \sim N(theta, s^2);
+The likelihood is for x | theta ~ N(theta, s^2);
 The expectation is taken over the posterior on theta
 }
