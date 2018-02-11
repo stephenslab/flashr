@@ -55,6 +55,53 @@ flash_combine = function(f1,f2){
   )
 }
 
+#' @title Subset a flash object with respect to its loadings
+#' @param f a flash fit object
+#' @param subset the subset of loading elements to be retained
+#' @return a subsetted flash fit object
+flash_subset_l = function(f, subset){
+  subf = f
+  subf$EL = subf$EL[subset,,drop=F]
+  subf$EL2 = subf$EL2[subset,,drop=F]
+  subf$fixl = subf$fixl[subset,,drop=F]
+  subf$tau = subf$tau[subset,,drop=F]
+  subf$KL_l = NULL
+  subf$KL_f = NULL
+  return(subf)
+}
+
+#' @title Subset a flash object with respect to its factors
+#' @param f a flash fit object
+#' @param subset the subset of factor elements to be retained
+#' @return a subsetted flash fit object
+flash_subset_f = function(f, subset){
+  subf = f
+  subf$EF = subf$EF[subset,,drop=F]
+  subf$EF2 = subf$EF2[subset,,drop=F]
+  subf$fixf = subf$fixf[subset,,drop=F]
+  subf$tau = subf$tau[,subset,drop=F]
+  subf$KL_l = NULL
+  subf$KL_f = NULL
+  return(subf)
+}
+
+#' @title Subset a flash data object
+#' @param f a flash fit object
+#' @param row_subset the subset of rows to be retained
+#' @param col_subset the subset of columns to be retained
+#' @return a subsetted flash data object
+flash_subset_data = function(data, row_subset=NULL, col_subset=NULL){
+  if(is.null(row_subset)) {row_subset=1:nrow(data$Y)}
+  if(is.null(col_subset)) {col_subset=1:ncol(data$Y)}
+
+  subdata = data
+  subdata$Yorig = subdata$Yorig[row_subset,col_subset,drop=F]
+  subdata$anyNA = anyNA(subdata$Yorig)
+  subdata$missing = subdata$missing[row_subset,col_subset,drop=F]
+  subdata$Y = subdata$Y[row_subset,col_subset,drop=F]
+  return(subdata)
+}
+
 #' @title zero out a factor from f
 #' @param data a flash data object
 #' @param f a flash fit object
