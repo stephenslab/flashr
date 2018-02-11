@@ -94,8 +94,12 @@ find_col_blocks = function(X) {
   n = nrow(X)
   K = ncol(X)
 
+  if (K == 1) { # just one column, so just one block
+    return(matrix(1, nrow=1, ncol=2))
+  }
+
   # Check to see whether column j in X has the same data as column j+1:
-  is_col_same = (colSums(X[,1:(K-1)] == X[,2:K]) == n)
+  is_col_same = (colSums(X[,1:(K-1),drop=F] == X[,2:K,drop=F]) == n)
 
   # Group into blocks of columns, each of which have the same data:
   block_ends = which(is_col_same == FALSE)
@@ -115,6 +119,8 @@ find_col_blocks = function(X) {
 #' @return a flash fit object, with factors initialized from FF, and corresponding loadings initialized to 0.
 #' @export
 flash_add_fixed_f = function(data,FF,f_init=NULL,fixf=NULL){
+  if (is.matrix(data)) {data = flash_set_data(data)}
+
   tf = flash_add_fixed_l(flash_transpose_data(data), FF, flash_transpose(f_init), fixf)
   return(flash_transpose(tf))
 }
