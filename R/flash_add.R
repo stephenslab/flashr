@@ -63,7 +63,7 @@ flash_add_fixed_l = function(data, LL, f_init=NULL, fixl=NULL, init_fn="udv_si")
 
     # If we're only missing one element, just replace it with the column mean:
     if (sum(missing) == 1) {
-      LL_init[missing, block_idx] = colMeans(LL[!missing], block_idx)
+      LL_init[missing, block_idx] = colMeans(LL[!missing, block_idx, drop=F])
     }
     # If we're missing more, initialize via a subsetted flash object:
     else if (sum(missing) > 1) {
@@ -76,7 +76,7 @@ flash_add_fixed_l = function(data, LL, f_init=NULL, fixl=NULL, init_fn="udv_si")
       FF_init[, block_idx] = subf$EF[,f_offset + block_idx]
     }
 
-    f_new = flash_init_lf(LL_init[,block_idx, drop=F], FF_init[,block_idx, drop=F], fixl=fixl)
+    f_new = flash_init_lf(LL_init[,block_idx, drop=F], FF_init[,block_idx, drop=F], fixl=fixl[,block_idx, drop=F])
     f = flash_combine(f, f_new)
   }
 
@@ -84,12 +84,12 @@ flash_add_fixed_l = function(data, LL, f_init=NULL, fixl=NULL, init_fn="udv_si")
 }
 
 
-#' @title partition matrix into blocks of identical columns
-#' @param X a matrix
+#' @title Partition a matrix into blocks of identical columns
+#' @param X the matrix to be partitioned (note that X should not have NAs)
 #' @return a matrix Y with 2 columns. Each row of Y corresponds to a block of columns in X.
 #' The first column of Y gives the index of the first column in the block; the second
-#' column gives the index of the last column. That is, block i is composed of columns
-#' Y[i, 1]:Y[i, 2].
+#' column gives the index of the last column. In other words, block i can be accessed as
+#' X[, Y[i, 1]:Y[i, 2]].
 find_col_blocks = function(X) {
   n = nrow(X)
   K = ncol(X)
@@ -101,7 +101,7 @@ find_col_blocks = function(X) {
   # Check to see whether column j in X has the same data as column j+1:
   is_col_same = (colSums(X[,1:(K-1),drop=F] == X[,2:K,drop=F]) == n)
 
-  # Group into blocks of columns, each of which have the same data:
+  # Group into blocks of columns; all columns in a block have the same data:
   block_ends = which(is_col_same == FALSE)
   start_idx = c(1, block_ends + 1)
   end_idx = c(block_ends, K)

@@ -35,4 +35,17 @@ test_that("adding sparse factors/loadings works", {
   expect_equal(sum(fl$EF[,(n_ll+1):ncol(fl$EF)][ff2 != 0] == 0), 0)
   expect_equal(sum(fl$fixf[,(n_ll+1):ncol(fl$fixf)][ff2 == 0] == FALSE), 0)
   expect_equal(sum(fl$fixf[,(n_ll+1):ncol(fl$fixf)][ff2 != 0] == TRUE), 0)
+
+  # Add a factor with only one missing element:
+  FF = matrix(c(NA, rep(1, p-1)), ncol=1)
+  fl <- flash_add_fixed_f(Y, FF, f_init=fl)
+  expect_equal(sum(fl$fixf[,(n_ll+n_ff+1):ncol(fl$fixf)][!is.na(FF)] == FALSE), 0)
+  expect_equal(sum(fl$fixf[,(n_ll+n_ff+1):ncol(fl$fixf)][is.na(FF)] == TRUE), 0)
+
+  # Add a bunch of loadings with all fixed elements:
+  LL = diag(1, nrow=n, ncol=n)
+  fl <- flash_add_fixed_l(Y, LL, f_init=fl)
+  expect_equal(sum(fl$fixl[,(n_ll+n_ff+2):ncol(fl$fixl)] == FALSE), 0)
+  # factors not fixed:
+  expect_equal(sum(fl$fixf[,(n_ll+n_ff+2):ncol(fl$fixf)] == TRUE), 0)
 })
