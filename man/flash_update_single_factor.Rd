@@ -23,5 +23,5 @@ an updated flash object
 }
 \details{
 Updates factor k of f to increase the objective F.
-Updates only the factor, once (not the loading)
+Updates only the factor, once (not the loading).
 }

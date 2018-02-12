@@ -4,7 +4,8 @@
 \alias{flash_add_fixed_l}
 \title{Add a set of fixed loadings to a flash fit object}
 \usage{
-flash_add_fixed_l(data, LL, f_init = NULL, fixl = NULL)
+flash_add_fixed_l(data, LL, f_init = NULL, fixl = NULL,
+  init_fn = "udv_si")
 }
 \arguments{
 \item{data}{a flash data object}
