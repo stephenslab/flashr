@@ -49,35 +49,33 @@ flash_add_fixed_l = function(data, LL, f_init=NULL, fixl=NULL, init_fn="udv_si")
 
   LL_init = LL
   FF_init = matrix(0, nrow=ncol(data$Y), ncol=ncol(LL))
-  f = f_init
 
-  f_offset = ncol(f$EL)
-  if (is.null(f_offset)) {f_offset = 0}
+  k_offset = ncol(f_init$EL)
+  if (is.null(k_offset)) {k_offset = 0}
 
   # Group columns of LL into blocks, each of which has the same missing data:
   blocks = find_col_blocks(is.na(LL))
 
-  for (i in 1:nrow(blocks)) {
-    block_idx = blocks[i, 1]:blocks[i, 2]
-    missing = is.na(LL[, block_idx[1]])
+  f = f_init
+  for (i in 1:length(blocks)) {
+    block_cols = blocks[[i]]
+    missing_rows = is.na(LL[, block_cols[1]])
 
     # If we're only missing one element, just replace it with the column mean:
-    if (sum(missing) == 1) {
-      LL_init[missing, block_idx] = colMeans(LL[!missing, block_idx, drop=F])
+    if (sum(missing_rows) == 1) {
+      LL_init[missing_rows, block_cols] = colMeans(LL[!missing_rows, block_cols, drop=F])
     }
     # If we're missing more, initialize via a subsetted flash object:
-    else if (sum(missing) > 1) {
-      subf = flash_subset_l(f, missing)
-      subdata = flash_subset_data(data, row_subset=missing)
-
-      block_size = length(block_idx)
-      subf = flash_add_factors_from_data(subdata, block_size, subf, init_fn)
-      LL_init[missing, block_idx] = subf$EL[,f_offset + block_idx]
-      FF_init[, block_idx] = subf$EF[,f_offset + block_idx]
+    else if (sum(missing_rows) > 1) {
+      subf = flash_subset_l(f, missing_rows)
+      subdata = flash_subset_data(data, row_subset=missing_rows)
+      subf = flash_add_factors_from_data(subdata, length(block_cols), subf, init_fn)
+      LL_init[missing_rows, block_cols] = subf$EL[,k_offset + block_cols]
+      FF_init[, block_cols] = subf$EF[,k_offset + block_cols]
     }
 
-    f_new = flash_init_lf(LL_init[,block_idx, drop=F], FF_init[,block_idx, drop=F], fixl=fixl[,block_idx, drop=F])
-    f = flash_combine(f, f_new)
+    f = flash_add_lf(data, LL_init[,block_cols, drop=F], FF_init[,block_cols, drop=F],
+                     f, fixl=fixl[,block_cols, drop=F])
   }
 
   return(f)
@@ -86,26 +84,29 @@ flash_add_fixed_l = function(data, LL, f_init=NULL, fixl=NULL, init_fn="udv_si")
 
 #' @title Partition a matrix into blocks of identical columns
 #' @param X the matrix to be partitioned (note that X should not have NAs)
-#' @return a matrix Y with 2 columns. Each row of Y corresponds to a block of columns in X.
-#' The first column of Y gives the index of the first column in the block; the second
-#' column gives the index of the last column. In other words, block i can be accessed as
-#' X[, Y[i, 1]:Y[i, 2]].
+#' @return a list, each element of which contains the indices of a single block of
+#' identical columns
 find_col_blocks = function(X) {
   n = nrow(X)
   K = ncol(X)
 
   if (K == 1) { # just one column, so just one block
-    return(matrix(1, nrow=1, ncol=2))
+    return(as.list(1))
   }
 
   # Check to see whether column j in X has the same data as column j+1:
   is_col_same = (colSums(X[,1:(K-1),drop=F] == X[,2:K,drop=F]) == n)
 
-  # Group into blocks of columns; all columns in a block have the same data:
+  # Group into blocks of columns; all columns in a single block have the same data:
   block_ends = which(is_col_same == FALSE)
   start_idx = c(1, block_ends + 1)
   end_idx = c(block_ends, K)
-  cbind(start_idx, end_idx)
+  blocks = vector("list", length(start_idx))
+  for (i in 1:length(start_idx)) {
+    blocks[[i]] = start_idx[i]:end_idx[i]
+  }
+
+  return(blocks)
 }
 
 
