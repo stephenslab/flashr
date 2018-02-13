@@ -1,13 +1,14 @@
 #' @title  Update a flash loading
-#' @details Updates loading k of f to increase the objective F
-#' Updates only the loading, once (not the factor)
+#' @details Updates loading k of f to increase the objective F.
+#' Updates only the loading, once (not the factor).
 #' @param data a flash data object
 #' @param f a flash fit object
 #' @param k the index of the loading to update
 #' @param ebnm_fn function to solve the Empirical Bayes normal means problem
 #' @param ebnm_param parameters to be passed to ebnm_fn when optimizing
 #' @return an updated flash object
-flash_update_single_loading = function(data,f,k,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn)){
+flash_update_single_loading = function(data,f,k,ebnm_fn=ebnm_ash,
+                                       ebnm_param=flash_default_ebnm_param(ebnm_fn)){
   subset = which(!f$fixl[,k]) # check which elements are not fixed
   if(length(subset)>0){ # and only do the update if some elements are not fixed
 
@@ -32,7 +33,7 @@ flash_update_single_loading = function(data,f,k,ebnm_fn = ebnm_ash, ebnm_param=f
 
 #' @title  Update a flash factor
 #' @details Updates factor k of f to increase the objective F.
-#' Updates only the factor, once (not the loading)
+#' Updates only the factor, once (not the loading).
 #' @inheritParams flash_update_single_loading
 #' @return an updated flash object
 flash_update_single_factor = function(data,f,k,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn)){

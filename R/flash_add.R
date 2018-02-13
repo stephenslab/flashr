@@ -33,7 +33,6 @@ flash_add_factors_from_data = function(data,K,f_init=NULL,init_fn="udv_si"){
 }
 
 
-
 #' @title  Add a set of fixed loadings to a flash fit object
 #' @param data a flash data object
 #' @param LL the loadings, an n by K matrix. Missing values will be initialized by the mean of the relevant column (but will generally be
@@ -43,24 +42,73 @@ flash_add_factors_from_data = function(data,K,f_init=NULL,init_fn="udv_si"){
 #' Default is to fix all non-missing values, so missing values will be updated when f is updated.
 #' @return a flash fit object, with loadings initialized from LL, and corresponding factors initialized to 0.
 #' @export
-flash_add_fixed_l = function(data, LL, f_init=NULL, fixl = NULL){
+flash_add_fixed_l = function(data, LL, f_init=NULL, fixl=NULL, init_fn="udv_si"){
+  if(is.matrix(data)){data = flash_set_data(data)}
   if(is.null(f_init)){f_init = flash_init_null()}
   if(is.null(fixl)){fixl = !is.na(LL)}
-  LL = fill_missing_with_column_mean(LL)
-  FF = matrix(0,nrow=ncol(data$Y),ncol=ncol(LL))
 
-  f_new = flash_init_lf(LL,FF,fixl=fixl)
-  f = flash_combine(f_init,f_new)
+  LL_init = LL
+  FF_init = matrix(0, nrow=ncol(data$Y), ncol=ncol(LL))
 
-  # maybe in future we want to give a fit option? But then would
-  # need to pass in var_type? possibly not needed.
-  # if(fit){
-  #   k1 = get_k(f_init)
-  #   k2 = get_k(f)
-  #   f = flash_backfit(data,f,kset=((k1+1):k2),var_type=xx)
-  # }
+  k_offset = ncol(f_init$EL)
+  if (is.null(k_offset)) {k_offset = 0}
+
+  # Group columns of LL into blocks, each of which has the same missing data:
+  blocks = find_col_blocks(is.na(LL))
+
+  f = f_init
+  for (i in 1:length(blocks)) {
+    block_cols = blocks[[i]]
+    missing_rows = is.na(LL[, block_cols[1]])
+
+    # If we're only missing one element, just replace it with the column mean:
+    if (sum(missing_rows) == 1) {
+      LL_init[missing_rows, block_cols] = colMeans(LL[!missing_rows, block_cols, drop=F])
+    }
+    # If we're missing more, initialize via a subsetted flash object:
+    else if (sum(missing_rows) > 1) {
+      subf = flash_subset_l(f, missing_rows)
+      subdata = flash_subset_data(data, row_subset=missing_rows)
+      subf = flash_add_factors_from_data(subdata, length(block_cols), subf, init_fn)
+      LL_init[missing_rows, block_cols] = subf$EL[,k_offset + block_cols]
+      FF_init[, block_cols] = subf$EF[,k_offset + block_cols]
+    }
+
+    f = flash_add_lf(data, LL_init[,block_cols, drop=F], FF_init[,block_cols, drop=F],
+                     f, fixl=fixl[,block_cols, drop=F])
+  }
+
   return(f)
 }
+
+
+#' @title Partition a matrix into blocks of identical columns
+#' @param X the matrix to be partitioned (note that X should not have NAs)
+#' @return a list, each element of which contains the indices of a single block of
+#' identical columns
+find_col_blocks = function(X) {
+  n = nrow(X)
+  K = ncol(X)
+
+  if (K == 1) { # just one column, so just one block
+    return(as.list(1))
+  }
+
+  # Check to see whether column j in X has the same data as column j+1:
+  is_col_same = (colSums(X[,1:(K-1),drop=F] == X[,2:K,drop=F]) == n)
+
+  # Group into blocks of columns; all columns in a single block have the same data:
+  block_ends = which(is_col_same == FALSE)
+  start_idx = c(1, block_ends + 1)
+  end_idx = c(block_ends, K)
+  blocks = vector("list", length(start_idx))
+  for (i in 1:length(start_idx)) {
+    blocks[[i]] = start_idx[i]:end_idx[i]
+  }
+
+  return(blocks)
+}
+
 
 #' @title  Add a set of fixed factors to a flash fit object
 #' @param data a flash data object
@@ -71,29 +119,11 @@ flash_add_fixed_l = function(data, LL, f_init=NULL, fixl = NULL){
 #' Default is to fix all non-missing values, so missing values will be updated when f is updated.
 #' @return a flash fit object, with factors initialized from FF, and corresponding loadings initialized to 0.
 #' @export
-flash_add_fixed_f = function(data, FF, f_init=NULL, fixf = NULL){
-  if(is.null(f_init)){f_init = flash_init_null()}
-  if(is.null(fixf)){fixf = !is.na(FF)}
-  FF = fill_missing_with_column_mean(FF)
-  LL = matrix(0,nrow=nrow(data$Y),ncol=ncol(FF))
+flash_add_fixed_f = function(data,FF,f_init=NULL,fixf=NULL){
+  if (is.matrix(data)) {data = flash_set_data(data)}
 
-  f_new = flash_init_lf(LL,FF,fixf=fixf)
-  f = flash_combine(f_init,f_new)
-
-  # maybe in future we want to give a fit option? But then would
-  # need to pass in var_type? possibly not needed.
-  # if(fit){
-  #   k1 = get_k(f_init)
-  #   k2 = get_k(f)
-  #   f = flash_backfit(data,f,kset=((k1+1):k2),var_type=xx)
-  # }
-  return(f)
-}
-
-NA2mean <- function(x) replace(x, is.na(x), mean(x, na.rm = TRUE))
-
-fill_missing_with_column_mean = function(X){
-  apply(X, 2, NA2mean)
+  tf = flash_add_fixed_l(flash_transpose_data(data), FF, flash_transpose(f_init), fixf)
+  return(flash_transpose(tf))
 }
 
 
