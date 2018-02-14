@@ -22,6 +22,6 @@ flash_update_single_loading(data, f, k, ebnm_fn = ebnm_ash,
 an updated flash object
 }
 \details{
-Updates loading k of f to increase the objective F
-Updates only the loading, once (not the factor)
+Updates loading k of f to increase the objective F.
+Updates only the loading, once (not the factor).
 }
