@@ -31,7 +31,16 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
   if(is.null(l2)){l2 = l^2} # default initialization of l2 and f2
   if(is.null(f2)){f2 = f^2}
 
-  F_obj = -Inf #variable to store value of objective function
+  gl = NULL
+  gf = NULL
+  penloglik_l = NULL
+  penloglik_f = NULL
+
+  if (calc_F) {
+    F_obj = -Inf #variable to store value of objective function
+    KL_f = 0
+    KL_l = 0
+  }
 
   diff = 1
   R2new = R2 - 2*outer(l,f)*R + outer(l2,f2) # expected squared residuals with l and f included
@@ -105,9 +114,8 @@ You could ignore this warning, but you might like to check out https://github.co
     }
   }
 
-  return(list(l=l,f=f,l2=l2,f2=f2,tau=tau,F_obj=F_obj,KL_l = KL_l, KL_f = KL_f,
-              gl = ebnm_l$fitted_g, gf = ebnm_f$fitted_g,
-              penloglik_l = ebnm_l$penloglik, penloglik_f = ebnm_f$penloglik,
+  return(list(l=l, f=f, l2=l2, f2=f2, tau=tau, F_obj=F_obj, KL_l=KL_l, KL_f=KL_f,
+              gl=gl, gf=gf, penloglik_l=penloglik_l, penloglik_f=penloglik_f,
               ebnm_param = ebnm_param))
 }
 
@@ -119,8 +127,8 @@ update_f_from_r1_opt_results = function(f,k,res){
   f$EF2[,k] = res$f2
   f$tau = res$tau
 
-  f$gf[[k]] = res$gf
-  f$gl[[k]] = res$gl
+  if (!is.null(res$gf)) {f$gf[[k]] = res$gf}
+  if (!is.null(res$gl)) {f$gl[[k]] = res$gl}
 
   f$ebnm_param_f[[k]] = res$ebnm_param
   f$ebnm_param_l[[k]] = res$ebnm_param
@@ -128,8 +136,8 @@ update_f_from_r1_opt_results = function(f,k,res){
   f$KL_f[[k]] = res$KL_f
   f$KL_l[[k]] = res$KL_l
 
-  f$penloglik_f[[k]] = res$penloglik_f
-  f$penloglik_l[[k]] = res$penloglik_l
+  if (!is.null(res$penloglik_f)) {f$penloglik_f[[k]] = res$penloglik_f}
+  if (!is.null(res$penloglik_l)) {f$penloglik_l[[k]] = res$penloglik_l}
   return(f)
 }
 
