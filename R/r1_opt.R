@@ -115,7 +115,8 @@ You could ignore this warning, but you might like to check out https://github.co
       l = l*norm
       l2 = l2*(norm^2)
 
-      diff = max(abs(c(l,f)/c(l_old,f_old) - 1))
+      all_diff = abs(c(l,f)/c(l_old,f_old) - 1)
+      diff = max(all_diff[!is.nan(all_diff)])
       if(verbose){
         message(paste0("diff:",diff))
       }
@@ -124,7 +125,7 @@ You could ignore this warning, but you might like to check out https://github.co
 
   return(list(l=l, f=f, l2=l2, f2=f2, tau=tau, F_obj=F_obj, KL_l=KL_l, KL_f=KL_f,
               gl=gl, gf=gf, penloglik_l=penloglik_l, penloglik_f=penloglik_f,
-              ebnm_param = ebnm_param))
+              ebnm_param=ebnm_param))
 }
 
 # put the results into f
