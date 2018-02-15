@@ -116,7 +116,11 @@ You could ignore this warning, but you might like to check out https://github.co
       l2 = l2*(norm^2)
 
       all_diff = abs(c(l,f)/c(l_old,f_old) - 1)
-      diff = max(all_diff[!is.nan(all_diff)])
+      if (all(is.nan(all_diff))) { # all old and new entries of l and f are zero
+        diff = 0
+      } else { # ignore entries where both old and new values are zero:
+        diff = max(all_diff[!is.nan(all_diff)])
+      }
       if(verbose){
         message(paste0("diff:",diff))
       }
