@@ -40,6 +40,10 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
     F_obj = -Inf #variable to store value of objective function
     KL_f = 0
     KL_l = 0
+  } else {
+    F_obj = NULL
+    KL_f = NULL
+    KL_l = NULL
   }
 
   diff = 1
@@ -131,14 +135,14 @@ update_f_from_r1_opt_results = function(f,k,res){
   f$EF2[,k] = res$f2
   f$tau = res$tau
 
-  if (!is.null(res$gf)) {f$gf[[k]] = res$gf}
-  if (!is.null(res$gl)) {f$gl[[k]] = res$gl}
-
   f$ebnm_param_f[[k]] = res$ebnm_param
   f$ebnm_param_l[[k]] = res$ebnm_param
 
-  f$KL_f[[k]] = res$KL_f
-  f$KL_l[[k]] = res$KL_l
+  if (!is.null(res$gf)) {f$gf[[k]] = res$gf}
+  if (!is.null(res$gl)) {f$gl[[k]] = res$gl}
+
+  if (!is.null(res$KL_f)) {f$KL_f[[k]] = res$KL_f}
+  if (!is.null(res$KL_l)) {f$KL_l[[k]] = res$KL_l}
 
   if (!is.null(res$penloglik_f)) {f$penloglik_f[[k]] = res$penloglik_f}
   if (!is.null(res$penloglik_l)) {f$penloglik_l[[k]] = res$penloglik_l}
