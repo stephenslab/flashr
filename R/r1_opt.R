@@ -60,6 +60,8 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
         ebnm_f = ebnm_fn(x,sqrt(s2),ebnm_param)
         f[f_subset] = ebnm_f$postmean
         f2[f_subset] = ebnm_f$postmean2
+        gf = ebnm_f$fitted_g
+        penloglik_f = ebnm_f$penloglik
 
         if(calc_F){
           KL_f = ebnm_f$penloglik - NM_posterior_e_loglik(x,sqrt(s2),ebnm_f$postmean,ebnm_f$postmean2)
@@ -74,6 +76,8 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
         ebnm_l = ebnm_fn(x,sqrt(s2),ebnm_param)
         l[l_subset] = ebnm_l$postmean
         l2[l_subset] = ebnm_l$postmean2
+        gl = ebnm_l$fitted_g
+        penloglik_l = ebnm_l$penloglik
 
         if(calc_F){
           KL_l = ebnm_l$penloglik - NM_posterior_e_loglik(x,sqrt(s2),ebnm_l$postmean,ebnm_l$postmean2)
