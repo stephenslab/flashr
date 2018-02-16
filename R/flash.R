@@ -123,13 +123,13 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
   c = flash_get_objective(data,f)
   if(verbose){message("objective: ",c)}
 
-  diff = 1
+  diff = Inf
   fit_got_worse = FALSE #flag used to check for occassional
   #issues with fit getting slightly worse due to numerics. If so we will stop iterating
   # to avoid potential infinite loop.
 
   while(diff > tol & !fit_got_worse){
-    diff = 1
+    diff = Inf
     iteration = 1
     while((diff > tol) & (iteration < maxiter)){
       iteration = iteration + 1
