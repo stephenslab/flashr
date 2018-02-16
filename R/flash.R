@@ -124,12 +124,13 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
   if(verbose){message("objective: ",c)}
 
   diff = Inf
-  fit_got_worse = FALSE # Flag used to check for occassional issues with fit getting
-  # slightly worse due to numerics.
 
-  while(diff > tol & !fit_got_worse){
+  while(diff > tol){
     diff = Inf
     iteration = 1
+
+    # There are two steps; first backfit, then null check
+    # (if nullcheck removes some factors then the whole process is repeated)
     while((diff > tol) & (iteration < maxiter)){
       iteration = iteration + 1
       if(verbose){message("iteration:", iteration)}
@@ -142,17 +143,17 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
       if(verbose){message("objective: ",c)}
     }
 
-    if(diff<0){fit_got_worse=TRUE; warning("fit got worse this iteration by ", -diff)}
-
     if(nullcheck){
-      kset = 1:get_k(f) #now remove factors that actually hurt objective
+      #remove factors that actually hurt objective
+      kset = 1:get_k(f)
       f = perform_nullcheck(data,f,kset,var_type,verbose)
+
+      # recompute objective; if it changes then whole process will be repeated
+      cnew = flash_get_objective(data, f)
+      diff = cnew-c
+      c = cnew
     }
-    # Check to see whether the objective decreased due to removing factors. If the
-    # decrease is greater than tol, the remaining factors will be refit.
-    cnew = flash_get_objective(data, f)
-    diff = cnew-c
-    c = cnew
+
   }
 
   return(f)
