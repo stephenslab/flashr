@@ -121,6 +121,8 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
   }
 
   c = flash_get_objective(data,f)
+  if(verbose){message("objective: ",c)}
+
   diff = 1
   fit_got_worse = FALSE #flag used to check for occassional
   #issues with fit getting slightly worse due to numerics. If so we will stop iterating
