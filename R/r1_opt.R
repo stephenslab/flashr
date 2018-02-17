@@ -101,8 +101,8 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
 
       if(diff<0 & verbose){
         warning("An iteration decreased the objective. This happens occassionally, perhaps due to numeric reasons.
-You could ignore this warning, but you might like to check out https://github.com/stephenslab/flashr/issues/26
-                for more details")
+You could ignore this warning, but you might like to check out
+https://github.com/stephenslab/flashr/issues/26 for more details.")
       }
       F_obj = Fnew
     } else { # check convergence by percentage changes in l and f
