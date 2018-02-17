@@ -88,11 +88,13 @@ flash_optimize_single_fl = function(data,f,k,var_type,nullcheck=TRUE,tol=1e-2,eb
                                     ebnm_param=flash_default_ebnm_param(ebnm_fn),verbose=FALSE){
   f_subset = which(!f$fixf[,k])
   l_subset = which(!f$fixl[,k])
-  KLobj = sum(unlist(f$KL_l)) + sum(unlist(f$KL_f)) - f$KL_l[[k]] - f$KL_f[[k]]
 
   res = r1_opt(get_Rk(data,f,k),get_R2k(data,f,k),f$EL[,k],f$EF[,k],f$EL2[,k],f$EF2[,k],
                l_subset,f_subset,ebnm_fn,ebnm_param,var_type,tol,calc_F = TRUE, missing = data$missing,
-               verbose=verbose, KLobj=KLobj)
+               verbose=verbose, KLobj = sum(unlist(f$KL_l)[-k]) + sum(unlist(f$KL_f)[-k]))
+
+  if (length(KLobj) == 0) {KLobj = 0} # Set KLobj when K = 1
+>>>>>>> origin/small-fixes
 
   f = update_f_from_r1_opt_results(f,k,res)
 
