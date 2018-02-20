@@ -124,15 +124,12 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
   if(verbose){message("objective: ",c)}
 
   diff = Inf
+  iteration = 2
 
-  while(diff > tol){
-    diff = Inf
-    iteration = 1
-
+  while((diff > tol) & (iteration <= maxiter)){
     # There are two steps; first backfit, then null check
     # (if nullcheck removes some factors then the whole process is repeated)
-    while((diff > tol) & (iteration < maxiter)){
-      iteration = iteration + 1
+    while((diff > tol) & (iteration <= maxiter)){
       if(verbose){message("iteration:", iteration)}
       for(k in kset){
         f = flash_update_single_fl(data,f,k,var_type,ebnm_fn,ebnm_param)
@@ -141,6 +138,7 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
       diff = cnew-c
       c = cnew
       if(verbose){message("objective: ",c)}
+      iteration = iteration + 1
     }
 
     if(nullcheck){
@@ -152,6 +150,7 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
       cnew = flash_get_objective(data, f)
       diff = cnew-c
       c = cnew
+      iteration = 1
     }
 
   }
