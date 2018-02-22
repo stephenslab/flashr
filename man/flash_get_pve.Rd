@@ -7,7 +7,7 @@
 flash_get_pve(f)
 }
 \details{
-returns the factor contributions ("proportion of variance explained")
+returns the factor contributions ('proportion of variance explained')
 by each factor/loading combination in flash fit f. Because the factors are
 not required to be orthogonal this should be interpreted loosely: eg PVE could total more than 1.
 }

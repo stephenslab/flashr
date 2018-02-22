@@ -4,15 +4,15 @@
 \alias{flash_backfit}
 \title{Refines a fit of the flash model to data by "backfitting"}
 \usage{
-flash_backfit(data, f, kset = NULL, var_type = c("by_column", "constant"),
-  tol = 0.01, ebnm_fn = ebnm_ash,
+flash_backfit(data, f_init, kset = NULL, var_type = c("by_column",
+  "constant"), tol = 0.01, ebnm_fn = ebnm_pn,
   ebnm_param = flash_default_ebnm_param(ebnm_fn), verbose = FALSE,
   nullcheck = TRUE, maxiter = 1000)
 }
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{flash_set_data}}
 
-\item{f}{a fitted flash object to be refined}
+\item{f_init}{a fitted flash object to be refined}
 
 \item{kset}{the indices of factors to be optimized (NULL indicates all factors)}
 
@@ -22,9 +22,13 @@ flash_backfit(data, f, kset = NULL, var_type = c("by_column", "constant"),
 
 \item{ebnm_fn}{function to solve the Empirical Bayes Normal Means problem}
 
-\item{ebnm_param}{parameters to be passed to ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()}
+\item{ebnm_param}{named list containing parameters to be passed to ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()}
 
 \item{verbose}{if TRUE various output progress updates will be printed}
+
+\item{nullcheck}{flag whether to check, after running
+hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
+If this check is performed and fails then the factor will be set to 0 in the returned fit.}
 
 \item{maxiter}{a maximum number of iterations to perform (in the inner loop). To perform just one iteration we suggest setting maxiter=1 and nullcheck=FALSE}
 }
@@ -36,10 +40,9 @@ Iterates through the factors of a flash object, updating each until convergence
 }
 \examples{
 Y = matrix(rnorm(100),nrow=5,ncol=20)
-fg = flash_greedy(Y,10)
+fg = flash_add_greedy(Y,10)
 fb = flash_backfit(Y,fg) # refines fit from greedy by backfitting
-flash_get_sizes(fb)
 fsi = flash_init_fn(flash_set_data(Y),"udv_si",4)
 fb2 = flash_backfit(Y,fsi)
-flash_get_sizes(fb2)
+flash_get_ldf(fb2)$d
 }

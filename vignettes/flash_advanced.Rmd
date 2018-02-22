@@ -1,0 +1,166 @@
+---
+title: "More advanced flash usage"
+author: "Matthew Stephens"
+date: "September 23, 2017"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+This vignette is designed to describe some more advanced use of flash.
+Most users should start with the [flash_intro.html](flash_intro.html) vignette.
+
+The interface described may change as we develop `flashr`.
+
+# Simulate Data
+
+We start by simulating some data to provide and example:
+```{r}
+library(flashr)
+set.seed(1)
+n = 100
+p = 500
+k = 7
+LL = matrix(rnorm(n*k),nrow=n)
+FF = matrix(rnorm(p*k),nrow=p)
+Y = LL %*% t(FF) + rnorm(n*p)
+```
+
+
+# Setting up data
+
+Although not necessary, we will start by seting 
+up the data in what we will call a "flash data object".
+This is essentially simply an n by p matrix. (We do it this way so it will be easy  for future extensions to pass more information in as data; e.g. maybe variances also associated with that matrix).
+```{r}
+data = flash_set_data(Y)
+```
+
+Second, we need to initialize a factor model - essentially a set of factors
+and loadings. We call this a "flash fit object", although at this point it is not 
+actually fit to the data (this is the next step!) There are several ways to do this,
+using functions of the form `flash_add_xxx`. They are called this because they
+can add factors to an existing flash fit object -- by providing a value
+for the argument `f_init` --- so you can build up a flash fit
+object bit-by-bit. Here we have no existing flash fit object, so we do not
+specify `f_init`, and in this case these functions create a new fit object.
+
+For illustration we use what will probably be the most common first choice of method: 
+`flash_add_factors_from_data`. This essentially runs
+`softImpute` (soft-thresholded singular value decomposition) on the data to 
+obtain an initial set of factors and loadings. We have to choose a number of factors
+to initialize with. (Factors can be dropped out during the fit so ideally this
+should be a larger number than we think we actually need; but at the same time
+more factors mean more computation, so you might start with a moderate number, and then try increasing later if the data seem to warrant it.)
+```{r}
+f = flash_add_factors_from_data(data,K=10)
+```
+
+Third, and finally, we need to fit the flash model to the data. This is
+done using `flash_backfit`. (If you want to see how the fit is progressing, set `verbose=TRUE` here)
+```{r}
+f = flash_backfit(data,f,verbose=FALSE)
+```
+
+Having fit the model we might want to extract the fitted factors and loadings.
+You can do that using functions like `flash_get_ldf` to get the standardized loadings, factors and weights. Also `flash_get_lf` gets the product (LDF').
+And `flash_get_objective` will return 
+the measure of goodness-of-fit achieved (the variational lower bound, F). This can
+be helpful for comparing multiple fits to the same data.
+```{r}
+plot(flash_get_lf(f), LL %*% t(FF), main="compare fitted values with true LF'")
+flash_get_ldf(f)$d
+flash_get_objective(data,f)
+```
+
+# Greedy addition of factors
+
+The way we did it above was to add all the factors at once and then optimize.
+An alternative is to add one at a time, and optimize each in turn. This is accomplished
+using `flash_add_greedy`. This will keep adding factors until they no longer improve
+the fit, so you need to specify a maximum number to consider.
+```{r}
+f_greedy = flash_add_greedy(data,Kmax=10)
+flash_get_ldf(f_greedy)$d
+flash_get_objective(data,f_greedy)
+```
+
+After adding factors in this way you can use backfitting to try
+to further improve the fit. In this case we get a slightly better fit
+than the original (although it maybe took longer?)
+```{r}
+f_greedy_bf = flash_backfit(data,f_greedy)
+flash_get_ldf(f_greedy_bf)$d
+flash_get_objective(data,f_greedy_bf)
+```
+
+# Setting loadings and factors directly
+
+In simulation experiments it might be useful to initialize
+the loadings and factors to the "truth" to see how it affects the convergence.
+```{r}
+f_true = flash_add_lf(data, LL=LL, FF=FF)
+f_cheat = flash_backfit(data,f_true)
+flash_get_ldf(f_cheat)$d
+flash_get_objective(data,f_cheat)
+```
+
+Unexpectedly (to me) the objective achieved from this initialization
+is lower than those from the other initializations. However, the
+results are pretty similar in terms of mean squared error:
+```{r}
+mean((flash_get_lf(f_cheat) - LL %*% t(FF))^2)
+mean((flash_get_lf(f_greedy_bf) - LL %*% t(FF))^2)
+mean((flash_get_lf(f) - LL %*% t(FF))^2)
+mean((flash_get_lf(f_greedy) - LL %*% t(FF))^2)
+```
+
+
+# Setting the function used to solve the EBNM problem
+
+The flash algorithm involves iteratively applying a function
+that solves the "empirical bayes normal means" (EBNM) problem. See Wang and Stephens (2017) for more details on this. For now we note
+that the package provides two functions to do this:
+`ebnm_pn`, which uses a point-normal prior from the `ebnm` package, 
+and `ebnm_ash` which
+provides an interface to functions in the `ashr` package.
+
+```{r}
+f_greedy_ash = flash_add_greedy(data,Kmax=10,ebnm_fn = ebnm_ash)
+flash_get_ldf(f_greedy_ash)
+```
+
+
+# Fixed factors or loadings
+
+Sometimes you might want to include a "fixed" factor or loading in the analysis.
+For example, maybe you have a covariate you are interested in the effect of.
+Or you want to include a mean term in the rows or columns. You can
+add such "fixed" factors using `flash_add_fixed_l` or `flash_add_fixed_f`.
+Fixed loadings will not be updated during a subsequent fit, but their corresponding
+factors *will* be updated. Similarly, fixed factors will not be updated, but
+their loadings will be. (Missing values, NA, in a fixed loading or factor are allowed
+and will be updated during a fit.)
+
+For example, the following creates a flash fit object with a fixed intercept loading.
+(so when fit it will estimate a corresponding factor, which should be interpreted as a column-specific mean). Then it adds 10 data-based factors and loadings, and then it fits the model. Note how the first loading (the mean) does not change during the fit.
+(Notice also that the corresponding factor is 0 - correct since we did not add a non-zero mean to the simulation.) 
+```{r}
+f = flash_add_fixed_l(data,LL = cbind(rep(1,n)))
+f = flash_add_factors_from_data(data,K=10,f_init=f)
+f = flash_backfit(data,f)
+flash_get_ldf(f,1)$l
+flash_get_ldf(f,1)$f
+flash_get_ldf(f,1)$d
+```
+
+

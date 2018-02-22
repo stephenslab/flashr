@@ -15,5 +15,5 @@ udv_si(Y, K = 1)
 a list with components (u,d,v)
 }
 \details{
-provides a simple wrapper to \code{softImpute} to provide a rank 1 initialization. Uses type="als" option.
+provides a simple wrapper to \code{softImpute} to provide a rank 1 initialization. Uses type='als' option.
 }

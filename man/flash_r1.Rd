@@ -2,10 +2,10 @@
 % Please edit documentation in R/flash.R
 \name{flash_r1}
 \alias{flash_r1}
-\title{Fit the rank1 flash model to data}
+\title{Fits a rank 1 Empirical Bayes Matrix Factorization model}
 \usage{
 flash_r1(data, f_init = NULL, var_type = c("by_column", "constant"),
-  init_fn = "udv_si", tol = 0.01, ebnm_fn = ebnm_ash,
+  init_fn = "udv_si", tol = 0.01, ebnm_fn = ebnm_pn,
   ebnm_param = flash_default_ebnm_param(ebnm_fn), verbose = FALSE,
   nullcheck = TRUE, seed = 123)
 }
@@ -39,13 +39,20 @@ If this check is performed and fails then the factor will be set to 0 in the ret
 (The seed can affect initialization when there are missing data; otherwise the algorithm is deterministic)}
 }
 \value{
-a fitted flash object
+a fitted flash object. Use \code{flash_get_ldf} to access standardized loadings and factors; use \code{flash_get_lf} to access fitted LF'.
 }
 \examples{
-Y = matrix(rnorm(100),nrow=5,ncol=20)
+ftrue = rnorm(100)
+ltrue = rnorm(20)
+Y = ltrue \%*\% t(ftrue)+rnorm(2000) # set up a simulated matrix with rank 1 plus noise structure
 f = flash_r1(Y)
-flash_get_sizes(f)
-f2 = flash_r1(Y,ebnm_fn=ebnm_pn) # run with the faster ebnm function (uses point-normal prior)
-# example to show how to pass parameters to ash
-f3 = flash_r1(Y,ebnm_fn = ebnm_ash, ebnm_param = list(mixcompdist = "normal",method="fdr"))
+ldf = flash_get_ldf(f)
+plot(ltrue,ldf$l) # plot true l against estimated l (note estimate is normalized);
+plot(ftrue,ldf$f) # plot true f against estimated f (note estimate is normalized)
+plot(ltrue \%*\% t(ftrue), flash_get_lf(f)) #plot true lf' against estimated lf'; the scale of the estimate matches the data
+
+# example to use the more flexible ebnm function in ashr; show how to pass parameters to
+f2 = flash_r1(Y,ebnm_fn = ebnm_ash)
+# example to show how to pass parameters to ashr
+f3= flash_r1(Y,ebnm_fn = ebnm_ash, ebnm_param = list(mixcompdist = "normal",method="fdr"))
 }

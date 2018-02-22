@@ -50,7 +50,7 @@ r1_opt(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
 an updated flash object
 }
 \description{
-Optimize a single loading and factor ("rank 1" model)
+Optimize a single loading and factor ('rank 1' model)
 }
 \details{
 This function iteratively optimizes the loading, factor and residual precision, from residuals and their expected squared values

@@ -11,12 +11,12 @@ test_that("results from r1_opt match old results", {
   Y.miss[i,sample(1:p,p/2)]=NA
   }
   data = flash_set_data(Y)
-  f= flash_r1(data,verbose=FALSE)
+  f= flash_r1(data,ebnm_fn = ebnm_ash,verbose=FALSE)
   f.old= flash_r1_old(data,verbose=FALSE)
   expect_true(all.equal(f,f.old))
 
   data.miss = flash_set_data(Y.miss)
-  f= flash_r1(data.miss,verbose=FALSE)
+  f= flash_r1(data.miss,ebnm_fn = ebnm_ash, verbose=FALSE)
   f.old= flash_r1_old(data.miss,verbose=FALSE)
   expect_true(all.equal(f,f.old,tol=1e-3))
 

@@ -2,39 +2,75 @@
 % Please edit documentation in R/flash.R
 \name{flash}
 \alias{flash}
-\title{Main flash function}
+\title{Fit Empirical Bayes Matrix Factorization}
 \usage{
-flash(data, Kmax, column_covariates = NULL, row_covariates = NULL,
-  f_init = NULL, init_fn = NULL, var_type = c("by_column", "constant"),
-  tol = 0.01, ebnm_fn = ebnm_ash,
-  ebnm_param = flash_default_ebnm_param(ebnm_fn), verbose = FALSE)
+flash(data, Kmax = 100, f_init = NULL, var_type = c("by_column",
+  "constant"), init_fn = "udv_si", tol = 0.01, ebnm_fn = ebnm_pn,
+  ebnm_param = flash_default_ebnm_param(ebnm_fn), verbose = FALSE,
+  nullcheck = TRUE, seed = 123, greedy = TRUE, backfit = FALSE)
 }
 \arguments{
 \item{data}{an n by p matrix or a flash data object created using \code{flash_set_data}}
 
-\item{Kmax}{the maximum total number of factors to use}
-
-\item{column_covariates}{an n by r1 matrix of covariates (eg could be a column of all 1s to allow an intercept for each column)}
-
-\item{row_covariates}{a p by r2 matrix of covariates (eg could be a vector of p 1s to allow an intercept for each row)}
-
-\item{f_init}{a previously fitted flash object to be added to or refined}
-
-\item{init_fn}{function used to initialize factors and loadings,}
+\item{f_init}{if supplied, a flash object to which a single new factor is to be added}
 
 \item{var_type}{type of variance structure to assume for residuals.}
+
+\item{init_fn}{function to be used to initialize the factor. This function should take parameters (Y,K)
+where Y is an n by p matrix of data (or a flash data object) and K is a number of factors.
+It should output a list with elements (u,d,v) where u is n by K matrix
+v is a p by K matrix  and d is a K vector. See \code{udv_si} for an example.
+(If the input data includes missing values then this function must be able
+to deal with missing values in its input matrix.)}
 
 \item{tol}{specify how much objective can change in a single iteration to be considered not converged}
 
 \item{ebnm_fn}{function to solve the Empirical Bayes Normal Means problem}
 
-\item{ebnm_param}{parameters to be passed to ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()}
+\item{ebnm_param}{named list containing parameters to be passed to ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()}
 
 \item{verbose}{if TRUE various output progress updates will be printed}
+
+\item{nullcheck}{flag whether to check, after running
+hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
+If this check is performed and fails then the factor will be set to 0 in the returned fit.}
+
+\item{seed}{a random number seed to use before running method - for reproducibility. Set to NULL if you don't want seed set.
+(The seed can affect initialization when there are missing data; otherwise the algorithm is deterministic)}
+
+\item{greedy}{a TRUE/FALSE flag to say whether to start by running the greedy algorithm (if FALSE then f_init must be supplied)}
+
+\item{backfit}{a TRUE/FALSE flag to say whether to run backfitting}
 }
 \value{
-a fitted flash object
+A fitted flash object. Use \code{flash_get_ldf} to access standardized loadings and factors; use \code{flash_get_lf} to access fitted LF'.
 }
 \details{
-Performs Empirical Bayes factor analysis with adaptive shrinkage on both factors and loadings.
+This is the main interface for fitting EBMF models based on algorithms from Wang and Stephens.
+The default behaviour is simply to run the greedy algorithm and return the result.
+To follow it by backfitting set backfit=TRUE.
+}
+\examples{
+set.seed(1) # for reproducibility
+ftrue = matrix(rnorm(200),ncol=2)
+ltrue = matrix(rnorm(40),ncol=2)
+ltrue[1:10,1] = 0 # set up some sparsity
+ltrue[11:20,2] = 0
+Y = ltrue \%*\% t(ftrue)+rnorm(2000) # set up a simulated matrix
+f = flash(Y)
+ldf = flash_get_ldf(f)
+ldf$d  #show the weights, analogous to singular values showing importance of each factor
+plot(ltrue[,1],ldf$l[,2]) # plot true l against estimated l; with this seed it turns out the 2nd loading/factor corresponds to the first column of ltrue
+plot(ftrue[,1],ldf$f[,2]) # plot true f against estimated f (note estimate is normalized)
+plot(ltrue \%*\% t(ftrue), flash_get_lf(f)) #plot true lf' against estimated lf'; the scale of the estimate matches the data
+
+# example to use the more flexible ebnm function in ashr
+f2 = flash(Y,ebnm_fn = ebnm_ash)
+# example to show how to pass parameters to ashr (may be most useful for research use)
+f3= flash(Y,ebnm_fn = ebnm_ash, ebnm_param = list(mixcompdist = "normal",method="fdr"))
+# example to show how to use a different initialization function
+f4 = flash(Y,init_fn = function(x,K=1){softImpute::softImpute(x,K,lambda=10)})
+}
+\seealso{
+flash_add_greedy, flash_backfit
 }

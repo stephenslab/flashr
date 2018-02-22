@@ -1,28 +1,37 @@
 # flashr
 
-This code is in development, and the interface may change
-under you! 
+This code is in development.  The interface is fairly stable but not guaranteed not to change.
 
 For a minimal example, install the `devtools` package and then:
 ```
-devtools::install_github("stephenslab/flashr")
+devtools::install_github("stephenslab/ebnm") # installs ebnm package
+devtools::install_github("stephenslab/flashr") # installs flashr package
 library("flashr")
-set.seed(1)
-l = rnorm(5)
-f = rnorm(20)
-LF = outer(l,f)
-Y = LF + rnorm(5*20)
 
-data = flash_set_data(Y)
-f1 = flash_r1(data)
-fg = flash_add_greedy(data,10)
-fb = flash_backfit(data,fg)
-flash_get_l(fb)
-flash_get_l(fg)
+# Set up some simulated data
+set.seed(1) # for reproducibility
+ftrue = matrix(rnorm(200),ncol=2)
+ltrue = matrix(rnorm(40),ncol=2)
+ltrue[1:10,1] = 0 # set up some sparsity
+ltrue[11:20,2] = 0
+Y = ltrue %*% t(ftrue)+rnorm(2000) # set up a simulated matrix
+
+# Run flash
+
+f = flash(Y)
+ldf = flash_get_ldf(f)$d # show the weights, analogous to singular values showing importance of each factor
+plot(ltrue[,1],ldf$l[,1]) # plot true l against estimated l (note estimate is normalized);
+plot(ftrue,ldf$f) # plot true f against estimated f (note estimate is normalized)
+plot(ltrue %*% t(ftrue), flash_get_lf(f)) #plot true lf' against estimated lf'; the scale of the estimate matches the data
+
+# example to use the more flexible ebnm function in ashr; show how to pass parameters to
+f2 = flash_r1(Y,ebnm_fn = ebnm_ash)
+# example to show how to pass parameters to ashr
+f3= flash_r1(Y,ebnm_fn = ebnm_ash, ebnm_param = list(mixcompdist = "normal",method="fdr"))
+
 ```
 
-If you want to use the faster `ebnm_pn` function (instead of the default adaptive shrinkage approach) you will have to install 
-[*ebnm*](https://github.com/stephenslab/ebnm/)
+
 
 For more see 
 (https://github.com/stephenslab/flashr/blob/master/vignettes/flash_intro.Rmd)

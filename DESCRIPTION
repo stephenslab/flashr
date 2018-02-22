@@ -1,10 +1,10 @@
 Package: flashr
 Type: Package
 Title: Empirical Bayes Matrix Factorization
-Version: 0.4-10
+Version: 0.5-0
 Author: Wei Wang, Matthew Stephens, Jason Willwerscheid 
 Maintainer: <mstephens@uchicago.edu>
-Description: Implements Empirical Bayes Matrix Factorization methods from Wang and Stephens (2017) 
+Description: Implements Empirical Bayes Matrix Factorization methods from Wang and Stephens (2017). 
 License: BSD-3
 Encoding: UTF-8
 LazyData: true

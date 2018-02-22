@@ -64,9 +64,7 @@ flash_add_fixed_l = function(data, LL, f_init=NULL, fixl=NULL, init_fn="udv_si")
     # If we're only missing one element, just replace it with the column mean:
     if (sum(missing_rows) == 1) {
       LL_init[missing_rows, block_cols] = colMeans(LL[!missing_rows, block_cols, drop=F])
-    }
-    # If we're missing more, initialize via a subsetted flash object:
-    else if (sum(missing_rows) > 1) {
+    } else if (sum(missing_rows) > 1) { # If we're missing more, initialize via a subsetted flash object:
       subf = flash_subset_l(f, missing_rows)
       subdata = flash_subset_data(data, row_subset=missing_rows)
       subf = flash_add_factors_from_data(subdata, length(block_cols), subf, init_fn)
