@@ -121,16 +121,15 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
   }
 
   c = flash_get_objective(data,f)
-  diff = 1
-  fit_got_worse = FALSE #flag used to check for occassional
-  #issues with fit getting slightly worse due to numerics. If so we will stop iterating
-  # to avoid potential infinite loop.
+  if(verbose){message("objective: ",c)}
 
-  while(diff > tol & !fit_got_worse){
-    diff = 1
-    iteration = 1
-    while((diff > tol) & (iteration < maxiter)){
-      iteration = iteration + 1
+  diff = Inf
+  iteration = 2
+
+  while((diff > tol) & (iteration <= maxiter)){
+    # There are two steps; first backfit, then null check
+    # (if nullcheck removes some factors then the whole process is repeated)
+    while((diff > tol) & (iteration <= maxiter)){
       if(verbose){message("iteration:", iteration)}
       for(k in kset){
         f = flash_update_single_fl(data,f,k,var_type,ebnm_fn,ebnm_param)
@@ -138,20 +137,22 @@ flash_backfit = function(data,f,kset=NULL,var_type = c("by_column","constant"),t
       cnew = flash_get_objective(data, f)
       diff = cnew-c
       c = cnew
-      if(verbose){
-        message("objective: ",c)
-      }
+      if(verbose){message("objective: ",c)}
+      iteration = iteration + 1
     }
-
-    if(diff<0){fit_got_worse=TRUE; warning("fit got worse this iteration by ", -diff)}
 
     if(nullcheck){
-      kset = 1:get_k(f) #now remove factors that actually hurt objective
+      #remove factors that actually hurt objective
+      kset = 1:get_k(f)
       f = perform_nullcheck(data,f,kset,var_type,verbose)
+
+      # recompute objective; if it changes then whole process will be repeated
+      cnew = flash_get_objective(data, f)
+      diff = cnew-c
+      c = cnew
+      iteration = 1
     }
-    cnew = flash_get_objective(data, f)
-    diff = cnew-c
-    c = cnew
+
   }
 
   return(f)

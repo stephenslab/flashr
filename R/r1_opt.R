@@ -31,7 +31,20 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
   if(is.null(l2)){l2 = l^2} # default initialization of l2 and f2
   if(is.null(f2)){f2 = f^2}
 
-  F_obj = -Inf #variable to store value of objective function
+  gl = NULL
+  gf = NULL
+  penloglik_l = NULL
+  penloglik_f = NULL
+
+  if (calc_F) {
+    F_obj = -Inf #variable to store value of objective function
+    KL_f = 0
+    KL_l = 0
+  } else {
+    F_obj = NULL
+    KL_f = NULL
+    KL_l = NULL
+  }
 
   diff = 1
   R2new = R2 - 2*outer(l,f)*R + outer(l2,f2) # expected squared residuals with l and f included
@@ -51,6 +64,8 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
         ebnm_f = ebnm_fn(x,sqrt(s2),ebnm_param)
         f[f_subset] = ebnm_f$postmean
         f2[f_subset] = ebnm_f$postmean2
+        gf = ebnm_f$fitted_g
+        penloglik_f = ebnm_f$penloglik
 
         if(calc_F){
           KL_f = ebnm_f$penloglik - NM_posterior_e_loglik(x,sqrt(s2),ebnm_f$postmean,ebnm_f$postmean2)
@@ -65,6 +80,8 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
         ebnm_l = ebnm_fn(x,sqrt(s2),ebnm_param)
         l[l_subset] = ebnm_l$postmean
         l2[l_subset] = ebnm_l$postmean2
+        gl = ebnm_l$fitted_g
+        penloglik_l = ebnm_l$penloglik
 
         if(calc_F){
           KL_l = ebnm_l$penloglik - NM_posterior_e_loglik(x,sqrt(s2),ebnm_l$postmean,ebnm_l$postmean2)
@@ -84,8 +101,8 @@ r1_opt = function(R,R2,l_init,f_init,l2_init = NULL, f2_init = NULL, l_subset = 
 
       if(diff<0 & verbose){
         warning("An iteration decreased the objective. This happens occassionally, perhaps due to numeric reasons.
-You could ignore this warning, but you might like to check out https://github.com/stephenslab/flashr/issues/26
-                for more details")
+You could ignore this warning, but you might like to check out
+https://github.com/stephenslab/flashr/issues/26 for more details.")
       }
       F_obj = Fnew
     } else { # check convergence by percentage changes in l and f
@@ -98,17 +115,21 @@ You could ignore this warning, but you might like to check out https://github.co
       l = l*norm
       l2 = l2*(norm^2)
 
-      diff = max(abs(c(l,f)/c(l_old,f_old) - 1))
+      all_diff = abs(c(l,f)/c(l_old,f_old) - 1)
+      if (all(is.nan(all_diff))) { # all old and new entries of l and f are zero
+        diff = 0
+      } else { # ignore entries where both old and new values are zero:
+        diff = max(all_diff[!is.nan(all_diff)])
+      }
       if(verbose){
         message(paste0("diff:",diff))
       }
     }
   }
 
-  return(list(l=l,f=f,l2=l2,f2=f2,tau=tau,F_obj=F_obj,KL_l = KL_l, KL_f = KL_f,
-              gl = ebnm_l$fitted_g, gf = ebnm_f$fitted_g,
-              penloglik_l = ebnm_l$penloglik, penloglik_f = ebnm_f$penloglik,
-              ebnm_param = ebnm_param))
+  return(list(l=l, f=f, l2=l2, f2=f2, tau=tau, F_obj=F_obj, KL_l=KL_l, KL_f=KL_f,
+              gl=gl, gf=gf, penloglik_l=penloglik_l, penloglik_f=penloglik_f,
+              ebnm_param=ebnm_param))
 }
 
 # put the results into f
@@ -119,17 +140,17 @@ update_f_from_r1_opt_results = function(f,k,res){
   f$EF2[,k] = res$f2
   f$tau = res$tau
 
-  f$gf[[k]] = res$gf
-  f$gl[[k]] = res$gl
-
   f$ebnm_param_f[[k]] = res$ebnm_param
   f$ebnm_param_l[[k]] = res$ebnm_param
 
-  f$KL_f[[k]] = res$KL_f
-  f$KL_l[[k]] = res$KL_l
+  if (!is.null(res$gf)) {f$gf[[k]] = res$gf}
+  if (!is.null(res$gl)) {f$gl[[k]] = res$gl}
 
-  f$penloglik_f[[k]] = res$penloglik_f
-  f$penloglik_l[[k]] = res$penloglik_l
+  if (!is.null(res$KL_f)) {f$KL_f[[k]] = res$KL_f}
+  if (!is.null(res$KL_l)) {f$KL_l[[k]] = res$KL_l}
+
+  if (!is.null(res$penloglik_f)) {f$penloglik_f[[k]] = res$penloglik_f}
+  if (!is.null(res$penloglik_l)) {f$penloglik_l[[k]] = res$penloglik_l}
   return(f)
 }
 
