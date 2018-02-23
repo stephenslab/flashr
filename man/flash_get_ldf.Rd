@@ -22,6 +22,9 @@ a list with elements
 }
 These are analogous to the u, d and v returned by \code{svd}, but columns of l and f are not orthogonal.
 }
+\description{
+flash_get_ldf
+}
 \details{
 returns standardized loadings, factors, and weights from a flash object.
 }

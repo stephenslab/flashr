@@ -1,9 +1,11 @@
 # flashr
 
-This code is in development.  The interface is fairly stable but not guaranteed not to change.
+This code is in development. The interface is fairly stable but not
+guaranteed not to change.
 
 For a minimal example, install the `devtools` package and then:
-```
+
+```R
 devtools::install_github("stephenslab/ebnm") # installs ebnm package
 devtools::install_github("stephenslab/flashr") # installs flashr package
 library("flashr")
@@ -31,7 +33,4 @@ f3= flash_r1(Y,ebnm_fn = ebnm_ash, ebnm_param = list(mixcompdist = "normal",meth
 
 ```
 
-
-
-For more see 
-(https://github.com/stephenslab/flashr/blob/master/vignettes/flash_intro.Rmd)
+For more see [flash_intro.Rmd](vignettes/flash_intro.Rmd).

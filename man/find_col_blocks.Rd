@@ -13,3 +13,6 @@ find_col_blocks(X)
 a list, each element of which contains the indices of a single block of
 identical columns
 }
+\description{
+Partition a matrix into blocks of identical columns
+}

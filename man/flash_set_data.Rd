@@ -16,6 +16,9 @@ Currently S is ignored as we have not yet implemented methods for this.}
 \value{
 a flash data object
 }
+\description{
+set up data for reading into flash
+}
 \details{
 Y can have missing data, but no column or row can be entirely missing
 The flash data object contains flags for dealing with missing data

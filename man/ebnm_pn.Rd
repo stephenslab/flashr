@@ -13,6 +13,9 @@ ebnm_pn(x, s, ebnm_param)
 
 \item{ebnm_param}{a list of parameters to be passed to the function ebnm_point_normal}
 }
+\description{
+ebnm_pn
+}
 \details{
 a wrapper to the function ebnm::point_normal
 }

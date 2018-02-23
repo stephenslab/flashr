@@ -18,3 +18,6 @@ flash_update_single_fl(data, f, k, var_type, ebnm_fn = ebnm_ash,
 
 \item{ebnm_param}{parameters to be passed to ebnm_fn when optimizing}
 }
+\description{
+Update a single flash factor-loading combination (and precision)
+}

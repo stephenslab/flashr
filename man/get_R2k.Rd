@@ -6,3 +6,6 @@
 \usage{
 get_R2k(data, f, k)
 }
+\description{
+Get the expected squared residuals from a flash data and fit object excluding factor k
+}

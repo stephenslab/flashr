@@ -7,3 +7,7 @@ excluding factor k}
 \usage{
 get_Rk(data, f, k)
 }
+\description{
+Get the residuals from a flash data and fit object,
+excluding factor k
+}

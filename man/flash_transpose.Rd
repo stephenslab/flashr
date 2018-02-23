@@ -13,3 +13,6 @@ flash_transpose(f)
 A new flash fit object, with the factors and loadings of the original flash
 fit object interchanged.
 }
+\description{
+transpose a flash fit object
+}

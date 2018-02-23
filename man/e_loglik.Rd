@@ -11,3 +11,6 @@ e_loglik(data, f)
 
 \item{f}{a flash fit object}
 }
+\description{
+Get expected log likelihood under current fit
+}

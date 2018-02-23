@@ -6,6 +6,9 @@
 \usage{
 is_tiny_fl(f, k, tol = 1e-08)
 }
+\description{
+is_tiny_fl
+}
 \details{
 checks whether kth factor/loading combination is tiny
 }

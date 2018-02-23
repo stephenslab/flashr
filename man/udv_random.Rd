@@ -14,6 +14,9 @@ udv_random(Y, K = 1)
 \value{
 a list with components (u,d,v), with elements of u and v iid N(0,1)
 }
+\description{
+udv_random
+}
 \details{
 provides a random initialization of factors
 }

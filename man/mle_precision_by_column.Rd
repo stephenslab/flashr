@@ -12,3 +12,6 @@ mle_precision_by_column(R2)
 \value{
 n by p matrix of precisions (separate value for each column)
 }
+\description{
+mle for precision (separate parameter for each column)
+}

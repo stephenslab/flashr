@@ -35,6 +35,9 @@ If this check is performed and fails then the factor will be set to 0 in the ret
 \value{
 a fitted flash object
 }
+\description{
+Refines a fit of the flash model to data by "backfitting"
+}
 \details{
 Iterates through the factors of a flash object, updating each until convergence
 }

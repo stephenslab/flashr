@@ -45,6 +45,9 @@ If this check is performed and fails then the factor will be set to 0 in the ret
 \value{
 A fitted flash object. Use \code{flash_get_ldf} to access standardized loadings and factors; use \code{flash_get_lf} to access fitted LF'.
 }
+\description{
+Fit Empirical Bayes Matrix Factorization
+}
 \details{
 This is the main interface for fitting EBMF models based on algorithms from Wang and Stephens.
 The default behaviour is simply to run the greedy algorithm and return the result.

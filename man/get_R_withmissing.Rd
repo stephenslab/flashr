@@ -6,3 +6,6 @@
 \usage{
 get_R_withmissing(data, f)
 }
+\description{
+Get the residuals from data and a flash fit object, with missing data as in original
+}

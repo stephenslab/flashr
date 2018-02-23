@@ -17,6 +17,9 @@ flash_update_precision(data, f, var_type = c("by_column", "constant",
 \value{
 an updated flash object
 }
+\description{
+Update precision parameter
+}
 \details{
 Updates precision estimate to increase the objective F
 }

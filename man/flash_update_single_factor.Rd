@@ -21,6 +21,9 @@ flash_update_single_factor(data, f, k, ebnm_fn = ebnm_ash,
 \value{
 an updated flash object
 }
+\description{
+Update a flash factor
+}
 \details{
 Updates factor k of f to increase the objective F.
 Updates only the factor, once (not the loading).

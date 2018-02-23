@@ -15,3 +15,6 @@ and K, a number of factors, and and outputs a list with elements (u,d,v)}
 \value{
 a flash fit object
 }
+\description{
+Initialize a flash fit object by applying a function to data
+}

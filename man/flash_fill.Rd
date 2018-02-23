@@ -14,3 +14,9 @@ flash_fill(Y, f)
 \value{
 a matrix with non-missing entries the same as $Y$, and missing entries imputed from the flash fit
 }
+\description{
+Use a flash fit to fill in missing entries
+}
+\details{
+Fills in missing entries of Y by using the relevant entries of the estimated LDF' from the flash fit.
+}

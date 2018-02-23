@@ -32,6 +32,9 @@ If this check is performed and fails then the factor will be set to 0 in the ret
 \value{
 an updated flash object
 }
+\description{
+Optimize a flash factor-loading combination
+}
 \details{
 Iteratively updates factor and loading k of f (as well as residual precision)
 to convergence of objective (used in the greedy algorithm for example)

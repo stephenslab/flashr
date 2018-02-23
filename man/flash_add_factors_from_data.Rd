@@ -15,6 +15,9 @@ flash_add_factors_from_data(data, K, f_init = NULL, init_fn = "udv_si")
 
 \item{init_fn}{the function to use to initialize new factors (typically some kind of svd-like function)}
 }
+\description{
+add factors to a flash fit object based on data
+}
 \details{
 Computes the current residuals from data and f_init and adds K new factors based
 on init_fn applied to these residuals. (If f_init is NULL then the residuals are the data)

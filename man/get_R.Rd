@@ -6,3 +6,6 @@
 \usage{
 get_R(data, f)
 }
+\description{
+Get the residuals from data and a flash fit object
+}

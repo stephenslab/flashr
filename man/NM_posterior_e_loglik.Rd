@@ -15,6 +15,9 @@ NM_posterior_e_loglik(x, s, Et, Et2)
 
 \item{Em2}{posterior second moment of theta}
 }
+\description{
+expected log likelihood for normal means model
+}
 \details{
 The likelihood is for x | theta ~ N(theta, s^2);
 The expectation is taken over the posterior on theta

@@ -13,3 +13,6 @@ flash_transpose_data(data)
 A new flash data object, with the matrices of the original flash data
 object transposed.
 }
+\description{
+transpose a flash data object
+}

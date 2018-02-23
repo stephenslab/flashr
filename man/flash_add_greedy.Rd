@@ -41,6 +41,9 @@ If this check is performed and fails then the factor will be set to 0 in the ret
 \value{
 a fitted flash object
 }
+\description{
+Fit Empirical Bayes Matrix Factorization (greedy algorithm)
+}
 \details{
 This implements the greedy algorithm from Wang and Stephens.
 It can be used to adds factors to an existing fit, or start from scratch.

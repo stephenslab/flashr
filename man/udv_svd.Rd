@@ -14,6 +14,9 @@ udv_svd(Y, K = 1)
 \value{
 a list with components (u,d,v)
 }
+\description{
+udv_svd
+}
 \details{
 provides a simple wrapper to svd
 }

@@ -19,6 +19,9 @@ list of factor, loading and variance of noise matrix
   \item{\code{plot_l}} {is a ggplot object for the loadings}
  }
 }
+\description{
+plot the factors from flash results
+}
 \details{
 plots each factor and loading as a barplot.
 }

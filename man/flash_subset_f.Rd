@@ -14,3 +14,6 @@ flash_subset_f(f, subset)
 \value{
 a subsetted flash fit object
 }
+\description{
+Subset a flash object with respect to its factors
+}

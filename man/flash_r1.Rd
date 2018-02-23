@@ -41,6 +41,9 @@ If this check is performed and fails then the factor will be set to 0 in the ret
 \value{
 a fitted flash object. Use \code{flash_get_ldf} to access standardized loadings and factors; use \code{flash_get_lf} to access fitted LF'.
 }
+\description{
+Fits a rank 1 Empirical Bayes Matrix Factorization model
+}
 \examples{
 ftrue = rnorm(100)
 ltrue = rnorm(20)

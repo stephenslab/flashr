@@ -9,3 +9,6 @@ flash_init_null()
 \value{
 an empty flash fit object
 }
+\description{
+Initialize an empty flash fit object
+}

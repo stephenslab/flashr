@@ -15,3 +15,6 @@ flash_combine(f1, f2)
 A flash fit object whose factors are concatenations of f1 and f2.
 The precision (tau) of the combined fit is inherited from f2.
 }
+\description{
+combine two flash fit objects
+}

@@ -20,6 +20,9 @@ perform_nullcheck(data, f, kset, var_type, verbose)
 \value{
 a flash object
 }
+\description{
+Zeros out factors when that improves the objective
+}
 \details{
 Sometimes zeroing out a factor can improve the objective.
 This function iterates over factors with indices in kset

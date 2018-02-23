@@ -6,3 +6,6 @@
 \usage{
 get_R2(data, f)
 }
+\description{
+Get the expected squared residuals from a flash data and fit object
+}

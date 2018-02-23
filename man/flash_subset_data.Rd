@@ -16,3 +16,6 @@ flash_subset_data(data, row_subset = NULL, col_subset = NULL)
 \value{
 a subsetted flash data object
 }
+\description{
+Subset a flash data object
+}

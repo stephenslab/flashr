@@ -14,3 +14,6 @@ flash_init_udv(s, K = 1)
 \value{
 a flash fit object ready for optimization
 }
+\description{
+Initialize a flash fit object from a list with elements (u,d,v)
+}
