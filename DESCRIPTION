@@ -1,7 +1,7 @@
 Package: flashr
 Encoding: UTF-8
 Type: Package
-Version: 0.5-0
+Version: 0.5-1
 Date: 2018-02-22
 Title: Empirical Bayes Matrix Factorization
 Authors@R: c(person("Matthew","Stephens",role=c("aut","cre"),
@@ -10,14 +10,16 @@ Authors@R: c(person("Matthew","Stephens",role=c("aut","cre"),
              person("Jason","Willwerscheid",role="aut"),
 	     person("Peter","Carbonetto",role="ctb"))
 Maintainer: Matthew Stephens <mstephens@uchicago.edu>
-Description: Implements Empirical Bayes Matrix Factorization methods
-    from Wang and Stephens (2017).
+Description: Methods for matrix factorization based on "Empirical
+    Bayes Matrix Factorization" (W. Wang & M. Stephens, 2018,
+    <https://arxiv.org/abs/1802.06931>). The name "flashr" comes from
+    "Factors and Loadings by Adaptive SHrinkage in R".
 Depends: R (>= 3.4.0)
 Imports: 
     ashr (>= 2.2-4),
     ebnm
 Suggests: testthat
-License: BSD-3
+License: BSD_3_clause
 URL: http://github.com/stephenslab/flashr
 BugReports: http://github.com/stephenslab/flashr/issues
 LazyData: true
