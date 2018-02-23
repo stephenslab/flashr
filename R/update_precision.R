@@ -20,7 +20,7 @@ compute_precision = function(R2,missing,var_type=c("by_column","constant","by_ro
   else if(var_type=="constant"){tau = mle_precision_constant(R2)}
   else(stop("that var_type not yet implemented"))
   tau[missing] = 0
-  return(abs(tau))
+  return(abs(tau)) # For numerical reasons, tau can become negative, so return absolute value
 }
 
 
