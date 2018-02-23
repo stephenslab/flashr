@@ -14,22 +14,25 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Introduction to flashr
+# Introduction
 
 This is a brief introduction to the `flashr` package. 
-This example will suffice for many users. 
-For more "advanced" options see [flash_advanced.html](flash_advanced.html).
+The examples here will suffice for many users. 
+For more "advanced" use see [flash_advanced.html](flash_advanced.html).
 
-## Model summary
+# Model summary
 
 The `flashr` package fits the model
 $$Y = LF' + E$$
 where $Y$ is an $n \times p$ matrix, $L$ is an $n \times k$ matrix,
-and $F$ is a $p \times k$ matrix. The columns of $L$ are
+and $F$ is a $p \times k$ matrix, and $E$ is an $n \times p$ matrix of residuals which (by default) are assumed to have column-specific variances:
+$$E_{ij} \sim N(0,\sigma_{j}^2)$$.
+
+The columns of $L$ are
 called the "loadings" and columns of $F$ are called the "factors".
 Unlike some other methods (e.g. singular value decomoposition) these columns are not required to be orthogonal.
 
-The key idea behind flashr is to use Empirical Bayes methods to estimate a "prior" distribution for each factor and each loading. This can induce
+The key idea behind `flashr is to use Empirical Bayes methods to estimate a "prior" distribution for each factor and each loading. This can induce
 sparsity on either/or factors and loadings if the data support this.
 
 The scaling of the factors and loadings in the above model is arbitrary. Often it is convenient to scale the loadings and columns to have unit norm.
@@ -39,9 +42,9 @@ where $D$ is a diagonal matrix of "weights" that capture the strength of each fa
 of $L, D$ and $F$ in this model (with $D$ returned as a vector of the diagonal values).
 
 
-## Example
+# Examples of running flash
 
-### Simulate Data
+## Simulate Data
 
 First we will simulate some data for illustration (in this case the loadings
 and factors are not at all sparse, so the benefits of flash over other methods might be limited.)
@@ -57,9 +60,10 @@ Y = LL %*% t(FF) + rnorm(n*p)
 ```
 
 
-### Fitting the model and extracting results
+## Fitting the model and extracting results
 
-Usually you will run one command to fit the model, and a second
+When running `flash`, 
+usually you will run one command to fit the model, and a second
 to extract results you want from the fit.
 The `flash` function is the one most users will want to start
 with to fit the model. The `flash_get_ldf` function can then be used to get the values of $L,D$ and $F$. 
@@ -75,7 +79,7 @@ ldf$d
 Note that flash correctly stopped at 7 factors for these data. (Although it 
 tries to fit an 8th factor, from the results we can see that this does not appear: this is because it turned out to be 0.)
 
-### Backfitting
+## Backfitting
 
 Sometimes the backfitting algorithm can
 improve the fit (but it takes longer).
@@ -90,7 +94,7 @@ ldf.b = flash_get_ldf(f.b)
 ldf.b$d
 ```
 
-### Combining greedy + backfitting
+## Combining greedy + backfitting
 
 If you know you are going to want to do backfitting anyway,
 you can do greedy+backfitting it in one command  without saving the intermediate result:
@@ -100,5 +104,18 @@ ldf.gb = flash_get_ldf(f.gb)
 ldf.gb$d
 ```
 
+
+# Using flash to fill in missing data
+
+Suppose your matrix has some missing entries and you want to fill them in. You can do this by first running flash on your matrix and then using `flash_fill`. (This function fills in the missing entries using the relevant elements of the estimated LDF' matrix).
+
+To illustrate, we add a little missing data to $Y$ here before running.
+```{r}
+Ymiss=Y
+Ymiss[1:20,1] = NA
+f = flash(Ymiss)
+Ynew = flash_fill(Ymiss,f)
+plot(Y[1:20,1],Ynew[1:20,1])
+```
 
 

@@ -9,4 +9,8 @@ License: BSD-3
 Encoding: UTF-8
 LazyData: true
 Suggests: testthat
+Imports: 
+  ashr,
+  ebnm
 RoxygenNote: 6.0.1
+Remotes: stephenslab/ebnm

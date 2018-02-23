@@ -148,7 +148,7 @@ get_p = function(f) {
 #' not required to be orthogonal this should be interpreted loosely: eg PVE could total more than 1.
 #' @export
 flash_get_pve = function(f) {
-    s = flash_get_sizes(f)
+    s = (flash_get_ldf(f)$d)^2
     s/(sum(s) + sum(1/f$tau))
     # wei's version (sapply(seq(1,K),function(x){ sum(f$EL2[,x] %*% t(f$EF2[,x])) }))/sum(Y^2)
 }

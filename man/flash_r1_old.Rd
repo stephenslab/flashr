@@ -41,6 +41,5 @@ a fitted flash object
 \examples{
 Y = matrix(rnorm(100),nrow=5,ncol=20)
 f = flash_r1(Y)
-flash_get_sizes(f)
 f2 = flash_r1(ebnm_fn=ebnm_pn) # run with the faster ebnm function (uses point-normal prior)
 }

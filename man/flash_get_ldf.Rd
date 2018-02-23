@@ -4,12 +4,14 @@
 \alias{flash_get_ldf}
 \title{flash_get_ldf}
 \usage{
-flash_get_ldf(f, k = NULL)
+flash_get_ldf(f, k = NULL, drop_zero_factors = TRUE)
 }
 \arguments{
 \item{f}{a flash fit object}
 
 \item{k}{indices of loadings/factors to be returned}
+
+\item{drop_zero_factors}{flag whether to remove any factor/loadings that are zero}
 }
 \value{
 a list with elements
