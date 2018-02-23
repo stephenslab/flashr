@@ -19,7 +19,7 @@ Imports:
     ashr (>= 2.2-4),
     ebnm
 Suggests: testthat
-License: BSD_3_clause
+License: BSD_3_clause + file LICENSE
 URL: http://github.com/stephenslab/flashr
 BugReports: http://github.com/stephenslab/flashr/issues
 LazyData: true
