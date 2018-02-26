@@ -11,19 +11,23 @@ flash_update_single_loading = function(data, f, k, ebnm_fn = ebnm_ash, ebnm_para
     subset = which(!f$fixl[, k])  # check which elements are not fixed
     if (length(subset) > 0) {
         # and only do the update if some elements are not fixed
-        
+
         tau = f$tau[subset, , drop = FALSE]
-        
-        if (data$anyNA) 
+
+        if (data$anyNA)
             {
                 tau = tau * (!data$missing[subset, ])
             }  #set missing values to have precision 0
-        s = sqrt(1/(tau %*% f$EF2[, k]))
-        if (sum(is.finite(s)) > 0) {
+
+        s2 = 1/(tau %*% f$EF2[, k])
+        if (sum(is.finite(s2)) > 0) {
             # check some finite values before proceeding
             Rk = get_Rk(data, f, k)[subset, ]  #residuals excluding factor k
-            x = ((Rk * tau) %*% f$EF[, k]) * s^2
+            x = ((Rk * tau) %*% f$EF[,k]) * s2
+            # if a value of s2 becomes numerically negative, set it to a small positive number
+            s = sqrt(pmax(s2, .Machine$double.eps))
             a = ebnm_fn(x, s, ebnm_param)
+
             f$EL[subset, k] = a$postmean
             f$EL2[subset, k] = a$postmean2
             f$gl[[k]] = a$fitted_g
@@ -35,6 +39,7 @@ flash_update_single_loading = function(data, f, k, ebnm_fn = ebnm_ash, ebnm_para
     return(f)
 }
 
+
 #' @title  Update a flash factor
 #' @details Updates factor k of f to increase the objective F.
 #' Updates only the factor, once (not the loading).
@@ -44,20 +49,22 @@ flash_update_single_factor = function(data, f, k, ebnm_fn = ebnm_ash, ebnm_param
     subset = which(!f$fixf[, k])  # check which elements are not fixed
     if (length(subset) > 0) {
         # and only do the update if some elements are not fixed
-        
+
         tau = f$tau[, subset, drop = FALSE]
-        if (data$anyNA) 
+        if (data$anyNA)
             {
                 tau = tau * (!data$missing[, subset])
             }  #set missing values to have precision 0
-        
-        s = sqrt(1/(t(tau) %*% f$EL2[, k]))
-        if (sum(is.finite(s)) > 0) {
+
+        s2 = 1/(t(tau) %*% f$EL2[, k])
+        if (sum(is.finite(s2)) > 0) {
             # check some finite values before proceeding
             Rk = get_Rk(data, f, k)[, subset]  #residuals excluding factor k
-            x = (t(Rk * tau) %*% f$EL[, k]) * s^2
+            x = (t(Rk * tau) %*% f$EL[, k]) * s2
+            # if a value of s2 becomes numerically negative, set it to a small positive number
+            s = sqrt(pmax(s2, .Machine$double.eps))
             a = ebnm_fn(x, s, ebnm_param)
-            
+
             f$EF[subset, k] = a$postmean
             f$EF2[subset, k] = a$postmean2
             f$gf[[k]] = a$fitted_g
@@ -93,21 +100,21 @@ flash_update_single_fl = function(data, f, k, var_type, ebnm_fn = ebnm_ash, ebnm
 #' @param ebnm_param parameters to be passed to ebnm_fn when optimizing;
 #' @param verbose if TRUE various output progress updates will be printed
 #' @return an updated flash object
-flash_optimize_single_fl = function(data, f, k, var_type, nullcheck = TRUE, tol = 0.01, ebnm_fn = ebnm_ash, ebnm_param = flash_default_ebnm_param(ebnm_fn), 
+flash_optimize_single_fl = function(data, f, k, var_type, nullcheck = TRUE, tol = 0.01, ebnm_fn = ebnm_ash, ebnm_param = flash_default_ebnm_param(ebnm_fn),
     verbose = FALSE) {
     f_subset = which(!f$fixf[, k])
     l_subset = which(!f$fixl[, k])
     KLobj = sum(unlist(f$KL_l)) + sum(unlist(f$KL_f)) - f$KL_l[[k]] - f$KL_f[[k]]
-    
-    res = r1_opt(get_Rk(data, f, k), get_R2k(data, f, k), f$EL[, k], f$EF[, k], f$EL2[, k], f$EF2[, k], l_subset, f_subset, 
+
+    res = r1_opt(get_Rk(data, f, k), get_R2k(data, f, k), f$EL[, k], f$EF[, k], f$EL2[, k], f$EF2[, k], l_subset, f_subset,
         ebnm_fn, ebnm_param, var_type, tol, calc_F = TRUE, missing = data$missing, verbose = verbose, KLobj = KLobj)
-    
+
     f = update_f_from_r1_opt_results(f, k, res)
-    
+
     if (nullcheck) {
         f = perform_nullcheck(data, f, k, var_type, verbose)
     }
-    
+
     return(f)
 }
 
@@ -124,24 +131,24 @@ flash_optimize_single_fl = function(data, f, k, var_type, nullcheck = TRUE, tol 
 #' @param verbose if TRUE various output progress updates will be printed
 #' @return a flash object
 perform_nullcheck = function(data, f, kset, var_type, verbose) {
-    
+
     f_changed = TRUE  #we are going to iterate until f does not change
     while (f_changed) {
-        
+
         f_changed = FALSE
         for (k in kset) {
-            
+
             f0 = flash_zero_out_factor(data, f, k)
             f0 = flash_update_precision(data, f0, var_type)
             F0 = flash_get_objective(data, f0)
             F1 = flash_get_objective(data, f)
-            
+
             if (verbose) {
                 message("performing nullcheck")
                 message("objective from deleting factor:", F0)
                 message("objective from keeping factor:", F1)
             }
-            
+
             if (F0 > F1) {
                 if (verbose) {
                   message("factor zeroed out")
@@ -149,7 +156,7 @@ perform_nullcheck = function(data, f, kset, var_type, verbose) {
                 f = f0
                 f_changed = TRUE
             }
-            
+
         }
     }
     if (verbose) {
