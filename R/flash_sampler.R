@@ -1,59 +1,76 @@
-flash_add_l_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
+#' @title Generates LF sampler with F fixed at its expectation
+#' @details Generates function that samples LF from a flash fit object, with F fixed at its
+#' posterior mean and the columns of L sampled independently from their marginal posteriors.
+#' @param data a flash data object
+#' @param f a flash fit object
+#' @param kset the indices of factor/loadings to include when sampling LF (defaults to all)
+#' @param ebnm_fn function used to solve the Empirical Bayes Normal Means problem
+#' @return A function that takes a single parameter nsamp, the number of samples of LF to be
+#' produced by the sampler. Care should be used when setting nsamp, because the sampler
+#' returns a list of matrices which are each of the same size as the original flash data
+#' object.
+#' @export
+flash_sampler_fixedf = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
+  if (is.matrix(data)) {data = flash_set_data(data)}
   if (is.null(kset)) {kset = 1:get_k(f)}
-  f$l_sampler = vector("list", get_k(f))
 
-  # Get a sampler by updating the loadings (this can change the fit if not converged!)
+  sampler_list = vector("list", get_k(f))
   for (k in kset) {
-    f = flash_update_single_loading(data, f, k, ebnm_fn, return_sampler=T)
+    sampler_list[[k]] = flash_update_single_loading(data, f, k, ebnm_fn, return_sampler=T)
   }
-  return(f)
-}
 
-flash_add_f_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
-  if (is.null(kset)) {kset = 1:get_k(f)}
-  f$f_sampler = vector("list", get_k(f))
-
-  # Get a sampler by updating the loadings (this can change the fit if not converged!)
-  for (k in kset) {
-    f = flash_update_single_factor(data, f, k, ebnm_fn, return_sampler=T)
-  }
-  return(f)
-}
-
-# Careful not to set nsamp too large!
-flash_fixl_samplef = function(data, f, kset=NULL, nsamp) {
-  if (is.null(kset)) {kset = 1:get_k(f)}
-  if (is.null(f$f_sampler)) {
-    stop("Sampler for F needs to be added first!")
-  }
-  LF = NULL
-
-  # Sampler each factor/loading independently
-  for (k in kset) {
-    l = f$EL[, k]
-    if (is.null(f$f_sampler[[k]])) {
-      stop(paste0("Sampler does not exist for factor ", k))
+  function(nsamp) {
+    LF = NULL
+    for (k in kset) {
+      lsamp = sampler_list[[k]](nsamp)
+      # take outer product of each sampled loading with EF (which is fixed throughout)
+      lfsamp = lapply(split(lsamp, col(lsamp)), function(x) {outer(f$EF[, k], x)})
+      if (is.null(LF)) { # begin a running total with the first factor/loading
+        LF = lfsamp
+      } else { # add subsequent factor/loadings to this running total
+        LF = mapply(`+`, LF, lfsamp, SIMPLIFY=FALSE)
+      }
     }
-    fsamp = f$f_sampler[[k]](nsamp)
-    lfsamp = lapply(split(fsamp, 1:nrow(fsamp)), function(x) {outer(l, x)})
-    if (is.null(LF)) { # begin a running total with the first factor/loading
-      LF = lfsamp
-    } else { # add subsequent factor/loadings to this running total
-      LF = mapply(`+`, LF, lfsamp, SIMPLIFY=FALSE)
-    }
+    return(LF)
   }
-
-  return(LF)
 }
-# warn when we don't get sampler (b/c all values infinite) but proceed anyway
-# need to deal with fixed vals
 
-eval_fxn_using_sampler = function(data, f, kset=NULL, fxn, nsamp, batch_size=10) {
-  vals = NULL
-  n_batch = ceiling(nsamp / batch_size)
-  for (i in 1:n_batch) {
-    vals = c(vals, sapply(flash_fixl_samplef(data, f, kset, batch_size), fxn))
+#' @title Generates LF sampler with L fixed at its expectation
+#' @details Generates function that samples LF from a flash fit object, with L fixed at its
+#' posterior mean and the columns of F sampled independently from their marginal posteriors.
+#' @param data a flash data object
+#' @param f a flash fit object
+#' @param kset the indices of factor/loadings to include when sampling LF (defaults to all)
+#' @param ebnm_fn function used to solve the Empirical Bayes Normal Means problem
+#' @return A function that takes a single parameter nsamp, the number of samples of LF to be
+#' produced by the sampler. Care should be used when setting nsamp, because the sampler
+#' returns a list of matrices which are each of the same size as the original flash data
+#' object.
+#' @export
+flash_sampler_fixedl = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
+  if (is.matrix(data)) {data = flash_set_data(data)}
+
+  ts = flash_sampler_fixedf(flash_transpose_data(data), flash_transpose(f), kset, ebnm_fn)
+  function(nsamp) {
+    samp = ts(nsamp)
+    return(lapply(samp, t)) # transposes samples back to original orientation
   }
-  names(vals) = NULL
-  return(vals)
+}
+
+#' @title Generates sampler for a single factor/loading
+#' @param is_fixed a vector of Booleans indicating which elements are fixed
+#' @param sample_fxn A function that returns samples for non-fixed elements. The function
+#' should return a matrix whose columns correspond to individual samples.
+#' @param fixed_vals the values of the fixed elements
+#' @return A function that generates samples for the factor/loading. The function returns
+#' a matrix whose columns correspond to individual samples.
+sampler = function(is_fixed, sample_fxn, fixed_vals) {
+  function(nsamp) {
+    samp = matrix(0, nrow=length(is_fixed), ncol=nsamp)
+    samp[is_fixed, ] = fixed_vals
+    if (!is.null(sample_fxn)) { # sample_fxn is NULL when all values are fixed
+      samp[!is_fixed, ] = sample_fxn(nsamp)
+    }
+    return(samp)
+  }
 }

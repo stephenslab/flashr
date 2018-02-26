@@ -21,15 +21,20 @@ flash_update_single_loading = function(data,f,k,ebnm_fn=ebnm_ash,
       Rk = get_Rk(data,f,k)[subset,] #residuals excluding factor k
       x = ((Rk*tau) %*% f$EF[,k]) * s^2
       a = ebnm_fn(x,s,ebnm_param)
+      if (return_sampler) {
+        if (is.null(a$sampler)) {
+          stop("No sampler implemented for that ebnm function.")
+        }
+        return(sampler(f$fixl[, k], a$sampler, f$EL[f$fixl[, k], k]))
+      }
       f$EL[subset,k] = a$postmean
       f$EL2[subset,k] = a$postmean2
       f$gl[[k]] = a$fitted_g
       f$ebnm_param_l[[k]] = ebnm_param
       f$KL_l[[k]] = a$penloglik - NM_posterior_e_loglik(x,s,a$postmean,a$postmean2)
       f$penloglik_l[[k]] = a$penloglik
-      if (return_sampler) {
-        f$l_sampler[[k]] = a$sampler
-      }
+    } else if (return_sampler) { # if all else fails, sample values at their expectation
+      return(sampler(rep(TRUE, length(f$EL[, k])), NULL, f$EL[, k]))
     }
   }
   return(f)
@@ -54,16 +59,20 @@ flash_update_single_factor = function(data,f,k,ebnm_fn = ebnm_ash,
       Rk = get_Rk(data,f,k)[,subset] #residuals excluding factor k
       x = (t(Rk*tau) %*% f$EL[,k]) * s^2
       a = ebnm_fn(x,s,ebnm_param)
-
+      if (return_sampler) {
+        if (is.null(a$sampler)) {
+          stop("No sampler implemented for that ebnm function.")
+        }
+        return(sampler(f$fixf[, k], a$sampler, f$EF[f$fixl[, k], k]))
+      }
       f$EF[subset,k] = a$postmean
       f$EF2[subset,k] = a$postmean2
       f$gf[[k]] = a$fitted_g
       f$ebnm_param_f[[k]] = ebnm_param
       f$KL_f[[k]] = a$penloglik - NM_posterior_e_loglik(x,s,a$postmean,a$postmean2)
       f$penloglik_f[[k]] = a$penloglik
-      if (return_sampler) {
-        f$f_sampler[[k]] = a$sampler
-      }
+    } else if (return_sampler) { # if all else fails, sample values at their expectation
+      return(sampler(rep(TRUE, length(f$EF[, k])), NULL, f$EF[, k]))
     }
   }
   return(f)
