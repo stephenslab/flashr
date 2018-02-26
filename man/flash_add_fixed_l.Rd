@@ -2,25 +2,30 @@
 % Please edit documentation in R/flash_add.R
 \name{flash_add_fixed_l}
 \alias{flash_add_fixed_l}
-\title{Add a set of fixed loadings to a flash fit object}
+\title{Add a set of fixed loadings to a flash fit object.}
 \usage{
 flash_add_fixed_l(data, LL, f_init = NULL, fixl = NULL,
   init_fn = "udv_si")
 }
 \arguments{
-\item{data}{a flash data object}
+\item{data}{A flash data object.}
 
-\item{LL}{the loadings, an n by K matrix. Missing values will be initialized by the mean of the relevant column (but will generally be
-re-estimated when refitting the model).}
+\item{LL}{The loadings, an n by K matrix. Missing values will be
+initialized by the mean of the relevant column (but will generally
+be re-estimated when refitting the model).}
 
-\item{f_init}{a flash fit object to which loadings are to be added (if NULL then a new fit object is created)}
+\item{f_init}{A flash fit object to which loadings are to be added
+(if NULL then a new fit object is created).}
 
-\item{fixl}{an n by K matrix of TRUE/FALSE values indicating which elements of LL should be considered fixed and not changed during updates.
-Default is to fix all non-missing values, so missing values will be updated when f is updated.}
+\item{fixl}{An n by K matrix of TRUE/FALSE values indicating which
+elements of LL should be considered fixed and not changed during
+updates.  Default is to fix all non-missing values, so missing
+values will be updated when f is updated.}
 }
 \value{
-a flash fit object, with loadings initialized from LL, and corresponding factors initialized to 0.
+A flash fit object, with loadings initialized from LL, and
+  corresponding factors initialized to 0.
 }
 \description{
-Add a set of fixed loadings to a flash fit object
+Add a set of fixed loadings to a flash fit object.
 }
