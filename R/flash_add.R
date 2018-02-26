@@ -54,7 +54,6 @@ flash_add_factors_from_data = function(data,K,f_init=NULL,init_fn="udv_si"){
   return(flash_update_precision(data,f))
 }
 
-
 #' @title Add a set of fixed loadings to a flash fit object.
 #' 
 #' @param data A flash data object.

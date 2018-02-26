@@ -1,9 +1,17 @@
-#' @title Use a flash fit to fill in missing entries
-#' @details Fills in missing entries of Y by using the relevant entries of the estimated LDF' from the flash fit.
-#' @param Y an n by p matrix with missing entries used to fit flash
-#' @param f the flash fit object obtained from running flash on Y
-#' @return a matrix with non-missing entries the same as $Y$, and missing entries imputed from the flash fit
+#' @title Use a flash fit to fill in missing entries.
+#' 
+#' @description Fills in missing entries of Y by using the relevant
+#'   entries of the estimated LDF' from the flash fit.
+#' 
+#' @param Y An n by p matrix with missing entries used to fit flash.
+#' 
+#' @param f The flash fit object obtained from running flash on Y.
+#' 
+#' @return A matrix with non-missing entries the same as $Y$, and
+#'   missing entries imputed from the flash fit
+#' 
 #' @export
+#' 
 flash_fill = function(Y, f){
   missing = is.na(Y)
   if(!is.matrix(Y)){stop("for flash_fill Y must be a matrix")}
@@ -13,13 +21,13 @@ flash_fill = function(Y, f){
   return(Y)
 }
 
-
-
-
-#' @title transpose a flash fit object
-#' @param f the flash fit object
-#' @return A new flash fit object, with the factors and loadings of the original flash
-#' fit object interchanged.
+# @title Transpose a flash fit object.
+#
+# @param f The flash fit object.
+#
+# @return A new flash fit object, with the factors and loadings of the
+#   original flash fit object interchanged.
+#
 flash_transpose = function(f) {
     if (is.null(f)) {
         return(NULL)
@@ -39,10 +47,13 @@ flash_transpose = function(f) {
     return(f)
 }
 
-#' @title transpose a flash data object
-#' @param f the flash data object
-#' @return A new flash data object, with the matrices of the original flash data
-#' object transposed.
+# @title Transpose a flash data object.
+# 
+# @param f The flash data object.
+# 
+# @return A new flash data object, with the matrices of the original
+#   flash data object transposed.
+# 
 flash_transpose_data = function(data) {
     if (is.matrix(data$Yorig)) {
         data$Yorig = t(data$Yorig)
@@ -56,11 +67,15 @@ flash_transpose_data = function(data) {
     return(data)
 }
 
-#' @title combine two flash fit objects
-#' @param f1 first flash fit object
-#' @param f2 second flash fit object
-#' @return A flash fit object whose factors are concatenations of f1 and f2.
-#' The precision (tau) of the combined fit is inherited from f2.
+# @title combine two flash fit objects
+# 
+# @param f1 first flash fit object
+# 
+# @param f2 second flash fit object
+# 
+# @return A flash fit object whose factors are concatenations of f1
+#   and f2. The precision (tau) of the combined fit is inherited from f2.
+#
 flash_combine = function(f1, f2) {
     list(EL = cbind(f1$EL, f2$EL), EF = cbind(f1$EF, f2$EF), EL2 = cbind(f1$EL2, f2$EL2), EF2 = cbind(f1$EF2, f2$EF2),
         fixl = cbind(f1$fixl, f2$fixl), fixf = cbind(f1$fixf, f2$fixf), gl = c(f1$gl, f2$gl), gf = c(f1$gf, f2$gf),
@@ -69,10 +84,10 @@ flash_combine = function(f1, f2) {
             f2$penloglik_f), tau = f2$tau)
 }
 
-#' @title Subset a flash object with respect to its loadings
-#' @param f a flash fit object
-#' @param subset the subset of loading elements to be retained
-#' @return a subsetted flash fit object
+# @title Subset a flash object with respect to its loadings.
+# @param f A flash fit object.
+# @param subset The subset of loading elements to be retained.
+# @return A subsetted flash fit object.
 flash_subset_l = function(f, subset) {
     subf = f
     subf$EL = subf$EL[subset, , drop = F]
@@ -84,10 +99,10 @@ flash_subset_l = function(f, subset) {
     return(subf)
 }
 
-#' @title Subset a flash object with respect to its factors
-#' @param f a flash fit object
-#' @param subset the subset of factor elements to be retained
-#' @return a subsetted flash fit object
+# @title Subset a flash object with respect to its factors.
+# @param f A flash fit object.
+# @param Subset the subset of factor elements to be retained.
+# @return A subsetted flash fit object.
 flash_subset_f = function(f, subset) {
     subf = f
     subf$EF = subf$EF[subset, , drop = F]
@@ -99,11 +114,11 @@ flash_subset_f = function(f, subset) {
     return(subf)
 }
 
-#' @title Subset a flash data object
-#' @param f a flash fit object
-#' @param row_subset the subset of rows to be retained
-#' @param col_subset the subset of columns to be retained
-#' @return a subsetted flash data object
+# @title Subset a flash data object.
+# @param f A flash fit object.
+# @param row_subset The subset of rows to be retained.
+# @param col_subset The subset of columns to be retained.
+# @return A subsetted flash data object.
 flash_subset_data = function(data, row_subset = NULL, col_subset = NULL) {
     if (is.null(row_subset)) {
         row_subset = 1:nrow(data$Y)
@@ -120,15 +135,22 @@ flash_subset_data = function(data, row_subset = NULL, col_subset = NULL) {
     return(subdata)
 }
 
-#' @title zero out a factor from f
-#' @param data a flash data object
-#' @param f a flash fit object
-#' @param k index of factor/loading to zero out
-#' @details The factor and loadings of the kth factor of f are made to be zero
-#' (except for elements of the factor/loading that are designated to be fixed).
-#' This effectively reduces the rank by 1, although the zero factor/loading is kept in f
-#' so the number and indexing of factor/loading matrices in f remains the same.
+#' @title Zero out a factor from f.
+#' 
+#' @param data A flash data object.
+#' 
+#' @param f A flash fit object.
+#' 
+#' @param k Index of factor/loading to zero out.
+#' 
+#' @details The factor and loadings of the kth factor of f are made to
+#'   be zero (except for elements of the factor/loading that are
+#'   designated to be fixed). This effectively reduces the rank by 1,
+#'   although the zero factor/loading is kept in f so the number and
+#'   indexing of factor/loading matrices in f remains the same.
+#' 
 #' @export
+#' 
 flash_zero_out_factor = function(data, f, k = 1) {
     f$EL[!f$fixl[, k], k] = 0
     f$EL2[!f$fixl[, k], k] = 0
