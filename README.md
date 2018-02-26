@@ -51,7 +51,7 @@ plot(ltrue[,1],ldf$l[,1]) # plot true l against estimated l (note estimate is no
 plot(ftrue,ldf$f) # plot true f against estimated f (note estimate is normalized)
 plot(ltrue %*% t(ftrue), flash_get_lf(f)) #plot true lf' against estimated lf'; the scale of the estimate matches the data
 
-# example to use the more flexible ebnm function in ashr; show how to pass parameters to
+# example to use the more flexible ebnm function in ashr
 f2 = flash_r1(Y,ebnm_fn = ebnm_ash)
 # example to show how to pass parameters to ashr
 f3= flash_r1(Y,ebnm_fn = ebnm_ash, ebnm_param = list(mixcompdist = "normal",method="fdr"))
