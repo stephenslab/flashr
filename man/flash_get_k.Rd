@@ -2,16 +2,16 @@
 % Please edit documentation in R/get_functions.R
 \name{flash_get_k}
 \alias{flash_get_k}
-\title{Get number of factors in a fit object}
+\title{Get number of factors in a fit object.}
 \usage{
 flash_get_k(f)
 }
 \arguments{
-\item{f}{a flash fit object}
+\item{f}{A flash fit object.}
 }
 \description{
-Get number of factors in a fit object
+Get number of factors in a fit object.
 }
 \details{
-returns the number of factors in a flash fit
+Returns the number of factors in a flash fit.
 }

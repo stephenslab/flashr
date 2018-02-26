@@ -7,24 +7,29 @@
 flash_get_ldf(f, k = NULL, drop_zero_factors = TRUE)
 }
 \arguments{
-\item{f}{a flash fit object}
+\item{f}{A flash fit object.}
 
-\item{k}{indices of loadings/factors to be returned}
+\item{k}{Indices of loadings/factors to be returned.}
 
-\item{drop_zero_factors}{flag whether to remove any factor/loadings that are zero}
+\item{drop_zero_factors}{Flag whether to remove any factor/loadings
+that are zero.}
 }
 \value{
-a list with elements
+A list with the following elements:
 \itemize{
-\item{l} a matrix whose columns contain the standardized loadings (ie norm 1)
-\item{d} a vector of weights (analogous to the singular values in an svd)
-\item{f} a matrix whose columns contain the standardized factors (ie norm 1)
-}
-These are analogous to the u, d and v returned by \code{svd}, but columns of l and f are not orthogonal.
+\item{l} A matrix whose columns contain the standardized loadings
+  (ie norm 1).
+\item{d} A vector of weights (analogous to the singular values in
+  an svd).
+\item{f} A matrix whose columns contain the standardized factors
+  (ie norm 1).}
+These are analogous to the u, d and v returned by \code{svd}, but
+columns of l and f are not orthogonal.
 }
 \description{
 flash_get_ldf
 }
 \details{
-returns standardized loadings, factors, and weights from a flash object.
+Returns standardized loadings, factors, and weights from a
+flash object.
 }
