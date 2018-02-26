@@ -2,15 +2,15 @@
 % Please edit documentation in R/F_objective.R
 \name{flash_get_objective}
 \alias{flash_get_objective}
-\title{Get objective function from flash data and flash fit objects}
+\title{Get objective function from flash data and flash fit objects.}
 \usage{
 flash_get_objective(data, f)
 }
 \arguments{
-\item{data}{a flash data object}
+\item{data}{A flash data object.}
 
-\item{f}{a flash fit object}
+\item{f}{A flash fit object.}
 }
 \description{
-Get objective function from flash data and flash fit objects
+Get objective function from flash data and flash fit objects.
 }

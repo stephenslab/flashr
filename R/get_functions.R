@@ -117,9 +117,7 @@ get_R2k = function(data, f, k) {
 }
 
 # @title is_tiny_fl
-#
 # @details Checks whether kth factor/loading combination is tiny.
-#
 is_tiny_fl = function(f, k, tol = 1e-08) {
     return(sum(f$EL[, k]^2) * sum(f$EF[, k]^2) < tol)
 }
