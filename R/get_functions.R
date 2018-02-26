@@ -1,9 +1,13 @@
-# functions for extracting useful information about the object
+# Functions for extracting useful information about the object.
 
-#' @title Return the estimated LF' matrix
-#' @param f a flash fit object
-#' @return the estimated value of LF', an n by p matrix
+#' @title Return the estimated LF' matrix.
+#' 
+#' @param f A flash fit object.
+#' 
+#' @return The estimated value of LF', an n by p matrix.
+#' 
 #' @export
+#' 
 flash_get_lf = function(f) {
     if (is.null(f$EL)) {
         return(NULL)
@@ -12,18 +16,30 @@ flash_get_lf = function(f) {
 }
 
 #' @title flash_get_ldf
-#' @param f a flash fit object
-#' @param k indices of loadings/factors to be returned
-#' @param drop_zero_factors flag whether to remove any factor/loadings that are zero
-#' @details returns standardized loadings, factors, and weights from a flash object.
-#' @return a list with elements
+#' 
+#' @param f A flash fit object.
+#' 
+#' @param k Indices of loadings/factors to be returned.
+#' 
+#' @param drop_zero_factors Flag whether to remove any factor/loadings
+#'   that are zero.
+#' 
+#' @details Returns standardized loadings, factors, and weights from a
+#' flash object.
+#' 
+#' @return A list with the following elements:
 #' \itemize{
-#' \item{l} a matrix whose columns contain the standardized loadings (ie norm 1)
-#' \item{d} a vector of weights (analogous to the singular values in an svd)
-#' \item{f} a matrix whose columns contain the standardized factors (ie norm 1)
-#' }
-#' These are analogous to the u, d and v returned by \code{svd}, but columns of l and f are not orthogonal.
+#' \item{l} A matrix whose columns contain the standardized loadings
+#'   (ie norm 1).
+#' \item{d} A vector of weights (analogous to the singular values in
+#'   an svd).
+#' \item{f} A matrix whose columns contain the standardized factors
+#'   (ie norm 1).}
+#' These are analogous to the u, d and v returned by \code{svd}, but
+#' columns of l and f are not orthogonal.
+#' 
 #' @export
+#' 
 flash_get_ldf = function(f, k = NULL, drop_zero_factors =TRUE) {
   if (is.null(k)) {
     k = 1:get_k(f)
@@ -46,10 +62,8 @@ flash_get_ldf = function(f, k = NULL, drop_zero_factors =TRUE) {
        f = ff)
 }
 
-
-
-#' @title  Get the residuals from a flash data and fit object,
-#' excluding factor k
+# @title Get the residuals from a flash data and fit object,
+#   excluding factor k.
 get_Rk = function(data, f, k) {
     if (get_k(f) < k) {
         stop("factor k does not exist")
@@ -57,7 +71,7 @@ get_Rk = function(data, f, k) {
     return(data$Y - f$EL[, -k, drop = FALSE] %*% t(f$EF[, -k, drop = FALSE]))
 }
 
-#' @title  Get the residuals from data and a flash fit object
+# @title Get the residuals from data and a flash fit object.
 get_R = function(data, f) {
     if (is.null(f$EL))
         {
@@ -68,7 +82,8 @@ get_R = function(data, f) {
     }
 }
 
-#' @title  Get the residuals from data and a flash fit object, with missing data as in original
+# @title Get the residuals from data and a flash fit object, with
+#   missing data as in original.
 get_R_withmissing = function(data, f) {
     if (is.null(f$EL))
         {
@@ -79,7 +94,8 @@ get_R_withmissing = function(data, f) {
     }
 }
 
-#' @title  Get the expected squared residuals from a flash data and fit object
+# @title Get the expected squared residuals from a flash data and fit
+# object.
 get_R2 = function(data, f) {
     if (is.null(f$EL)) {
         return(data$Y^2)
@@ -89,7 +105,8 @@ get_R2 = function(data, f) {
     }
 }
 
-#' @title  Get the expected squared residuals from a flash data and fit object excluding factor k
+# @title Get the expected squared residuals from a flash data and fit
+#   object excluding factor k.
 get_R2k = function(data, f, k) {
     if (is.null(f$EL)) {
         return(data$Y^2)
@@ -99,33 +116,33 @@ get_R2k = function(data, f, k) {
     }
 }
 
-#' @title is_tiny_fl
-#' @details checks whether kth factor/loading combination is tiny
+# @title is_tiny_fl
+# @details Checks whether kth factor/loading combination is tiny.
 is_tiny_fl = function(f, k, tol = 1e-08) {
     return(sum(f$EL[, k]^2) * sum(f$EF[, k]^2) < tol)
 }
 
-
-
-
-
-#' @title Get number of factors in a fit object
-#' @param f a flash fit object
-#' @details returns the number of factors in a flash fit
+#' @title Get number of factors in a fit object.
+#' 
+#' @param f A flash fit object.
+#' 
+#' @details Returns the number of factors in a flash fit.
+#' 
 #' @export
+#' 
 flash_get_k = function(f) {
     get_k(f)
 }
 
-
-get_l = function(f) {
+flash_get_l = function(f) {
     f$EL
 }
-get_f = function(f) {
+
+flash_get_f = function(f) {
     f$EF
 }
 
-get_k = function(f) {
+flash_get_k = function(f) {
     k = ncol(f$EL)
     if (is.null(k)) {
         return(0)
@@ -134,27 +151,33 @@ get_k = function(f) {
     }
 }
 
-get_n = function(f) {
+flash_get_n = function(f) {
     nrow(f$EL)
 }
-get_p = function(f) {
+
+flash_get_p = function(f) {
     nrow(f$EF)
 }
 
-
 #' @title flash_get_pve
-#' @details returns the factor contributions ('proportion of variance explained')
-#' by each factor/loading combination in flash fit f. Because the factors are
-#' not required to be orthogonal this should be interpreted loosely: eg PVE could total more than 1.
+#' 
+#' @description Returns the factor contributions ('proportion of
+#' variance explained') by each factor/loading combination in flash
+#' fit f. Because the factors are not required to be orthogonal this
+#' should be interpreted loosely: eg PVE could total more than 1.
+#' 
 #' @export
+#' 
 flash_get_pve = function(f) {
     s = (flash_get_ldf(f)$d)^2
     s/(sum(s) + sum(1/f$tau))
-    # wei's version (sapply(seq(1,K),function(x){ sum(f$EL2[,x] %*% t(f$EF2[,x])) }))/sum(Y^2)
+    # wei's version:
+    #
+    #  sapply(seq(1,K),function(x){
+    #    sum(f$EL2[,x] %*% t(f$EF2[,x])) }))/sum(Y^2)
+    #
 }
 
-
-# get_conv_criteria = function(f){flash_get_lf(f)}
 get_conv_criteria = function(data, f) {
     flash_get_objective(data, f)
 }

@@ -1,7 +1,31 @@
 # flashr
 
-This code is in development. The interface is fairly stable but not
-guaranteed not to change.
+Methods for matrix factorization based on
+[Empirical Bayes Matrix Factorization](https://arxiv.org/abs/1802.06931).
+The name of the package, "flashr," comes from "Factors and Loadings by
+Adaptive SHrinkage in R".
+	
+*Note:* This code is in development. The interface is fairly stable
+but not guaranteed to stay the same.
+
+## License
+
+Copyright (c) 2017-2018, Matthew Stephens and Wei Wang.
+
+All source code and software in this repository are made available
+under the terms of the [BSD 3-Clause
+License](https://opensource.org/licenses/BSD-3-Clause). See
+the [LICENSE](LICENSE) file for the full text of the license.
+
+## Citing this work
+
+If you find that this R package is useful for your work, please cite
+our paper:
+
+> W. Wang and M. Stephens, 2018. *Empirical Bayes matrix factorization.* 
+[arXiv:1802.06931](https://arxiv.org/abs/1802.06931).
+
+## Quick start
 
 For a minimal example, install the `devtools` package and then:
 
@@ -10,7 +34,8 @@ devtools::install_github("stephenslab/ebnm") # installs ebnm package
 devtools::install_github("stephenslab/flashr") # installs flashr package
 library("flashr")
 
-# Set up some simulated data
+## Set up some simulated data
+
 set.seed(1) # for reproducibility
 ftrue = matrix(rnorm(200),ncol=2)
 ltrue = matrix(rnorm(40),ncol=2)
@@ -18,7 +43,7 @@ ltrue[1:10,1] = 0 # set up some sparsity
 ltrue[11:20,2] = 0
 Y = ltrue %*% t(ftrue)+rnorm(2000) # set up a simulated matrix
 
-# Run flash
+## Run flash
 
 f = flash(Y)
 ldf = flash_get_ldf(f)$d # show the weights, analogous to singular values showing importance of each factor
@@ -34,3 +59,11 @@ f3= flash_r1(Y,ebnm_fn = ebnm_ash, ebnm_param = list(mixcompdist = "normal",meth
 ```
 
 For more see [flash_intro.Rmd](vignettes/flash_intro.Rmd).
+
+## Credits
+
+This software was developed by
+[Matthew Stephens](http://stephenslab.uchicago.edu)
+[Wei Wang](https://github.com/NKweiwang) and
+[Jason Willwerscheid](https://github.com/willwerscheid) at the University
+of Chicago.

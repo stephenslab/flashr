@@ -7,9 +7,10 @@
 #' @param data the flash data object
 #' @param f is a flash fit object
 #' @details plots each factor and loading as a barplot.
+#' 
 #' @export
-flash_plot_factors = function(data, f, k = 1, loading_label = FALSE, factor_label = FALSE) {
-    library(ggplot2)
+flash_plot_factors =
+  function(data, f, k = 1, loading_label = FALSE, factor_label = FALSE) {
     Y = get_Yorig(data)
     sample_name = rownames(Y)
     variable_name = colnames(Y)
@@ -30,7 +31,6 @@ flash_plot_factors = function(data, f, k = 1, loading_label = FALSE, factor_labe
     }
     return(list(plot_f = plot_f, plot_l = plot_l))
 }
-
 
 #' plot_f
 #'
