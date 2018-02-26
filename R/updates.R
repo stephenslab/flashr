@@ -8,7 +8,8 @@
 #' @param ebnm_param parameters to be passed to ebnm_fn when optimizing
 #' @return an updated flash object
 flash_update_single_loading = function(data,f,k,ebnm_fn=ebnm_ash,
-                                       ebnm_param=flash_default_ebnm_param(ebnm_fn)){
+                                       ebnm_param=flash_default_ebnm_param(ebnm_fn),
+                                       return_sampler=F){
   subset = which(!f$fixl[,k]) # check which elements are not fixed
   if(length(subset)>0){ # and only do the update if some elements are not fixed
 
@@ -26,6 +27,9 @@ flash_update_single_loading = function(data,f,k,ebnm_fn=ebnm_ash,
       f$ebnm_param_l[[k]] = ebnm_param
       f$KL_l[[k]] = a$penloglik - NM_posterior_e_loglik(x,s,a$postmean,a$postmean2)
       f$penloglik_l[[k]] = a$penloglik
+      if (return_sampler) {
+        f$l_sampler[[k]] = a$sampler
+      }
     }
   }
   return(f)
@@ -36,7 +40,9 @@ flash_update_single_loading = function(data,f,k,ebnm_fn=ebnm_ash,
 #' Updates only the factor, once (not the loading).
 #' @inheritParams flash_update_single_loading
 #' @return an updated flash object
-flash_update_single_factor = function(data,f,k,ebnm_fn = ebnm_ash, ebnm_param=flash_default_ebnm_param(ebnm_fn)){
+flash_update_single_factor = function(data,f,k,ebnm_fn = ebnm_ash,
+                                      ebnm_param=flash_default_ebnm_param(ebnm_fn),
+                                      return_sampler=F){
   subset = which(!f$fixf[,k]) # check which elements are not fixed
   if(length(subset)>0){ # and only do the update if some elements are not fixed
 
@@ -55,6 +61,9 @@ flash_update_single_factor = function(data,f,k,ebnm_fn = ebnm_ash, ebnm_param=fl
       f$ebnm_param_f[[k]] = ebnm_param
       f$KL_f[[k]] = a$penloglik - NM_posterior_e_loglik(x,s,a$postmean,a$postmean2)
       f$penloglik_f[[k]] = a$penloglik
+      if (return_sampler) {
+        f$f_sampler[[k]] = a$sampler
+      }
     }
   }
   return(f)
