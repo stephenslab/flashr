@@ -7,15 +7,13 @@
 ebnm_pn(x, s, ebnm_param)
 }
 \arguments{
-\item{x}{a vector of observations}
+\item{x}{A vector of observations.}
 
-\item{s}{a vector of standard errors}
+\item{s}{A vector of standard errors.}
 
-\item{ebnm_param}{a list of parameters to be passed to the function ebnm_point_normal}
+\item{ebnm_param}{A list of parameters to be passed to the function
+\code{ebnm_point_normal}.}
 }
 \description{
-ebnm_pn
-}
-\details{
-a wrapper to the function ebnm::point_normal
+A wrapper to the function \code{\link[ebnm]{point_normal}}.
 }

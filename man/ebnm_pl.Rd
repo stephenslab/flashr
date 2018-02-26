@@ -7,16 +7,16 @@
 ebnm_pl(x, s, ebnm_param)
 }
 \arguments{
-\item{x}{a vector of observations}
+\item{x}{A vector of observations.}
 
-\item{s}{a vector of standard errors}
+\item{s}{A vector of standard errors.}
 
-\item{ebnm_param}{a list of parameters to be passed to the function
-ebnm_point_laplace}
+\item{ebnm_param}{A list of parameters to be passed to the function
+ebnm_point_laplace.}
 }
 \description{
-EBNM using point-laplace prior, from ebnm package.
+A wrapper to the function \code{\link[ebnm]{point_laplace}}.
 }
 \details{
-a wrapper to the function ebnm::point_laplace
+EBNM using point-laplace prior, from ebnm package.
 }

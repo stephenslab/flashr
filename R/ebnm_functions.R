@@ -1,10 +1,11 @@
 # Provides functions to solve the Empirical Bayes Normal Means problem
 # function must take the arguments x,s and output a list with elements
-# postmean, postmean2, fitted_g, penloglik
+# postmean, postmean2, fitted_g and penloglik.
  
-#' @details A wrapper to the ash function for flash.
+#' @description A wrapper to the ash function for flash.
 #' 
 #' @export
+#' 
 ebnm_ash = function(x, s, ash_param) {
     ash_param = modifyList(ash_param, list(outputlevel = 5))
     a = do.call(ashr::ash, c(list(betahat = as.vector(x), sebetahat = as.vector(s)), ash_param))
@@ -18,16 +19,17 @@ ebnm_ash = function(x, s, ash_param) {
 #' 
 #' @title ebnm_pl
 #' 
-#' @details a wrapper to the function ebnm::point_laplace
+#' @description A wrapper to the function \code{\link[ebnm]{point_laplace}}.
 #' 
-#' @param x a vector of observations
+#' @param x A vector of observations.
 #' 
-#' @param s a vector of standard errors
+#' @param s A vector of standard errors.
 #' 
-#' @param ebnm_param a list of parameters to be passed to the function
-#'   ebnm_point_laplace
+#' @param ebnm_param A list of parameters to be passed to the function
+#'   ebnm_point_laplace.
 #' 
 #' @export
+#' 
 ebnm_pl = function(x, s, ebnm_param) {
     res = do.call(ebnm::ebnm_point_laplace, c(list(x = as.vector(x), s = as.vector(s)), ebnm_param))
     return(list(postmean = res$result$PosteriorMean, postmean2 = res$result$PosteriorMean2, fitted_g = res$fitted_g, 
@@ -35,15 +37,25 @@ ebnm_pl = function(x, s, ebnm_param) {
 }
 
 #' @title ebnm_pn
-#' @details a wrapper to the function ebnm::point_normal
-#' @param x a vector of observations
-#' @param s a vector of standard errors
-#' @param ebnm_param a list of parameters to be passed to the function ebnm_point_normal
+#' 
+#' @description A wrapper to the function \code{\link[ebnm]{point_normal}}.
+#' 
+#' @param x A vector of observations.
+#' 
+#' @param s A vector of standard errors.
+#' 
+#' @param ebnm_param A list of parameters to be passed to the function
+#'   \code{ebnm_point_normal}.
+#' 
 #' @export
+#' 
 ebnm_pn = function(x, s, ebnm_param) {
-    res = do.call(ebnm::ebnm_point_normal, c(list(x = as.vector(x), s = as.vector(s)), ebnm_param))
-    return(list(postmean = res$result$PosteriorMean, postmean2 = res$result$PosteriorMean2, fitted_g = res$fitted_g, 
-        penloglik = res$loglik))
+    res = do.call(ebnm::ebnm_point_normal,
+                  c(list(x = as.vector(x),s = as.vector(s)), ebnm_param))
+    return(list(postmean  = res$result$PosteriorMean,
+                postmean2 = res$result$PosteriorMean2,
+                fitted_g  = res$fitted_g, 
+                penloglik = res$loglik))
 }
 
 
