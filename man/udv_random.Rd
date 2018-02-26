@@ -7,16 +7,14 @@
 udv_random(Y, K = 1)
 }
 \arguments{
-\item{Y}{an n by p matrix}
+\item{Y}{An n by p matrix.}
 
-\item{K}{number of factors}
+\item{K}{Number of factors.}
 }
 \value{
-a list with components (u,d,v), with elements of u and v iid N(0,1)
+A list with components (u,d,v), with elements of u and v
+  i.i.d. N(0,1).
 }
 \description{
-udv_random
-}
-\details{
-provides a random initialization of factors
+Provides a random initialization of factors.
 }

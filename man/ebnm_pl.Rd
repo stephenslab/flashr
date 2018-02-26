@@ -11,10 +11,11 @@ ebnm_pl(x, s, ebnm_param)
 
 \item{s}{a vector of standard errors}
 
-\item{ebnm_param}{a list of parameters to be passed to the function ebnm_point_laplace}
+\item{ebnm_param}{a list of parameters to be passed to the function
+ebnm_point_laplace}
 }
 \description{
-ebnm_pl
+EBNM using point-laplace prior, from ebnm package.
 }
 \details{
 a wrapper to the function ebnm::point_laplace
