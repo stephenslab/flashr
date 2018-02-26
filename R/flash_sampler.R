@@ -1,3 +1,5 @@
+# TODO: update docs
+
 #' @title Generates LF sampler with F fixed at its expectation
 #' @details Generates function that samples LF from a flash fit object, with F fixed at its
 #' posterior mean and the columns of L sampled independently from their marginal posteriors.
@@ -10,28 +12,13 @@
 #' returns a list of matrices which are each of the same size as the original flash data
 #' object.
 #' @export
-flash_sampler_fixedf = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
-  if (is.matrix(data)) {data = flash_set_data(data)}
+flash_lf_sampler_fixedf = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
   if (is.null(kset)) {kset = 1:get_k(f)}
-
-  sampler_list = vector("list", get_k(f))
-  for (k in kset) {
-    sampler_list[[k]] = flash_update_single_loading(data, f, k, ebnm_fn, return_sampler=T)
-  }
+  l_sampler = flash_l_sampler(data, f, kset, ebnm_fn)
 
   function(nsamp) {
-    LF = NULL
-    for (k in kset) {
-      lsamp = sampler_list[[k]](nsamp)
-      # take outer product of each sampled loading with EF (which is fixed throughout)
-      lfsamp = lapply(split(lsamp, col(lsamp)), function(x) {outer(f$EF[, k], x)})
-      if (is.null(LF)) { # begin a running total with the first factor/loading
-        LF = lfsamp
-      } else { # add subsequent factor/loadings to this running total
-        LF = mapply(`+`, LF, lfsamp, SIMPLIFY=FALSE)
-      }
-    }
-    return(LF)
+    lsamp = l_sampler(nsamp)
+    return(mapply(function(L) {L %*% t(f$EF[, kset])}, lsamp, SIMPLIFY=FALSE))
   }
 }
 
@@ -47,22 +34,51 @@ flash_sampler_fixedf = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
 #' returns a list of matrices which are each of the same size as the original flash data
 #' object.
 #' @export
-flash_sampler_fixedl = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
+flash_lf_sampler_fixedl = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
   if (is.matrix(data)) {data = flash_set_data(data)}
 
-  ts = flash_sampler_fixedf(flash_transpose_data(data), flash_transpose(f), kset, ebnm_fn)
+  ts = flash_lf_sampler_fixedf(flash_transpose_data(data), flash_transpose(f), kset, ebnm_fn)
   function(nsamp) {
     samp = ts(nsamp)
     return(lapply(samp, t)) # transposes samples back to original orientation
   }
 }
 
+flash_l_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
+  if (is.matrix(data)) {data = flash_set_data(data)}
+  if (is.null(kset)) {kset = 1:get_k(f)}
+
+  sampler_list = vector("list", get_k(f))
+  for (k in kset) {
+    sampler_list[[k]] = flash_update_single_loading(data, f, k, ebnm_fn, return_sampler=T)
+  }
+
+  function(nsamp) {
+    L = NULL
+    for (k in kset) {
+      lsamp = sampler_list[[k]](nsamp)
+      lsamp = split(lsamp, col(lsamp)) # split into list
+      if (is.null(L)) { # the first factor/loading
+        L = lsamp
+      } else { # subsequent factor/loadings
+        L = mapply(cbind, L, lsamp, SIMPLIFY=FALSE)
+      }
+    }
+    return(L)
+  }
+}
+
+flash_f_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
+  if (is.matrix(data)) {data = flash_set_data(data)}
+  return(flash_l_sampler(flash_transpose_data(data), flash_transpose(f), kset, ebnm_fn))
+}
+
 #' @title Generates sampler for a single factor/loading
-#' @param is_fixed a vector of Booleans indicating which elements are fixed
+#' @param is_fixed a vector of Booleans that indicates which elements are fixed
 #' @param sample_fxn A function that returns samples for non-fixed elements. The function
 #' should return a matrix whose columns correspond to individual samples.
 #' @param fixed_vals the values of the fixed elements
-#' @return A function that generates samples for the factor/loading. The function returns
+#' @return A function that generates samples for the factor/loading. This function returns
 #' a matrix whose columns correspond to individual samples.
 sampler = function(is_fixed, sample_fxn, fixed_vals) {
   function(nsamp) {
