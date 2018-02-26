@@ -59,3 +59,11 @@ f3= flash_r1(Y,ebnm_fn = ebnm_ash, ebnm_param = list(mixcompdist = "normal",meth
 ```
 
 For more see [flash_intro.Rmd](vignettes/flash_intro.Rmd).
+
+## Credits
+
+This software was developed by
+[Matthew Stephens](http://stephenslab.uchicago.edu)
+[Wei Wang](https://github.com/NKweiwang) and
+[Jason Willwerscheid](https://github.com/willwerscheid) at the University
+of Chicago.
