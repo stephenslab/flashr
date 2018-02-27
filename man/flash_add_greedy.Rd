@@ -13,6 +13,8 @@ flash_add_greedy(data, Kmax = 1, f_init = NULL, var_type = c("by_column",
 \item{data}{An n by p matrix or a flash data object created using
 \code{flash_set_data}.}
 
+\item{Kmax}{Description of input argument goes here.}
+
 \item{f_init}{if supplied, a flash object to which a single new
 factor is to be added.}
 

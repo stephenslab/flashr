@@ -10,6 +10,12 @@
 #' @param data The flash data object.
 #' 
 #' @param f A flash fit object.
+#'
+#' @param k Description of input argument goes here.
+#'
+#' @param loading_label Description of input argument goes here.
+#'
+#' @param factor_label Description of input argument goes here.
 #' 
 #' @details Plots each factor and loading as a barplot.
 #' 
@@ -39,7 +45,7 @@ flash_plot_factors =
         plot_l = plot_one_factor(flash_get_l(f), pve[k], k,
             f_labels = row.names(Y), y_lab = "loading values")
     } else {
-        plot_l = plot_one_factor(flash_get_l(f, k), pve[k], k,
+        plot_l = plot_one_factor(flash_get_l(f), pve[k], k,
             f_labels = NA, y_lab = "loading values")
     }
     return(list(plot_f = plot_f, plot_l = plot_l))

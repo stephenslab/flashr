@@ -15,7 +15,8 @@ flash_get_objective = function(data, f) {
 # @param f A flash fit object.
 e_loglik = function(data, f) {
   return(-0.5 * sum((log((2 * pi)/f$tau[!data$missing]) +
-                     f$tau[!data$missing] * get_R2(data, f)[!data$missing])))
+                     f$tau[!data$missing] *
+                     flash_get_R2(data, f)[!data$missing])))
 }
 
 # @title Expected log likelihood for normal means model.

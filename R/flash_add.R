@@ -48,9 +48,9 @@ flash_add_lf = function(data,LL,FF,f_init=NULL,fixl=NULL,fixf=NULL){
 #' 
 flash_add_factors_from_data = function(data,K,f_init=NULL,init_fn="udv_si"){
   if(is.null(f_init)){f_init = flash_init_null()}
-  R = get_R_withmissing(data,f_init)
+  R  = flash_get_R_withmissing(data,f_init)
   f2 = flash_init_fn(flash_set_data(R),init_fn,K)
-  f = flash_combine(f_init,f2)
+  f  = flash_combine(f_init,f2)
   return(flash_update_precision(data,f))
 }
 

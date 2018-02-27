@@ -42,7 +42,7 @@ flash_get_lf = function(f) {
 #' 
 flash_get_ldf = function(f, k = NULL, drop_zero_factors =TRUE) {
   if (is.null(k)) {
-    k = 1:get_k(f)
+    k = 1:flash_get_k(f)
   }
   ll = f$EL[, k, drop=FALSE]
   ff = f$EF[, k, drop=FALSE]
@@ -164,7 +164,7 @@ flash_get_p = function(f) {
 #' fit f. Because the factors are not required to be orthogonal this
 #' should be interpreted loosely: eg PVE could total more than 1.
 #'
-#' @params Description of input argument goes here.
+#' @params f Description of input argument goes here.
 #' 
 #' @export
 #' 

@@ -11,6 +11,12 @@ flash_plot_factors(data, f, k = 1, loading_label = FALSE,
 \item{data}{The flash data object.}
 
 \item{f}{A flash fit object.}
+
+\item{k}{Description of input argument goes here.}
+
+\item{loading_label}{Description of input argument goes here.}
+
+\item{factor_label}{Description of input argument goes here.}
 }
 \value{
 List containing:

@@ -155,6 +155,8 @@ flash = function(data,
 #'   the residuals after removing previously-fitted factors.
 #' 
 #' @inheritParams flash_r1
+#'
+#' @param Kmax Description of input argument goes here.
 #' 
 #' @return A fitted flash object.
 #' 
