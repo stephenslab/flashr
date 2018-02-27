@@ -6,6 +6,9 @@
 \usage{
 flash_get_pve(f)
 }
+\arguments{
+\item{f}{Description of input argument goes here.}
+}
 \description{
 Returns the factor contributions ('proportion of
 variance explained') by each factor/loading combination in flash

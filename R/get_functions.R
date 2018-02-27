@@ -164,7 +164,7 @@ flash_get_p = function(f) {
 #' fit f. Because the factors are not required to be orthogonal this
 #' should be interpreted loosely: eg PVE could total more than 1.
 #'
-#' @params f Description of input argument goes here.
+#' @param f Description of input argument goes here.
 #' 
 #' @export
 #' 
