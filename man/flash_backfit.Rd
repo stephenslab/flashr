@@ -48,11 +48,11 @@ Iterates through the factors of a flash object,
 }
 \examples{
 
-Y = matrix(rnorm(100),nrow=5,ncol=20)
+l = rnorm(100) #simulate some rank 1 data
+f = rnorm(10)
+Y = outer(l,f) + matrix(rnorm(1000),nrow=100)
 fg = flash_add_greedy(Y,10)
 fb = flash_backfit(Y,fg) # refines fit from greedy by backfitting
-fsi = flash_init_fn(flash_set_data(Y),"udv_si",4)
-fb2 = flash_backfit(Y,fsi)
-flash_get_ldf(fb2)$d
+flash_get_ldf(fb)$d
 
 }

@@ -61,7 +61,7 @@ ftrue = rnorm(100)
 ltrue = rnorm(20)
 
 # Set up a simulated matrix with rank 1 plus noise structure.
-Y = ltrue \%*\% t(ftrue)+rnorm(2000) 
+Y = ltrue \%*\% t(ftrue)+rnorm(2000)
 f = flash_r1(Y)
 ldf = flash_get_ldf(f)
 

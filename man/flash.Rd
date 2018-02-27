@@ -82,14 +82,14 @@ ldf$d
 
 # Plot true l against estimated l; with this seed it turns out the
 # 2nd loading/factor corresponds to the first column of ltrue.
-plot(ltrue[,1],ldf$l[,2]) 
+plot(ltrue[,1],ldf$l[,2])
 
 # Plot true f against estimated f (note estimate is normalized).
 plot(ftrue[,1],ldf$f[,2])
 
 # Plot true lf' against estimated lf'; the scale of the estimate
 # matches the data.
-plot(ltrue \%*\% t(ftrue), flash_get_lf(f)) 
+plot(ltrue \%*\% t(ftrue), flash_get_lf(f))
 
 # Example to use the more flexible ebnm function in ashr.
 f2 = flash(Y,ebnm_fn = ebnm_ash)
