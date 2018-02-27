@@ -21,6 +21,7 @@ flash_lf_sampler_fixedf = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
   }
 }
 
+
 #' @title Generates LF sampler with L fixed at its expectation
 #' @details Generates function that samples LF from a flash fit object, with L fixed at its
 #' posterior mean and the columns of F sampled independently from their marginal posteriors.
@@ -41,6 +42,7 @@ flash_lf_sampler_fixedl = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
     return(lapply(samp, t)) # transposes samples back to original orientation
   }
 }
+
 
 #' @title Generates sampler for L
 #' @details Generates function that samples L from a flash fit object. The columns of L are
@@ -77,6 +79,7 @@ flash_l_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
   }
 }
 
+
 #' @title Generates sampler for F
 #' @details Generates function that samples F from a flash fit object. The columns of F are
 #' sampled independently from their marginal posteriors (conditional on L being fixed at
@@ -92,6 +95,7 @@ flash_f_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
   if (is.matrix(data)) {data = flash_set_data(data)}
   return(flash_l_sampler(flash_transpose_data(data), flash_transpose(f), kset, ebnm_fn))
 }
+
 
 #' @title Generates sampler for a single factor/loading
 #' @param is_fixed a vector of Booleans that indicates which elements are fixed
