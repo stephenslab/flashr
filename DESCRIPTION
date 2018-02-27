@@ -14,7 +14,7 @@ Description: Methods for matrix factorization based on "Empirical
     Bayes Matrix Factorization" (W. Wang & M. Stephens, 2018,
     <https://arxiv.org/abs/1802.06931>). The name "flashr" comes from
     "Factors and Loadings by Adaptive SHrinkage in R".
-Depends: R (>= 3.4.0)
+Depends: R (>= 3.3)
 Imports: 
     ashr (>= 2.2-4),
     assertthat,
