@@ -23,7 +23,7 @@ The interface described may change as we develop `flashr`.
 
 # Simulate Data
 
-We start by simulating some data to provide and example:
+We start by simulating some data to provide an example:
 ```{r}
 library(flashr)
 set.seed(1)
@@ -35,15 +35,18 @@ FF = matrix(rnorm(p*k),nrow=p)
 Y = LL %*% t(FF) + rnorm(n*p)
 ```
 
-
 # Setting up data
 
-Although not necessary, we will start by seting 
+For anything beyond the simplest usage, you should start
+your analysis by setting 
 up the data in what we will call a "flash data object".
-This is essentially simply an n by p matrix. (We do it this way so it will be easy  for future extensions to pass more information in as data; e.g. maybe variances also associated with that matrix).
+This is essentially simply an n by p matrix, but with meta-data
+to allow `flash` functions to deal properly with missing values etc. (This framework also makes it easier for future extensions to pass more information in as data; e.g. maybe variances also associated with the matrix).
 ```{r}
 data = flash_set_data(Y)
 ```
+
+# Initializing a factor model
 
 Second, we need to initialize a factor model - essentially a set of factors
 and loadings. We call this a "flash fit object", although at this point it is not 
@@ -54,9 +57,7 @@ for the argument `f_init` --- so you can build up a flash fit
 object bit-by-bit. Here we have no existing flash fit object, so we do not
 specify `f_init`, and in this case these functions create a new fit object.
 
-For illustration we use what will probably be the most common first choice of method: 
-`flash_add_factors_from_data`. This essentially runs
-`softImpute` (soft-thresholded singular value decomposition) on the data to 
+For illustration we show `flash_add_factors_from_data`. This essentially runs `softImpute` (soft-thresholded singular value decomposition) on the data to 
 obtain an initial set of factors and loadings. We have to choose a number of factors
 to initialize with. (Factors can be dropped out during the fit so ideally this
 should be a larger number than we think we actually need; but at the same time
@@ -65,11 +66,16 @@ more factors mean more computation, so you might start with a moderate number, a
 f = flash_add_factors_from_data(data,K=10)
 ```
 
-Third, and finally, we need to fit the flash model to the data. This is
-done using `flash_backfit`. (If you want to see how the fit is progressing, set `verbose=TRUE` here)
+
+# Refining/fitting a factor model
+
+Once you have initialized a flash fit object,
+you can improve the fit using `flash_backfit`. (If you want to see how the fit is progressing, set `verbose=TRUE` here)
 ```{r}
 f = flash_backfit(data,f,verbose=FALSE)
 ```
+
+# Extracting information
 
 Having fit the model we might want to extract the fitted factors and loadings.
 You can do that using functions like `flash_get_ldf` to get the standardized loadings, factors and weights. Also `flash_get_lf` gets the product (LDF').
