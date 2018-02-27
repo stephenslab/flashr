@@ -37,18 +37,15 @@ the objective function! That is the optimization did not
 work very well (because deleting the factor is actually a special
 case of the model). 
 ```{r}
-  f0 = flash_zero_out_factor(data,f1,1)
-  f0 = flash_update_precision(data,f0)
-  flash_get_F(data,f0)
-  flash_get_F(data,f1)>get_F(data,f0)
+f0 = flash_zero_out_factor(data,f1,1)
+f0 = flash_update_precision(data,f0)
 ```
 
 This is actually quite a common occurance (see below).
 So we have implemented this check as the default in flash.
 Here is what happens if you run `flash_r1` with default (`nullcheck=TRUE`): it automatically deletes the factor.
 ```{r}
-  f1 = flash_r1(data,verbose=TRUE)
-  flash_get_sizes(f1)
+f1 = flash_r1(data,verbose=TRUE)
 ```
 
 
@@ -66,10 +63,7 @@ for(i in 1:100){
   f1= flash_r1(data,nullcheck=FALSE)
   f0 = flash_zero_out_factor(data,f1,1)
   f0 = flash_update_precision(data,f0)
-  F1minusF0[i] = (flash_get_F(data,f1)-get_F(data,f0))
 }
-hist(F1minusF0)
-summary(F1minusF0)
 ```
 
 

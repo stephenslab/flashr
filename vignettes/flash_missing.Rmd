@@ -91,10 +91,6 @@ mean((f_imp-opt)^2)
 mean((fg_imp-opt)^2)
 mean((fgb_imp-opt)^2)
 mean(opt^2)
-
-flash_get_F(dmiss,f)
-flash_get_F(dmiss,fg)
-flash_get_F(dmiss,fgb)
 ```
 
 
