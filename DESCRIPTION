@@ -1,7 +1,7 @@
 Package: flashr
 Encoding: UTF-8
 Type: Package
-Version: 0.5-3
+Version: 0.5-4
 Date: 2018-02-27
 Title: Empirical Bayes Matrix Factorization
 Authors@R: c(person("Matthew","Stephens",role=c("aut","cre"),
@@ -25,7 +25,9 @@ Imports:
     utils
 Suggests: 
     testthat,
-    knitr
+    knitr,
+    REBayes,
+    Rmosek
 License: BSD_3_clause + file LICENSE
 URL: http://github.com/stephenslab/flashr
 BugReports: http://github.com/stephenslab/flashr/issues

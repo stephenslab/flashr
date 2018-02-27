@@ -154,7 +154,7 @@ flash = function(data,
 #'   Each new factor is intialized by applying the function `init_fn` to
 #'   the residuals after removing previously-fitted factors.
 #'
-#' @inheritParams flash_r1
+#' @inheritParams flash
 #'
 #' @param Kmax Description of input argument goes here.
 #'
@@ -233,7 +233,7 @@ flash_add_greedy = function(data,
 #'   inner loop). To perform just one iteration we suggest setting
 #'   \code{maxiter = 1} and \code{nullcheck = FALSE}.
 #'
-#' @inheritParams flash_r1
+#' @inheritParams flash
 #'
 #' @return A fitted flash object.
 #'
@@ -316,40 +316,40 @@ flash_backfit = function(data,
   return(f)
 }
 
-#' @title Fits a rank 1 Empirical Bayes Matrix Factorization model.
-#'
-#' @return A fitted flash object. Use \code{flash_get_ldf} to access
-#'   standardized loadings and factors; use \code{flash_get_lf} to
-#'   access fitted LF'.
-#'
-#' @inheritParams flash
-#'
-#' @examples
-#'
-#' ftrue = rnorm(100)
-#' ltrue = rnorm(20)
-#'
-#' # Set up a simulated matrix with rank 1 plus noise structure.
-#' Y = ltrue %*% t(ftrue)+rnorm(2000)
-#' f = flash_r1(Y)
-#' ldf = flash_get_ldf(f)
-#'
-#' # Plot true l against estimated l (note estimate is normalized).
-#' plot(ltrue,ldf$l)
-#'
-#' # Plot true f against estimated f (note estimate is normalized).
-#' plot(ftrue,ldf$f)
-#'
-#' # Plot true lf' against estimated lf'; the scale of the estimate
-#' # matches the data.
-#' plot(ltrue %*% t(ftrue), flash_get_lf(f))
-#'
-#' # Example to use the more flexible ebnm function in ashr.
-#' f2 = flash_r1(Y,ebnm_fn = ebnm_ash)
-#'
-#' # Example to show how to pass parameters to ashr.
-#' f3 = flash_r1(Y,ebnm_fn = ebnm_ash,
-#'               ebnm_param = list(mixcompdist = "normal",method="fdr"))
+# @title Fits a rank 1 Empirical Bayes Matrix Factorization model.
+#
+# @return A fitted flash object. Use \code{flash_get_ldf} to access
+#   standardized loadings and factors; use \code{flash_get_lf} to
+#   access fitted LF'.
+#
+# @inheritParams flash
+#
+# @examples
+#
+# ftrue = rnorm(100)
+# ltrue = rnorm(20)
+#
+# # Set up a simulated matrix with rank 1 plus noise structure.
+# Y = ltrue %*% t(ftrue)+rnorm(2000)
+# f = flash_r1(Y)
+# ldf = flash_get_ldf(f)
+#
+# # Plot true l against estimated l (note estimate is normalized).
+# plot(ltrue,ldf$l)
+#
+# # Plot true f against estimated f (note estimate is normalized).
+# plot(ftrue,ldf$f)
+#
+# # Plot true lf' against estimated lf'; the scale of the estimate
+# # matches the data.
+# plot(ltrue %*% t(ftrue), flash_get_lf(f))
+#
+# # Example to use the more flexible ebnm function in ashr.
+# f2 = flash_r1(Y,ebnm_fn = ebnm_ash)
+#
+# # Example to show how to pass parameters to ashr.
+# f3 = flash_r1(Y,ebnm_fn = ebnm_ash,
+#               ebnm_param = list(mixcompdist = "normal",method="fdr"))
 flash_r1 = function(data,
                     f_init = NULL,
                     var_type = c("by_column", "constant"),

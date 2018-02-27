@@ -13,13 +13,11 @@ test_that("results from r1_opt match old results", {
   data = flash_set_data(Y)
   f= flash_r1(data,ebnm_fn = ebnm_ash,verbose=FALSE)
   f.old= flash_r1_old(data,verbose=FALSE)
-  expect_true(all.equal(f,f.old))
+  expect_true(all.equal(f,f.old,tolerance = 1e-5))
 
   data.miss = flash_set_data(Y.miss)
   f= flash_r1(data.miss,ebnm_fn = ebnm_ash, verbose=FALSE)
   f.old= flash_r1_old(data.miss,verbose=FALSE)
-  expect_true(all.equal(f,f.old,tol=1e-3))
-
-
+  expect_true(all.equal(f,f.old,tolerance = 1e-3))
 })
 
