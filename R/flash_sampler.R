@@ -1,5 +1,30 @@
 # TODO: update docs; add sampling function for ebnm_pn
 
+#' @title Generates LF sampler
+#' @details Generates function that samples LF from a flash fit object, with either L or F
+#' fixed at its posterior mean and the columns of F or L sampled independently from their
+#' marginal posteriors.
+#' @param data a flash data object
+#' @param f a flash fit object
+#' @param kset the indices of factor/loadings to include when sampling LF (defaults to all)
+#' @param ebnm_fn function used to solve the Empirical Bayes Normal Means problem
+#' @param fixed indicates whether to fix factors or loadings at their posterior mean
+#' @return A function that takes a single parameter nsamp, the number of samples of LF to be
+#' produced by the sampler. Care should be used when setting nsamp, because the sampler
+#' returns a list of matrices which are each of the same size as the data matrix.
+#' @export
+flash_lf_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_ash,
+                            fixed=c("factors", "loadings")) {
+  if (is.null(kset)) {kset = 1:get_k(f)}
+  fixed = match.arg(fixed)
+  if (fixed == "factors") {
+    return(flash_lf_sampler_fixedf(data, f, kset, ebnm_fn))
+  } else if (fixed == "loadings") {
+    return(flash_lf_sampler_fixedl(data, f, kset, ebnm_fn))
+  }
+}
+
+
 #' @title Generates LF sampler with F fixed at its expectation
 #' @details Generates function that samples LF from a flash fit object, with F fixed at its
 #' posterior mean and the columns of L sampled independently from their marginal posteriors.
@@ -8,9 +33,7 @@
 #' @param kset the indices of factor/loadings to include when sampling LF (defaults to all)
 #' @param ebnm_fn function used to solve the Empirical Bayes Normal Means problem
 #' @return A function that takes a single parameter nsamp, the number of samples of LF to be
-#' produced by the sampler. Care should be used when setting nsamp, because the sampler
-#' returns a list of matrices which are each of the same size as the data matrix.
-#' @export
+#' produced by the sampler.
 flash_lf_sampler_fixedf = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
   if (is.null(kset)) {kset = 1:get_k(f)}
   l_sampler = flash_l_sampler(data, f, kset, ebnm_fn)
@@ -30,9 +53,7 @@ flash_lf_sampler_fixedf = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
 #' @param kset the indices of factor/loadings to include when sampling LF (defaults to all)
 #' @param ebnm_fn function used to solve the Empirical Bayes Normal Means problem
 #' @return A function that takes a single parameter nsamp, the number of samples of LF to be
-#' produced by the sampler. Care should be used when setting nsamp, because the sampler
-#' returns a list of matrices which are each of the same size as the data matrix.
-#' @export
+#' produced by the sampler.
 flash_lf_sampler_fixedl = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
   if (is.matrix(data)) {data = flash_set_data(data)}
 
