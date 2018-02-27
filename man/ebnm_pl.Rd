@@ -15,5 +15,6 @@ ebnm_pl(x, s, ebnm_param)
 ebnm_point_laplace.}
 }
 \description{
-A wrapper to the function \code{\link[ebnm]{point_laplace}}.
+A wrapper to the function
+\code{\link[ebnm]{ebnm_point_laplace}}.
 }

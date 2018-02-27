@@ -15,8 +15,8 @@
 flash_fill = function(Y, f){
   missing = is.na(Y)
   if(!is.matrix(Y)){stop("for flash_fill Y must be a matrix")}
-  if(dim(Y)[1]!=get_n(f)){stop("dimensions of Y must match flash fit")}
-  if(dim(Y)[2]!=get_p(f)){stop("dimensions of Y must match flash fit")}
+  if(dim(Y)[1]!=flash_get_n(f)){stop("dimensions of Y must match flash fit")}
+  if(dim(Y)[2]!=flash_get_p(f)){stop("dimensions of Y must match flash fit")}
   Y[is.na(Y)] = flash_get_lf(f)[is.na(Y)]
   return(Y)
 }
@@ -148,6 +148,8 @@ flash_subset_data = function(data, row_subset = NULL, col_subset = NULL) {
 #'   designated to be fixed). This effectively reduces the rank by 1,
 #'   although the zero factor/loading is kept in f so the number and
 #'   indexing of factor/loading matrices in f remains the same.
+#'
+#' @importFrom ashr normalmix
 #' 
 #' @export
 #' 
@@ -156,8 +158,8 @@ flash_zero_out_factor = function(data, f, k = 1) {
     f$EL2[!f$fixl[, k], k] = 0
     f$EF[!f$fixf[, k], k] = 0
     f$EF2[!f$fixf[, k], k] = 0
-    f$gl[[k]] = ashr::normalmix(1, 0, 0)
-    f$gf[[k]] = ashr::normalmix(1, 0, 0)
+    f$gl[[k]]   = normalmix(1, 0, 0)
+    f$gf[[k]]   = normalmix(1, 0, 0)
     f$KL_l[[k]] = 0
     f$KL_f[[k]] = 0  #KL divergences for each l and f
     f = flash_update_precision(data, f)

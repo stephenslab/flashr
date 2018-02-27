@@ -7,6 +7,8 @@
 #' 
 #' @param data An n by p matrix or a flash data object created using
 #'   \code{flash_set_data}.
+#'
+#' @param Kmax Description of input argument goes here.
 #' 
 #' @param f_init if supplied, a flash object to which a single new
 #'   factor is to be added.
@@ -63,19 +65,33 @@
 #' Y = ltrue %*% t(ftrue)+rnorm(2000) # set up a simulated matrix
 #' f = flash(Y)
 #' ldf = flash_get_ldf(f)
-#' ldf$d  #show the weights, analogous to singular values showing importance of each factor
-#' plot(ltrue[,1],ldf$l[,2]) # plot true l against estimated l; with this seed it turns out the 2nd loading/factor corresponds to the first column of ltrue
-#' plot(ftrue[,1],ldf$f[,2]) # plot true f against estimated f (note estimate is normalized)
-#' plot(ltrue %*% t(ftrue), flash_get_lf(f)) #plot true lf' against estimated lf'; the scale of the estimate matches the data
+#'
+#' # Show the weights, analogous to singular values showing importance
+#' # of each factor.
+#' ldf$d
+#'
+#' # Plot true l against estimated l; with this seed it turns out the
+#' # 2nd loading/factor corresponds to the first column of ltrue.
+#' plot(ltrue[,1],ldf$l[,2]) 
+#'
+#' # Plot true f against estimated f (note estimate is normalized).
+#' plot(ftrue[,1],ldf$f[,2])
+#'
+#' # Plot true lf' against estimated lf'; the scale of the estimate
+#' # matches the data.
+#' plot(ltrue %*% t(ftrue), flash_get_lf(f)) 
 #'
 #' # Example to use the more flexible ebnm function in ashr.
 #' f2 = flash(Y,ebnm_fn = ebnm_ash)
 #' 
-#' # example to show how to pass parameters to ashr (may be most useful for research use)
-#' f3= flash(Y,ebnm_fn = ebnm_ash, ebnm_param = list(mixcompdist = "normal",method="fdr"))
+#' # Example to show how to pass parameters to ashr (may be most
+#' # useful for research use).
+#' f3 = flash(Y,ebnm_fn = ebnm_ash,
+#'            ebnm_param = list(mixcompdist = "normal",method="fdr"))
 #' 
-#' # example to show how to use a different initialization function
-#' f4 = flash(Y,init_fn = function(x,K=1){softImpute::softImpute(x,K,lambda=10)})
+#' # Example to show how to use a different initialization function.
+#' library(softImpute)
+#' f4 = flash(Y,init_fn = function(x,K=1){softImpute(x,K,lambda=10)})
 #' 
 #' @export
 #' 
@@ -147,10 +163,16 @@ flash = function(data,
 #' f = rnorm(10)
 #' Y = outer(l,f) + matrix(rnorm(1000),nrow=100)
 #' f = flash_add_greedy(Y,10)
-#' flash_get_ldf(f)$d #gives the weights for each factor (analogue of singular values)
-#' # example to show how to use a different initialization function
-#' f2 = flash_add_greedy(Y,10,init_fn = function(x,K=1){softImpute::softImpute(x,K,lambda=10)})
+#'
+#' # Gives the weights for each factor (analogue of singular values).
+#' flash_get_ldf(f)$d
 #' 
+#' # Example to show how to use a different initialization function.
+#' library(softImpute)
+#' f2 = flash_add_greedy(Y,10,init_fn = function(x,K=1){
+#'   softImpute(x,K,lambda=10)
+#' })
+#'
 #' @export
 #' 
 flash_add_greedy = function(data,
@@ -187,7 +209,7 @@ flash_add_greedy = function(data,
                  seed = NULL)
     
     # Test whether the factor/loading combination is effectively zero.
-    if (is_tiny_fl(f, get_k(f)))
+    if (is_tiny_fl(f, flash_get_k(f)))
       break
   }
 
@@ -239,7 +261,7 @@ flash_backfit = function(data,
     data = flash_set_data(data)
   }
   if (is.null(kset)) {
-    kset = 1:get_k(f)
+    kset = 1:flash_get_k(f)
   }
   var_type = match.arg(var_type)
 
@@ -277,7 +299,7 @@ flash_backfit = function(data,
 
     if (nullcheck) {
       #remove factors that actually hurt objective
-      kset = 1:get_k(f)
+      kset = 1:flash_get_k(f)
       f = perform_nullcheck(data, f, kset, var_type, verbose)
 
       # recompute objective; if it changes then whole process will be repeated
@@ -304,17 +326,28 @@ flash_backfit = function(data,
 #' 
 #' ftrue = rnorm(100)
 #' ltrue = rnorm(20)
-#' Y = ltrue %*% t(ftrue)+rnorm(2000) # set up a simulated matrix with rank 1 plus noise structure
+#'
+#' # Set up a simulated matrix with rank 1 plus noise structure.
+#' Y = ltrue %*% t(ftrue)+rnorm(2000) 
 #' f = flash_r1(Y)
 #' ldf = flash_get_ldf(f)
-#' plot(ltrue,ldf$l) # plot true l against estimated l (note estimate is normalized);
-#' plot(ftrue,ldf$f) # plot true f against estimated f (note estimate is normalized)
-#' plot(ltrue %*% t(ftrue), flash_get_lf(f)) #plot true lf' against estimated lf'; the scale of the estimate matches the data
 #'
-#' # example to use the more flexible ebnm function in ashr; show how to pass parameters to
+#' # Plot true l against estimated l (note estimate is normalized).
+#' plot(ltrue,ldf$l)
+#'
+#' # Plot true f against estimated f (note estimate is normalized).
+#' plot(ftrue,ldf$f)
+#'
+#' # Plot true lf' against estimated lf'; the scale of the estimate
+#' # matches the data.
+#' plot(ltrue %*% t(ftrue), flash_get_lf(f))
+#'
+#' # Example to use the more flexible ebnm function in ashr.
 #' f2 = flash_r1(Y,ebnm_fn = ebnm_ash)
-#' # example to show how to pass parameters to ashr
-#' f3= flash_r1(Y,ebnm_fn = ebnm_ash, ebnm_param = list(mixcompdist = "normal",method="fdr"))
+#' 
+#' # Example to show how to pass parameters to ashr.
+#' f3 = flash_r1(Y,ebnm_fn = ebnm_ash,
+#'               ebnm_param = list(mixcompdist = "normal",method="fdr"))
 flash_r1 = function(data,
                     f_init = NULL,
                     var_type = c("by_column", "constant"),
@@ -338,7 +371,7 @@ flash_r1 = function(data,
                                   K = 1)
   f = flash_optimize_single_fl(data,
                                f,
-                               get_k(f),
+                               flash_get_k(f),
                                var_type,
                                nullcheck,
                                tol,

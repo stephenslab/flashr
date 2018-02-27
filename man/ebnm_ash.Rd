@@ -6,6 +6,13 @@
 \usage{
 ebnm_ash(x, s, ash_param)
 }
+\arguments{
+\item{x}{Describe parameter here.}
+
+\item{s}{Describe parameter here.}
+
+\item{ash_param}{Describe parameter here.}
+}
 \description{
 A wrapper to the ash function for flash.
 }

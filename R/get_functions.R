@@ -64,15 +64,15 @@ flash_get_ldf = function(f, k = NULL, drop_zero_factors =TRUE) {
 
 # @title Get the residuals from a flash data and fit object,
 #   excluding factor k.
-get_Rk = function(data, f, k) {
-    if (get_k(f) < k) {
+flash_get_Rk = function(data, f, k) {
+    if (flash_get_k(f) < k) {
         stop("factor k does not exist")
     }
     return(data$Y - f$EL[, -k, drop = FALSE] %*% t(f$EF[, -k, drop = FALSE]))
 }
 
 # @title Get the residuals from data and a flash fit object.
-get_R = function(data, f) {
+flash_get_R = function(data, f) {
     if (is.null(f$EL))
         {
             return(data$Y)
@@ -84,7 +84,7 @@ get_R = function(data, f) {
 
 # @title Get the residuals from data and a flash fit object, with
 #   missing data as in original.
-get_R_withmissing = function(data, f) {
+flash_get_R_withmissing = function(data, f) {
     if (is.null(f$EL))
         {
             return(get_Yorig(data))
@@ -96,7 +96,7 @@ get_R_withmissing = function(data, f) {
 
 # @title Get the expected squared residuals from a flash data and fit
 # object.
-get_R2 = function(data, f) {
+flash_get_R2 = function(data, f) {
     if (is.null(f$EL)) {
         return(data$Y^2)
     } else {
@@ -107,12 +107,14 @@ get_R2 = function(data, f) {
 
 # @title Get the expected squared residuals from a flash data and fit
 #   object excluding factor k.
-get_R2k = function(data, f, k) {
+flash_get_R2k = function(data, f, k) {
     if (is.null(f$EL)) {
         return(data$Y^2)
     } else {
-        return(get_Rk(data, f, k)^2 + f$EL2[, -k, drop = FALSE] %*% t(f$EF2[, -k, drop = FALSE]) - f$EL[, -k, drop = FALSE]^2 %*%
-            t(f$EF[, -k, drop = FALSE]^2))
+        return(flash_get_Rk(data, f, k)^2 +
+               f$EL2[, -k, drop = FALSE] %*% t(f$EF2[, -k, drop = FALSE]) -
+               f$EL[, -k, drop = FALSE]^2 %*%
+               t(f$EF[, -k, drop = FALSE]^2))
     }
 }
 
@@ -120,6 +122,14 @@ get_R2k = function(data, f, k) {
 # @details Checks whether kth factor/loading combination is tiny.
 is_tiny_fl = function(f, k, tol = 1e-08) {
     return(sum(f$EL[, k]^2) * sum(f$EF[, k]^2) < tol)
+}
+
+flash_get_l = function(f) {
+  f$EL
+}
+
+flash_get_f = function(f) {
+  f$EF
 }
 
 #' @title Get number of factors in a fit object.
@@ -130,18 +140,6 @@ is_tiny_fl = function(f, k, tol = 1e-08) {
 #' 
 #' @export
 #' 
-flash_get_k = function(f) {
-    get_k(f)
-}
-
-flash_get_l = function(f) {
-    f$EL
-}
-
-flash_get_f = function(f) {
-    f$EF
-}
-
 flash_get_k = function(f) {
     k = ncol(f$EL)
     if (is.null(k)) {
@@ -156,7 +154,7 @@ flash_get_n = function(f) {
 }
 
 flash_get_p = function(f) {
-    nrow(f$EF)
+  nrow(f$EF)
 }
 
 #' @title flash_get_pve
@@ -165,6 +163,8 @@ flash_get_p = function(f) {
 #' variance explained') by each factor/loading combination in flash
 #' fit f. Because the factors are not required to be orthogonal this
 #' should be interpreted loosely: eg PVE could total more than 1.
+#'
+#' @params Description of input argument goes here.
 #' 
 #' @export
 #' 
@@ -178,6 +178,6 @@ flash_get_pve = function(f) {
     #
 }
 
-get_conv_criteria = function(data, f) {
+flash_get_conv_criteria = function(data, f) {
     flash_get_objective(data, f)
 }

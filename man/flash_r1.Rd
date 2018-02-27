@@ -59,15 +59,26 @@ Fits a rank 1 Empirical Bayes Matrix Factorization model.
 
 ftrue = rnorm(100)
 ltrue = rnorm(20)
-Y = ltrue \%*\% t(ftrue)+rnorm(2000) # set up a simulated matrix with rank 1 plus noise structure
+
+# Set up a simulated matrix with rank 1 plus noise structure.
+Y = ltrue \%*\% t(ftrue)+rnorm(2000) 
 f = flash_r1(Y)
 ldf = flash_get_ldf(f)
-plot(ltrue,ldf$l) # plot true l against estimated l (note estimate is normalized);
-plot(ftrue,ldf$f) # plot true f against estimated f (note estimate is normalized)
-plot(ltrue \%*\% t(ftrue), flash_get_lf(f)) #plot true lf' against estimated lf'; the scale of the estimate matches the data
 
-# example to use the more flexible ebnm function in ashr; show how to pass parameters to
+# Plot true l against estimated l (note estimate is normalized).
+plot(ltrue,ldf$l)
+
+# Plot true f against estimated f (note estimate is normalized).
+plot(ftrue,ldf$f)
+
+# Plot true lf' against estimated lf'; the scale of the estimate
+# matches the data.
+plot(ltrue \%*\% t(ftrue), flash_get_lf(f))
+
+# Example to use the more flexible ebnm function in ashr.
 f2 = flash_r1(Y,ebnm_fn = ebnm_ash)
-# example to show how to pass parameters to ashr
-f3= flash_r1(Y,ebnm_fn = ebnm_ash, ebnm_param = list(mixcompdist = "normal",method="fdr"))
+
+# Example to show how to pass parameters to ashr.
+f3 = flash_r1(Y,ebnm_fn = ebnm_ash,
+              ebnm_param = list(mixcompdist = "normal",method="fdr"))
 }

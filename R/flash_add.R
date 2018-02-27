@@ -4,11 +4,11 @@
 #' 
 #' @param data A flash data object.
 #' 
-#' @param f A flash fit object.
-#' 
 #' @param LL The loadings, an n by K matrix.
 #' 
 #' @param FF The factors, a p by K matrix.
+#'
+#' @param f_init Description of input argument goes here.
 #' 
 #' @param fixl An n by K matrix of TRUE/FALSE values indicating which
 #'   elements of LL should be considered fixed and not changed during
@@ -69,6 +69,8 @@ flash_add_factors_from_data = function(data,K,f_init=NULL,init_fn="udv_si"){
 #'   elements of LL should be considered fixed and not changed during
 #'   updates.  Default is to fix all non-missing values, so missing
 #'   values will be updated when f is updated.
+#'
+#' @param init_fn Description of input argument goes here.
 #' 
 #' @return A flash fit object, with loadings initialized from LL, and
 #'   corresponding factors initialized to 0.

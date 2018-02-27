@@ -22,7 +22,7 @@ flash_update_single_loading = function(data, f, k, ebnm_fn = ebnm_ash, ebnm_para
         s2 = 1/(tau %*% f$EF2[, k])
         if (sum(is.finite(s2)) > 0) {
             # check some finite values before proceeding
-            Rk = get_Rk(data, f, k)[subset, ]  #residuals excluding factor k
+            Rk = flash_get_Rk(data, f, k)[subset, ]  #residuals excluding factor k
             x = ((Rk * tau) %*% f$EF[,k]) * s2
             # if a value of s2 becomes numerically negative, set it to a small positive number
             s = sqrt(pmax(s2, .Machine$double.eps))
@@ -62,7 +62,7 @@ flash_update_single_factor = function(data, f, k, ebnm_fn = ebnm_ash, ebnm_param
         s2 = 1/(t(tau) %*% f$EL2[, k])
         if (sum(is.finite(s2)) > 0) {
             # check some finite values before proceeding
-            Rk = get_Rk(data, f, k)[, subset]  #residuals excluding factor k
+            Rk = flash_get_Rk(data, f, k)[, subset]  #residuals excluding factor k
             x = (t(Rk * tau) %*% f$EL[, k]) * s2
             # if a value of s2 becomes numerically negative, set it to a small positive number
             s = sqrt(pmax(s2, .Machine$double.eps))
@@ -124,7 +124,8 @@ flash_optimize_single_fl = function(data, f, k, var_type, nullcheck = TRUE, tol 
     l_subset = which(!f$fixl[, k])
     KLobj = sum(unlist(f$KL_l)) + sum(unlist(f$KL_f)) - f$KL_l[[k]] - f$KL_f[[k]]
 
-    res = r1_opt(get_Rk(data, f, k), get_R2k(data, f, k), f$EL[, k], f$EF[, k], f$EL2[, k], f$EF2[, k], l_subset, f_subset,
+    res = r1_opt(flash_get_Rk(data, f, k), flash_get_R2k(data, f, k),
+        f$EL[, k], f$EF[, k], f$EL2[, k], f$EF2[, k], l_subset, f_subset,
         ebnm_fn, ebnm_param, var_type, tol, calc_F = TRUE, missing = data$missing, verbose = verbose, KLobj = KLobj)
 
     f = update_f_from_r1_opt_results(f, k, res)

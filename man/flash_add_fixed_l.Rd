@@ -21,6 +21,8 @@ be re-estimated when refitting the model).}
 elements of LL should be considered fixed and not changed during
 updates.  Default is to fix all non-missing values, so missing
 values will be updated when f is updated.}
+
+\item{init_fn}{Description of input argument goes here.}
 }
 \value{
 A flash fit object, with loadings initialized from LL, and

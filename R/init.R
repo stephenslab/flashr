@@ -17,8 +17,10 @@
 # 
 # @return A flash fit object, with factors initialized using L and F.
 #
+#' @importFrom assertthat assert_that
+#' 
 flash_init_lf = function(LL, FF, fixl = NULL, fixf = NULL) {
-    assertthat::assert_that(ncol(LL) == ncol(FF))
+    assert_that(ncol(LL) == ncol(FF))
     if (is.null(fixl)) {
         fixl = matrix(FALSE, ncol = ncol(LL), nrow = nrow(LL))
     }
@@ -33,10 +35,10 @@ flash_init_lf = function(LL, FF, fixl = NULL, fixf = NULL) {
     f$gf = list()
     f$ebnm_param_l = list()
     f$ebnm_param_f = list()
-    f$KL_l = as.list(rep(0, get_k(f)))
-    f$KL_f = as.list(rep(0, get_k(f))) # KL divergences for each l and f.
-    f$penloglik_l = as.list(rep(0, get_k(f)))
-    f$penloglik_f = as.list(rep(0, get_k(f)))
+    f$KL_l = as.list(rep(0, flash_get_k(f)))
+    f$KL_f = as.list(rep(0, flash_get_k(f))) # KL divergences for each l and f.
+    f$penloglik_l = as.list(rep(0, flash_get_k(f)))
+    f$penloglik_f = as.list(rep(0, flash_get_k(f)))
     f$tau = NULL
     return(f)
 }
@@ -61,11 +63,13 @@ flash_init_null = function() {
 #' @param K Number of factors to use.
 #' 
 #' @return A list with components (u,d,v).
+#'
+#' @importFrom softImpute softImpute
 #' 
 #' @export
 udv_si = function(Y, K = 1) {
-  suppressWarnings(res <- softImpute::softImpute(Y, rank.max = K,
-                                                 type = "als", lambda = 0))
+  suppressWarnings(res <- softImpute(Y, rank.max = K,
+                                     type = "als", lambda = 0))
   return(res)
 }
 
@@ -85,8 +89,7 @@ udv_si = function(Y, K = 1) {
 #' @export
 #' 
 udv_si_svd = function(Y, K = 1) {
-  suppressWarnings(res <- softImpute::softImpute(Y, rank.max = K,
-                                                 type = "svd", lambda = 0))
+  suppressWarnings(res <- softImpute(Y,rank.max = K,type = "svd",lambda = 0))
   return(res)
 }
 
@@ -116,6 +119,8 @@ udv_svd = function (Y, K = 1) {
 #' 
 #' @return A list with components (u,d,v), with elements of u and v
 #'   i.i.d. N(0,1).
+#'
+#' @importFrom stats rnorm
 #' 
 #' @export
 #' 

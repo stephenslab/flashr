@@ -65,8 +65,14 @@ l = rnorm(100)
 f = rnorm(10)
 Y = outer(l,f) + matrix(rnorm(1000),nrow=100)
 f = flash_add_greedy(Y,10)
-flash_get_ldf(f)$d #gives the weights for each factor (analogue of singular values)
-# example to show how to use a different initialization function
-f2 = flash_add_greedy(Y,10,init_fn = function(x,K=1){softImpute::softImpute(x,K,lambda=10)})
+
+# Gives the weights for each factor (analogue of singular values).
+flash_get_ldf(f)$d
+
+# Example to show how to use a different initialization function.
+library(softImpute)
+f2 = flash_add_greedy(Y,10,init_fn = function(x,K=1){
+  softImpute(x,K,lambda=10)
+})
 
 }

@@ -15,5 +15,6 @@ ebnm_pn(x, s, ebnm_param)
 \code{ebnm_point_normal}.}
 }
 \description{
-A wrapper to the function \code{\link[ebnm]{point_normal}}.
+A wrapper to the function
+  \code{\link[ebnm]{ebnm_point_normal}}.
 }

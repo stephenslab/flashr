@@ -13,6 +13,8 @@ flash(data, Kmax = 100, f_init = NULL, var_type = c("by_column",
 \item{data}{An n by p matrix or a flash data object created using
 \code{flash_set_data}.}
 
+\item{Kmax}{Description of input argument goes here.}
+
 \item{f_init}{if supplied, a flash object to which a single new
 factor is to be added.}
 
@@ -73,19 +75,33 @@ ltrue[11:20,2] = 0
 Y = ltrue \%*\% t(ftrue)+rnorm(2000) # set up a simulated matrix
 f = flash(Y)
 ldf = flash_get_ldf(f)
-ldf$d  #show the weights, analogous to singular values showing importance of each factor
-plot(ltrue[,1],ldf$l[,2]) # plot true l against estimated l; with this seed it turns out the 2nd loading/factor corresponds to the first column of ltrue
-plot(ftrue[,1],ldf$f[,2]) # plot true f against estimated f (note estimate is normalized)
-plot(ltrue \%*\% t(ftrue), flash_get_lf(f)) #plot true lf' against estimated lf'; the scale of the estimate matches the data
+
+# Show the weights, analogous to singular values showing importance
+# of each factor.
+ldf$d
+
+# Plot true l against estimated l; with this seed it turns out the
+# 2nd loading/factor corresponds to the first column of ltrue.
+plot(ltrue[,1],ldf$l[,2]) 
+
+# Plot true f against estimated f (note estimate is normalized).
+plot(ftrue[,1],ldf$f[,2])
+
+# Plot true lf' against estimated lf'; the scale of the estimate
+# matches the data.
+plot(ltrue \%*\% t(ftrue), flash_get_lf(f)) 
 
 # Example to use the more flexible ebnm function in ashr.
 f2 = flash(Y,ebnm_fn = ebnm_ash)
 
-# example to show how to pass parameters to ashr (may be most useful for research use)
-f3= flash(Y,ebnm_fn = ebnm_ash, ebnm_param = list(mixcompdist = "normal",method="fdr"))
+# Example to show how to pass parameters to ashr (may be most
+# useful for research use).
+f3 = flash(Y,ebnm_fn = ebnm_ash,
+           ebnm_param = list(mixcompdist = "normal",method="fdr"))
 
-# example to show how to use a different initialization function
-f4 = flash(Y,init_fn = function(x,K=1){softImpute::softImpute(x,K,lambda=10)})
+# Example to show how to use a different initialization function.
+library(softImpute)
+f4 = flash(Y,init_fn = function(x,K=1){softImpute(x,K,lambda=10)})
 
 }
 \seealso{

@@ -8,6 +8,8 @@ flash_plot_pve(f, main = "Scree plot of PVE for each factor")
 }
 \arguments{
 \item{f}{The flash fit object.}
+
+\item{main}{Description of input argument goes here.}
 }
 \value{
 A ggplot plot object.

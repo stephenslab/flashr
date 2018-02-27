@@ -19,7 +19,7 @@ flash_update_precision =
         stop("not yet implemented")
     }
 
-    R2 = get_R2(data, f)
+    R2 = flash_get_R2(data, f)
     f$tau = compute_precision(R2, data$missing, var_type)
     return(f)
 }
