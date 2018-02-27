@@ -55,12 +55,12 @@ flash_lf_sampler_fixedf = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
 #' @return A function that takes a single parameter nsamp, the number of samples of LF to be
 #' produced by the sampler.
 flash_lf_sampler_fixedl = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
-  if (is.matrix(data)) {data = flash_set_data(data)}
+  if (is.null(kset)) {kset = 1:get_k(f)}
+  f_sampler = flash_f_sampler(data, f, kset, ebnm_fn)
 
-  ts = flash_lf_sampler_fixedf(flash_transpose_data(data), flash_transpose(f), kset, ebnm_fn)
   function(nsamp) {
-    samp = ts(nsamp)
-    return(lapply(samp, t)) # transposes samples back to original orientation
+    fsamp = f_sampler(nsamp)
+    return(mapply(function(F) {f$EL[, kset] %*% t(F)}, fsamp, SIMPLIFY=FALSE))
   }
 }
 
