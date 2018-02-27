@@ -1,12 +1,12 @@
-#' @title  Update a flash loading
-#' @details Updates loading k of f to increase the objective F.
-#' Updates only the loading, once (not the factor).
-#' @param data a flash data object
-#' @param f a flash fit object
-#' @param k the index of the loading to update
-#' @param ebnm_fn function to solve the Empirical Bayes normal means problem
-#' @param ebnm_param parameters to be passed to ebnm_fn when optimizing
-#' @return an updated flash object
+# @title Update a flash loading
+# @details Updates loading k of f to increase the objective F.
+# Updates only the loading, once (not the factor).
+# @param data a flash data object
+# @param f a flash fit object
+# @param k the index of the loading to update
+# @param ebnm_fn function to solve the Empirical Bayes normal means problem
+# @param ebnm_param parameters to be passed to ebnm_fn when optimizing
+# @return an updated flash object
 flash_update_single_loading = function(data, f, k, ebnm_fn = ebnm_ash, ebnm_param = flash_default_ebnm_param(ebnm_fn)) {
     subset = which(!f$fixl[, k])  # check which elements are not fixed
     if (length(subset) > 0) {
@@ -39,12 +39,15 @@ flash_update_single_loading = function(data, f, k, ebnm_fn = ebnm_ash, ebnm_para
     return(f)
 }
 
-
-#' @title  Update a flash factor
-#' @details Updates factor k of f to increase the objective F.
-#' Updates only the factor, once (not the loading).
-#' @inheritParams flash_update_single_loading
-#' @return an updated flash object
+# @title  Update a flash factor
+# 
+# @description Updates factor k of f to increase the objective F.
+#   Updates only the factor, once (not the loading).
+# 
+# @inheritParams flash_update_single_loading
+# 
+# @return an updated flash object
+# 
 flash_update_single_factor = function(data, f, k, ebnm_fn = ebnm_ash, ebnm_param = flash_default_ebnm_param(ebnm_fn)) {
     subset = which(!f$fixf[, k])  # check which elements are not fixed
     if (length(subset) > 0) {
@@ -76,8 +79,8 @@ flash_update_single_factor = function(data, f, k, ebnm_fn = ebnm_ash, ebnm_param
     return(f)
 }
 
-#' @title Update a single flash factor-loading combination (and precision)
-#' @inheritParams flash_update_single_loading
+# @title Update a single flash factor-loading combination (and precision).
+# @inheritParams flash_update_single_loading
 flash_update_single_fl = function(data, f, k, var_type, ebnm_fn = ebnm_ash, ebnm_param = flash_default_ebnm_param(ebnm_fn)) {
     f = flash_update_precision(data, f, var_type)
     f = flash_update_single_factor(data, f, k, ebnm_fn, ebnm_param)
@@ -85,21 +88,36 @@ flash_update_single_fl = function(data, f, k, var_type, ebnm_fn = ebnm_ash, ebnm
     return(f)
 }
 
-#' @title  Optimize a flash factor-loading combination
-#' @details Iteratively updates factor and loading k of f (as well as residual precision)
-#' to convergence of objective (used in the greedy algorithm for example)
-#' @param data a flash data object
-#' @param f a flash object
-#' @param k the index of the factor/loading to optimize
-#' @param var_type type of variance structure to assume for residuals.
-#' @param nullcheck flag whether to check, after running
-#' hill-climbing updates, whether the achieved optimum is better than setting factor to 0.
-#' If this check is performed and fails then the factor will be set to 0 in the returned fit.
-#' @param tol a tolerance for the optimization
-#' @param ebnm_fn function to solve the Empirical Bayes normal means problem
-#' @param ebnm_param parameters to be passed to ebnm_fn when optimizing;
-#' @param verbose if TRUE various output progress updates will be printed
-#' @return an updated flash object
+# @title Optimize a flash factor-loading combination.
+# 
+# @details Iteratively updates factor and loading k of f (as well as
+#   residual precision) to convergence of objective (used in the greedy
+#   algorithm for example).
+# 
+# @param data A flash data object.
+# 
+# @param f A flash object.
+# 
+# @param k The index of the factor/loading to optimize.
+# 
+# @param var_type Type of variance structure to assume for residuals.
+# 
+# @param nullcheck Flag whether to check, after running hill-climbing
+#   updates, whether the achieved optimum is better than setting factor
+#   to 0. If this check is performed and fails then the factor will be
+#   set to 0 in the returned fit.
+# 
+# @param tol A tolerance for the optimization.
+# 
+# @param ebnm_fn Function to solve the Empirical Bayes normal means
+#   problem.
+# 
+# @param ebnm_param Parameters to be passed to ebnm_fn when optimizing.
+# 
+# @param verbose If TRUE, various output progress updates will be printed.
+# 
+# @return An updated flash object.
+# 
 flash_optimize_single_fl = function(data, f, k, var_type, nullcheck = TRUE, tol = 0.01, ebnm_fn = ebnm_ash, ebnm_param = flash_default_ebnm_param(ebnm_fn),
     verbose = FALSE) {
     f_subset = which(!f$fixf[, k])
@@ -118,18 +136,29 @@ flash_optimize_single_fl = function(data, f, k, var_type, nullcheck = TRUE, tol 
     return(f)
 }
 
-#' @title  Zeros out factors when that improves the objective
-#' @details Sometimes zeroing out a factor can improve the objective.
-#' This function iterates over factors with indices in kset
-#' and checks whether zeroing it out will improve the objective; if so then that factor
-#' is set to 0 (and precision is updated). Returns the final flash fit object obtained when this iterative process stops
-#' (ie a complete pass is performed with no factor being zerod)
-#' @param data a flash data object
-#' @param f a flash object
-#' @param kset the indices of the factor/loading to check
-#' @param var_type type of variance structure to assume for residuals.
-#' @param verbose if TRUE various output progress updates will be printed
-#' @return a flash object
+# @title Zeros out factors when that improves the objective.
+# 
+# @description Sometimes zeroing out a factor can improve the
+#   objective. This function iterates over factors with indices in
+#   kset and checks whether zeroing it out will improve the objective;
+#   if so then that factor is set to 0 (and precision is updated).
+#   Returns the final flash fit object obtained when this iterative
+#   process stops (ie a complete pass is performed with no factor being
+#   zeroed).
+# 
+# @param data A flash data object.
+# 
+# @param f A flash object.
+# 
+# @param kset The indices of the factor/loading to check.
+# 
+# @param var_type Type of variance structure to assume for residuals.
+# 
+# @param verbose If TRUE, various output progress updates will be
+#   printed.
+# 
+# @return A flash object.
+# 
 perform_nullcheck = function(data, f, kset, var_type, verbose) {
 
     f_changed = TRUE  #we are going to iterate until f does not change

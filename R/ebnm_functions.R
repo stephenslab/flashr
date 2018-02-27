@@ -2,7 +2,7 @@
 # function must take the arguments x,s and output a list with elements
 # postmean, postmean2, fitted_g and penloglik.
  
-#' @description A wrapper to the ash function for flash.
+#' @title A wrapper to the ash function for flash.
 #' 
 #' @export
 #' 
