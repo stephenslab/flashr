@@ -9,8 +9,7 @@
 #' @param ebnm_fn function used to solve the Empirical Bayes Normal Means problem
 #' @return A function that takes a single parameter nsamp, the number of samples of LF to be
 #' produced by the sampler. Care should be used when setting nsamp, because the sampler
-#' returns a list of matrices which are each of the same size as the original flash data
-#' object.
+#' returns a list of matrices which are each of the same size as the data matrix.
 #' @export
 flash_lf_sampler_fixedf = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
   if (is.null(kset)) {kset = 1:get_k(f)}
@@ -31,8 +30,7 @@ flash_lf_sampler_fixedf = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
 #' @param ebnm_fn function used to solve the Empirical Bayes Normal Means problem
 #' @return A function that takes a single parameter nsamp, the number of samples of LF to be
 #' produced by the sampler. Care should be used when setting nsamp, because the sampler
-#' returns a list of matrices which are each of the same size as the original flash data
-#' object.
+#' returns a list of matrices which are each of the same size as the data matrix.
 #' @export
 flash_lf_sampler_fixedl = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
   if (is.matrix(data)) {data = flash_set_data(data)}
