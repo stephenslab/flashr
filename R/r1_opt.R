@@ -1,28 +1,61 @@
-#' @title r1_opt
-#' @description Optimize a single loading and factor ('rank 1' model)
-#' @details This function iteratively optimizes the loading, factor and residual precision, from residuals and their expected squared values
-#' Currently the tolerance is on the changes in l and f (not on the objective function)
-#' @param R an n times p matrix of data (expected residuals)
-#' @param R2 an n times p matrix of expected squared residuals
-#' @param l_init the initial value of loading used for iterative scheme (n vector)
-#' @param f_init the initial value of the factor for iterative scheme (p vector)
-#' @param l2_init initial value of l2 (optional)
-#' @param f2_init initial value of f2 (optional)
-#' @param l_subset vector of indices of l to update (default is all)
-#' @param f_subset vector of indices of f to update (default is all)
-#' @param ebnm_fn function to solve the Empirical Bayes normal means problem
-#' @param ebnm_param parameters to be passed to ebnm_fn when optimizing
-#' @param var_type the type of variance structure to assume
-#' @param tol a tolerance on changes in l and f to diagnose convergence
-#' @param calc_F whether to compute the objective function (useful for testing purposes)
-#' @param missing an n times matrix of TRUE/FALSE indicating which elements of R and R2 should be considered missing (note neither R nor R2 must have missing values; eg set them to 0)
-#' @param verbose if true then trace of objective function is printed
-#' @param maxiter an upper bound on the number of iterations before terminating
-#' @param KLobj the value of the KL part of the objective for the other factors not being optimized (optional, but allows objective to be computed accurately)
-#' @return an updated flash object
-r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL, l_subset = 1:length(l_init), f_subset = 1:length(f_init),
-    ebnm_fn = ebnm_ash, ebnm_param = flash_default_ebnm_param(ebnm_fn), var_type = c("by_column", "constant", "by_row",
-        "kroneker"), tol = 0.001, calc_F = TRUE, missing = NULL, verbose = FALSE, maxiter = 5000, KLobj = 0) {
+# @title Optimize a single loading and factor ('rank 1' model).
+# 
+# @description This function iteratively optimizes the loading,
+#   factor and residual precision, from residuals and their expected
+#   squared values Currently the tolerance is on the changes in l and f
+#   (not on the objective function)
+# 
+# @param R An n times p matrix of data (expected residuals).
+# 
+# @param R2 An n times p matrix of expected squared residuals.
+# 
+# @param l_init The initial value of loading used for iterative
+#   scheme (n vector).
+# 
+# @param f_init The initial value of the factor for iterative scheme
+#   (p vector).
+# 
+# @param l2_init initial value of l2 (optional)
+# 
+# @param f2_init initial value of f2 (optional)
+# 
+# @param l_subset Vector of indices of l to update (default is all).
+# 
+# @param f_subset Vector of indices of f to update (default is all).
+# 
+# @param ebnm_fn Function to solve the Empirical Bayes normal means
+#   problem.
+# 
+# @param ebnm_param Parameters to be passed to ebnm_fn when optimizing.
+# 
+# @param var_type The type of variance structure to assume.
+# 
+# @param tol A tolerance on changes in l and f to diagnose convergence.
+# 
+# @param calc_F Whether to compute the objective function (useful for
+#   testing purposes).
+# 
+# @param missing An n times matrix of TRUE/FALSE indicating which
+#   elements of R and R2 should be considered missing (note neither R
+#   nor R2 must have missing values; eg set them to 0).
+# 
+# @param verbose If TRUE, then trace of objective function is printed.
+# 
+# @param maxiter An upper bound on the number of iterations before
+#   terminating.
+# 
+# @param KLobj The value of the KL part of the objective for the
+#   other factors not being optimized (optional, but allows objective
+#   to be computed accurately).
+# 
+# @return An updated flash object.
+# 
+r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
+  l_subset = 1:length(l_init), f_subset = 1:length(f_init),
+    ebnm_fn = ebnm_ash, ebnm_param = flash_default_ebnm_param(ebnm_fn),
+    var_type = c("by_column", "constant", "by_row","kroneker"),
+    tol = 0.001, calc_F = TRUE, missing = NULL, verbose = FALSE,
+    maxiter = 5000, KLobj = 0) {
 
     l = l_init
     f = f_init
@@ -144,7 +177,7 @@ https://github.com/stephenslab/flashr/issues/26 for more details.")
         penloglik_l = penloglik_l, penloglik_f = penloglik_f, ebnm_param = ebnm_param))
 }
 
-# put the results into f
+# Put the results into f.
 update_f_from_r1_opt_results = function(f, k, res) {
     f$EL[, k] = res$l
     f$EF[, k] = res$f
@@ -178,7 +211,8 @@ update_f_from_r1_opt_results = function(f, k, res) {
     return(f)
 }
 
-# compute the expected log-likelihood (at non-missing locations) based on expected squared residuals and tau
+# Compute the expected log-likelihood (at non-missing locations) based
+# on expected squared residuals and tau.
 e_loglik_from_R2_and_tau = function(R2, tau, missing) {
     -0.5 * sum(log((2 * pi)/tau[!missing]) + tau[!missing] * R2[!missing])
 }
