@@ -28,7 +28,8 @@ test_that("sampling functions produce objects of correct dimensions and give rea
 
   lf_means = Reduce(`+`, lfsamp) / 10
   # need to suppress warning about scale parameter being a matrix:
-  suppressWarnings(expect_equal(lf_means, flash_get_lf(fit), tolerance=0.1, scale=LF))
+  LF = flash_get_lf(fit)
+  suppressWarnings(expect_equal(lf_means, LF, tolerance=0.1, scale=LF))
 
   # fix some elements
   fit = flash_add_fixed_f(data, matrix(1, nrow=30, ncol=1),

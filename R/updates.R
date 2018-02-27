@@ -58,13 +58,14 @@ flash_update_single_factor = function(data,f,k,ebnm_fn = ebnm_ash,
     if(sum(is.finite(s))>0){ # check some finite values before proceeding
       Rk = get_Rk(data,f,k)[,subset] #residuals excluding factor k
       x = (t(Rk*tau) %*% f$EL[,k]) * s^2
-      a = ebnm_fn(x,s,ebnm_param)
       if (return_sampler) {
-        if (is.null(a$sampler)) {
+        a = ebnm_fn(x, s, ebnm_param, output="post_sampler")
+        if (is.null(a$post_sampler)) {
           stop("No sampler implemented for that ebnm function.")
         }
-        return(sampler(f$fixf[, k], a$sampler, f$EF[f$fixl[, k], k]))
+        return(sampler(f$fixf[, k], a$post_sampler, f$EF[f$fixl[, k], k]))
       }
+      a = ebnm_fn(x,s,ebnm_param)
       f$EF[subset,k] = a$postmean
       f$EF2[subset,k] = a$postmean2
       f$gf[[k]] = a$fitted_g
