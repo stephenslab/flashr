@@ -2,16 +2,17 @@
 % Please edit documentation in R/plot.R
 \name{flash_plot_pve}
 \alias{flash_plot_pve}
-\title{plot a scree plot of proportion of variance explained by each factor}
+\title{Scree plot.}
 \usage{
 flash_plot_pve(f, main = "Scree plot of PVE for each factor")
 }
 \arguments{
-\item{f}{the flash fit object}
+\item{f}{The flash fit object.}
 }
 \value{
-a ggplot plot object
+A ggplot plot object.
 }
 \description{
-plot a scree plot of proportion of variance explained by each factor
+Create a scree plot giving proportion of variance
+explained by each factor.
 }

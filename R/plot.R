@@ -1,28 +1,37 @@
-#' @title plot the factors from flash results
-#' @return list of factor, loading and variance of noise matrix
+#' @title Plot the factors from flash results.
+#' 
+#' @return List containing:
+#' 
 #'  \itemize{
-#'   \item{\code{plot_f}} {is a ggplot object for the factors}
-#'   \item{\code{plot_l}} {is a ggplot object for the loadings}
+#'   \item{\code{plot_f}} {A ggplot object for the factors.}
+#'   \item{\code{plot_l}} {A ggplot object for the loadings}
 #'  }
-#' @param data the flash data object
-#' @param f is a flash fit object
-#' @details plots each factor and loading as a barplot.
+#' 
+#' @param data The flash data object.
+#' 
+#' @param f A flash fit object.
+#' 
+#' @details Plots each factor and loading as a barplot.
 #' 
 #' @export
+#' 
 flash_plot_factors =
   function(data, f, k = 1, loading_label = FALSE, factor_label = FALSE) {
     Y = get_Yorig(data)
     sample_name = rownames(Y)
     variable_name = colnames(Y)
+    
     # plot the expectation of PVE
     K = flash_get_k(f)
     pve = flash_get_pve(f)
+    
     # plot the factors
     if (factor_label == TRUE) {
         plot_f = plot_one_factor(flash_get_f(f, k), pve[k], k, f_labels = colnames(Y), y_lab = "factor values")
     } else {
         plot_f = plot_one_factor(flash_get_f(f, k), pve[k], k, f_labels = NA, y_lab = "factor values")
     }
+    
     # plot the loadings
     if (loading_label == TRUE) {
         plot_l = plot_one_factor(flash_get_l(f, k), pve[k], k, f_labels = row.names(Y), y_lab = "loading values")
@@ -32,20 +41,26 @@ flash_plot_factors =
     return(list(plot_f = plot_f, plot_l = plot_l))
 }
 
-#' plot_f
-#'
-#' plot the factor
+#' @title Factor plot.
+#' 
 #' @return list of factor, loading and variance of noise matrix
 #'  \itemize{
 #'   \item{\code{plot_f}} {is a ggplot object for the factors}
 #'  }
-#' @param f factor to plot
-#' @param pve pve for this factor
-#' @param P the lenght of this factor
-#' @param k the order of the factor
-#' @param f_labels the lables for the factor
-#' @param y_lab is the name of the Y axis
-#' @details plot_f is to plot the factor as barplot.
+#' 
+#' @param f Factor to plot.
+#' 
+#' @param pve PVE for this factor.
+#' 
+#' @param P The length of this factor.
+#' 
+#' @param k The order of the factor.
+#' 
+#' @param f_labels The labels for the factor.
+#' 
+#' @param y_lab The name of the Y axis.
+#' 
+#' @details Plots the factors in a barplot.
 #'
 plot_one_factor = function(f, pve, k, f_labels = NA, y_lab = "factor values") {
     P = length(f)
@@ -71,14 +86,23 @@ plot_one_factor = function(f, pve, k, f_labels = NA, y_lab = "factor values") {
     return(plot_f)
 }
 
-#' plot a scree plot of proportion of variance explained by each factor
-#' @param f the flash fit object
-#' @return a ggplot plot object
+
+#' @title Scree plot.
+#'
+#' @description Create a scree plot giving proportion of variance
+#' explained by each factor.
+#' 
+#' @param f The flash fit object.
+#' 
+#' @return A ggplot plot object.
+#' 
 #' @export
+#' 
 flash_plot_pve = function(f, main = "Scree plot of PVE for each factor") {
-    pve = flash_get_pve(f)
-    pve_dat = data.frame(factor_index = seq(1, flash_get_k(f)), PVE = pve)
-    p <- ggplot2::ggplot(pve_dat, aes(factor_index, PVE)) + geom_point(size = 4) + geom_line(linetype = "dotdash") + 
-        labs(title = main)
-    return(p)
+  pve = flash_get_pve(f)
+  pve_dat = data.frame(factor_index = seq(1, flash_get_k(f)), PVE = pve)
+  p <- ggplot2::ggplot(pve_dat, aes(factor_index, PVE)) +
+    geom_point(size = 4) + geom_line(linetype = "dotdash") + 
+    labs(title = main)
+  return(p)
 }

@@ -15,9 +15,7 @@ ebnm_ash = function(x, s, ash_param) {
     return(a$flash_data)
 }
 
-#' EBNM using point-laplace prior, from ebnm package.
-#' 
-#' @title ebnm_pl
+#' @title EBNM using point-laplace prior, from ebnm package.
 #' 
 #' @description A wrapper to the function \code{\link[ebnm]{point_laplace}}.
 #' 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/ebnm_functions.R
 \name{ebnm_pl}
 \alias{ebnm_pl}
-\title{ebnm_pl}
+\title{EBNM using point-laplace prior, from ebnm package.}
 \usage{
 ebnm_pl(x, s, ebnm_param)
 }
@@ -16,7 +16,4 @@ ebnm_point_laplace.}
 }
 \description{
 A wrapper to the function \code{\link[ebnm]{point_laplace}}.
-}
-\details{
-EBNM using point-laplace prior, from ebnm package.
 }
