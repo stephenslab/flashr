@@ -31,6 +31,12 @@ test_that("sampling functions produce objects of correct dimensions and give rea
   LF = flash_get_lf(fit)
   suppressWarnings(expect_equal(lf_means, LF, tolerance=0.1, scale=LF))
 
+  # test wrapper function
+  lfsampler2 = flash_lf_sampler(data, fit, ebnm_fn=ebnm_ash, fixed="f")
+  lfsamp = lfsampler(10)
+  expect_length(lfsamp, 10)
+  expect_equal(dim(lfsamp[[1]]), c(20, 30))
+
   # fix some elements
   fit = flash_add_fixed_f(data, matrix(1, nrow=30, ncol=1),
                           fixf = matrix(c(rep(TRUE, 10), rep(FALSE, 20)), ncol=1))
@@ -51,6 +57,12 @@ test_that("sampling functions produce objects of correct dimensions and give rea
 
   flsampler = flash_lf_sampler_fixedl(data, fit, ebnm_fn=ebnm_ash)
   flsamp = flsampler(10)
+  expect_length(flsamp, 10)
+  expect_equal(dim(flsamp[[1]]), c(20, 30))
+
+  #test wrapper function
+  flsampler2 = flash_lf_sampler(data, fit, ebnm_fn=ebnm_ash, fixed="l")
+  flsamp = flsampler2(10)
   expect_length(flsamp, 10)
   expect_equal(dim(flsamp[[1]]), c(20, 30))
 })
