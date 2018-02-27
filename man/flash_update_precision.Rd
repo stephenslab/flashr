@@ -2,24 +2,21 @@
 % Please edit documentation in R/update_precision.R
 \name{flash_update_precision}
 \alias{flash_update_precision}
-\title{Update precision parameter}
+\title{Update precision parameter.}
 \usage{
 flash_update_precision(data, f, var_type = c("by_column", "constant",
   "by_row", "kroneker"))
 }
 \arguments{
-\item{data}{a flash data object}
+\item{data}{A flash data object.}
 
-\item{f}{a flash object}
+\item{f}{A flash object.}
 
-\item{var_type}{indicates what type of variance structure to assume}
+\item{var_type}{Indicates what type of variance structure to assume.}
 }
 \value{
-an updated flash object
+An updated flash object.
 }
 \description{
-Update precision parameter
-}
-\details{
-Updates precision estimate to increase the objective F
+Updates precision estimate to increase the objective F.
 }
