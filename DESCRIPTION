@@ -23,10 +23,13 @@ Imports:
     softImpute,
     stats,
     utils
-Suggests: testthat
+Suggests: 
+    testthat,
+    knitr
 License: BSD_3_clause + file LICENSE
 URL: http://github.com/stephenslab/flashr
 BugReports: http://github.com/stephenslab/flashr/issues
+VignetteBuilder: knitr
 LazyData: true
 RoxygenNote: 6.0.1.9000
 Remotes: stephenslab/ebnm
