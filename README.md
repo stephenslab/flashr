@@ -60,7 +60,7 @@ f3= flash_r1(Y,ebnm_fn = ebnm_ash, ebnm_param = list(mixcompdist = "normal",meth
 
 ```
 
-For more see [flash_intro.Rmd](articles/flash_intro.html).
+For more see [flash_intro.Rmd](https://stephenslab.github.io/flashr/articles/flash_intro.html).
 
 ## How to build static HTML documentation
 
