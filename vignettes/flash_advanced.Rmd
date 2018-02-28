@@ -4,7 +4,7 @@ author: "Matthew Stephens"
 date: "September 23, 2017"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{flashr advanced}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -17,7 +17,8 @@ knitr::opts_chunk$set(echo = TRUE)
 # Introduction
 
 This vignette is designed to describe some more advanced use of flash.
-Most users should start with the [flash_intro.html](flash_intro.html) vignette.
+Most users should start with the [flash_intro.html](flash_intro.html)
+vignette.
 
 The interface described may change as we develop `flashr`.
 

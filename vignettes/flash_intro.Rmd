@@ -4,7 +4,7 @@ author: "Matthew Stephens"
 date: "September 23, 2017"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{flashr intro}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -103,7 +103,6 @@ f.gb = flash(Y, backfit=TRUE, greedy=TRUE)
 ldf.gb = flash_get_ldf(f.gb)
 ldf.gb$d
 ```
-
 
 # Using flash to fill in missing data
 

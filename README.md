@@ -27,6 +27,10 @@ our paper:
 
 ## Quick start
 
+Follow these steps to quickly get started using `flashr`.
+
+1. 
+
 For a minimal example, install the `devtools` package and then:
 
 ```R
@@ -59,6 +63,16 @@ f3= flash_r1(Y,ebnm_fn = ebnm_ash, ebnm_param = list(mixcompdist = "normal",meth
 ```
 
 For more see [flash_intro.Rmd](vignettes/flash_intro.Rmd).
+
+## How to build static HTML documentation
+
+These are the R commands to build the website (make sure you are
+connected to Internet while running these commands):
+
+```R
+library(pkgdown)
+build_site(mathjax = FALSE)
+```
 
 ## Credits
 
