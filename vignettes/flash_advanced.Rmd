@@ -167,7 +167,7 @@ For example, the following creates a flash fit object with a fixed intercept loa
 f = flash_add_fixed_l(data,LL = cbind(rep(1,n)))
 f = flash_add_factors_from_data(data,K=10,f_init=f)
 f = flash_backfit(data,f)
-f = flash_get_k(f) #tells you how many factors f has
+flash_get_k(f) #tells you how many factors f has
 head(flash_get_ldf(f,1,drop_zero_factors = FALSE)$l) 
 flash_get_ldf(f,1,drop_zero_factors = FALSE)$d  #note this is 0 as the factor has no weight
 ```
