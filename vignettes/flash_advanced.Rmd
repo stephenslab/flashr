@@ -102,12 +102,12 @@ flash_get_objective(data,f_greedy)
 ```
 
 After adding factors in this way you can use backfitting to try
-to further improve the fit. In this case we get a slightly better fit
-than the original (although it maybe took longer?)
+to further improve the fit. In our experience, for different datasets, sometimes this provides a better fit than initializing all at once (as in `f` above), sometimes worse.
 ```{r}
 f_greedy_bf = flash_backfit(data,f_greedy)
 flash_get_ldf(f_greedy_bf)$d
 flash_get_objective(data,f_greedy_bf)
+flash_get_objective(data,f)
 ```
 
 # Setting loadings and factors directly
@@ -122,8 +122,8 @@ flash_get_objective(data,f_cheat)
 ```
 
 Unexpectedly (to me) the objective achieved from this initialization
-is lower than those from the other initializations. However, the
-results are pretty similar in terms of mean squared error:
+is lower than those from the greedy initialization. However, the
+results are pretty similar in terms of mean squared error (MSE). Notice that backfitting improved MSE vs greedy.
 ```{r}
 mean((flash_get_lf(f_cheat) - LL %*% t(FF))^2)
 mean((flash_get_lf(f_greedy_bf) - LL %*% t(FF))^2)
@@ -135,15 +135,17 @@ mean((flash_get_lf(f_greedy) - LL %*% t(FF))^2)
 # Setting the function used to solve the EBNM problem
 
 The flash algorithm involves iteratively applying a function
-that solves the "empirical bayes normal means" (EBNM) problem. See Wang and Stephens (2017) for more details on this. For now we note
-that the package provides two functions to do this:
+that solves the "Empirical Bayes normal means" (EBNM) problem. See Wang and Stephens (2017) for more details on this.  The `flashr` package provides two functions to do this:
 `ebnm_pn`, which uses a point-normal prior from the `ebnm` package, 
 and `ebnm_ash` which
 provides an interface to functions in the `ashr` package.
 
+In principle the `ebnm_ash` function fits a more flexible model,
+so might be preferred. However, in the paper we generally found
+the two methods give similar average performance, and `ebnm_pn` is (currently) faster, and so this is the default.
 ```{r}
 f_greedy_ash = flash_add_greedy(data,Kmax=10,ebnm_fn = ebnm_ash)
-flash_get_ldf(f_greedy_ash)
+flash_get_objective(data,f_greedy_ash)
 ```
 
 
@@ -165,9 +167,9 @@ For example, the following creates a flash fit object with a fixed intercept loa
 f = flash_add_fixed_l(data,LL = cbind(rep(1,n)))
 f = flash_add_factors_from_data(data,K=10,f_init=f)
 f = flash_backfit(data,f)
-flash_get_ldf(f,1)$l
-flash_get_ldf(f,1)$f
-flash_get_ldf(f,1)$d
+f = flash_get_k(f) #tells you how many factors f has
+head(flash_get_ldf(f,1,drop_zero_factors = FALSE)$l) 
+flash_get_ldf(f,1,drop_zero_factors = FALSE)$d  #note this is 0 as the factor has no weight
 ```
 
 
