@@ -1,5 +1,7 @@
 # flashr
 
+[![Travis Build Status](https://travis-ci.org/stephenslab/flashr.svg?branch=master)](https://travis-ci.org/stephenslab/flashr)
+
 Methods for matrix factorization based on
 [Empirical Bayes Matrix Factorization](https://arxiv.org/abs/1802.06931).
 The name of the package, "flashr," comes from "Factors and Loadings by
