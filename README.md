@@ -34,7 +34,7 @@ Follow these steps to quickly get started using `flashr`.
 1. Install the [latest release of the flashr
    package](https://github.com/stephenslab/flashr/releases/tag/v0.5-6)
    using [devtools](https://github.com/r-lib/devtools). Please note that it can take
-   several minutes to build the vignettes.
+   several minutes to build the vignettes:
 
    ```R
    # install.packages("devtools")
