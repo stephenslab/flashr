@@ -38,7 +38,7 @@ Follow these steps to quickly get started using `flashr`.
    ```R
    # install.packages("devtools")
    library(devtools)
-   install_github("stephenslab/flashr@v0.5-6")
+   install_github("stephenslab/flashr@v0.5-6",build_vignettes = TRUE)
    ```
 
    This command should automatically retrieve and install the `ashr`
