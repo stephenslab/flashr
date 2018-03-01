@@ -1,20 +1,20 @@
 #' @title Use a flash fit to fill in missing entries.
-#' 
+#'
 #' @description Fills in missing entries of Y by using the relevant
 #'   entries of the estimated LDF' from the flash fit.
-#' 
-#' @param Y An n by p matrix with missing entries used to fit flash.
-#' 
+#'
+#' @param Y A flash data object, or an n by p matrix, used to fit f.
+#'
 #' @param f The flash fit object obtained from running flash on Y.
-#' 
+#'
 #' @return A matrix with non-missing entries the same as $Y$, and
 #'   missing entries imputed from the flash fit
-#' 
+#'
 #' @export
-#' 
+#'
 flash_fill = function(Y, f){
-  missing = is.na(Y)
-  if(!is.matrix(Y)){stop("for flash_fill Y must be a matrix")}
+  if(class(Y)=="flash_data"){Y = get_Yorig(Y)}
+  if(!is.matrix(Y)){stop("for flash_fill Y must be a matrix or flash data object")}
   if(dim(Y)[1]!=flash_get_n(f)){stop("dimensions of Y must match flash fit")}
   if(dim(Y)[2]!=flash_get_p(f)){stop("dimensions of Y must match flash fit")}
   Y[is.na(Y)] = flash_get_lf(f)[is.na(Y)]
@@ -48,12 +48,12 @@ flash_transpose = function(f) {
 }
 
 # @title Transpose a flash data object.
-# 
+#
 # @param f The flash data object.
-# 
+#
 # @return A new flash data object, with the matrices of the original
 #   flash data object transposed.
-# 
+#
 flash_transpose_data = function(data) {
     if (is.matrix(data$Yorig)) {
         data$Yorig = t(data$Yorig)
@@ -68,11 +68,11 @@ flash_transpose_data = function(data) {
 }
 
 # @title combine two flash fit objects
-# 
+#
 # @param f1 first flash fit object
-# 
+#
 # @param f2 second flash fit object
-# 
+#
 # @return A flash fit object whose factors are concatenations of f1
 #   and f2. The precision (tau) of the combined fit is inherited from f2.
 #
@@ -136,13 +136,13 @@ flash_subset_data = function(data, row_subset = NULL, col_subset = NULL) {
 }
 
 #' @title Zero out a factor from f.
-#' 
+#'
 #' @param data A flash data object.
-#' 
+#'
 #' @param f A flash fit object.
-#' 
+#'
 #' @param k Index of factor/loading to zero out.
-#' 
+#'
 #' @details The factor and loadings of the kth factor of f are made to
 #'   be zero (except for elements of the factor/loading that are
 #'   designated to be fixed). This effectively reduces the rank by 1,
@@ -150,9 +150,9 @@ flash_subset_data = function(data, row_subset = NULL, col_subset = NULL) {
 #'   indexing of factor/loading matrices in f remains the same.
 #'
 #' @importFrom ashr normalmix
-#' 
+#'
 #' @export
-#' 
+#'
 flash_zero_out_factor = function(data, f, k = 1) {
     f$EL[!f$fixl[, k], k] = 0
     f$EL2[!f$fixl[, k], k] = 0

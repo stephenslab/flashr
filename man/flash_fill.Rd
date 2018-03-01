@@ -7,7 +7,7 @@
 flash_fill(Y, f)
 }
 \arguments{
-\item{Y}{An n by p matrix with missing entries used to fit flash.}
+\item{Y}{A flash data object, or an n by p matrix, used to fit f.}
 
 \item{f}{The flash fit object obtained from running flash on Y.}
 }

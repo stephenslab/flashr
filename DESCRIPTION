@@ -1,8 +1,8 @@
 Package: flashr
 Encoding: UTF-8
 Type: Package
-Version: 0.5-5
-Date: 2018-02-27
+Version: 0.5-6
+Date: 2018-03-01
 Title: Empirical Bayes Matrix Factorization
 Authors@R: c(person("Matthew","Stephens",role=c("aut","cre"),
                     email="mstephens@uchicago.edu"),
@@ -35,4 +35,4 @@ VignetteBuilder: knitr
 LazyData: true
 RoxygenNote: 6.0.1.9000
 Remotes: stephens999/ashr
-Remotes: stephenslab/ebnm
+    stephenslab/ebnm
