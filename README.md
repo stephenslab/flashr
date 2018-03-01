@@ -52,7 +52,7 @@ Follow these steps to quickly get started using `flashr`.
 
 2. Optionally, install MOSEK and the Rmosek package, for faster model
    fitting. See the
-   [ashr webpage on GitHub](https://github.com/stephens999/ashr) for
+   [ashr GitHub repository](https://github.com/stephens999/ashr) for
    details.
 
 3. Run a few toy examples illustrating the `flash` function:
@@ -76,7 +76,7 @@ Follow these steps to quickly get started using `flashr`.
    vignette("flash_advanced")
    ```
 
-6. Read the [online documentation](https://stephenslab.github.io/flashr) 
+6. See the [online documentation](https://stephenslab.github.io/flashr) 
    learn more about the `flashr` package.
 
 ## How to build static HTML documentation
