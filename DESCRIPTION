@@ -34,4 +34,5 @@ BugReports: http://github.com/stephenslab/flashr/issues
 VignetteBuilder: knitr
 LazyData: true
 RoxygenNote: 6.0.1.9000
+Remotes: stephens999/ashr
 Remotes: stephenslab/ebnm
