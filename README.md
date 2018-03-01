@@ -62,13 +62,21 @@ Follow these steps to quickly get started using `flashr`.
    ```
 
 4. Explore the [introductory flashr
-   vignette](https://stephenslab.github.io/flashr/articles/flash_intro.html).
+   vignette](https://stephenslab.github.io/flashr/articles/flash_intro.html):
+
+   ```R
+   vignette("flash_intro")
+   ```
 
 5. Explore the
    [vignette illustrating some more advanced features of
-   flashr](https://stephenslab.github.io/flashr/articles/flash_advanced.html).
+   flashr](https://stephenslab.github.io/flashr/articles/flash_advanced.html):
 
-6. Read the [online documentation](https://stephenslab.github.io/flashr) to
+   ```R
+   vignette("flash_advanced")
+   ```
+
+6. Read the [online documentation](https://stephenslab.github.io/flashr) 
    learn more about the `flashr` package.
 
 ## How to build static HTML documentation
