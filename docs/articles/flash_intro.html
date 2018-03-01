@@ -72,15 +72,18 @@
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
-<p>This is a brief introduction to the <code>flashr</code> package. The examples here will suffice for many users. For more “advanced” use see <a href="flash_advanced.html" class="uri">flash_advanced.html</a>.</p>
+<p>This is a brief introduction to the <code>flashr</code> package. The examples here will suffice for many users. For more advanced usage, see the other vignettes.</p>
 </div>
 <div id="model-summary" class="section level1">
 <h1 class="hasAnchor">
 <a href="#model-summary" class="anchor"></a>Model summary</h1>
-<p>The <code>flashr</code> package fits the model <span class="math display">\[Y = LF' + E\]</span> where <span class="math inline">\(Y\)</span> is an <span class="math inline">\(n \times p\)</span> matrix, <span class="math inline">\(L\)</span> is an <span class="math inline">\(n \times k\)</span> matrix, and <span class="math inline">\(F\)</span> is a <span class="math inline">\(p \times k\)</span> matrix, and <span class="math inline">\(E\)</span> is an <span class="math inline">\(n \times p\)</span> matrix of residuals which (by default) are assumed to have column-specific variances: <span class="math display">\[E_{ij} \sim N(0,\sigma_{j}^2)\]</span>.</p>
+<p>The <code>flashr</code> package fits the model <span class="math display">\[Y = LF' + E\]</span> where <span class="math inline">\(Y\)</span> is an <span class="math inline">\(n \times p\)</span> matrix, <span class="math inline">\(L\)</span> is an <span class="math inline">\(n \times k\)</span> matrix, and <span class="math inline">\(F\)</span> is a <span class="math inline">\(p \times k\)</span> matrix, and <span class="math inline">\(E\)</span> is an <span class="math inline">\(n \times p\)</span> matrix of residuals which (by default) are assumed to have column-specific variances:</p>
+<p><span class="math display">\[E_{ij} \sim N(0,\sigma_{j}^2).\]</span></p>
 <p>The columns of <span class="math inline">\(L\)</span> are called the “loadings” and columns of <span class="math inline">\(F\)</span> are called the “factors”. Unlike some other methods (e.g. singular value decomoposition) these columns are not required to be orthogonal.</p>
-<p>The key idea behind `flashr is to use Empirical Bayes methods to estimate a “prior” distribution for each factor and each loading. This can induce sparsity on either/or factors and loadings if the data support this.</p>
-<p>The scaling of the factors and loadings in the above model is arbitrary. Often it is convenient to scale the loadings and columns to have unit norm. In this case we can write <span class="math display">\[Y = LDF' + E\]</span> where <span class="math inline">\(D\)</span> is a diagonal matrix of “weights” that capture the strength of each factor/loading. The flash function <code>flash_get_ldf</code> returns the values of <span class="math inline">\(L, D\)</span> and <span class="math inline">\(F\)</span> in this model (with <span class="math inline">\(D\)</span> returned as a vector of the diagonal values).</p>
+<p>The key idea behind <code>flashr</code> is to use Empirical Bayes methods to estimate a “prior” distribution for each factor and each loading. This can induce sparsity on either/or factors and loadings if the data support this.</p>
+<p>The scaling of the factors and loadings in the above model is arbitrary. Often it is convenient to scale the loadings and columns to have unit norm. In this case we can write</p>
+<p><span class="math display">\[Y = LDF' + E,\]</span></p>
+<p>where <span class="math inline">\(D\)</span> is a diagonal matrix of “weights” that capture the strength of each factor/loading. The flash function <code>flash_get_ldf</code> returns the values of <span class="math inline">\(L, D\)</span> and <span class="math inline">\(F\)</span> in this model (with <span class="math inline">\(D\)</span> returned as a vector of the diagonal values).</p>
 </div>
 <div id="examples-of-running-flash" class="section level1">
 <h1 class="hasAnchor">
@@ -103,18 +106,18 @@ Y =<span class="st"> </span>LL <span class="op">%*%</span><span class="st"> </sp
 <a href="#fitting-the-model-and-extracting-results" class="anchor"></a>Fitting the model and extracting results</h2>
 <p>When running <code>flash</code>, usually you will run one command to fit the model, and a second to extract results you want from the fit. The <code>flash</code> function is the one most users will want to start with to fit the model. The <code>flash_get_ldf</code> function can then be used to get the values of <span class="math inline">\(L,D\)</span> and <span class="math inline">\(F\)</span>.</p>
 <p>By default <code>flash</code> runs the greedy algorithm from Wang and Stephens. This is usually the quickest approach. It simply adds factors one at a time, until adding a new factor doesn’t improve the fit:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">f =<span class="st"> </span><span class="kw"><a href="../reference/flash.html">flash</a></span>(Y)</code></pre></div>
-<pre><code>## fitting factor/loading 1</code></pre>
-<pre><code>## fitting factor/loading 2</code></pre>
-<pre><code>## fitting factor/loading 3</code></pre>
-<pre><code>## fitting factor/loading 4</code></pre>
-<pre><code>## fitting factor/loading 5</code></pre>
-<pre><code>## fitting factor/loading 6</code></pre>
-<pre><code>## fitting factor/loading 7</code></pre>
-<pre><code>## fitting factor/loading 8</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ldf =<span class="st"> </span><span class="kw"><a href="../reference/flash_get_ldf.html">flash_get_ldf</a></span>(f)
-ldf<span class="op">$</span>d</code></pre></div>
-<pre><code>## [1] 292.3761 253.6873 233.4289 210.8591 204.2400 203.0717 182.1317</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">f =<span class="st"> </span><span class="kw"><a href="../reference/flash.html">flash</a></span>(Y)
+<span class="co"># fitting factor/loading 1</span>
+<span class="co"># fitting factor/loading 2</span>
+<span class="co"># fitting factor/loading 3</span>
+<span class="co"># fitting factor/loading 4</span>
+<span class="co"># fitting factor/loading 5</span>
+<span class="co"># fitting factor/loading 6</span>
+<span class="co"># fitting factor/loading 7</span>
+<span class="co"># fitting factor/loading 8</span>
+ldf =<span class="st"> </span><span class="kw"><a href="../reference/flash_get_ldf.html">flash_get_ldf</a></span>(f)
+ldf<span class="op">$</span>d
+<span class="co"># [1] 292.3761 253.6873 233.4289 210.8591 204.2400 203.0717 182.1317</span></code></pre></div>
 <p>Note that flash correctly stopped at 7 factors for these data. (Although it tries to fit an 8th factor, from the results we can see that this does not appear: this is because it turned out to be 0.)</p>
 </div>
 <div id="backfitting" class="section level2">
@@ -123,25 +126,25 @@ ldf<span class="op">$</span>d</code></pre></div>
 <p>Sometimes the backfitting algorithm can improve the fit (but it takes longer). To do backfitting on a previous flash fit you can provide that fit as the <code>f_init</code> parameter, and set <code>backfit=TRUE</code>. Here we use the fit obtained from the greedy function as our initialization.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">f.b =<span class="st"> </span><span class="kw"><a href="../reference/flash.html">flash</a></span>(Y, <span class="dt">f_init =</span> f, <span class="dt">backfit=</span><span class="ot">TRUE</span>, <span class="dt">greedy=</span><span class="ot">FALSE</span>)
 ldf.b =<span class="st"> </span><span class="kw"><a href="../reference/flash_get_ldf.html">flash_get_ldf</a></span>(f.b)
-ldf.b<span class="op">$</span>d</code></pre></div>
-<pre><code>## [1] 303.7844 263.2466 241.8200 217.4748 209.0290 206.0587 183.2006</code></pre>
+ldf.b<span class="op">$</span>d
+<span class="co"># [1] 303.7844 263.2466 241.8200 217.4748 209.0290 206.0587 183.2006</span></code></pre></div>
 </div>
 <div id="combining-greedy-backfitting" class="section level2">
 <h2 class="hasAnchor">
 <a href="#combining-greedy-backfitting" class="anchor"></a>Combining greedy + backfitting</h2>
 <p>If you know you are going to want to do backfitting anyway, you can do greedy+backfitting it in one command without saving the intermediate result:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">f.gb =<span class="st"> </span><span class="kw"><a href="../reference/flash.html">flash</a></span>(Y, <span class="dt">backfit=</span><span class="ot">TRUE</span>, <span class="dt">greedy=</span><span class="ot">TRUE</span>)</code></pre></div>
-<pre><code>## fitting factor/loading 1</code></pre>
-<pre><code>## fitting factor/loading 2</code></pre>
-<pre><code>## fitting factor/loading 3</code></pre>
-<pre><code>## fitting factor/loading 4</code></pre>
-<pre><code>## fitting factor/loading 5</code></pre>
-<pre><code>## fitting factor/loading 6</code></pre>
-<pre><code>## fitting factor/loading 7</code></pre>
-<pre><code>## fitting factor/loading 8</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ldf.gb =<span class="st"> </span><span class="kw"><a href="../reference/flash_get_ldf.html">flash_get_ldf</a></span>(f.gb)
-ldf.gb<span class="op">$</span>d</code></pre></div>
-<pre><code>## [1] 303.7844 263.2466 241.8200 217.4748 209.0290 206.0587 183.2006</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">f.gb =<span class="st"> </span><span class="kw"><a href="../reference/flash.html">flash</a></span>(Y, <span class="dt">backfit=</span><span class="ot">TRUE</span>, <span class="dt">greedy=</span><span class="ot">TRUE</span>)
+<span class="co"># fitting factor/loading 1</span>
+<span class="co"># fitting factor/loading 2</span>
+<span class="co"># fitting factor/loading 3</span>
+<span class="co"># fitting factor/loading 4</span>
+<span class="co"># fitting factor/loading 5</span>
+<span class="co"># fitting factor/loading 6</span>
+<span class="co"># fitting factor/loading 7</span>
+<span class="co"># fitting factor/loading 8</span>
+ldf.gb =<span class="st"> </span><span class="kw"><a href="../reference/flash_get_ldf.html">flash_get_ldf</a></span>(f.gb)
+ldf.gb<span class="op">$</span>d
+<span class="co"># [1] 303.7844 263.2466 241.8200 217.4748 209.0290 206.0587 183.2006</span></code></pre></div>
 </div>
 </div>
 <div id="using-flash-to-fill-in-missing-data" class="section level1">
@@ -151,18 +154,18 @@ ldf.gb<span class="op">$</span>d</code></pre></div>
 <p>To illustrate, we add a little missing data to <span class="math inline">\(Y\)</span> here before running.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Ymiss=Y
 Ymiss[<span class="dv">1</span><span class="op">:</span><span class="dv">20</span>,<span class="dv">1</span>] =<span class="st"> </span><span class="ot">NA</span>
-f =<span class="st"> </span><span class="kw"><a href="../reference/flash.html">flash</a></span>(Ymiss)</code></pre></div>
-<pre><code>## fitting factor/loading 1</code></pre>
-<pre><code>## fitting factor/loading 2</code></pre>
-<pre><code>## fitting factor/loading 3</code></pre>
-<pre><code>## fitting factor/loading 4</code></pre>
-<pre><code>## fitting factor/loading 5</code></pre>
-<pre><code>## fitting factor/loading 6</code></pre>
-<pre><code>## fitting factor/loading 7</code></pre>
-<pre><code>## fitting factor/loading 8</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Ynew =<span class="st"> </span><span class="kw"><a href="../reference/flash_fill.html">flash_fill</a></span>(Ymiss,f)
+f =<span class="st"> </span><span class="kw"><a href="../reference/flash.html">flash</a></span>(Ymiss)
+<span class="co"># fitting factor/loading 1</span>
+<span class="co"># fitting factor/loading 2</span>
+<span class="co"># fitting factor/loading 3</span>
+<span class="co"># fitting factor/loading 4</span>
+<span class="co"># fitting factor/loading 5</span>
+<span class="co"># fitting factor/loading 6</span>
+<span class="co"># fitting factor/loading 7</span>
+<span class="co"># fitting factor/loading 8</span>
+Ynew =<span class="st"> </span><span class="kw"><a href="../reference/flash_fill.html">flash_fill</a></span>(Ymiss,f)
 <span class="kw">plot</span>(Y[<span class="dv">1</span><span class="op">:</span><span class="dv">20</span>,<span class="dv">1</span>],Ynew[<span class="dv">1</span><span class="op">:</span><span class="dv">20</span>,<span class="dv">1</span>])</code></pre></div>
-<p><img src="flash_intro_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
+<p><img src="flash_intro_files/figure-html/unnamed-chunk-5-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 </div>
   </div>

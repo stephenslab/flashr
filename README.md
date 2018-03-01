@@ -29,6 +29,18 @@ our paper:
 
 Follow these steps to quickly get started using `flashr`.
 
+1. Install the latest version of the `flashr` package using
+   [devtools](https://github.com/r-lib/devtools):
+
+   ```R
+   library(devtools)
+   install_github("stephenslab/mashr@v0.2-3")
+   library(mashr)
+   ```
+
+   This command should automatically retrieve and install the `ashr`
+   package from Github. 1 
+
 For a minimal example, install the `devtools` package and then:
 
 ```R

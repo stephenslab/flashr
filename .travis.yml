@@ -2,6 +2,12 @@ language: r
 cache: packages
 latex: false
 
+env:
+  global:
+    - _R_CHECK_FORCE_SUGGESTS_: false
+
+r_github_packages: stephens999/ashr
+
 branches:
   only:
   - master

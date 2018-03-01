@@ -15,6 +15,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Here we will do a quick comparison with softImpute.
 First the rank 1 case.
+
 ```{r}
 library("flashr")
 set.seed(1)
@@ -24,7 +25,6 @@ k = 1
 LL = matrix(rnorm(n*k),nrow=n)
 FF = matrix(rnorm(p*k),nrow=p)
 Y = LL %*% t(FF) + rnorm(n*p)
-
 
 Ymiss = Y
 Ymiss[sample(1:length(Y),length(Y)/2)] = NA
@@ -67,7 +67,6 @@ k = 7
 LL = matrix(rnorm(n*k),nrow=n)
 FF = matrix(rnorm(p*k),nrow=p)
 Y = LL %*% t(FF) + rnorm(n*p)
-
 
 Ymiss = Y
 Ymiss[sample(1:length(Y),length(Y)/2)] = NA
