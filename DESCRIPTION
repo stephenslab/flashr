@@ -1,12 +1,39 @@
 Package: flashr
-Type: Package
-Title: Empirical Bayes Matrix Factorization
-Version: 0.4-10
-Author: Wei Wang, Matthew Stephens, Jason Willwerscheid 
-Maintainer: <mstephens@uchicago.edu>
-Description: Implements Empirical Bayes Matrix Factorization methods from Wang and Stephens (2017) 
-License: BSD-3
 Encoding: UTF-8
+Type: Package
+Version: 0.5-6
+Date: 2018-03-01
+Title: Empirical Bayes Matrix Factorization
+Authors@R: c(person("Matthew","Stephens",role=c("aut","cre"),
+                    email="mstephens@uchicago.edu"),
+             person("Wei","Wang",role="aut"),
+             person("Jason","Willwerscheid",role="aut"),
+	     person("Peter","Carbonetto",role="ctb"))
+Maintainer: Matthew Stephens <mstephens@uchicago.edu>
+Description: Methods for matrix factorization based on "Empirical
+    Bayes Matrix Factorization" (W. Wang & M. Stephens, 2018,
+    <https://arxiv.org/abs/1802.06931>). The name "flashr" comes from
+    "Factors and Loadings by Adaptive SHrinkage in R".
+Depends: R (>= 3.3)
+Imports: 
+    ashr (>= 2.2-4),
+    assertthat,
+    ebnm,
+    ggplot2,
+    softImpute,
+    stats,
+    utils
+Suggests: 
+    testthat,
+    knitr,
+    REBayes,
+    Rmosek
+License: BSD_3_clause + file LICENSE
+URL: http://github.com/stephenslab/flashr
+BugReports: http://github.com/stephenslab/flashr/issues
+VignetteBuilder: knitr
 LazyData: true
-Suggests: testthat
-RoxygenNote: 6.0.1
+RoxygenNote: 6.0.1.9000
+Remotes: 
+    stephens999/ashr,
+    stephenslab/ebnm

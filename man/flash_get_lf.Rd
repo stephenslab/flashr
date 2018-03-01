@@ -2,13 +2,16 @@
 % Please edit documentation in R/get_functions.R
 \name{flash_get_lf}
 \alias{flash_get_lf}
-\title{Return the estimated LF' matrix}
+\title{Return the estimated LF' matrix.}
 \usage{
 flash_get_lf(f)
 }
 \arguments{
-\item{f}{a flash fit object}
+\item{f}{A flash fit object.}
 }
 \value{
-the estimated value of LF', an n by p matrix
+The estimated value of LF', an n by p matrix.
+}
+\description{
+Return the estimated LF' matrix.
 }

@@ -2,22 +2,20 @@
 % Please edit documentation in R/plot.R
 \name{plot_one_factor}
 \alias{plot_one_factor}
-\title{plot_f}
+\title{Factor plot.}
 \usage{
 plot_one_factor(f, pve, k, f_labels = NA, y_lab = "factor values")
 }
 \arguments{
-\item{f}{factor to plot}
+\item{f}{Factor to plot.}
 
-\item{pve}{pve for this factor}
+\item{pve}{PVE for this factor.}
 
-\item{k}{the order of the factor}
+\item{k}{The order of the factor.}
 
-\item{f_labels}{the lables for the factor}
+\item{f_labels}{The labels for the factor.}
 
-\item{y_lab}{is the name of the Y axis}
-
-\item{P}{the lenght of this factor}
+\item{y_lab}{The name of the Y axis.}
 }
 \value{
 list of factor, loading and variance of noise matrix
@@ -26,8 +24,8 @@ list of factor, loading and variance of noise matrix
  }
 }
 \description{
-plot the factor
+Factor plot.
 }
 \details{
-plot_f is to plot the factor as barplot.
+Plots the factors in a barplot.
 }

@@ -2,20 +2,24 @@
 % Please edit documentation in R/flash_utils.R
 \name{flash_zero_out_factor}
 \alias{flash_zero_out_factor}
-\title{zero out a factor from f}
+\title{Zero out a factor from f.}
 \usage{
 flash_zero_out_factor(data, f, k = 1)
 }
 \arguments{
-\item{data}{a flash data object}
+\item{data}{A flash data object.}
 
-\item{f}{a flash fit object}
+\item{f}{A flash fit object.}
 
-\item{k}{index of factor/loading to zero out}
+\item{k}{Index of factor/loading to zero out.}
+}
+\description{
+Zero out a factor from f.
 }
 \details{
-The factor and loadings of the kth factor of f are made to be zero
-(except for elements of the factor/loading that are designated to be fixed).
-This effectively reduces the rank by 1, although the zero factor/loading is kept in f
-so the number and indexing of factor/loading matrices in f remains the same.
+The factor and loadings of the kth factor of f are made to
+  be zero (except for elements of the factor/loading that are
+  designated to be fixed). This effectively reduces the rank by 1,
+  although the zero factor/loading is kept in f so the number and
+  indexing of factor/loading matrices in f remains the same.
 }

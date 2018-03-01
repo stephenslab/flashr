@@ -2,17 +2,17 @@
 % Please edit documentation in R/ebnm_functions.R
 \name{ebnm_ash}
 \alias{ebnm_ash}
-\title{provides functions to solve the Empirical Bayes Normal Means problem
-function must take the arguments x,s and output a list with elements
-postmean, postmean2, fitted_g, penloglik}
+\title{A wrapper to the ash function for flash.}
 \usage{
 ebnm_ash(x, s, ash_param)
 }
-\description{
-provides functions to solve the Empirical Bayes Normal Means problem
-function must take the arguments x,s and output a list with elements
-postmean, postmean2, fitted_g, penloglik
+\arguments{
+\item{x}{Describe parameter here.}
+
+\item{s}{Describe parameter here.}
+
+\item{ash_param}{Describe parameter here.}
 }
-\details{
-a wrapper to the ash function for flash
+\description{
+A wrapper to the ash function for flash.
 }
