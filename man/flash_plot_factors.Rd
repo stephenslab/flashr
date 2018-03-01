@@ -2,26 +2,33 @@
 % Please edit documentation in R/plot.R
 \name{flash_plot_factors}
 \alias{flash_plot_factors}
-\title{plot the factors from flash results}
+\title{Plot the factors from flash results.}
 \usage{
 flash_plot_factors(data, f, k = 1, loading_label = FALSE,
   factor_label = FALSE)
 }
 \arguments{
-\item{data}{the flash data object}
+\item{data}{The flash data object.}
 
-\item{f}{is a flash fit object}
+\item{f}{A flash fit object.}
+
+\item{k}{Description of input argument goes here.}
+
+\item{loading_label}{Description of input argument goes here.}
+
+\item{factor_label}{Description of input argument goes here.}
 }
 \value{
-list of factor, loading and variance of noise matrix
+List containing:
+
  \itemize{
-  \item{\code{plot_f}} {is a ggplot object for the factors}
-  \item{\code{plot_l}} {is a ggplot object for the loadings}
+  \item{\code{plot_f}} {A ggplot object for the factors.}
+  \item{\code{plot_l}} {A ggplot object for the loadings}
  }
 }
 \description{
-plot the factors from flash results
+Plot the factors from flash results.
 }
 \details{
-plots each factor and loading as a barplot.
+Plots each factor and loading as a barplot.
 }

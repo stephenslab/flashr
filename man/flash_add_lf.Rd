@@ -2,30 +2,33 @@
 % Please edit documentation in R/flash_add.R
 \name{flash_add_lf}
 \alias{flash_add_lf}
-\title{add factors or loadings to f}
+\title{Add factors or loadings to f.}
 \usage{
 flash_add_lf(data, LL, FF, f_init = NULL, fixl = NULL, fixf = NULL)
 }
 \arguments{
-\item{data}{a flash data object}
+\item{data}{A flash data object.}
 
-\item{LL}{the loadings, an n by K matrix}
+\item{LL}{The loadings, an n by K matrix.}
 
-\item{FF}{the factors, a p by K matrix}
+\item{FF}{The factors, a p by K matrix.}
 
-\item{fixl}{an n by K matrix of TRUE/FALSE values indicating which elements of LL should be considered fixed and not changed during updates.
-Useful for including a mean factor for example.}
+\item{f_init}{Description of input argument goes here.}
 
-\item{fixf}{a p by K matrix of TRUE/FALSE values; same as fixl but for factors FF.}
+\item{fixl}{An n by K matrix of TRUE/FALSE values indicating which
+elements of LL should be considered fixed and not changed during
+updates. Useful for including a mean factor for example.}
 
-\item{f}{a flash fit object}
+\item{fixf}{A p by K matrix of TRUE/FALSE values; same as fixl but
+for factors FF.}
 }
 \value{
-a flash fit object, with additional factors initialized using LL and FF
+A flash fit object, with additional factors initialized
+  using LL and FF.
 }
 \description{
-add factors or loadings to f
+Add factors or loadings to f.
 }
 \details{
-The precision parameter in f is updated after adding
+The precision parameter in f is updated after adding.
 }

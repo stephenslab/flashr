@@ -1,10 +1,14 @@
 language: r
-sudo: false
 cache: packages
 latex: false
-
 
 env:
   global:
     - _R_CHECK_FORCE_SUGGESTS_: false
 
+r_github_packages: stephens999/ashr
+r_github_packages: stephenslab/ebnm
+
+branches:
+  only:
+  - master

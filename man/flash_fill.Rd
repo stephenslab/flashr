@@ -2,21 +2,20 @@
 % Please edit documentation in R/flash_utils.R
 \name{flash_fill}
 \alias{flash_fill}
-\title{Use a flash fit to fill in missing entries}
+\title{Use a flash fit to fill in missing entries.}
 \usage{
 flash_fill(Y, f)
 }
 \arguments{
-\item{Y}{an n by p matrix with missing entries used to fit flash}
+\item{Y}{A flash data object, or an n by p matrix, used to fit f.}
 
-\item{f}{the flash fit object obtained from running flash on Y}
+\item{f}{The flash fit object obtained from running flash on Y.}
 }
 \value{
-a matrix with non-missing entries the same as $Y$, and missing entries imputed from the flash fit
+A matrix with non-missing entries the same as $Y$, and
+  missing entries imputed from the flash fit
 }
 \description{
-Use a flash fit to fill in missing entries
-}
-\details{
-Fills in missing entries of Y by using the relevant entries of the estimated LDF' from the flash fit.
+Fills in missing entries of Y by using the relevant
+  entries of the estimated LDF' from the flash fit.
 }

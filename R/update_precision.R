@@ -1,21 +1,32 @@
-#' @title  Update precision parameter
-#' @details Updates precision estimate to increase the objective F
-#' @param data a flash data object
-#' @param f a flash object
-#' @param var_type indicates what type of variance structure to assume
-#' @return an updated flash object
+#' @title  Update precision parameter.
+#' 
+#' @description Updates precision estimate to increase the objective F.
+#' 
+#' @param data A flash data object.
+#' 
+#' @param f A flash object.
+#' 
+#' @param var_type Indicates what type of variance structure to assume.
+#' 
+#' @return An updated flash object.
+#' 
 #' @export
-flash_update_precision = function(data, f, var_type = c("by_column", "constant", "by_row", "kroneker")) {
+#' 
+flash_update_precision =
+  function(data, f,
+           var_type = c("by_column", "constant", "by_row", "kroneker")) {
     if (data$S != 0) {
         stop("not yet implemented")
     }
 
-    R2 = get_R2(data, f)
+    R2 = flash_get_R2(data, f)
     f$tau = compute_precision(R2, data$missing, var_type)
     return(f)
 }
 
-compute_precision = function(R2, missing, var_type = c("by_column", "constant", "by_row", "kroneker")) {
+compute_precision =
+  function(R2, missing,
+           var_type = c("by_column", "constant", "by_row", "kroneker")) {
     R2[missing] = NA
     var_type = match.arg(var_type)
     if (var_type == "by_column") {
@@ -27,25 +38,26 @@ compute_precision = function(R2, missing, var_type = c("by_column", "constant", 
     return(tau)
 }
 
-
-#' @title  mle for precision (separate parameter for each column)
-#' @param R2 n by p matrix of squared residuals (with NAs for missing)
-#' @return n by p matrix of precisions (separate value for each column)
-mle_precision_by_column = function(R2) {
+# @title MLE or precision (separate parameter for each column).
+# @param R2 n by p matrix of squared residuals (with NAs for missing).
+# @return n by p matrix of precisions (separate value for each column).
+mle_precision_by_column = function (R2) {
     sigma2 = colMeans(R2, na.rm = TRUE)  # a p vector
-    # if a value of tau becomes numerically negative, set it to a small positive number
+    
+    # If a value of tau becomes numerically negative, set it to a
+    # small positive number.
     tau = pmax(1/sigma2, .Machine$double.eps)
     return(outer(rep(1, nrow(R2)), tau))  # an n by p matrix
 }
 
-#' @title  mle for precision (separate parameter for each column)
-#' @param R2 n by p matrix of squared residuals (with NAs for missing)
-#' @return n by p matrix of precisions (separate value for each column)
+# @title mle for precision (separate parameter for each column).
+# @param R2 n by p matrix of squared residuals (with NAs for missing).
+# @return n by p matrix of precisions (separate value for each column).
 mle_precision_constant = function(R2) {
     sigma2 = mean(R2, na.rm = TRUE)  # a scalar
-    # if a value of tau becomes numerically negative, set it to a small positive number
+    
+    # If a value of tau becomes numerically negative, set it to a
+    # small positive number.
     tau = pmax(1/sigma2, .Machine$double.eps)
     return(matrix(tau, nrow = nrow(R2), ncol = ncol(R2)))  # an n by p matrix
 }
-
-

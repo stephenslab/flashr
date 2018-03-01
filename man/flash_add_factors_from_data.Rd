@@ -2,23 +2,22 @@
 % Please edit documentation in R/flash_add.R
 \name{flash_add_factors_from_data}
 \alias{flash_add_factors_from_data}
-\title{add factors to a flash fit object based on data}
+\title{Add factors to a flash fit object based on data.}
 \usage{
 flash_add_factors_from_data(data, K, f_init = NULL, init_fn = "udv_si")
 }
 \arguments{
-\item{data}{a flash data object}
+\item{data}{A flash data object.}
 
-\item{K}{number of factors to add}
+\item{K}{Number of factors to add.}
 
-\item{f_init}{an existing flash fit object to add to}
+\item{f_init}{An existing flash fit object to add to.}
 
-\item{init_fn}{the function to use to initialize new factors (typically some kind of svd-like function)}
+\item{init_fn}{The function to use to initialize new factors
+(typically some kind of svd-like function).}
 }
 \description{
-add factors to a flash fit object based on data
-}
-\details{
-Computes the current residuals from data and f_init and adds K new factors based
-on init_fn applied to these residuals. (If f_init is NULL then the residuals are the data)
+Computes the current residuals from data and f_init
+  and adds K new factors based on init_fn applied to these
+  residuals. (If f_init is NULL then the residuals are the data).
 }
