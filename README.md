@@ -93,7 +93,8 @@ Follow these steps to quickly get started using `flashr`.
 
 ## How to build static HTML documentation
 
-These are the R commands to build the website (make sure you are
+These are the R commands to build the website using
+[pkgdown](https://github.com/r-lib/pkgdown) (make sure you are
 connected to Internet while running these commands):
 
 ```R
