@@ -191,8 +191,7 @@ the algorithm is deterministic)</p></td>
 <span class='co'># Gives the weights for each factor (analogue of singular values).</span>
 <span class='fu'><a href='flash_get_ldf.html'>flash_get_ldf</a></span>(<span class='no'>f</span>)$<span class='no'>d</span></div><div class='output co'>#&gt; [1] 26</div><div class='input'>
 <span class='co'># Example to show how to use a different initialization function.</span>
-<span class='fu'>library</span>(<span class='no'>softImpute</span>)
-<span class='no'>f2</span> <span class='kw'>=</span> <span class='fu'>flash_add_greedy</span>(<span class='no'>Y</span>,<span class='fl'>10</span>,<span class='kw'>init_fn</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>x</span>,<span class='no'>K</span><span class='kw'>=</span><span class='fl'>1</span>){
+<span class='fu'>library</span>(<span class='no'>softImpute</span>)</div><div class='output co'>#&gt; <span class='message'>Loading required package: Matrix</span></div><div class='output co'>#&gt; <span class='message'>Loaded softImpute 1.4</span></div><div class='input'><span class='no'>f2</span> <span class='kw'>=</span> <span class='fu'>flash_add_greedy</span>(<span class='no'>Y</span>,<span class='fl'>10</span>,<span class='kw'>init_fn</span> <span class='kw'>=</span> <span class='kw'>function</span>(<span class='no'>x</span>,<span class='no'>K</span><span class='kw'>=</span><span class='fl'>1</span>){
   <span class='fu'><a href='http://www.rdocumentation.org/packages/softImpute/topics/softImpute'>softImpute</a></span>(<span class='no'>x</span>,<span class='no'>K</span>,<span class='kw'>lambda</span><span class='kw'>=</span><span class='fl'>10</span>)
 })</div><div class='output co'>#&gt; <span class='message'>fitting factor/loading 1</span></div><div class='output co'>#&gt; <span class='message'>fitting factor/loading 2</span></div><div class='input'>
 </div></pre>

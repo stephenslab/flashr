@@ -115,9 +115,9 @@ Y =<span class="st"> </span>LL <span class="op">%*%</span><span class="st"> </sp
      <span class="dt">main=</span><span class="st">"compare fitted values with true LF'"</span>)</code></pre></div>
 <p><img src="flash_advanced_files/figure-html/unnamed-chunk-5-1.png" width="480" style="display: block; margin: auto;"></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/flash_get_ldf.html">flash_get_ldf</a></span>(f)<span class="op">$</span>d
-<span class="co"># [1] 303.3347 264.0266 242.3851 217.6919 208.6116 205.8484 183.3921</span>
+<span class="co"># [1] 303.3382 264.0119 242.3772 217.6895 208.5868 205.8112 183.3776</span>
 <span class="kw"><a href="../reference/flash_get_objective.html">flash_get_objective</a></span>(data,f)
-<span class="co"># [1] -81252.94</span></code></pre></div>
+<span class="co"># [1] -81253.75</span></code></pre></div>
 </div>
 <div id="greedy-addition-of-factors" class="section level1">
 <h1 class="hasAnchor">
@@ -143,7 +143,7 @@ Y =<span class="st"> </span>LL <span class="op">%*%</span><span class="st"> </sp
 <span class="kw"><a href="../reference/flash_get_objective.html">flash_get_objective</a></span>(data,f_greedy_bf)
 <span class="co"># [1] -81264.89</span>
 <span class="kw"><a href="../reference/flash_get_objective.html">flash_get_objective</a></span>(data,f)
-<span class="co"># [1] -81252.94</span></code></pre></div>
+<span class="co"># [1] -81253.75</span></code></pre></div>
 </div>
 <div id="setting-loadings-and-factors-directly" class="section level1">
 <h1 class="hasAnchor">
@@ -152,7 +152,7 @@ Y =<span class="st"> </span>LL <span class="op">%*%</span><span class="st"> </sp
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">f_true =<span class="st"> </span><span class="kw"><a href="../reference/flash_add_lf.html">flash_add_lf</a></span>(data, <span class="dt">LL=</span>LL, <span class="dt">FF=</span>FF)
 f_cheat =<span class="st"> </span><span class="kw"><a href="../reference/flash_backfit.html">flash_backfit</a></span>(data,f_true)
 <span class="kw"><a href="../reference/flash_get_ldf.html">flash_get_ldf</a></span>(f_cheat)<span class="op">$</span>d
-<span class="co"># [1] 208.6823 214.9714 250.2059 213.0661 284.4944 221.1514 236.8675</span>
+<span class="co"># [1] 208.6823 214.9714 250.2059 213.0661 284.4945 221.1514 236.8675</span>
 <span class="kw"><a href="../reference/flash_get_objective.html">flash_get_objective</a></span>(data,f_cheat)
 <span class="co"># [1] -81306.46</span></code></pre></div>
 <p>Unexpectedly (to me) the objective achieved from this initialization is lower than those from the greedy initialization. However, the results are pretty similar in terms of mean squared error (MSE). Notice that backfitting improved MSE vs greedy.</p>
@@ -161,9 +161,9 @@ f_cheat =<span class="st"> </span><span class="kw"><a href="../reference/flash_b
 <span class="kw">mean</span>((<span class="kw"><a href="../reference/flash_get_lf.html">flash_get_lf</a></span>(f_greedy_bf) <span class="op">-</span><span class="st"> </span>LL <span class="op">%*%</span><span class="st"> </span><span class="kw">t</span>(FF))<span class="op">^</span><span class="dv">2</span>)
 <span class="co"># [1] 0.08411568</span>
 <span class="kw">mean</span>((<span class="kw"><a href="../reference/flash_get_lf.html">flash_get_lf</a></span>(f) <span class="op">-</span><span class="st"> </span>LL <span class="op">%*%</span><span class="st"> </span><span class="kw">t</span>(FF))<span class="op">^</span><span class="dv">2</span>)
-<span class="co"># [1] 0.08428796</span>
+<span class="co"># [1] 0.08426771</span>
 <span class="kw">mean</span>((<span class="kw"><a href="../reference/flash_get_lf.html">flash_get_lf</a></span>(f_greedy) <span class="op">-</span><span class="st"> </span>LL <span class="op">%*%</span><span class="st"> </span><span class="kw">t</span>(FF))<span class="op">^</span><span class="dv">2</span>)
-<span class="co"># [1] 0.09737635</span></code></pre></div>
+<span class="co"># [1] 0.09737634</span></code></pre></div>
 </div>
 <div id="setting-the-function-used-to-solve-the-ebnm-problem" class="section level1">
 <h1 class="hasAnchor">

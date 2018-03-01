@@ -104,13 +104,13 @@
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  data.miss =<span class="st"> </span><span class="kw"><a href="../reference/flash_set_data.html">flash_set_data</a></span>(Y.miss)
   f.miss =<span class="st"> </span><span class="kw"><a href="../reference/flash.html">flash</a></span>(data.miss,<span class="dt">Kmax=</span><span class="dv">1</span>,<span class="dt">verbose=</span><span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## fitting factor/loading 1</code></pre>
-<pre><code>## Objective:-72878.3428854883</code></pre>
-<pre><code>## Objective:-72871.9459442935</code></pre>
-<pre><code>## Objective:-72871.9388845935</code></pre>
+<pre><code>## Objective:-72878.3428854656</code></pre>
+<pre><code>## Objective:-72871.94594429</code></pre>
+<pre><code>## Objective:-72871.938884675</code></pre>
 <pre><code>## performing nullcheck</code></pre>
 <pre><code>## objective from deleting factor:-83195.7765049021</code></pre>
-<pre><code>## objective from keeping factor:-72871.9388845935</code></pre>
-<pre><code>## nullcheck complete, objective:-72871.9388845935</code></pre>
+<pre><code>## objective from keeping factor:-72871.938884675</code></pre>
+<pre><code>## nullcheck complete, objective:-72871.938884675</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  <span class="kw">plot</span>(LF,<span class="kw"><a href="../reference/flash_get_lf.html">flash_get_lf</a></span>(f.miss),<span class="dt">main=</span><span class="st">"True LF vs fitted values (missing data)"</span>,<span class="dt">xlab=</span><span class="st">"true LF"</span>,<span class="dt">ylab=</span><span class="st">"fitted LF"</span>)
   <span class="kw">abline</span>(<span class="dt">a=</span><span class="dv">0</span>,<span class="dt">b=</span><span class="dv">1</span>,<span class="dt">col=</span><span class="st">"red"</span>)</code></pre></div>
 <p><img src="flash_r1_files/figure-html/unnamed-chunk-4-1.png" width="672"></p>
@@ -136,13 +136,13 @@
 <pre><code>## [1] 0.1050241</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  f.miss =<span class="st"> </span><span class="kw"><a href="../reference/flash.html">flash</a></span>(data.miss,<span class="dt">Kmax=</span><span class="dv">1</span>,<span class="dt">var_type =</span> <span class="st">"constant"</span>,<span class="dt">verbose=</span><span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## fitting factor/loading 1</code></pre>
-<pre><code>## Objective:-73346.0085701801</code></pre>
-<pre><code>## Objective:-73339.9109021195</code></pre>
-<pre><code>## Objective:-73339.9073790492</code></pre>
+<pre><code>## Objective:-73346.0085702052</code></pre>
+<pre><code>## Objective:-73339.9109021205</code></pre>
+<pre><code>## Objective:-73339.9073790477</code></pre>
 <pre><code>## performing nullcheck</code></pre>
 <pre><code>## objective from deleting factor:-87044.9863407244</code></pre>
-<pre><code>## objective from keeping factor:-73339.9073790492</code></pre>
-<pre><code>## nullcheck complete, objective:-73339.9073790492</code></pre>
+<pre><code>## objective from keeping factor:-73339.9073790477</code></pre>
+<pre><code>## nullcheck complete, objective:-73339.9073790477</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">  <span class="kw">plot</span>(LF,<span class="kw"><a href="../reference/flash_get_lf.html">flash_get_lf</a></span>(f.miss),<span class="dt">main=</span><span class="st">"True LF vs fitted values (missing data)"</span>,<span class="dt">xlab=</span><span class="st">"true LF"</span>,<span class="dt">ylab=</span><span class="st">"fitted LF"</span>)
   <span class="kw">abline</span>(<span class="dt">a=</span><span class="dv">0</span>,<span class="dt">b=</span><span class="dv">1</span>,<span class="dt">col=</span><span class="st">"red"</span>)</code></pre></div>
 <p><img src="flash_r1_files/figure-html/unnamed-chunk-6-2.png" width="672"></p>
