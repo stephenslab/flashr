@@ -12,8 +12,9 @@ udv_si_svd(Y, K = 1)
 \item{K}{number of factors to use}
 }
 \value{
-a list with components (u,d,v)
+A list with components (u,d,v)
 }
-\details{
-provides a simple wrapper to \code{softImpute} to provide a rank 1 initialization. Uses type="svd" option.
+\description{
+provides a simple wrapper to \code{softImpute} to
+  provide a rank 1 initialization. Uses \code{type = "svd"} option.
 }

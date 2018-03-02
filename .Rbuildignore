@@ -1,3 +1,7 @@
-^.*\.Rproj$
+^\.travis\.yml$
+^flashr\.Rproj$
 ^\.Rproj\.user$
-test-vignettes
+^_pkgdown\.yaml$
+^docs$
+
+

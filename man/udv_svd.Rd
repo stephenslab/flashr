@@ -7,13 +7,13 @@
 udv_svd(Y, K = 1)
 }
 \arguments{
-\item{Y}{an n by p matrix}
+\item{Y}{An n by p matrix.}
 
-\item{K}{number of factors to use}
+\item{K}{Number of factors to use.}
 }
 \value{
-a list with components (u,d,v)
+A list with components (u,d,v).
 }
-\details{
-provides a simple wrapper to svd
+\description{
+Provides a simple wrapper to svd.
 }

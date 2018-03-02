@@ -22,13 +22,13 @@ First we will simulate some rank 0 data:
 ```
 
 
-Run flash. Here `nullcheck=FALSE` tells flash to keep
+Run flash to fit a rank 1 model (`Kmax=1`). Here `nullcheck=FALSE` tells flash to keep
 the final value of the variational optimization without checking
 it against the rank 0 solution (since we are going to do that
 by hand here.)
 ```{r}
   data = flash_set_data(Y)
-  f1= flash_r1(data,nullcheck=FALSE)
+  f1= flash(data,Kmax=1,nullcheck=FALSE)
   flash_get_objective(data,f1)
 ```
 
@@ -37,18 +37,16 @@ the objective function! That is the optimization did not
 work very well (because deleting the factor is actually a special
 case of the model). 
 ```{r}
-  f0 = flash_zero_out_factor(data,f1,1)
-  f0 = flash_update_precision(data,f0)
-  flash_get_F(data,f0)
-  flash_get_F(data,f1)>get_F(data,f0)
+f0 = flash_zero_out_factor(data,f1,1)
+f0 = flash_update_precision(data,f0)
+flash_get_objective(data,f0)
 ```
 
 This is actually quite a common occurance (see below).
 So we have implemented this check as the default in flash.
-Here is what happens if you run `flash_r1` with default (`nullcheck=TRUE`): it automatically deletes the factor.
+Here is what happens if you run `flash` with default (`nullcheck=TRUE`): it automatically deletes the factor.
 ```{r}
-  f1 = flash_r1(data,verbose=TRUE)
-  flash_get_sizes(f1)
+f1 = flash(data,Kmax=1,verbose=TRUE)
 ```
 
 
@@ -63,13 +61,12 @@ F1minusF0 = rep(0,100)
 for(i in 1:100){
   Y = matrix(rnorm(n*p),nrow=n)
   data = flash_set_data(Y)
-  f1= flash_r1(data,nullcheck=FALSE)
+  f1= flash(data,Kmax=1,nullcheck=FALSE)
   f0 = flash_zero_out_factor(data,f1,1)
   f0 = flash_update_precision(data,f0)
-  F1minusF0[i] = (flash_get_F(data,f1)-get_F(data,f0))
+  F1minusF0[i] = flash_get_objective(data,f1) - flash_get_objective(data,f0)
 }
 hist(F1minusF0)
-summary(F1minusF0)
 ```
 
 

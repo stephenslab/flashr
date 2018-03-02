@@ -2,24 +2,29 @@
 % Please edit documentation in R/flash_data.R
 \name{flash_set_data}
 \alias{flash_set_data}
-\title{set up data for reading into flash}
+\title{Set up data for reading into flash.}
 \usage{
 flash_set_data(Y, S = 0)
 }
 \arguments{
 \item{Y}{an n by p data matrix}
 
-\item{S}{an n by p matrix of the standard errors of observations of Y.
-(Can be a scalar if all elements of the matrix are equal.)
-Currently S is ignored as we have not yet implemented methods for this.}
+\item{S}{An n by p matrix of the standard errors of observations of
+Y. (Can be a scalar if all elements of the matrix are equal.)
+Currently S is ignored as we have not yet implemented methods for
+this.}
 }
 \value{
-a flash data object
+A flash data object.
+}
+\description{
+Set up data for reading into flash.
 }
 \details{
-Y can have missing data, but no column or row can be entirely missing
-The flash data object contains flags for dealing with missing data
-and a (naively) imputed version of the original data matrix so that
-i) some of the initializatinon methods used by flash (eg svd) do not fail
-ii) data$Y * data$missing is 0 if the original data were missing
+Y can have missing data, but no column or row can be
+entirely missing. The flash data object contains flags for dealing
+with missing data and a (naively) imputed version of the original
+data matrix so that i) some of the initializatinon methods used by
+flash (eg svd) do not fail ii) data$Y * data$missing is 0 if the
+original data were missing.
 }

@@ -33,10 +33,10 @@ Now add some missing data at 50 percent of entries
   }
 ```
 
-Run flash on the full data
+Run flash (with $K=1$) on the full data
 ```{r}
   data = flash_set_data(Y)
-  f= flash_r1(data,verbose=TRUE)
+  f= flash(data,Kmax=1,verbose=TRUE)
   plot(LF,flash_get_lf(f),main="True LF vs fitted value (full data)",xlab="true LF",ylab="fitted LF")
   abline(a=0,b=1,col="red")
 ```
@@ -44,7 +44,7 @@ Run flash on the full data
 And on missing data
 ```{r}  
   data.miss = flash_set_data(Y.miss)
-  f.miss = flash_r1(data.miss,verbose=TRUE)
+  f.miss = flash(data.miss,Kmax=1,verbose=TRUE)
   plot(LF,flash_get_lf(f.miss),main="True LF vs fitted values (missing data)",xlab="true LF",ylab="fitted LF")
   abline(a=0,b=1,col="red")
 ```
@@ -55,35 +55,14 @@ And compute overall RMSE of estimated low-rank structure.
   sqrt(mean((LF-flash_get_lf(f.miss))^2))
 ```
 
-And compare with original flashr:
-```{r}
-  f.orig = flashr::greedy(Y,1)
-  f.orig.na = flashr::greedy(Y.miss,1)
-  
-  plot(f.orig$f,f$EF,main="comparison of flashr and flashr factors",xlab="flashr",ylab="flashr")
-   plot(f.orig$l,f$EL,main="comparison of flashr and flashr loadings",xlab="flashr",ylab="flashr")
-  
-  sqrt(mean((LF-outer(f.orig$l,f.orig$f))^2))
-  sqrt(mean((LF-outer(f.orig.na$l,f.orig.na$f))^2))
-
-```
-
-And try setting the ash parameters slightly differently:
-```{r}
-  f= flash_r1(data,ash_param = list(method="fdr"),verbose=TRUE)
-  plot(LF,flash_get_lf(f),main="True LF vs fitted value (full data)",xlab="true LF",ylab="fitted LF")
-  abline(a=0,b=1,col="red")
-  sqrt(mean((LF-flash_get_lf(f))^2))
-```
-
 And try setting the var_type slightly differently:
 ```{r}
-  f= flash_r1(data,var_type = "constant",verbose=TRUE)
+  f= flash(data,Kmax=1,var_type = "constant",verbose=TRUE)
   plot(LF,flash_get_lf(f),main="True LF vs fitted value (full data)",xlab="true LF",ylab="fitted LF")
   abline(a=0,b=1,col="red")
   sqrt(mean((LF-flash_get_lf(f))^2))
   
-  f.miss = flash_r1(data.miss,var_type = "constant",verbose=TRUE)
+  f.miss = flash(data.miss,Kmax=1,var_type = "constant",verbose=TRUE)
   plot(LF,flash_get_lf(f.miss),main="True LF vs fitted values (missing data)",xlab="true LF",ylab="fitted LF")
   abline(a=0,b=1,col="red")
   sqrt(mean((LF-flash_get_lf(f.miss))^2))
