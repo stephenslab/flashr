@@ -63,6 +63,7 @@
     <div id="flashr" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#flashr" class="anchor"></a>flashr</h1></div>
+<p><a href="https://travis-ci.org/stephenslab/flashr"><img src="https://travis-ci.org/stephenslab/flashr.svg?branch=master" alt="Travis Build Status"></a></p>
 <p>Methods for matrix factorization based on <a href="https://arxiv.org/abs/1802.06931">Empirical Bayes Matrix Factorization</a>. The name of the package, “flashr,” comes from “Factors and Loadings by Adaptive SHrinkage in R”.</p>
 <p><em>Note:</em> This code is in development. The interface is fairly stable but not guaranteed to stay the same.</p>
 <div id="license" class="section level2">
@@ -83,45 +84,35 @@
 <h2 class="hasAnchor">
 <a href="#quick-start" class="anchor"></a>Quick start</h2>
 <p>Follow these steps to quickly get started using <code>flashr</code>.</p>
-<p>For a minimal example, install the <code>devtools</code> package and then:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"stephenslab/ebnm"</span>) <span class="co"># installs ebnm package</span>
-devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"stephenslab/flashr"</span>) <span class="co"># installs flashr package</span>
-<span class="kw">library</span>(<span class="st">"flashr"</span>)
-
-## Set up some simulated data
-
-<span class="kw">set.seed</span>(<span class="dv">1</span>) <span class="co"># for reproducibility</span>
-ftrue =<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(<span class="dv">200</span>),<span class="dt">ncol=</span><span class="dv">2</span>)
-ltrue =<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rnorm</span>(<span class="dv">40</span>),<span class="dt">ncol=</span><span class="dv">2</span>)
-ltrue[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,<span class="dv">1</span>] =<span class="st"> </span><span class="dv">0</span> <span class="co"># set up some sparsity</span>
-ltrue[<span class="dv">11</span><span class="op">:</span><span class="dv">20</span>,<span class="dv">2</span>] =<span class="st"> </span><span class="dv">0</span>
-Y =<span class="st"> </span>ltrue <span class="op">%*%</span><span class="st"> </span><span class="kw">t</span>(ftrue)<span class="op">+</span><span class="kw">rnorm</span>(<span class="dv">2000</span>) <span class="co"># set up a simulated matrix</span>
-
-## Run flash
-
-f =<span class="st"> </span><span class="kw"><a href="reference/flash.html">flash</a></span>(Y)
-ldf =<span class="st"> </span><span class="kw"><a href="reference/flash_get_ldf.html">flash_get_ldf</a></span>(f)<span class="op">$</span>d <span class="co"># show the weights, analogous to singular values showing importance of each factor</span>
-<span class="kw">plot</span>(ltrue[,<span class="dv">1</span>],ldf<span class="op">$</span>l[,<span class="dv">1</span>]) <span class="co"># plot true l against estimated l (note estimate is normalized);</span>
-<span class="kw">plot</span>(ftrue,ldf<span class="op">$</span>f) <span class="co"># plot true f against estimated f (note estimate is normalized)</span>
-<span class="kw">plot</span>(ltrue <span class="op">%*%</span><span class="st"> </span><span class="kw">t</span>(ftrue), <span class="kw"><a href="reference/flash_get_lf.html">flash_get_lf</a></span>(f)) <span class="co">#plot true lf' against estimated lf'; the scale of the estimate matches the data</span>
-
-<span class="co"># example to use the more flexible ebnm function in ashr; show how to pass parameters to</span>
-f2 =<span class="st"> </span><span class="kw">flash_r1</span>(Y,<span class="dt">ebnm_fn =</span> ebnm_ash)
-<span class="co"># example to show how to pass parameters to ashr</span>
-f3=<span class="st"> </span><span class="kw">flash_r1</span>(Y,<span class="dt">ebnm_fn =</span> ebnm_ash, <span class="dt">ebnm_param =</span> <span class="kw">list</span>(<span class="dt">mixcompdist =</span> <span class="st">"normal"</span>,<span class="dt">method=</span><span class="st">"fdr"</span>))</code></pre></div>
-<p>For more see <a href="https://stephenslab.github.io/flashr/articles/flash_intro.html">flash_intro.Rmd</a>.</p>
+<p>Install the <a href="https://github.com/stephenslab/flashr/releases/tag/v0.5-6">latest release of the flashr package</a> using <a href="https://github.com/r-lib/devtools">devtools</a>. Please note that it can take several minutes to build the vignettes:</p>
+<p><code># install.packages("devtools")<br>
+library(devtools)<br>
+install_github("stephenslab/flashr@v0.5-6",build_vignettes=TRUE)</code></p>
+<p>This command should automatically retrieve and install the <code>ashr</code> and <code>ebnm</code> packages from GitHub (and possibly other packages). If it does not, install <code>ashr</code> and <code>ebnm</code> separately using devtools:</p>
+<p><code>install_github("stephens999/ashr")<br>
+install_github("stephenslab/ebnm")</code></p>
+<p><em>Note:</em> If you are interested in attempting to reproduce the results in the Wei and Stephens (2018) manuscript, the flashr release that most closely matches the package used in the paper is <a href="https://github.com/stephenslab/flashr/releases/tag/v0.4-10">version 0.4-10</a>. This release can be installed by running the following in R:</p>
+<p><code>install_github("stephenslab/flashr@v0.4-10")</code></p>
+<p>Optionally, install MOSEK and the Rmosek package, for faster model fitting. See the <a href="https://github.com/stephens999/ashr">ashr GitHub repository</a> for details.</p>
+<p>Run a few toy examples illustrating the <code>flash</code> function:</p>
+<p><code>example("flash")</code></p>
+Explore the <a href="https://stephenslab.github.io/flashr/articles/flash_intro.html">introductory flashr vignette</a>:
+<p><code>vignette("flash_intro")</code></p>
+Explore the <a href="https://stephenslab.github.io/flashr/articles/flash_advanced.html">vignette illustrating some more advanced features of flashr</a>:
+<p><code>vignette("flash_advanced")</code></p>
+See the <a href="https://stephenslab.github.io/flashr">online documentation</a> learn more about the <code>flashr</code> package.
 </div>
 <div id="how-to-build-static-html-documentation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#how-to-build-static-html-documentation" class="anchor"></a>How to build static HTML documentation</h2>
-<p>These are the R commands to build the website (make sure you are connected to Internet while running these commands):</p>
+<p>These are the R commands to build the website using <a href="https://github.com/r-lib/pkgdown">pkgdown</a> (make sure you are connected to Internet while running these commands):</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(pkgdown)
 <span class="kw"><a href="http://pkgdown.r-lib.org/reference/build_site.html">build_site</a></span>(<span class="dt">mathjax =</span> <span class="ot">FALSE</span>)</code></pre></div>
 </div>
 <div id="credits" class="section level2">
 <h2 class="hasAnchor">
 <a href="#credits" class="anchor"></a>Credits</h2>
-<p>This software was developed by <a href="http://stephenslab.uchicago.edu">Matthew Stephens</a> <a href="https://github.com/NKweiwang">Wei Wang</a> and <a href="https://github.com/willwerscheid">Jason Willwerscheid</a> at the University of Chicago.</p>
+<p>This software was developed by <a href="http://stephenslab.uchicago.edu">Matthew Stephens</a>, <a href="https://github.com/NKweiwang">Wei Wang</a>, <a href="https://github.com/willwerscheid">Jason Willwerscheid</a> and <a href="http://pcarbo.github.io">Peter Carbonetto</a> at the University of Chicago.</p>
 </div>
 </div>
   </div>
