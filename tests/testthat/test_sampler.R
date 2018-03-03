@@ -40,7 +40,7 @@ test_that("sampling functions produce objects of correct dimensions and give rea
   # fix some elements
   fit = flash_add_fixed_f(data, matrix(1, nrow=30, ncol=1),
                           fixf = matrix(c(rep(TRUE, 10), rep(FALSE, 20)), ncol=1))
-  fit = suppressWarnings(flash_backfit(data, fit))
+  fit = suppressWarnings(flash_backfit(data, fit, ebnm_fn=ebnm_ash))
 
   # check flash_f_sampler
   fsampler = flash_f_sampler(data, fit, ebnm_fn=ebnm_ash)
