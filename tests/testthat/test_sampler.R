@@ -22,7 +22,7 @@ test_that("sampling functions produce objects of correct dimensions and give rea
     sampled_means_l = Reduce(`+`, lsamp) / 50
     expect_equal(sampled_means_l, fit$EL, tolerance = sqrt(var_l))
 
-    lfsampler = flash_lf_sampler_fixedf(data, fit, ebnm_fn=ebnm_ash)
+    lfsampler = flash_lf_sampler_fixedf(data, fit, ebnm_fn=ebnm_fn)
     lfsamp = lfsampler(10)
     expect_length(lfsamp, 10)
     expect_equal(dim(lfsamp[[1]]), c(20, 30))
@@ -33,7 +33,7 @@ test_that("sampling functions produce objects of correct dimensions and give rea
     suppressWarnings(expect_equal(lf_means, LF, tolerance=0.1, scale=LF))
 
     # test wrapper function
-    lfsampler2 = flash_lf_sampler(data, fit, ebnm_fn=ebnm_ash, fixed="f")
+    lfsampler2 = flash_lf_sampler(data, fit, ebnm_fn=ebnm_fn, fixed="f")
     lfsamp = lfsampler(10)
     expect_length(lfsamp, 10)
     expect_equal(dim(lfsamp[[1]]), c(20, 30))
@@ -41,10 +41,10 @@ test_that("sampling functions produce objects of correct dimensions and give rea
     # fix some elements
     fit = flash_add_fixed_f(data, matrix(1, nrow=30, ncol=1),
                             fixf = matrix(c(rep(TRUE, 10), rep(FALSE, 20)), ncol=1))
-    fit = suppressWarnings(flash_backfit(data, fit, ebnm_fn=ebnm_ash))
+    fit = suppressWarnings(flash_backfit(data, fit, ebnm_fn=ebnm_fn))
 
     # check flash_f_sampler
-    fsampler = flash_f_sampler(data, fit, ebnm_fn=ebnm_ash)
+    fsampler = flash_f_sampler(data, fit, ebnm_fn=ebnm_fn)
     fsamp = fsampler(50)
     expect_length(fsamp, 50)
     expect_length(fsamp[[1]], 30)
@@ -56,13 +56,13 @@ test_that("sampling functions produce objects of correct dimensions and give rea
     expect_equal(sampled_means_f[1:10], fit$EF[1:10])
     expect_equal(sampled_means_f[11:30], fit$EF[11:30], tolerance = sqrt(var_f[11:30]))
 
-    flsampler = flash_lf_sampler_fixedl(data, fit, ebnm_fn=ebnm_ash)
+    flsampler = flash_lf_sampler_fixedl(data, fit, ebnm_fn=ebnm_fn)
     flsamp = flsampler(10)
     expect_length(flsamp, 10)
     expect_equal(dim(flsamp[[1]]), c(20, 30))
 
     #test wrapper function
-    flsampler2 = flash_lf_sampler(data, fit, ebnm_fn=ebnm_ash, fixed="l")
+    flsampler2 = flash_lf_sampler(data, fit, ebnm_fn=ebnm_fn, fixed="l")
     flsamp = flsampler2(10)
     expect_length(flsamp, 10)
     expect_equal(dim(flsamp[[1]]), c(20, 30))

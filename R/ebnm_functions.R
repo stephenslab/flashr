@@ -72,7 +72,7 @@ ebnm_pl = function(x, s, ebnm_param, return_sampler = FALSE) {
 #'
 ebnm_pn = function(x, s, ebnm_param, return_sampler = FALSE) {
   if (return_sampler) {
-    ash_param = modifyList(ebnm_param, list(output = "post_sampler"))
+    ebnm_param = modifyList(ebnm_param, list(output = "post_sampler"))
   }
   res = do.call(ebnm_point_normal, c(list(x = as.vector(x),s = as.vector(s)), ebnm_param))
   if (!return_sampler) {
