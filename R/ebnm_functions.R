@@ -4,11 +4,11 @@
 
 #' @title A wrapper to the ash function for flash.
 #'
-#' @param x Describe parameter here.
+#' @param x A vector of observations.
 #'
-#' @param s Describe parameter here.
+#' @param s A vector of standard errors.
 #'
-#' @param ash_param Describe parameter here.
+#' @param ash_param A list of parameters to be passed into ash.
 #'
 #' @importFrom utils modifyList
 #' @importFrom ashr ash
@@ -18,16 +18,21 @@
 ebnm_ash = function(x, s, ash_param, return_sampler = FALSE) {
     if (return_sampler) {
       ash_param = modifyList(ash_param, list(output = "post_sampler"))
+    } else {
+      ash_param = modifyList(ash_param, list(output = "flash_data"))
     }
+
     a = do.call(ash, c(list(betahat = as.vector(x), sebetahat = as.vector(s)), ash_param))
-    if (!return_sampler) {
-      if (is.null(a$flash_data$postmean)) {
-        stop("ashr is not outputting flashr data in the right format. Maybe ashr needs updating to latest version?")
-      }
-      a = a$flash_data
+
+    if (return_sampler) {
+      return(a)
     }
-    return(a)
+    if (is.null(a$flash_data$postmean)) {
+      stop("ashr is not outputting flashr data in the right format. Maybe ashr needs updating to latest version?")
+    }
+    return(a$flash_data)
 }
+
 
 #' @title EBNM using point-laplace prior, from ebnm package.
 #'
@@ -39,7 +44,7 @@ ebnm_ash = function(x, s, ash_param, return_sampler = FALSE) {
 #' @param s A vector of standard errors.
 #'
 #' @param ebnm_param A list of parameters to be passed to the function
-#'   ebnm_point_laplace.
+#'   \code{ebnm_point_laplace}.
 #'
 #' @importFrom ebnm ebnm_point_laplace
 #'
@@ -53,6 +58,7 @@ ebnm_pl = function(x, s, ebnm_param, return_sampler = FALSE) {
                 fitted_g  = res$fitted_g,
                 penloglik = res$loglik))
 }
+
 
 #' @title ebnm_pn
 #'
@@ -74,14 +80,16 @@ ebnm_pn = function(x, s, ebnm_param, return_sampler = FALSE) {
   if (return_sampler) {
     ebnm_param = modifyList(ebnm_param, list(output = "post_sampler"))
   }
-  res = do.call(ebnm_point_normal, c(list(x = as.vector(x),s = as.vector(s)), ebnm_param))
-  if (!return_sampler) {
-    res = list(postmean  = res$result$PosteriorMean,
-               postmean2 = res$result$PosteriorMean2,
-               fitted_g  = res$fitted_g,
-               penloglik = res$loglik)
+
+  res = do.call(ebnm_point_normal, c(list(x = as.vector(x), s = as.vector(s)), ebnm_param))
+
+  if (return_sampler) {
+    return(res)
   }
-  return(res)
+  return(list(postmean  = res$result$PosteriorMean,
+              postmean2 = res$result$PosteriorMean2,
+              fitted_g  = res$fitted_g,
+              penloglik = res$loglik))
 }
 
 
