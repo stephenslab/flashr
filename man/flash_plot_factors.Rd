@@ -26,9 +26,6 @@ List containing:
   \item{\code{plot_l}} {A ggplot object for the loadings}
  }
 }
-\description{
-Plot the factors from flash results.
-}
 \details{
 Plots each factor and loading as a barplot.
 }

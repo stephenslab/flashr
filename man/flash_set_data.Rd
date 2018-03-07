@@ -17,9 +17,6 @@ this.}
 \value{
 A flash data object.
 }
-\description{
-Set up data for reading into flash.
-}
 \details{
 Y can have missing data, but no column or row can be
 entirely missing. The flash data object contains flags for dealing

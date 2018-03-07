@@ -13,9 +13,6 @@ flash_zero_out_factor(data, f, k = 1)
 
 \item{k}{Index of factor/loading to zero out.}
 }
-\description{
-Zero out a factor from f.
-}
 \details{
 The factor and loadings of the kth factor of f are made to
   be zero (except for elements of the factor/loading that are

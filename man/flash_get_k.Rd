@@ -9,9 +9,6 @@ flash_get_k(f)
 \arguments{
 \item{f}{A flash fit object.}
 }
-\description{
-Get number of factors in a fit object.
-}
 \details{
 Returns the number of factors in a flash fit.
 }

@@ -4,15 +4,15 @@
 \alias{ebnm_ash}
 \title{A wrapper to the ash function for flash.}
 \usage{
-ebnm_ash(x, s, ash_param)
+ebnm_ash(x, s, ash_param, return_sampler = FALSE)
 }
 \arguments{
-\item{x}{Describe parameter here.}
+\item{x}{A vector of observations.}
 
-\item{s}{Describe parameter here.}
+\item{s}{A vector of standard errors.}
 
-\item{ash_param}{Describe parameter here.}
-}
-\description{
-A wrapper to the ash function for flash.
+\item{ash_param}{A list of parameters to be passed into ash.}
+
+\item{return_sampler}{Indicates whether a posterior sampler should be returned rather
+than summary results.}
 }

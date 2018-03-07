@@ -10,6 +10,9 @@
 #'
 #' @param ash_param A list of parameters to be passed into ash.
 #'
+#' @param return_sampler Indicates whether a posterior sampler should be returned rather
+#' than summary results.
+#'
 #' @importFrom utils modifyList
 #' @importFrom ashr ash
 #'
@@ -46,6 +49,8 @@ ebnm_ash = function(x, s, ash_param, return_sampler = FALSE) {
 #' @param ebnm_param A list of parameters to be passed to the function
 #'   \code{ebnm_point_laplace}.
 #'
+#' @param return_sampler This option is not yet implemented for \code{ebnm_point_laplace}.
+#'
 #' @importFrom ebnm ebnm_point_laplace
 #'
 #' @export
@@ -72,6 +77,9 @@ ebnm_pl = function(x, s, ebnm_param, return_sampler = FALSE) {
 #' @param ebnm_param A list of parameters to be passed to the function
 #'   \code{ebnm_point_normal}.
 #'
+#' @param return_sampler Indicates whether a posterior sampler should be returned rather
+#' than summary results.
+#'
 #' @importFrom ebnm ebnm_point_normal
 #'
 #' @export
@@ -91,5 +99,3 @@ ebnm_pn = function(x, s, ebnm_param, return_sampler = FALSE) {
               fitted_g  = res$fitted_g,
               penloglik = res$loglik))
 }
-
-
