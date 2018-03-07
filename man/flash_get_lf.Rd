@@ -12,3 +12,6 @@ flash_get_lf(f)
 \value{
 The estimated value of LF', an n by p matrix.
 }
+\description{
+Return the estimated LF' matrix.
+}

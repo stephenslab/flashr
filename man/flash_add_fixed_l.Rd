@@ -28,3 +28,6 @@ values will be updated when f is updated.}
 A flash fit object, with loadings initialized from LL, and
   corresponding factors initialized to 0.
 }
+\description{
+Add a set of fixed loadings to a flash fit object.
+}

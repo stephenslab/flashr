@@ -11,3 +11,6 @@ flash_get_objective(data, f)
 
 \item{f}{A flash fit object.}
 }
+\description{
+Get objective function from flash data and flash fit objects.
+}

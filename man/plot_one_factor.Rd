@@ -23,6 +23,9 @@ list of factor, loading and variance of noise matrix
   \item{\code{plot_f}} {is a ggplot object for the factors}
  }
 }
+\description{
+Factor plot.
+}
 \details{
 Plots the factors in a barplot.
 }
