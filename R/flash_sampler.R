@@ -32,22 +32,22 @@ flash_lf_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_ash,
 }
 
 
-#' @title Generates LF sampler with F fixed at its expectation
-#'
-#' @description Generates function that samples LF from a flash fit object, with F fixed at its
-#' posterior mean and the columns of L sampled independently from their marginal posteriors.
-#'
-#' @param data a flash data object
-#'
-#' @param f a flash fit object
-#'
-#' @param kset the indices of factor/loadings to include when sampling LF (defaults to all)
-#'
-#' @param ebnm_fn function used to solve the Empirical Bayes Normal Means problem
-#'
-#' @return A function that takes a single parameter nsamp, the number of samples of LF to be
-#' produced by the sampler.
-#'
+# @title Generates LF sampler with F fixed at its expectation
+#
+# @description Generates function that samples LF from a flash fit object, with F fixed at its
+# posterior mean and the columns of L sampled independently from their marginal posteriors.
+#
+# @param data a flash data object
+#
+# @param f a flash fit object
+#
+# @param kset the indices of factor/loadings to include when sampling LF (defaults to all)
+#
+# @param ebnm_fn function used to solve the Empirical Bayes Normal Means problem
+#
+# @return A function that takes a single parameter nsamp, the number of samples of LF to be
+# produced by the sampler.
+#
 flash_lf_sampler_fixedf = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
   if (is.null(kset)) {kset = 1:flash_get_k(f)}
   l_sampler = flash_l_sampler(data, f, kset, ebnm_fn)
@@ -59,22 +59,22 @@ flash_lf_sampler_fixedf = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
 }
 
 
-#' @title Generates LF sampler with L fixed at its expectation
-#'
-#' @description Generates function that samples LF from a flash fit object, with L fixed at its
-#' posterior mean and the columns of F sampled independently from their marginal posteriors.
-#'
-#' @param data a flash data object
-#'
-#' @param f a flash fit object
-#'
-#' @param kset the indices of factor/loadings to include when sampling LF (defaults to all)
-#'
-#' @param ebnm_fn function used to solve the Empirical Bayes Normal Means problem
-#'
-#' @return A function that takes a single parameter nsamp, the number of samples of LF to be
-#' produced by the sampler.
-#'
+# @title Generates LF sampler with L fixed at its expectation
+#
+# @description Generates function that samples LF from a flash fit object, with L fixed at its
+# posterior mean and the columns of F sampled independently from their marginal posteriors.
+#
+# @param data a flash data object
+#
+# @param f a flash fit object
+#
+# @param kset the indices of factor/loadings to include when sampling LF (defaults to all)
+#
+# @param ebnm_fn function used to solve the Empirical Bayes Normal Means problem
+#
+# @return A function that takes a single parameter nsamp, the number of samples of LF to be
+# produced by the sampler.
+#
 flash_lf_sampler_fixedl = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
   if (is.null(kset)) {kset = 1:flash_get_k(f)}
   f_sampler = flash_f_sampler(data, f, kset, ebnm_fn)
@@ -155,18 +155,18 @@ flash_f_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
 }
 
 
-#' @title Generates sampler for a single factor/loading
-#'
-#' @param is_fixed a vector of Booleans that indicates which elements are fixed
-#'
-#' @param sample_fxn A function that returns samples for non-fixed elements. The function
-#' should return a matrix whose rows correspond to individual samples.
-#'
-#' @param fixed_vals the values of the fixed elements
-#'
-#' @return A function that generates samples for the factor/loading. This function returns
-#' a matrix whose rows correspond to individual samples.
-#'
+# @title Generates sampler for a single factor/loading
+#
+# @param is_fixed a vector of Booleans that indicates which elements are fixed
+#
+# @param sample_fxn A function that returns samples for non-fixed elements. The function
+# should return a matrix whose rows correspond to individual samples.
+#
+# @param fixed_vals the values of the fixed elements
+#
+# @return A function that generates samples for the factor/loading. This function returns
+# a matrix whose rows correspond to individual samples.
+#
 sampler = function(is_fixed, sample_fxn, fixed_vals) {
   function(nsamp) {
     samp = matrix(0, nrow=nsamp, ncol=length(is_fixed))
