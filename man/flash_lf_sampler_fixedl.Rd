@@ -19,7 +19,7 @@ flash_lf_sampler_fixedl(data, f, kset = NULL, ebnm_fn = ebnm_ash)
 A function that takes a single parameter nsamp, the number of samples of LF to be
 produced by the sampler.
 }
-\details{
+\description{
 Generates function that samples LF from a flash fit object, with L fixed at its
 posterior mean and the columns of F sampled independently from their marginal posteriors.
 }

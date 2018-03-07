@@ -19,7 +19,7 @@ flash_l_sampler(data, f, kset = NULL, ebnm_fn = ebnm_ash)
 A function that takes a single parameter nsamp, the number of samples of L to be
 produced by the sampler. This sampler returns a list of matrices.
 }
-\details{
+\description{
 Generates function that samples L from a flash fit object. The columns of L are
 sampled independently from their marginal posteriors (conditional on F being fixed at
 its expectation).

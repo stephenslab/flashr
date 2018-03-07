@@ -1,6 +1,6 @@
 #' @title Generates LF sampler
 #'
-#' @details Generates function that samples LF from a flash fit object, with either L or F
+#' @description Generates function that samples LF from a flash fit object, with either L or F
 #' fixed at its posterior mean and the columns of F or L sampled independently from their
 #' marginal posteriors.
 #'
@@ -34,7 +34,7 @@ flash_lf_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_ash,
 
 #' @title Generates LF sampler with F fixed at its expectation
 #'
-#' @details Generates function that samples LF from a flash fit object, with F fixed at its
+#' @description Generates function that samples LF from a flash fit object, with F fixed at its
 #' posterior mean and the columns of L sampled independently from their marginal posteriors.
 #'
 #' @param data a flash data object
@@ -61,7 +61,7 @@ flash_lf_sampler_fixedf = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
 
 #' @title Generates LF sampler with L fixed at its expectation
 #'
-#' @details Generates function that samples LF from a flash fit object, with L fixed at its
+#' @description Generates function that samples LF from a flash fit object, with L fixed at its
 #' posterior mean and the columns of F sampled independently from their marginal posteriors.
 #'
 #' @param data a flash data object
@@ -88,7 +88,7 @@ flash_lf_sampler_fixedl = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
 
 #' @title Generates sampler for L
 #'
-#' @details Generates function that samples L from a flash fit object. The columns of L are
+#' @description Generates function that samples L from a flash fit object. The columns of L are
 #' sampled independently from their marginal posteriors (conditional on F being fixed at
 #' its expectation).
 #'
@@ -132,7 +132,7 @@ flash_l_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
 
 #' @title Generates sampler for F
 #'
-#' @details Generates function that samples F from a flash fit object. The columns of F are
+#' @description Generates function that samples F from a flash fit object. The columns of F are
 #' sampled independently from their marginal posteriors (conditional on L being fixed at
 #' its expectation).
 #'

@@ -23,7 +23,7 @@ A function that takes a single parameter nsamp, the number of samples of LF to b
 produced by the sampler. Care should be used when setting nsamp, because the sampler
 returns a list of matrices which are each of the same size as the data matrix.
 }
-\details{
+\description{
 Generates function that samples LF from a flash fit object, with either L or F
 fixed at its posterior mean and the columns of F or L sampled independently from their
 marginal posteriors.
