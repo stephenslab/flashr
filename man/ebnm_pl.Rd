@@ -4,7 +4,7 @@
 \alias{ebnm_pl}
 \title{EBNM using point-laplace prior, from ebnm package.}
 \usage{
-ebnm_pl(x, s, ebnm_param)
+ebnm_pl(x, s, ebnm_param, return_sampler = FALSE)
 }
 \arguments{
 \item{x}{A vector of observations.}
@@ -12,7 +12,9 @@ ebnm_pl(x, s, ebnm_param)
 \item{s}{A vector of standard errors.}
 
 \item{ebnm_param}{A list of parameters to be passed to the function
-ebnm_point_laplace.}
+\code{ebnm_point_laplace}.}
+
+\item{return_sampler}{This option is not yet implemented for \code{ebnm_point_laplace}.}
 }
 \description{
 A wrapper to the function
