@@ -4,7 +4,7 @@
 \alias{ebnm_pn}
 \title{ebnm_pn}
 \usage{
-ebnm_pn(x, s, ebnm_param)
+ebnm_pn(x, s, ebnm_param, return_sampler = FALSE)
 }
 \arguments{
 \item{x}{A vector of observations.}
@@ -13,6 +13,9 @@ ebnm_pn(x, s, ebnm_param)
 
 \item{ebnm_param}{A list of parameters to be passed to the function
 \code{ebnm_point_normal}.}
+
+\item{return_sampler}{Indicates whether a posterior sampler should be returned rather
+than summary results.}
 }
 \description{
 A wrapper to the function
