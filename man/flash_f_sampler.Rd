@@ -4,7 +4,7 @@
 \alias{flash_f_sampler}
 \title{Generates sampler for F}
 \usage{
-flash_f_sampler(data, f, kset = NULL, ebnm_fn = ebnm_ash)
+flash_f_sampler(data, f, kset = NULL, ebnm_fn = ebnm_pn)
 }
 \arguments{
 \item{data}{a flash data object}

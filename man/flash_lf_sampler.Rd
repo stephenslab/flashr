@@ -4,7 +4,7 @@
 \alias{flash_lf_sampler}
 \title{Generates LF sampler}
 \usage{
-flash_lf_sampler(data, f, kset = NULL, ebnm_fn = ebnm_ash,
+flash_lf_sampler(data, f, kset = NULL, ebnm_fn = ebnm_pn,
   fixed = c("factors", "loadings"))
 }
 \arguments{
