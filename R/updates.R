@@ -7,7 +7,7 @@
 # @param ebnm_fn function to solve the Empirical Bayes normal means problem
 # @param ebnm_param parameters to be passed to ebnm_fn when optimizing
 # @return an updated flash object
-flash_update_single_loading = function(data,f,k,ebnm_fn = ebnm_ash,
+flash_update_single_loading = function(data,f,k,ebnm_fn = ebnm_pn,
                                        ebnm_param = flash_default_ebnm_param(ebnm_fn),
                                        return_sampler = F) {
     subset = which(!f$fixl[, k])  # check which elements are not fixed
@@ -58,7 +58,7 @@ flash_update_single_loading = function(data,f,k,ebnm_fn = ebnm_ash,
 #
 # @return an updated flash object
 #
-flash_update_single_factor = function(data, f, k, ebnm_fn = ebnm_ash,
+flash_update_single_factor = function(data, f, k, ebnm_fn = ebnm_pn,
                                       ebnm_param = flash_default_ebnm_param(ebnm_fn),
                                       return_sampler = F) {
     subset = which(!f$fixf[, k])  # check which elements are not fixed
@@ -101,7 +101,7 @@ flash_update_single_factor = function(data, f, k, ebnm_fn = ebnm_ash,
 
 # @title Update a single flash factor-loading combination (and precision).
 # @inheritParams flash_update_single_loading
-flash_update_single_fl = function(data, f, k, var_type, ebnm_fn = ebnm_ash, ebnm_param = flash_default_ebnm_param(ebnm_fn)) {
+flash_update_single_fl = function(data, f, k, var_type, ebnm_fn = ebnm_pn, ebnm_param = flash_default_ebnm_param(ebnm_fn)) {
     f = flash_update_precision(data, f, var_type)
     f = flash_update_single_factor(data, f, k, ebnm_fn, ebnm_param)
     f = flash_update_single_loading(data, f, k, ebnm_fn, ebnm_param)
@@ -138,7 +138,7 @@ flash_update_single_fl = function(data, f, k, var_type, ebnm_fn = ebnm_ash, ebnm
 #
 # @return An updated flash object.
 #
-flash_optimize_single_fl = function(data, f, k, var_type, nullcheck = TRUE, tol = 0.01, ebnm_fn = ebnm_ash, ebnm_param = flash_default_ebnm_param(ebnm_fn),
+flash_optimize_single_fl = function(data, f, k, var_type, nullcheck = TRUE, tol = 0.01, ebnm_fn = ebnm_pn, ebnm_param = flash_default_ebnm_param(ebnm_fn),
     verbose = FALSE) {
     f_subset = which(!f$fixf[, k])
     l_subset = which(!f$fixl[, k])
