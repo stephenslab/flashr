@@ -18,7 +18,7 @@ flash_update_precision =
 
     if (!is.null(data$S)) {
         if (is.null(f$tau)) {
-          f$tau = 1 / data$S
+          f$tau = 1 / data$S^2
         }
         return(f)
     }
