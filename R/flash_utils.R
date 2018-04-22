@@ -64,6 +64,9 @@ flash_transpose_data = function(data) {
     if (is.matrix(data$Y)) {
         data$Y = t(data$Y)
     }
+    if (is.matrix(data$S)) {
+        data$S = t(data$S)
+    }
     return(data)
 }
 
