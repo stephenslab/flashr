@@ -12,32 +12,39 @@
 #'
 #' @export
 #'
-flash_update_precision =
-  function(data, f,
-           var_type = c("by_column", "constant", "by_row", "kroneker")) {
-
-    if (!is.null(data$S)) {
-        if (is.null(f$tau)) {
-          f$tau = 1 / data$S^2
-        }
-        return(f)
+flash_update_precision = function(data,
+                                  f,
+                                  var_type = c("by_column", "by_row", "constant",
+                                               "zero", "kroneker")) {
+    if (var_type == "zero" & is.null(data$S)) {
+      stop("Flash data object must include standard errors when var_type is zero.")
+    }
+    if (!is.null(data$S) & var_type != "zero") {
+      stop("Standard errors are currently only used when var_type is zero.")
     }
 
     R2 = flash_get_R2(data, f)
-    f$tau = compute_precision(R2, data$missing, var_type)
+    f$tau = compute_precision(R2, data$missing, var_type, data$S)
     return(f)
 }
 
-compute_precision =
-  function(R2, missing,
-           var_type = c("by_column", "constant", "by_row", "kroneker")) {
+compute_precision = function(R2, missing, var_type, S) {
     R2[missing] = NA
-    var_type = match.arg(var_type)
+
     if (var_type == "by_column") {
-        tau = mle_precision_by_column(R2)
-    } else if (var_type == "constant") {
-        tau = mle_precision_constant(R2)
-    } else (stop("that var_type not yet implemented"))
+      tau = mle_precision_by_column(R2)
+    }
+    else if (var_type == "by_row") {
+      tau = t(mle_precision_by_column(t(R2)))
+    }
+    else if (var_type == "constant") {
+      tau = mle_precision_constant(R2)
+    }
+    else if (var_type == "zero") {
+      tau = 1 / S^2
+    }
+    else (stop("that var_type not yet implemented"))
+
     tau[missing] = 0
     return(tau)
 }

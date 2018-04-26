@@ -98,7 +98,8 @@
 flash = function(data,
                  Kmax = 100,
                  f_init = NULL,
-                 var_type = c("by_column", "constant"),
+                 var_type = c("by_column", "by_row", "constant",
+                              "zero", "kroneker"),
                  init_fn = "udv_si",
                  tol = 1e-2,
                  ebnm_fn = ebnm_pn,
@@ -137,8 +138,15 @@ flash = function(data,
   }
 
   if (backfit) {
-    f = flash_backfit(data, f, kset=NULL, var_type, tol, ebnm_fn,
-                      ebnm_param, verbose, nullcheck)
+    f = flash_backfit(data,
+                      f,
+                      kset=NULL,
+                      var_type,
+                      tol,
+                      ebnm_fn,
+                      ebnm_param,
+                      verbose,
+                      nullcheck)
   }
   return(f)
 }
@@ -180,7 +188,8 @@ flash = function(data,
 flash_add_greedy = function(data,
                             Kmax = 1,
                             f_init = NULL,
-                            var_type = c("by_column", "constant"),
+                            var_type = c("by_column", "by_row", "constant",
+                                         "zero", "kroneker"),
                             init_fn = "udv_si",
                             tol = 1e-2,
                             ebnm_fn = ebnm_pn,
@@ -251,7 +260,8 @@ flash_add_greedy = function(data,
 flash_backfit = function(data,
                          f_init,
                          kset = NULL,
-                         var_type = c("by_column", "constant"),
+                         var_type = c("by_column", "by_row", "constant",
+                                      "zero", "kroneker"),
                          tol = 1e-2,
                          ebnm_fn = ebnm_pn,
                          ebnm_param = flash_default_ebnm_param(ebnm_fn),
@@ -290,7 +300,7 @@ flash_backfit = function(data,
     while((diff > tol) & (iteration <= maxiter)){
       if(verbose){message("iteration:", iteration)}
       for(k in kset){
-        f = flash_update_single_fl(data,f,k,var_type,ebnm_fn,ebnm_param)
+        f = flash_update_single_fl(data, f, k, var_type, ebnm_fn, ebnm_param)
       }
       cnew = flash_get_objective(data, f)
       diff = cnew - c
@@ -353,7 +363,8 @@ flash_backfit = function(data,
 #
 flash_r1 = function(data,
                     f_init = NULL,
-                    var_type = c("by_column", "constant"),
+                    var_type = c("by_column", "by_row", "constant",
+                                 "zero", "kroneker"),
                     init_fn = "udv_si",
                     tol = 1e-2,
                     ebnm_fn = ebnm_pn,
@@ -369,9 +380,9 @@ flash_r1 = function(data,
   }
   var_type = match.arg(var_type)
   f = flash_add_factors_from_data(data,
+                                  K = 1,
                                   f_init = f_init,
-                                  init_fn = init_fn,
-                                  K = 1)
+                                  init_fn = init_fn)
   f = flash_optimize_single_fl(data,
                                f,
                                flash_get_k(f),

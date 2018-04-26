@@ -48,14 +48,16 @@
 #   other factors not being optimized (optional, but allows objective
 #   to be computed accurately).
 #
+# @param S Standard errors from flash data object (only used when
+#   var_type = "zero")
+#
 # @return An updated flash object.
 #
 r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
-  l_subset = 1:length(l_init), f_subset = 1:length(f_init),
+    l_subset = 1:length(l_init), f_subset = 1:length(f_init),
     ebnm_fn = ebnm_pn, ebnm_param = flash_default_ebnm_param(ebnm_fn),
-    var_type = c("by_column", "constant", "by_row","kroneker"),
-    tol = 0.001, calc_F = TRUE, missing = NULL, verbose = FALSE,
-    maxiter = 5000, KLobj = 0) {
+    var_type, tol = 0.001, calc_F = TRUE, missing = NULL,
+    verbose = FALSE, maxiter = 5000, KLobj = 0, S = NULL) {
 
     l = l_init
     f = f_init
@@ -93,7 +95,7 @@ r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
         l_old = l
         f_old = f
 
-        tau = compute_precision(R2new, missing, var_type)
+        tau = compute_precision(R2new, missing, var_type, S)
 
         if (length(f_subset) > 0) {
             s2 = 1/(t(l2) %*% tau[, f_subset, drop = FALSE])

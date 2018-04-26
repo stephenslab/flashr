@@ -146,7 +146,8 @@ flash_optimize_single_fl = function(data, f, k, var_type, nullcheck = TRUE, tol 
 
     res = r1_opt(flash_get_Rk(data, f, k), flash_get_R2k(data, f, k),
         f$EL[, k], f$EF[, k], f$EL2[, k], f$EF2[, k], l_subset, f_subset,
-        ebnm_fn, ebnm_param, var_type, tol, calc_F = TRUE, missing = data$missing, verbose = verbose, KLobj = KLobj)
+        ebnm_fn, ebnm_param, var_type, tol, calc_F = TRUE, missing = data$missing,
+        verbose = verbose, KLobj = KLobj, S = data$S)
 
     f = update_f_from_r1_opt_results(f, k, res)
 
