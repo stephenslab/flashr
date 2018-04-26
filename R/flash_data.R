@@ -6,8 +6,6 @@
 #'
 #' @param S An n by p matrix of the standard errors of observations of
 #'   Y. (Can be a scalar if all elements of the matrix are equal.)
-#'   Currently S is ignored as we have not yet implemented methods for
-#'   this.
 #'
 #' @details Y can have missing data, but no column or row can be
 #' entirely missing. The flash data object contains flags for dealing
@@ -20,7 +18,7 @@
 #'
 #' @export
 #'
-flash_set_data = function(Y, S = 0) {
+flash_set_data = function(Y, S = NULL) {
 
     # initialize data
     data = list(Yorig = Y, S = S, anyNA = anyNA(Y), missing = is.na(Y))
@@ -37,6 +35,11 @@ flash_set_data = function(Y, S = 0) {
     }
 
     data$Y = Y
+
+    if (!is.null(S)) {
+      data$S = matrix(S, nrow=nrow(Y), ncol=ncol(Y))
+    }
+
     class(data) = "flash_data"
     return(data)
 }

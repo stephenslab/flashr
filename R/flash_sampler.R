@@ -20,7 +20,7 @@
 #'
 #' @export
 #'
-flash_lf_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_ash,
+flash_lf_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_pn,
                             fixed=c("factors", "loadings")) {
   if (is.null(kset)) {kset = 1:flash_get_k(f)}
   fixed = match.arg(fixed)
@@ -48,7 +48,7 @@ flash_lf_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_ash,
 # @return A function that takes a single parameter nsamp, the number of samples of LF to be
 # produced by the sampler.
 #
-flash_lf_sampler_fixedf = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
+flash_lf_sampler_fixedf = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
   if (is.null(kset)) {kset = 1:flash_get_k(f)}
   l_sampler = flash_l_sampler(data, f, kset, ebnm_fn)
 
@@ -75,7 +75,7 @@ flash_lf_sampler_fixedf = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
 # @return A function that takes a single parameter nsamp, the number of samples of LF to be
 # produced by the sampler.
 #
-flash_lf_sampler_fixedl = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
+flash_lf_sampler_fixedl = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
   if (is.null(kset)) {kset = 1:flash_get_k(f)}
   f_sampler = flash_f_sampler(data, f, kset, ebnm_fn)
 
@@ -105,7 +105,7 @@ flash_lf_sampler_fixedl = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
 #'
 #' @export
 #'
-flash_l_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
+flash_l_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
   if (is.matrix(data)) {data = flash_set_data(data)}
   if (is.null(kset)) {kset = 1:flash_get_k(f)}
 
@@ -149,7 +149,7 @@ flash_l_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
 #'
 #' @export
 #'
-flash_f_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_ash) {
+flash_f_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
   if (is.matrix(data)) {data = flash_set_data(data)}
   return(flash_l_sampler(flash_transpose_data(data), flash_transpose(f), kset, ebnm_fn))
 }

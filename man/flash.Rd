@@ -4,10 +4,11 @@
 \alias{flash}
 \title{Fit Empirical Bayes Matrix Factorization}
 \usage{
-flash(data, Kmax = 100, f_init = NULL, var_type = c("by_column",
-  "constant"), init_fn = "udv_si", tol = 0.01, ebnm_fn = ebnm_pn,
-  ebnm_param = flash_default_ebnm_param(ebnm_fn), verbose = FALSE,
-  nullcheck = TRUE, seed = 123, greedy = TRUE, backfit = FALSE)
+flash(data, Kmax = 100, f_init = NULL, var_type = c("by_column", "by_row",
+  "constant", "zero", "kroneker"), init_fn = "udv_si", tol = 0.01,
+  ebnm_fn = ebnm_pn, ebnm_param = flash_default_ebnm_param(ebnm_fn),
+  verbose = FALSE, nullcheck = TRUE, seed = 123, greedy = TRUE,
+  backfit = FALSE)
 }
 \arguments{
 \item{data}{An n by p matrix or a flash data object created using

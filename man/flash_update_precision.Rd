@@ -4,8 +4,8 @@
 \alias{flash_update_precision}
 \title{Update precision parameter.}
 \usage{
-flash_update_precision(data, f, var_type = c("by_column", "constant",
-  "by_row", "kroneker"))
+flash_update_precision(data, f, var_type = c("by_column", "by_row",
+  "constant", "zero", "kroneker"))
 }
 \arguments{
 \item{data}{A flash data object.}

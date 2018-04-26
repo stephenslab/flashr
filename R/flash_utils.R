@@ -64,6 +64,9 @@ flash_transpose_data = function(data) {
     if (is.matrix(data$Y)) {
         data$Y = t(data$Y)
     }
+    if (is.matrix(data$S)) {
+        data$S = t(data$S)
+    }
     return(data)
 }
 
@@ -149,8 +152,6 @@ flash_subset_data = function(data, row_subset = NULL, col_subset = NULL) {
 #'   although the zero factor/loading is kept in f so the number and
 #'   indexing of factor/loading matrices in f remains the same.
 #'
-#' @importFrom ashr normalmix
-#'
 #' @export
 #'
 flash_zero_out_factor = function(data, f, k = 1) {
@@ -158,10 +159,9 @@ flash_zero_out_factor = function(data, f, k = 1) {
     f$EL2[!f$fixl[, k], k] = 0
     f$EF[!f$fixf[, k], k] = 0
     f$EF2[!f$fixf[, k], k] = 0
-    f$gl[[k]]   = normalmix(1, 0, 0)
-    f$gf[[k]]   = normalmix(1, 0, 0)
+    f$gl[[k]]   = NULL
+    f$gf[[k]]   = NULL
     f$KL_l[[k]] = 0
     f$KL_f[[k]] = 0  #KL divergences for each l and f
-    f = flash_update_precision(data, f)
     return(f)
 }
