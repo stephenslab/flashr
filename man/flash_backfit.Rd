@@ -4,8 +4,8 @@
 \alias{flash_backfit}
 \title{Refines a fit of the flash model to data by "backfitting".}
 \usage{
-flash_backfit(data, f_init, kset = NULL, var_type = c("by_column",
-  "constant"), tol = 0.01, ebnm_fn = ebnm_pn,
+flash_backfit(data, f_init, kset = NULL, var_type = c("by_column", "by_row",
+  "constant", "zero", "kroneker"), tol = 0.01, ebnm_fn = ebnm_pn,
   ebnm_param = flash_default_ebnm_param(ebnm_fn), verbose = FALSE,
   nullcheck = TRUE, maxiter = 1000)
 }

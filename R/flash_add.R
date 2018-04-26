@@ -1,82 +1,89 @@
 #' @title Add factors or loadings to f.
-#' 
-#' @details The precision parameter in f is updated after adding.
-#' 
+#'
 #' @param data A flash data object.
-#' 
+#'
 #' @param LL The loadings, an n by K matrix.
-#' 
+#'
 #' @param FF The factors, a p by K matrix.
 #'
 #' @param f_init Description of input argument goes here.
-#' 
+#'
 #' @param fixl An n by K matrix of TRUE/FALSE values indicating which
 #'   elements of LL should be considered fixed and not changed during
 #'   updates. Useful for including a mean factor for example.
-#' 
+#'
 #' @param fixf A p by K matrix of TRUE/FALSE values; same as fixl but
 #'   for factors FF.
-#' 
+#'
 #' @return A flash fit object, with additional factors initialized
 #'   using LL and FF.
-#' 
+#'
 #' @export
-#' 
-flash_add_lf = function(data,LL,FF,f_init=NULL,fixl=NULL,fixf=NULL){
-  if(is.null(f_init)){f_init = flash_init_null()}
-  f2 = flash_init_lf(LL,FF,fixl,fixf)
-  f = flash_combine(f_init,f2)
-  return(flash_update_precision(data,f))
+#'
+flash_add_lf = function(data, LL, FF, f_init=NULL, fixl=NULL, fixf=NULL) {
+  if (is.null(f_init)){
+    f_init = flash_init_null()
+  }
+
+  f2 = flash_init_lf(LL, FF, fixl, fixf)
+  f = flash_combine(f_init, f2)
+
+  return(f)
 }
 
 #' @title Add factors to a flash fit object based on data.
-#' 
+#'
 #' @description Computes the current residuals from data and f_init
 #'   and adds K new factors based on init_fn applied to these
 #'   residuals. (If f_init is NULL then the residuals are the data).
-#' 
+#'
 #' @param data A flash data object.
-#' 
+#'
 #' @param K Number of factors to add.
-#' 
+#'
 #' @param f_init An existing flash fit object to add to.
-#' 
+#'
 #' @param init_fn The function to use to initialize new factors
 #'   (typically some kind of svd-like function).
-#' 
+#'
 #' @export
-#' 
-flash_add_factors_from_data = function(data,K,f_init=NULL,init_fn="udv_si"){
-  if(is.null(f_init)){f_init = flash_init_null()}
-  R  = flash_get_R_withmissing(data,f_init)
-  f2 = flash_init_fn(flash_set_data(R),init_fn,K)
-  f  = flash_combine(f_init,f2)
-  return(flash_update_precision(data,f))
+#'
+flash_add_factors_from_data = function(data, K, f_init=NULL,
+                                       init_fn="udv_si") {
+  if (is.null(f_init)) {
+    f_init = flash_init_null()
+  }
+
+  R  = flash_get_R_withmissing(data, f_init)
+  f2 = flash_init_fn(flash_set_data(R), init_fn, K)
+  f  = flash_combine(f_init, f2)
+
+  return(f)
 }
 
 #' @title Add a set of fixed loadings to a flash fit object.
-#' 
+#'
 #' @param data A flash data object.
-#' 
+#'
 #' @param LL The loadings, an n by K matrix. Missing values will be
 #'   initialized by the mean of the relevant column (but will generally
 #'   be re-estimated when refitting the model).
-#' 
+#'
 #' @param f_init A flash fit object to which loadings are to be added
 #'   (if NULL then a new fit object is created).
-#' 
+#'
 #' @param fixl An n by K matrix of TRUE/FALSE values indicating which
 #'   elements of LL should be considered fixed and not changed during
 #'   updates.  Default is to fix all non-missing values, so missing
 #'   values will be updated when f is updated.
 #'
 #' @param init_fn Description of input argument goes here.
-#' 
+#'
 #' @return A flash fit object, with loadings initialized from LL, and
 #'   corresponding factors initialized to 0.
-#' 
+#'
 #' @export
-#' 
+#'
 flash_add_fixed_l = function(data, LL, f_init=NULL, fixl=NULL,
   init_fn="udv_si") {
   if(is.matrix(data)){data = flash_set_data(data)}
@@ -116,12 +123,12 @@ flash_add_fixed_l = function(data, LL, f_init=NULL, fixl=NULL,
 }
 
 # @title Partition a matrix into blocks of identical columns
-# 
+#
 # @param X the matrix to be partitioned (note that X should not have NAs)
-# 
+#
 # @return A list, each element of which contains the indices of a
 #   single block of identical columns.
-# 
+#
 find_col_blocks = function(X) {
   n = nrow(X)
   K = ncol(X)
@@ -147,27 +154,27 @@ find_col_blocks = function(X) {
 }
 
 #' @title Add a set of fixed factors to a flash fit object.
-#' 
+#'
 #' @param data a flash data object
-#' 
+#'
 #' @param FF The factors, a p by K matrix. Missing values will be
 #'   initialized by the mean of the relevant column (but will generally
 #'   be re-estimated when refitting the model).
-#' 
+#'
 #' @param f_init A flash fit object to which factors are to be added
 #'   (if NULL then a new fit object is created).
-#' 
+#'
 #' @param fixf A p by K matrix of TRUE/FALSE values indicating which
 #'   elements of FF should be considered fixed and not changed during
 #'   updates. Default is to fix all non-missing values, so missing
 #'   values will be updated when f is updated.
-#' 
+#'
 #' @return A flash fit object, with factors initialized from FF, and
 #'   corresponding loadings initialized to 0..
-#' 
+#'
 #' @export
-#' 
-flash_add_fixed_f = function(data,FF,f_init=NULL,fixf=NULL){
+#'
+flash_add_fixed_f = function(data, FF, f_init=NULL, fixf=NULL) {
   if (is.matrix(data)) {data = flash_set_data(data)}
 
   tf = flash_add_fixed_l(flash_transpose_data(data), FF, flash_transpose(f_init), fixf)
@@ -184,9 +191,8 @@ flash_add_fixed_f = function(data,FF,f_init=NULL,fixf=NULL){
 #
 # @return A flash fit object.
 #
-flash_init_fn = function(data,init_fn,K=1){
-  s = do.call(init_fn,list(get_Yorig(data),K))
-  f = flash_init_udv(s,K)
-  f = flash_update_precision(data,f)
+flash_init_fn = function(data, init_fn, K=1) {
+  s = do.call(init_fn, list(get_Yorig(data), K))
+  f = flash_init_udv(s, K)
   return(f)
 }

@@ -29,6 +29,3 @@ A flash fit object, with additional factors initialized
 \description{
 Add factors or loadings to f.
 }
-\details{
-The precision parameter in f is updated after adding.
-}

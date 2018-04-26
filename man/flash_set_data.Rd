@@ -4,15 +4,13 @@
 \alias{flash_set_data}
 \title{Set up data for reading into flash.}
 \usage{
-flash_set_data(Y, S = 0)
+flash_set_data(Y, S = NULL)
 }
 \arguments{
 \item{Y}{an n by p data matrix}
 
 \item{S}{An n by p matrix of the standard errors of observations of
-Y. (Can be a scalar if all elements of the matrix are equal.)
-Currently S is ignored as we have not yet implemented methods for
-this.}
+Y. (Can be a scalar if all elements of the matrix are equal.)}
 }
 \value{
 A flash data object.
