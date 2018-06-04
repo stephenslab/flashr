@@ -1,13 +1,13 @@
 # Functions for extracting useful information about the object.
 
 #' @title Return the estimated LF' matrix.
-#' 
+#'
 #' @param f A flash fit object.
-#' 
+#'
 #' @return The estimated value of LF', an n by p matrix.
-#' 
+#'
 #' @export
-#' 
+#'
 flash_get_lf = function(f) {
     if (is.null(f$EL)) {
         return(NULL)
@@ -16,17 +16,17 @@ flash_get_lf = function(f) {
 }
 
 #' @title flash_get_ldf
-#' 
+#'
 #' @param f A flash fit object.
-#' 
+#'
 #' @param k Indices of loadings/factors to be returned.
-#' 
+#'
 #' @param drop_zero_factors Flag whether to remove any factor/loadings
 #'   that are zero.
-#' 
+#'
 #' @details Returns standardized loadings, factors, and weights from a
 #' flash object.
-#' 
+#'
 #' @return A list with the following elements:
 #' \itemize{
 #' \item{l} A matrix whose columns contain the standardized loadings
@@ -37,9 +37,9 @@ flash_get_lf = function(f) {
 #'   (ie norm 1).}
 #' These are analogous to the u, d and v returned by \code{svd}, but
 #' columns of l and f are not orthogonal.
-#' 
+#'
 #' @export
-#' 
+#'
 flash_get_ldf = function(f, k = NULL, drop_zero_factors =TRUE) {
   if (is.null(k)) {
     k = 1:flash_get_k(f)
@@ -133,13 +133,13 @@ flash_get_f = function(f) {
 }
 
 #' @title Get number of factors in a fit object.
-#' 
+#'
 #' @param f A flash fit object.
-#' 
+#'
 #' @details Returns the number of factors in a flash fit.
-#' 
+#'
 #' @export
-#' 
+#'
 flash_get_k = function(f) {
     k = ncol(f$EL)
     if (is.null(k)) {
@@ -158,19 +158,20 @@ flash_get_p = function(f) {
 }
 
 #' @title flash_get_pve
-#' 
+#'
 #' @description Returns the factor contributions ('proportion of
 #' variance explained') by each factor/loading combination in flash
 #' fit f. Because the factors are not required to be orthogonal this
 #' should be interpreted loosely: eg PVE could total more than 1.
 #'
 #' @param f Description of input argument goes here.
-#' 
+#'
 #' @export
-#' 
+#'
 flash_get_pve = function(f) {
     s = (flash_get_ldf(f)$d)^2
-    s/(sum(s) + sum(1/f$tau))
+    tau = f$tau[f$tau != 0]
+    s/(sum(s) + sum(1/tau))
     # wei's version:
     #
     #  sapply(seq(1,K),function(x){
