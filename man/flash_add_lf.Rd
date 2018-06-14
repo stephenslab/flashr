@@ -13,7 +13,8 @@ flash_add_lf(data, LL, FF, f_init = NULL, fixl = NULL, fixf = NULL)
 
 \item{FF}{The factors, a p by K matrix.}
 
-\item{f_init}{Description of input argument goes here.}
+\item{f_init}{A flash object to which new factors are to be added
+(if NULL then a new fit object is created).}
 
 \item{fixl}{An n by K matrix of TRUE/FALSE values indicating which
 elements of LL should be considered fixed and not changed during

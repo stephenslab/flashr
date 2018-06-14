@@ -8,14 +8,18 @@
 #' @param data An n by p matrix or a flash data object created using
 #'   \code{flash_set_data}.
 #'
-#' @param Kmax Description of input argument goes here.
+#' @param Kmax The maximum number of factors to be added to the flash
+#'   object. (If \code{nullcheck = TRUE}, the actual number of factors
+#'   added might be less than \code{Kmax}.)
 #'
-#' @param f_init if supplied, a flash object to which a single new
-#'   factor is to be added.
+#' @param f_init The flash object to which new factors are to be added.
+#'   If \code{f_init = NULL}, \code{flash} begins with an empty flash
+#'   object.
 #'
-#' @param var_type type of variance structure to assume for residuals.
+#' @param var_type The type of variance structure to assume for
+#'   residuals.
 #'
-#' @param init_fn function to be used to initialize the factor. This
+#' @param init_fn The function used to initialize factors. This
 #'   function should take parameters (Y,K) where Y is an n by p matrix
 #'   of data (or a flash data object) and K is a number of factors.  It
 #'   should output a list with elements (u,d,v) where u is n by K matrix
@@ -24,30 +28,33 @@
 #'   function must be able to deal with missing values in its input
 #'   matrix.)
 #'
-#' @param tol Specify how much objective can change in a single
+#' @param tol Specifies how much the objective can change in a single
 #'   iteration to be considered not converged.
 #'
-#' @param ebnm_fn function to solve the Empirical Bayes Normal Means problem
+#' @param ebnm_fn The function used to solve the Empirical Bayes Normal
+#'   Means problem
 #'
-#' @param ebnm_param named list containing parameters to be passed to
-#'   ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()
+#' @param ebnm_param A named list containing parameters to be passed to
+#'   ebnm_fn when optimizing; defaults are set by
+#'   \code{flash_default_ebnm_param()}.
 #'
-#' @param verbose if TRUE various output progress updates will be printed
+#' @param verbose If TRUE, various progress updates will be printed.
 #'
-#' @param nullcheck flag whether to check, after running hill-climbing
-#'   updates, whether the achieved optimum is better than setting factor
-#'   to 0. If this check is performed and fails then the factor will be
-#'   set to 0 in the returned fit.
+#' @param nullcheck If TRUE, then after running hill-climbing updates,
+#'   \code{flash} will check whether the achieved optimum is better than
+#'   setting the factor to 0. If the check is performed and fails then
+#'   the factor will be set to 0 in the returned fit.
 #'
-#' @param seed a random number seed to use before running method - for
-#'   reproducibility. Set to NULL if you don't want seed set.  (The seed
-#'   can affect initialization when there are missing data; otherwise
-#'   the algorithm is deterministic)
+#' @param seed A random number seed to use before running \code{flash}
+#'   - for reproducibility. Set to NULL if you don't want the seed set.
+#'   (The seed can affect initialization when there are missing data;
+#'   otherwise the algorithm is deterministic.)
 #'
-#' @param greedy a TRUE/FALSE flag to say whether to start by running
-#'   the greedy algorithm (if FALSE then f_init must be supplied)
+#' @param greedy If TRUE, factors are added via the greedy algorithm.
+#'   If FALSE, then \code{f_init} must be supplied.
 #'
-#' @param backfit a TRUE/FALSE flag to say whether to run backfitting.
+#' @param backfit If TRUE, factors are refined via the backfitting
+#'   algorithm.
 #'
 #' @seealso flash_add_greedy, flash_backfit
 #'
@@ -163,8 +170,6 @@ flash = function(data,
 #'   the residuals after removing previously-fitted factors.
 #'
 #' @inheritParams flash
-#'
-#' @param Kmax Description of input argument goes here.
 #'
 #' @return A fitted flash object.
 #'

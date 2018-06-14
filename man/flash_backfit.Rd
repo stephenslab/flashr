@@ -18,22 +18,25 @@ flash_backfit(data, f_init, kset = NULL, var_type = c("by_column", "by_row",
 \item{kset}{The indices of factors to be optimized (NULL indicates
 all factors).}
 
-\item{var_type}{type of variance structure to assume for residuals.}
+\item{var_type}{The type of variance structure to assume for
+residuals.}
 
-\item{tol}{Specify how much objective can change in a single
+\item{tol}{Specifies how much the objective can change in a single
 iteration to be considered not converged.}
 
-\item{ebnm_fn}{function to solve the Empirical Bayes Normal Means problem}
+\item{ebnm_fn}{The function used to solve the Empirical Bayes Normal
+Means problem}
 
-\item{ebnm_param}{named list containing parameters to be passed to
-ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()}
+\item{ebnm_param}{A named list containing parameters to be passed to
+ebnm_fn when optimizing; defaults are set by
+\code{flash_default_ebnm_param()}.}
 
-\item{verbose}{if TRUE various output progress updates will be printed}
+\item{verbose}{If TRUE, various progress updates will be printed.}
 
-\item{nullcheck}{flag whether to check, after running hill-climbing
-updates, whether the achieved optimum is better than setting factor
-to 0. If this check is performed and fails then the factor will be
-set to 0 in the returned fit.}
+\item{nullcheck}{If TRUE, then after running hill-climbing updates,
+\code{flash} will check whether the achieved optimum is better than
+setting the factor to 0. If the check is performed and fails then
+the factor will be set to 0 in the returned fit.}
 
 \item{maxiter}{A maximum number of iterations to perform (in the
 inner loop). To perform just one iteration we suggest setting

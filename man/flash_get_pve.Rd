@@ -7,7 +7,7 @@
 flash_get_pve(f)
 }
 \arguments{
-\item{f}{Description of input argument goes here.}
+\item{f}{A flash fit object.}
 }
 \description{
 Returns the factor contributions ('proportion of

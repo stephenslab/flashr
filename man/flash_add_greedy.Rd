@@ -13,14 +13,18 @@ flash_add_greedy(data, Kmax = 1, f_init = NULL, var_type = c("by_column",
 \item{data}{An n by p matrix or a flash data object created using
 \code{flash_set_data}.}
 
-\item{Kmax}{Description of input argument goes here.}
+\item{Kmax}{The maximum number of factors to be added to the flash
+object. (If \code{nullcheck = TRUE}, the actual number of factors
+added might be less than \code{Kmax}.)}
 
-\item{f_init}{if supplied, a flash object to which a single new
-factor is to be added.}
+\item{f_init}{The flash object to which new factors are to be added.
+If \code{f_init = NULL}, \code{flash} begins with an empty flash
+object.}
 
-\item{var_type}{type of variance structure to assume for residuals.}
+\item{var_type}{The type of variance structure to assume for
+residuals.}
 
-\item{init_fn}{function to be used to initialize the factor. This
+\item{init_fn}{The function used to initialize factors. This
 function should take parameters (Y,K) where Y is an n by p matrix
 of data (or a flash data object) and K is a number of factors.  It
 should output a list with elements (u,d,v) where u is n by K matrix
@@ -29,25 +33,27 @@ example.  (If the input data includes missing values then this
 function must be able to deal with missing values in its input
 matrix.)}
 
-\item{tol}{Specify how much objective can change in a single
+\item{tol}{Specifies how much the objective can change in a single
 iteration to be considered not converged.}
 
-\item{ebnm_fn}{function to solve the Empirical Bayes Normal Means problem}
+\item{ebnm_fn}{The function used to solve the Empirical Bayes Normal
+Means problem}
 
-\item{ebnm_param}{named list containing parameters to be passed to
-ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()}
+\item{ebnm_param}{A named list containing parameters to be passed to
+ebnm_fn when optimizing; defaults are set by
+\code{flash_default_ebnm_param()}.}
 
-\item{verbose}{if TRUE various output progress updates will be printed}
+\item{verbose}{If TRUE, various progress updates will be printed.}
 
-\item{nullcheck}{flag whether to check, after running hill-climbing
-updates, whether the achieved optimum is better than setting factor
-to 0. If this check is performed and fails then the factor will be
-set to 0 in the returned fit.}
+\item{nullcheck}{If TRUE, then after running hill-climbing updates,
+\code{flash} will check whether the achieved optimum is better than
+setting the factor to 0. If the check is performed and fails then
+the factor will be set to 0 in the returned fit.}
 
-\item{seed}{a random number seed to use before running method - for
-reproducibility. Set to NULL if you don't want seed set.  (The seed
-can affect initialization when there are missing data; otherwise
-the algorithm is deterministic)}
+\item{seed}{A random number seed to use before running \code{flash}
+- for reproducibility. Set to NULL if you don't want the seed set.
+(The seed can affect initialization when there are missing data;
+otherwise the algorithm is deterministic.)}
 }
 \value{
 A fitted flash object.
