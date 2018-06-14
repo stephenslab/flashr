@@ -18,8 +18,7 @@ object. (If \code{nullcheck = TRUE}, the actual number of factors
 added might be less than \code{Kmax}.)}
 
 \item{f_init}{The flash object to which new factors are to be added.
-If \code{f_init = NULL}, \code{flash} begins with an empty flash
-object.}
+If \code{f_init = NULL}, then a new flash fit object is created.}
 
 \item{var_type}{The type of variance structure to assume for
 residuals.}
@@ -37,7 +36,7 @@ matrix.)}
 iteration to be considered not converged.}
 
 \item{ebnm_fn}{The function used to solve the Empirical Bayes Normal
-Means problem}
+Means problem.}
 
 \item{ebnm_param}{A named list containing parameters to be passed to
 ebnm_fn when optimizing; defaults are set by

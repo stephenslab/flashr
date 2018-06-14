@@ -25,7 +25,7 @@ residuals.}
 iteration to be considered not converged.}
 
 \item{ebnm_fn}{The function used to solve the Empirical Bayes Normal
-Means problem}
+Means problem.}
 
 \item{ebnm_param}{A named list containing parameters to be passed to
 ebnm_fn when optimizing; defaults are set by

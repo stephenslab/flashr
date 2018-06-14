@@ -13,8 +13,7 @@
 #'   added might be less than \code{Kmax}.)
 #'
 #' @param f_init The flash object to which new factors are to be added.
-#'   If \code{f_init = NULL}, \code{flash} begins with an empty flash
-#'   object.
+#'   If \code{f_init = NULL}, then a new flash fit object is created.
 #'
 #' @param var_type The type of variance structure to assume for
 #'   residuals.
@@ -32,7 +31,7 @@
 #'   iteration to be considered not converged.
 #'
 #' @param ebnm_fn The function used to solve the Empirical Bayes Normal
-#'   Means problem
+#'   Means problem.
 #'
 #' @param ebnm_param A named list containing parameters to be passed to
 #'   ebnm_fn when optimizing; defaults are set by
