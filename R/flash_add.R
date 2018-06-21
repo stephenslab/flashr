@@ -6,7 +6,8 @@
 #'
 #' @param FF The factors, a p by K matrix.
 #'
-#' @param f_init Description of input argument goes here.
+#' @param f_init A flash object to which new factors are to be added
+#'   (if NULL then a new fit object is created).
 #'
 #' @param fixl An n by K matrix of TRUE/FALSE values indicating which
 #'   elements of LL should be considered fixed and not changed during
@@ -77,7 +78,9 @@ flash_add_factors_from_data = function(data, K, f_init=NULL,
 #'   updates.  Default is to fix all non-missing values, so missing
 #'   values will be updated when f is updated.
 #'
-#' @param init_fn Description of input argument goes here.
+#' @param init_fn An initialization function, which takes as input an
+#   (n by p matrix, or flash data object) and K, a number of factors,
+#   and and outputs a list with elements (u,d,v).
 #'
 #' @return A flash fit object, with loadings initialized from LL, and
 #'   corresponding factors initialized to 0.
@@ -170,7 +173,7 @@ find_col_blocks = function(X) {
 #'   values will be updated when f is updated.
 #'
 #' @return A flash fit object, with factors initialized from FF, and
-#'   corresponding loadings initialized to 0..
+#'   corresponding loadings initialized to 0.
 #'
 #' @export
 #'

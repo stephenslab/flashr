@@ -23,7 +23,7 @@ values will be updated when f is updated.}
 }
 \value{
 A flash fit object, with factors initialized from FF, and
-  corresponding loadings initialized to 0..
+  corresponding loadings initialized to 0.
 }
 \description{
 Add a set of fixed factors to a flash fit object.
