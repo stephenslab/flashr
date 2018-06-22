@@ -126,18 +126,19 @@ flash = function(data,
   }
 
   if (greedy) {
-    f = flash_add_greedy(
-      data,
-      Kmax,
-      f_init,
-      var_type,
-      init_fn,
-      tol,
-      ebnm_fn,
-      ebnm_param,
-      verbose,
-      nullcheck,
-      seed
+    f = flash_add_greedy(data,
+                         Kmax,
+                         f_init,
+                         var_type,
+                         init_fn,
+                         tol,
+                         ebnm_fn,
+                         ebnm_param,
+                         gl = NULL,
+                         gf = NULL,
+                         verbose,
+                         nullcheck,
+                         seed
     )
   } else {
     f = f_init
@@ -146,11 +147,13 @@ flash = function(data,
   if (backfit) {
     f = flash_backfit(data,
                       f,
-                      kset=NULL,
+                      kset = NULL,
                       var_type,
                       tol,
                       ebnm_fn,
                       ebnm_param,
+                      gl = NULL,
+                      gf = NULL,
                       verbose,
                       nullcheck)
   }
@@ -164,11 +167,20 @@ flash = function(data,
 #'   start from scratch.  It adds factors iteratively, at each stage
 #'   adding a new factor and then optimizing it.  It is "greedy" in that
 #'   it does not return to re-optimize previous factors.  The function
-#'   stops when an added factor contributes nothing, or Kmax is reached.
-#'   Each new factor is intialized by applying the function `init_fn` to
-#'   the residuals after removing previously-fitted factors.
+#'   stops when an added factor contributes nothing, or \code{Kmax} is
+#'   reached. Each new factor is intialized by applying the function
+#'   \code{init_fn} to the residuals after removing previously-fitted
+#'   factors.
 #'
 #' @inheritParams flash
+#'
+#' @param gl If nonnull, then the priors on the loadings will be fixed at
+#'   the specified values. This should be a list of length \code{Kmax},
+#'   with \code{gl[[k]]} specifying the prior for the kth loading.
+#'
+#' @param gf If nonnull, then the priors on the factors will be fixed
+#'   the specified values. This should be a list of length \code{Kmax},
+#'   with \code{gf[[k]]} specifying the prior for the kth factor.
 #'
 #' @return A fitted flash object.
 #'
@@ -198,6 +210,8 @@ flash_add_greedy = function(data,
                             tol = 1e-2,
                             ebnm_fn = ebnm_pn,
                             ebnm_param = flash_default_ebnm_param(ebnm_fn),
+                            gl = NULL,
+                            gf = NULL,
                             verbose = FALSE,
                             nullcheck = TRUE,
                             seed = 123) {
@@ -219,6 +233,8 @@ flash_add_greedy = function(data,
                  tol,
                  ebnm_fn,
                  ebnm_param,
+                 gl[[k]],
+                 gf[[k]],
                  verbose,
                  nullcheck,
                  seed = NULL)
@@ -237,8 +253,6 @@ flash_add_greedy = function(data,
 #' @description Iterates through the factors of a flash object,
 #'   updating each until convergence.
 #'
-#' @param f_init A fitted flash object to be refined.
-#'
 #' @param kset The indices of factors to be optimized (NULL indicates
 #'   all factors).
 #'
@@ -247,6 +261,14 @@ flash_add_greedy = function(data,
 #'   \code{maxiter = 1} and \code{nullcheck = FALSE}.
 #'
 #' @inheritParams flash
+#'
+#' @param gl If nonnull, then the priors on the loadings will be fixed at
+#'   the specified values. This should be a list, with \code{gl[[k]]}
+#'   specifying the prior for the kth loading.
+#'
+#' @param gf If nonnull, then the priors on the factors will be fixed
+#'   the specified values. This should be a list, with \code{gf[[k]]}
+#'   specifying the prior for the kth factor.
 #'
 #' @return A fitted flash object.
 #'
@@ -269,6 +291,8 @@ flash_backfit = function(data,
                          tol = 1e-2,
                          ebnm_fn = ebnm_pn,
                          ebnm_param = flash_default_ebnm_param(ebnm_fn),
+                         gl = NULL,
+                         gf = NULL,
                          verbose = FALSE,
                          nullcheck = TRUE,
                          maxiter = 1000) {
@@ -286,7 +310,14 @@ flash_backfit = function(data,
   }
 
   for (k in kset) {
-    f = flash_update_single_fl(data, f, k, var_type, ebnm_fn, ebnm_param)
+    f = flash_update_single_fl(data,
+                               f,
+                               k,
+                               var_type,
+                               ebnm_fn,
+                               ebnm_param,
+                               gl[[k]],
+                               gf[[k]])
   }
 
   c = flash_get_objective(data, f)
@@ -299,12 +330,19 @@ flash_backfit = function(data,
 
   while((diff > tol) & (iteration <= maxiter)) {
 
-    # There are two steps; first backfit, then null check
-    # (if nullcheck removes some factors then the whole process is repeated)
+    # There are two steps; first backfit, then null check (if nullcheck
+    # removes some factors then the whole process is repeated).
     while((diff > tol) & (iteration <= maxiter)){
       if(verbose){message("iteration:", iteration)}
       for(k in kset){
-        f = flash_update_single_fl(data, f, k, var_type, ebnm_fn, ebnm_param)
+        f = flash_update_single_fl(data,
+                                   f,
+                                   k,
+                                   var_type,
+                                   ebnm_fn,
+                                   ebnm_param,
+                                   gl[[k]],
+                                   gf[[k]])
       }
       cnew = flash_get_objective(data, f)
       diff = cnew - c
@@ -314,7 +352,7 @@ flash_backfit = function(data,
     }
 
     if (nullcheck) {
-      #remove factors that actually hurt objective
+      # remove factors that actually hurt objective
       kset = 1:flash_get_k(f)
       f = perform_nullcheck(data, f, kset, var_type, verbose)
 
@@ -336,7 +374,7 @@ flash_backfit = function(data,
 #   standardized loadings and factors; use \code{flash_get_lf} to
 #   access fitted LF'.
 #
-# @inheritParams flash
+# @inheritParams flash_add_greedy
 #
 # @examples
 #
@@ -373,6 +411,8 @@ flash_r1 = function(data,
                     tol = 1e-2,
                     ebnm_fn = ebnm_pn,
                     ebnm_param = flash_default_ebnm_param(ebnm_fn),
+                    gl = NULL,
+                    gf = NULL,
                     verbose = FALSE,
                     nullcheck = TRUE,
                     seed = 123) {
@@ -395,6 +435,8 @@ flash_r1 = function(data,
                                tol,
                                ebnm_fn,
                                ebnm_param,
+                               gl,
+                               gf,
                                verbose)
   return(f)
 }

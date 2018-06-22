@@ -62,15 +62,6 @@ flash_get_ldf = function(f, k = NULL, drop_zero_factors =TRUE) {
        f = ff)
 }
 
-# @title Get the residuals from a flash data and fit object,
-#   excluding factor k.
-flash_get_Rk = function(data, f, k) {
-    if (flash_get_k(f) < k) {
-        stop("factor k does not exist")
-    }
-    return(data$Y - f$EL[, -k, drop = FALSE] %*% t(f$EF[, -k, drop = FALSE]))
-}
-
 # @title Get the residuals from data and a flash fit object.
 flash_get_R = function(data, f) {
     if (is.null(f$EL))
@@ -94,8 +85,17 @@ flash_get_R_withmissing = function(data, f) {
     }
 }
 
+# @title Get the residuals from a flash data and fit object,
+#   excluding factor k.
+flash_get_Rk = function(data, f, k) {
+  if (flash_get_k(f) < k) {
+    stop("factor k does not exist")
+  }
+  return(data$Y - f$EL[, -k, drop = FALSE] %*% t(f$EF[, -k, drop = FALSE]))
+}
+
 # @title Get the expected squared residuals from a flash data and fit
-# object.
+#   object.
 flash_get_R2 = function(data, f) {
     if (is.null(f$EL)) {
         return(data$Y^2)
@@ -155,6 +155,32 @@ flash_get_n = function(f) {
 
 flash_get_p = function(f) {
   nrow(f$EF)
+}
+
+#' @title Return the list of priors on the loadings.
+#'
+#' @param f A flash fit object.
+#'
+#' @details Returns a list of length K, with the kth list element
+#'   containing the prior for the kth loading.
+#'
+#' @export
+#'
+flash_get_gl = function(f) {
+  f$gl
+}
+
+#' @title Return the list of priors on the factors
+#'
+#' @param f A flash fit object.
+#'
+#' @details Returns a list of length K, with the kth list element
+#'   containing the prior for the kth factor.
+#'
+#' @export
+#'
+flash_get_gf = function(f) {
+  f$gf
 }
 
 #' @title flash_get_pve

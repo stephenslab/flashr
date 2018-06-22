@@ -28,6 +28,10 @@
 #
 # @param ebnm_param Parameters to be passed to ebnm_fn when optimizing.
 #
+# @param gl If nonnull, fixes the prior on the loading.
+#
+# @param gf If nonnull, fixes the prior on the factor.
+#
 # @param var_type The type of variance structure to assume.
 #
 # @param tol A tolerance on changes in l and f to diagnose convergence.
@@ -53,11 +57,35 @@
 #
 # @return An updated flash object.
 #
-r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
-    l_subset = 1:length(l_init), f_subset = 1:length(f_init),
-    ebnm_fn = ebnm_pn, ebnm_param = flash_default_ebnm_param(ebnm_fn),
-    var_type, tol = 0.001, calc_F = TRUE, missing = NULL,
-    verbose = FALSE, maxiter = 5000, KLobj = 0, S = NULL) {
+r1_opt = function(R,
+                  R2,
+                  l_init,
+                  f_init,
+                  l2_init = NULL,
+                  f2_init = NULL,
+                  l_subset = 1:length(l_init),
+                  f_subset = 1:length(f_init),
+                  ebnm_fn = ebnm_pn,
+                  ebnm_param = flash_default_ebnm_param(ebnm_fn),
+                  gl = NULL,
+                  gf = NULL,
+                  var_type,
+                  tol = 0.001,
+                  calc_F = TRUE,
+                  missing = NULL,
+                  verbose = FALSE,
+                  maxiter = 5000,
+                  KLobj = 0,
+                  S = NULL) {
+    ebnm_param_l = ebnm_param
+    if (!is.null(gl)) {
+      modifyList(ebnm_param_l, list(fixg=TRUE, g=gl))
+    }
+
+    ebnm_param_f = ebnm_param
+    if (is.null(gf)) {
+      modifyList(ebnm_param_f, list(fixg=TRUE, g=gf))
+    }
 
     l = l_init
     f = f_init
@@ -104,7 +132,7 @@ r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
                 x = (t(l) %*% (R[, f_subset, drop = FALSE] * tau[, f_subset, drop = FALSE])) * s2
                 # if a value of s2 is numerically negative, set it to a small positive number
                 s = sqrt(pmax(s2, .Machine$double.eps))
-                ebnm_f = ebnm_fn(x, s, ebnm_param)
+                ebnm_f = ebnm_fn(x, s, ebnm_param_f)
                 f[f_subset] = ebnm_f$postmean
                 f2[f_subset] = ebnm_f$postmean2
                 gf = ebnm_f$fitted_g
@@ -123,7 +151,7 @@ r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
                 x = ((R[l_subset, , drop = FALSE] * tau[l_subset, , drop = FALSE]) %*% f) * s2
                 # if a value of s2 is numerically negative, set it to a small positive number
                 s = sqrt(pmax(s2, .Machine$double.eps))
-                ebnm_l = ebnm_fn(x, s, ebnm_param)
+                ebnm_l = ebnm_fn(x, s, ebnm_param_l)
                 l[l_subset] = ebnm_l$postmean
                 l2[l_subset] = ebnm_l$postmean2
                 gl = ebnm_l$fitted_g
@@ -146,9 +174,7 @@ r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
             diff = Fnew - F_obj
 
             if (diff < 0 & verbose) {
-                warning("An iteration decreased the objective. This happens occasionally, perhaps due to numeric reasons.
-You could ignore this warning, but you might like to check out
-https://github.com/stephenslab/flashr/issues/26 for more details.")
+                warning("An iteration decreased the objective. This happens occasionally, perhaps due to numeric reasons. You could ignore this warning, but you might like to check out https://github.com/stephenslab/flashr/issues/26 for more details.")
             }
             F_obj = Fnew
         } else {
@@ -175,8 +201,20 @@ https://github.com/stephenslab/flashr/issues/26 for more details.")
         }
     }
 
-    return(list(l = l, f = f, l2 = l2, f2 = f2, tau = tau, F_obj = F_obj, KL_l = KL_l, KL_f = KL_f, gl = gl, gf = gf,
-        penloglik_l = penloglik_l, penloglik_f = penloglik_f, ebnm_param = ebnm_param))
+    return(list(l = l,
+                f = f,
+                l2 = l2,
+                f2 = f2,
+                tau = tau,
+                F_obj = F_obj,
+                KL_l = KL_l,
+                KL_f = KL_f,
+                gl = gl,
+                gf = gf,
+                penloglik_l = penloglik_l,
+                penloglik_f = penloglik_f,
+                ebnm_param_l = ebnm_param_l,
+                ebnm_param_f = ebnm_param_f))
 }
 
 # Put the results into f.
@@ -187,8 +225,8 @@ update_f_from_r1_opt_results = function(f, k, res) {
     f$EF2[, k] = res$f2
     f$tau = res$tau
 
-    f$ebnm_param_f[[k]] = res$ebnm_param
-    f$ebnm_param_l[[k]] = res$ebnm_param
+    f$ebnm_param_f[[k]] = res$ebnm_param_f
+    f$ebnm_param_l[[k]] = res$ebnm_param_l
 
     if (!is.null(res$gf)) {
         f$gf[[k]] = res$gf
