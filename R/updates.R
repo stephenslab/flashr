@@ -15,7 +15,7 @@ flash_update_single_loading = function(data,
                                        gl = NULL,
                                        return_sampler = F) {
     if (!is.null(gl)) {
-      modifyList(ebnm_param, list(fixg=TRUE, g=gl))
+      ebnm_param = modifyList(ebnm_param, list(fixg=TRUE, g=gl))
     }
 
     subset = which(!f$fixl[, k])  # check which elements are not fixed
@@ -75,7 +75,7 @@ flash_update_single_factor = function(data,
                                       gf = NULL,
                                       return_sampler = F) {
     if (!is.null(gf)) {
-      modifyList(ebnm_param, list(fixg=TRUE, g=gf))
+      ebnm_param = modifyList(ebnm_param, list(fixg=TRUE, g=gf))
     }
 
     subset = which(!f$fixf[, k])  # check which elements are not fixed

@@ -79,12 +79,12 @@ r1_opt = function(R,
                   S = NULL) {
     ebnm_param_l = ebnm_param
     if (!is.null(gl)) {
-      modifyList(ebnm_param_l, list(fixg=TRUE, g=gl))
+      ebnm_param_l = modifyList(ebnm_param_l, list(fixg=TRUE, g=gl))
     }
 
     ebnm_param_f = ebnm_param
-    if (is.null(gf)) {
-      modifyList(ebnm_param_f, list(fixg=TRUE, g=gf))
+    if (!is.null(gf)) {
+      ebnm_param_f = modifyList(ebnm_param_f, list(fixg=TRUE, g=gf))
     }
 
     l = l_init
