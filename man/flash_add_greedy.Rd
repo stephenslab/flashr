@@ -7,7 +7,8 @@
 flash_add_greedy(data, Kmax = 1, f_init = NULL, var_type = c("by_column",
   "by_row", "constant", "zero", "kroneker"), init_fn = "udv_si", tol = 0.01,
   ebnm_fn = ebnm_pn, ebnm_param = flash_default_ebnm_param(ebnm_fn),
-  verbose = FALSE, nullcheck = TRUE, seed = 123)
+  gl = NULL, fixgl = FALSE, gf = NULL, fixgf = FALSE, verbose = FALSE,
+  nullcheck = TRUE, seed = 123)
 }
 \arguments{
 \item{data}{An n by p matrix or a flash data object created using
@@ -42,6 +43,26 @@ Means problem.}
 ebnm_fn when optimizing; defaults are set by
 \code{flash_default_ebnm_param()}.}
 
+\item{gl}{Passed into \code{ebnm_fn} as parameter \code{g} (used to
+fix or initialize priors on the loadings). This can be a single
+prior or a list of length \code{Kmax}, with \code{gl[[k]]}
+specifying the prior for the kth loading.}
+
+\item{fixgl}{Passed into \code{ebnm_fn} as parameter \code{fixg} (used
+to fix priors on the loadings). This can be a single boolean which
+specifies \code{fixg} for all loadings or a vector of booleans,
+with \code{fixg}[k] specifying \code{fixg} for the kth loading.}
+
+\item{gf}{Passed into \code{ebnm_fn} as parameter \code{g} (used to
+fix or initialize priors on the factors). This can be a single
+prior or a list of length \code{Kmax}, with \code{gf[[k]]}
+specifying the prior for the kth factor.}
+
+\item{fixgf}{Passed into \code{ebnm_fn} as parameter \code{fixg} (used
+to fix priors on the factors). This can be a single boolean which
+specifies \code{fixg} for all factors or a vector of booleans,
+with \code{fixg}[k] specifying \code{fixg} for the kth factor.}
+
 \item{verbose}{If TRUE, various progress updates will be printed.}
 
 \item{nullcheck}{If TRUE, then after running hill-climbing updates,
@@ -59,13 +80,14 @@ A fitted flash object.
 }
 \description{
 This implements the greedy algorithm from Wang and
-  Stephens. It can be used to adds factors to an existing fit, or
+  Stephens.  It can be used to add factors to an existing fit, or
   start from scratch.  It adds factors iteratively, at each stage
   adding a new factor and then optimizing it.  It is "greedy" in that
   it does not return to re-optimize previous factors.  The function
-  stops when an added factor contributes nothing, or Kmax is reached.
-  Each new factor is intialized by applying the function `init_fn` to
-  the residuals after removing previously-fitted factors.
+  stops when an added factor contributes nothing or when \code{Kmax}
+  is reached. Each new factor is intialized by applying the function
+  \code{init_fn} to the residuals after removing previously-fitted
+  factors.
 }
 \examples{
 l = rnorm(100)
