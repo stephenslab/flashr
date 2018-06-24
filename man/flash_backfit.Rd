@@ -33,13 +33,15 @@ Means problem.}
 ebnm_fn when optimizing; defaults are set by
 \code{flash_default_ebnm_param()}.}
 
-\item{gl}{If nonnull, then the priors on the loadings will be fixed at
-the specified values. This should be a list, with \code{gl[[k]]}
-specifying the prior for the kth loading.}
+\item{gl}{Passed into \code{ebnm_fn} as parameter \code{g} (used to
+fix or initialize priors on the loadings). This can be a single
+prior or a list, with \code{gl[[k]]} specifying the prior for the
+kth loading.}
 
-\item{gf}{If nonnull, then the priors on the factors will be fixed
-the specified values. This should be a list, with \code{gf[[k]]}
-specifying the prior for the kth factor.}
+\item{fixgl}{Passed into \code{ebnm_fn} as parameter \code{fixg} (used
+to fix priors on the loadings). This can be a single boolean which
+specifies \code{fixg} for all loadings or a vector of booleans,
+with \code{fixg}[k] specifying \code{fixg} for the kth loading.}
 
 \item{verbose}{If TRUE, various progress updates will be printed.}
 
@@ -51,6 +53,16 @@ the factor will be set to 0 in the returned fit.}
 \item{maxiter}{A maximum number of iterations to perform (in the
 inner loop). To perform just one iteration we suggest setting
 \code{maxiter = 1} and \code{nullcheck = FALSE}.}
+
+\item{gl}{Passed into \code{ebnm_fn} as parameter \code{g} (used to
+fix or initialize priors on the factors). This can be a single
+prior or a list, with \code{gf[[k]]} specifying the prior for the
+kth factor.}
+
+\item{fixgl}{Passed into \code{ebnm_fn} as parameter \code{fixg} (used
+to fix priors on the factors). This can be a single boolean which
+specifies \code{fixg} for all factors or a vector of booleans,
+with \code{fixg}[k] specifying \code{fixg} for the kth factor.}
 }
 \value{
 A fitted flash object.

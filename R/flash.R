@@ -294,13 +294,25 @@ flash_add_greedy = function(data,
 #'
 #' @inheritParams flash
 #'
-#' @param gl If nonnull, then the priors on the loadings will be fixed at
-#'   the specified values. This should be a list, with \code{gl[[k]]}
-#'   specifying the prior for the kth loading.
+#' @param gl Passed into \code{ebnm_fn} as parameter \code{g} (used to
+#'   fix or initialize priors on the loadings). This can be a single
+#'   prior or a list, with \code{gl[[k]]} specifying the prior for the
+#'   kth loading.
 #'
-#' @param gf If nonnull, then the priors on the factors will be fixed
-#'   the specified values. This should be a list, with \code{gf[[k]]}
-#'   specifying the prior for the kth factor.
+#' @param fixgl Passed into \code{ebnm_fn} as parameter \code{fixg} (used
+#'   to fix priors on the loadings). This can be a single boolean which
+#'   specifies \code{fixg} for all loadings or a vector of booleans,
+#'   with \code{fixg}[k] specifying \code{fixg} for the kth loading.
+#'
+#' @param gl Passed into \code{ebnm_fn} as parameter \code{g} (used to
+#'   fix or initialize priors on the factors). This can be a single
+#'   prior or a list, with \code{gf[[k]]} specifying the prior for the
+#'   kth factor.
+#'
+#' @param fixgl Passed into \code{ebnm_fn} as parameter \code{fixg} (used
+#'   to fix priors on the factors). This can be a single boolean which
+#'   specifies \code{fixg} for all factors or a vector of booleans,
+#'   with \code{fixg}[k] specifying \code{fixg} for the kth factor.
 #'
 #' @return A fitted flash object.
 #'
