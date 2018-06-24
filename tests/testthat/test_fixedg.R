@@ -6,7 +6,7 @@ test_that("fixing gl and gf works as expected", {
   gl = ashr::normalmix(c(0.5, 0.5), c(0, 0), c(1, 2))
   data = flash_set_data(Y)
   fl = flash_add_greedy(data, 1, ebnm_fn=ebnm_ash, gl=gl, fixgl=TRUE)
-  expect_identical(flash_get_gl(fl), gl)
+  expect_identical(flash_get_gl(fl)[[1]], gl)
 
   # This test takes a few seconds...
   # gf = list()

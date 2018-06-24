@@ -53,6 +53,16 @@ to fix priors on the loadings). This can be a single boolean which
 specifies \code{fixg} for all loadings or a vector of booleans,
 with \code{fixg}[k] specifying \code{fixg} for the kth loading.}
 
+\item{gf}{Passed into \code{ebnm_fn} as parameter \code{g} (used to
+fix or initialize priors on the factors). This can be a single
+prior or a list of length \code{Kmax}, with \code{gf[[k]]}
+specifying the prior for the kth factor.}
+
+\item{fixgf}{Passed into \code{ebnm_fn} as parameter \code{fixg} (used
+to fix priors on the factors). This can be a single boolean which
+specifies \code{fixg} for all factors or a vector of booleans,
+with \code{fixg}[k] specifying \code{fixg} for the kth factor.}
+
 \item{verbose}{If TRUE, various progress updates will be printed.}
 
 \item{nullcheck}{If TRUE, then after running hill-climbing updates,
@@ -64,16 +74,6 @@ the factor will be set to 0 in the returned fit.}
 - for reproducibility. Set to NULL if you don't want the seed set.
 (The seed can affect initialization when there are missing data;
 otherwise the algorithm is deterministic.)}
-
-\item{gl}{Passed into \code{ebnm_fn} as parameter \code{g} (used to
-fix or initialize priors on the factors). This can be a single
-prior or a list of length \code{Kmax}, with \code{gf[[k]]}
-specifying the prior for the kth factor.}
-
-\item{fixgl}{Passed into \code{ebnm_fn} as parameter \code{fixg} (used
-to fix priors on the factors). This can be a single boolean which
-specifies \code{fixg} for all factors or a vector of booleans,
-with \code{fixg}[k] specifying \code{fixg} for the kth factor.}
 }
 \value{
 A fitted flash object.

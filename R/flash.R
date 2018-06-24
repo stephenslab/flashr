@@ -188,12 +188,12 @@ flash = function(data,
 #'   specifies \code{fixg} for all loadings or a vector of booleans,
 #'   with \code{fixg}[k] specifying \code{fixg} for the kth loading.
 #'
-#' @param gl Passed into \code{ebnm_fn} as parameter \code{g} (used to
+#' @param gf Passed into \code{ebnm_fn} as parameter \code{g} (used to
 #'   fix or initialize priors on the factors). This can be a single
 #'   prior or a list of length \code{Kmax}, with \code{gf[[k]]}
 #'   specifying the prior for the kth factor.
 #'
-#' @param fixgl Passed into \code{ebnm_fn} as parameter \code{fixg} (used
+#' @param fixgf Passed into \code{ebnm_fn} as parameter \code{fixg} (used
 #'   to fix priors on the factors). This can be a single boolean which
 #'   specifies \code{fixg} for all factors or a vector of booleans,
 #'   with \code{fixg}[k] specifying \code{fixg} for the kth factor.
@@ -304,12 +304,12 @@ flash_add_greedy = function(data,
 #'   specifies \code{fixg} for all loadings or a vector of booleans,
 #'   with \code{fixg}[k] specifying \code{fixg} for the kth loading.
 #'
-#' @param gl Passed into \code{ebnm_fn} as parameter \code{g} (used to
+#' @param gf Passed into \code{ebnm_fn} as parameter \code{g} (used to
 #'   fix or initialize priors on the factors). This can be a single
 #'   prior or a list, with \code{gf[[k]]} specifying the prior for the
 #'   kth factor.
 #'
-#' @param fixgl Passed into \code{ebnm_fn} as parameter \code{fixg} (used
+#' @param fixgf Passed into \code{ebnm_fn} as parameter \code{fixg} (used
 #'   to fix priors on the factors). This can be a single boolean which
 #'   specifies \code{fixg} for all factors or a vector of booleans,
 #'   with \code{fixg}[k] specifying \code{fixg} for the kth factor.
