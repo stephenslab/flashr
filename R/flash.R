@@ -135,7 +135,9 @@ flash = function(data,
                          ebnm_fn,
                          ebnm_param,
                          gl = NULL,
+                         fixgl = FALSE,
                          gf = NULL,
+                         fixgf = FALSE,
                          verbose,
                          nullcheck,
                          seed
@@ -153,7 +155,9 @@ flash = function(data,
                       ebnm_fn,
                       ebnm_param,
                       gl = NULL,
+                      fixgl = FALSE,
                       gf = NULL,
+                      fixgf = FALSE,
                       verbose,
                       nullcheck)
   }
@@ -174,13 +178,25 @@ flash = function(data,
 #'
 #' @inheritParams flash
 #'
-#' @param gl If nonnull, then the priors on the loadings will be fixed at
-#'   the specified values. This should be a list of length \code{Kmax},
-#'   with \code{gl[[k]]} specifying the prior for the kth loading.
+#' @param gl Passed into \code{ebnm_fn} as parameter \code{g} (used to
+#'   fix or initialize priors on the loadings). This can be a single
+#'   prior or a list of length \code{Kmax}, with \code{gl[[k]]}
+#'   specifying the prior for the kth loading.
 #'
-#' @param gf If nonnull, then the priors on the factors will be fixed
-#'   the specified values. This should be a list of length \code{Kmax},
-#'   with \code{gf[[k]]} specifying the prior for the kth factor.
+#' @param fixgl Passed into \code{ebnm_fn} as parameter \code{fixg} (used
+#'   to fix priors on the loadings). This can be a single boolean which
+#'   specifies \code{fixg} for all loadings or a vector of booleans,
+#'   with \code{fixg}[k] specifying \code{fixg} for the kth loading.
+#'
+#' @param gl Passed into \code{ebnm_fn} as parameter \code{g} (used to
+#'   fix or initialize priors on the factors). This can be a single
+#'   prior or a list of length \code{Kmax}, with \code{gf[[k]]}
+#'   specifying the prior for the kth factor.
+#'
+#' @param fixgl Passed into \code{ebnm_fn} as parameter \code{fixg} (used
+#'   to fix priors on the factors). This can be a single boolean which
+#'   specifies \code{fixg} for all factors or a vector of booleans,
+#'   with \code{fixg}[k] specifying \code{fixg} for the kth factor.
 #'
 #' @return A fitted flash object.
 #'
@@ -211,7 +227,9 @@ flash_add_greedy = function(data,
                             ebnm_fn = ebnm_pn,
                             ebnm_param = flash_default_ebnm_param(ebnm_fn),
                             gl = NULL,
+                            fixgl = FALSE,
                             gf = NULL,
+                            fixgf = FALSE,
                             verbose = FALSE,
                             nullcheck = TRUE,
                             seed = 123) {
@@ -222,6 +240,18 @@ flash_add_greedy = function(data,
     data = flash_set_data(data)
   }
   var_type = match.arg(var_type)
+  if (!is.list(gl[[1]])) {
+    gl = rep(list(gl), Kmax)
+  }
+  if (length(fixgl) == 1) {
+    fixgl = rep(fixgl, Kmax)
+  }
+  if (!is.list(gf[[1]])) {
+    gf = rep(list(gf), Kmax)
+  }
+  if (length(fixgf) == 1) {
+    fixgf = rep(fixgf, Kmax)
+  }
   f = f_init
 
   for (k in 1:Kmax) {
@@ -234,7 +264,9 @@ flash_add_greedy = function(data,
                  ebnm_fn,
                  ebnm_param,
                  gl[[k]],
+                 fixgl[k],
                  gf[[k]],
+                 fixgf[k],
                  verbose,
                  nullcheck,
                  seed = NULL)
@@ -292,7 +324,9 @@ flash_backfit = function(data,
                          ebnm_fn = ebnm_pn,
                          ebnm_param = flash_default_ebnm_param(ebnm_fn),
                          gl = NULL,
+                         fixgl = FALSE,
                          gf = NULL,
+                         fixgf = FALSE,
                          verbose = FALSE,
                          nullcheck = TRUE,
                          maxiter = 1000) {
@@ -304,6 +338,18 @@ flash_backfit = function(data,
     kset = 1:flash_get_k(f)
   }
   var_type = match.arg(var_type)
+  if (!is.list(gl[[1]])) {
+    gl = rep(list(gl), max(kset))
+  }
+  if (length(fixgl) == 1) {
+    fixgl = rep(fixgl, max(kset))
+  }
+  if (!is.list(gf[[1]])) {
+    gf = rep(list(gf), max(kset))
+  }
+  if (length(fixgf) == 1) {
+    fixgf = rep(fixgf, max(kset))
+  }
 
   if (verbose) {
     message("iteration:1")
@@ -317,7 +363,9 @@ flash_backfit = function(data,
                                ebnm_fn,
                                ebnm_param,
                                gl[[k]],
-                               gf[[k]])
+                               fixgl[k],
+                               gf[[k]],
+                               fixgf[k])
   }
 
   c = flash_get_objective(data, f)
@@ -342,7 +390,9 @@ flash_backfit = function(data,
                                    ebnm_fn,
                                    ebnm_param,
                                    gl[[k]],
-                                   gf[[k]])
+                                   fixgl[k],
+                                   gf[[k]],
+                                   fixgf[k])
       }
       cnew = flash_get_objective(data, f)
       diff = cnew - c
@@ -412,7 +462,9 @@ flash_r1 = function(data,
                     ebnm_fn = ebnm_pn,
                     ebnm_param = flash_default_ebnm_param(ebnm_fn),
                     gl = NULL,
+                    fixgl = FALSE,
                     gf = NULL,
+                    fixgf = FALSE,
                     verbose = FALSE,
                     nullcheck = TRUE,
                     seed = 123) {
@@ -436,7 +488,9 @@ flash_r1 = function(data,
                                ebnm_fn,
                                ebnm_param,
                                gl,
+                               fixgl,
                                gf,
+                               fixgf,
                                verbose)
   return(f)
 }

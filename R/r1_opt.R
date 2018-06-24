@@ -28,9 +28,13 @@
 #
 # @param ebnm_param Parameters to be passed to ebnm_fn when optimizing.
 #
-# @param gl If nonnull, fixes the prior on the loading.
+# @param gl Passed into ebnm_fn as parameter g.
 #
-# @param gf If nonnull, fixes the prior on the factor.
+# @param fixgl Passed into ebnm_fn as parameter fixg.
+#
+# @param gf Passed into ebnm_fn as parameter g.
+#
+# @param fixgf Passed into ebnm_fn as parameter fixg.
 #
 # @param var_type The type of variance structure to assume.
 #
@@ -68,7 +72,9 @@ r1_opt = function(R,
                   ebnm_fn = ebnm_pn,
                   ebnm_param = flash_default_ebnm_param(ebnm_fn),
                   gl = NULL,
+                  fixgl = FALSE,
                   gf = NULL,
+                  fixgf = FALSE,
                   var_type,
                   tol = 0.001,
                   calc_F = TRUE,
@@ -79,12 +85,12 @@ r1_opt = function(R,
                   S = NULL) {
     ebnm_param_l = ebnm_param
     if (!is.null(gl)) {
-      ebnm_param_l = modifyList(ebnm_param_l, list(fixg=TRUE, g=gl))
+      ebnm_param_l = modifyList(ebnm_param_l, list(fixg=fixgl, g=gl))
     }
 
     ebnm_param_f = ebnm_param
     if (!is.null(gf)) {
-      ebnm_param_f = modifyList(ebnm_param_f, list(fixg=TRUE, g=gf))
+      ebnm_param_f = modifyList(ebnm_param_f, list(fixg=fixgf, g=gf))
     }
 
     l = l_init
@@ -162,7 +168,6 @@ r1_opt = function(R,
                 }
             }
         }
-
 
         R2new = R2 - 2 * outer(l, f) * R + outer(l2, f2)
 

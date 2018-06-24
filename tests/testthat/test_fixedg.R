@@ -3,10 +3,9 @@ test_that("fixing gl and gf works as expected", {
   LF = 3 * outer(rnorm(5),rnorm(20))
   Y = LF + rnorm(5*20)
 
-  gl = list()
-  gl[[1]] = ashr::normalmix(c(0.5, 0.5), c(0, 0), c(1, 2))
+  gl = ashr::normalmix(c(0.5, 0.5), c(0, 0), c(1, 2))
   data = flash_set_data(Y)
-  fl = flash_add_greedy(data, 1, ebnm_fn=ebnm_ash, gl=gl)
+  fl = flash_add_greedy(data, 1, ebnm_fn=ebnm_ash, gl=gl, fixgl=TRUE)
   expect_identical(flash_get_gl(fl), gl)
 
   # This test takes a few seconds...
@@ -19,6 +18,6 @@ test_that("fixing gl and gf works as expected", {
   gf = list()
   gf[[1]] = ashr::normalmix(1, 0, 0.25)
   fl = flash_add_greedy(data, 1, ebnm_fn=ebnm_ash)
-  fl2 = flash_backfit(data, fl, 1, ebnm_fn=ebnm_ash, gf=gf)
+  fl2 = flash_backfit(data, fl, 1, ebnm_fn=ebnm_ash, gf=gf, fixgf=TRUE)
   expect_identical(flash_get_gf(fl2), gf)
 })

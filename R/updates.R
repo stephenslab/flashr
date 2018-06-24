@@ -13,9 +13,10 @@ flash_update_single_loading = function(data,
                                        ebnm_fn = ebnm_pn,
                                        ebnm_param = flash_default_ebnm_param(ebnm_fn),
                                        gl = NULL,
+                                       fixgl = FALSE,
                                        return_sampler = F) {
     if (!is.null(gl)) {
-      ebnm_param = modifyList(ebnm_param, list(fixg=TRUE, g=gl))
+      ebnm_param = modifyList(ebnm_param, list(fixg=fixgl, g=gl))
     }
 
     subset = which(!f$fixl[, k])  # check which elements are not fixed
@@ -73,9 +74,10 @@ flash_update_single_factor = function(data,
                                       ebnm_fn = ebnm_pn,
                                       ebnm_param = flash_default_ebnm_param(ebnm_fn),
                                       gf = NULL,
+                                      fixgf = FALSE,
                                       return_sampler = F) {
     if (!is.null(gf)) {
-      ebnm_param = modifyList(ebnm_param, list(fixg=TRUE, g=gf))
+      ebnm_param = modifyList(ebnm_param, list(fixg=fixgf, g=gf))
     }
 
     subset = which(!f$fixf[, k])  # check which elements are not fixed
@@ -135,10 +137,12 @@ flash_update_single_fl = function(data,
                                   ebnm_fn = ebnm_pn,
                                   ebnm_param = flash_default_ebnm_param(ebnm_fn),
                                   gl = NULL,
-                                  gf = NULL) {
+                                  fixgl = FALSE,
+                                  gf = NULL,
+                                  fixgf = FALSE) {
     f = flash_update_precision(data, f, var_type)
-    f = flash_update_single_factor(data, f, k, ebnm_fn, ebnm_param, gf)
-    f = flash_update_single_loading(data, f, k, ebnm_fn, ebnm_param, gl)
+    f = flash_update_single_factor(data, f, k, ebnm_fn, ebnm_param, gf, fixgf)
+    f = flash_update_single_loading(data, f, k, ebnm_fn, ebnm_param, gl, fixgl)
     return(f)
 }
 
@@ -166,9 +170,13 @@ flash_update_single_fl = function(data,
 # @param ebnm_fn Function to solve the Empirical Bayes normal means
 #   problem.
 #
-# @param gl If nonnull, fixes the prior on the loading.
+# @param gl Passed into ebnm_fn as parameter g.
 #
-# @param gf If nonnull, fixes the prior on the factor.
+# @param fixgl Passed into ebnm_fn as parameter fixg.
+#
+# @param gf Passed into ebnm_fn as parameter g.
+#
+# @param fixgf Passed into ebnm_fn as parameter fixg.
 #
 # @param ebnm_param Parameters to be passed to ebnm_fn when optimizing.
 #
@@ -185,7 +193,9 @@ flash_optimize_single_fl = function(data,
                                     ebnm_fn = ebnm_pn,
                                     ebnm_param = flash_default_ebnm_param(ebnm_fn),
                                     gl = NULL,
+                                    fixgl = FALSE,
                                     gf = NULL,
+                                    fixgf = FALSE,
                                     verbose = FALSE) {
     f_subset = which(!f$fixf[, k])
     l_subset = which(!f$fixl[, k])
@@ -202,7 +212,9 @@ flash_optimize_single_fl = function(data,
                  ebnm_fn,
                  ebnm_param,
                  gl,
+                 fixgl,
                  gf,
+                 fixgf,
                  var_type,
                  tol,
                  calc_F = TRUE,
