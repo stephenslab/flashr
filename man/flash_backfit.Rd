@@ -6,14 +6,16 @@
 \usage{
 flash_backfit(data, f_init, kset = NULL, var_type = c("by_column", "by_row",
   "constant", "zero", "kroneker"), tol = 0.01, ebnm_fn = ebnm_pn,
-  ebnm_param = flash_default_ebnm_param(ebnm_fn), verbose = FALSE,
+  ebnm_param = flash_default_ebnm_param(ebnm_fn), gl = NULL,
+  fixgl = FALSE, gf = NULL, fixgf = FALSE, verbose = FALSE,
   nullcheck = TRUE, maxiter = 1000)
 }
 \arguments{
 \item{data}{An n by p matrix or a flash data object created using
 \code{flash_set_data}.}
 
-\item{f_init}{A fitted flash object to be refined.}
+\item{f_init}{The flash object to which new factors are to be added.
+If \code{f_init = NULL}, then a new flash fit object is created.}
 
 \item{kset}{The indices of factors to be optimized (NULL indicates
 all factors).}
@@ -30,6 +32,14 @@ Means problem.}
 \item{ebnm_param}{A named list containing parameters to be passed to
 ebnm_fn when optimizing; defaults are set by
 \code{flash_default_ebnm_param()}.}
+
+\item{gl}{If nonnull, then the priors on the loadings will be fixed at
+the specified values. This should be a list, with \code{gl[[k]]}
+specifying the prior for the kth loading.}
+
+\item{gf}{If nonnull, then the priors on the factors will be fixed
+the specified values. This should be a list, with \code{gf[[k]]}
+specifying the prior for the kth factor.}
 
 \item{verbose}{If TRUE, various progress updates will be printed.}
 
