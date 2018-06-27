@@ -27,16 +27,18 @@ flash_get_lf = function(f) {
 #' @details Returns standardized loadings, factors, and weights from a
 #' flash object.
 #'
-#' @return A list with the following elements:
-#' \itemize{
-#' \item{l} A matrix whose columns contain the standardized loadings
-#'   (ie norm 1).
-#' \item{d} A vector of weights (analogous to the singular values in
-#'   an svd).
-#' \item{f} A matrix whose columns contain the standardized factors
+#' @return A list with the following elements. These are analogous to
+#'   the u, d and v returned by \code{svd}, but columns of l and f are
+#'   not orthogonal.
+#' 
+#' \item{l}{A matrix whose columns contain the standardized loadings
 #'   (ie norm 1).}
-#' These are analogous to the u, d and v returned by \code{svd}, but
-#' columns of l and f are not orthogonal.
+#' 
+#' \item{d}{A vector of weights (analogous to the singular values in
+#'   an svd).}
+#' 
+#' \item{f}{A matrix whose columns contain the standardized factors
+#'   (i.e., norm 1).}
 #'
 #' @export
 #'
@@ -51,13 +53,13 @@ flash_get_ldf = function(f, k = NULL, drop_zero_factors =TRUE) {
   ll = scale(ll, scale=sqrt(colSums(ll^2)), center=FALSE)
   ff = scale(ff, scale=sqrt(colSums(ff^2)), center=FALSE)
 
-  if(drop_zero_factors){
+  if(drop_zero_factors) {
     ll = ll[,d!=0,drop=FALSE]
     ff = ff[,d!=0,drop=FALSE]
     d = d[d!=0,drop=FALSE]
   }
 
-  list(d=d,
+  list(d = d,
        l = ll,
        f = ff)
 }
@@ -73,10 +75,12 @@ flash_get_Rk = function(data, f, k) {
 
 # @title Get the residuals from data and a flash fit object.
 flash_get_R = function(data, f) {
+
+    # If f is null, return Y.
     if (is.null(f$EL))
         {
             return(data$Y)
-        }  # if f is null, return Y
+        }  
  else {
         return(data$Y - flash_get_lf(f))
     }
@@ -85,10 +89,12 @@ flash_get_R = function(data, f) {
 # @title Get the residuals from data and a flash fit object, with
 #   missing data as in original.
 flash_get_R_withmissing = function(data, f) {
+
+    # If f is null, return Y.
     if (is.null(f$EL))
         {
             return(get_Yorig(data))
-        }  # if f is null, return Y
+        }  
  else {
         return(get_Yorig(data) - flash_get_lf(f))
     }
@@ -172,11 +178,6 @@ flash_get_pve = function(f) {
     s = (flash_get_ldf(f)$d)^2
     tau = f$tau[f$tau != 0]
     s/(sum(s) + sum(1/tau))
-    # wei's version:
-    #
-    #  sapply(seq(1,K),function(x){
-    #    sum(f$EL2[,x] %*% t(f$EF2[,x])) }))/sum(Y^2)
-    #
 }
 
 flash_get_conv_criteria = function(data, f) {

@@ -1,10 +1,10 @@
 #' @title Plot the factor/loading pairs from flash results.
 #'
 #' @return List containing:
-#'   \describe{
-#'     \item{\code{plot_f}}{A ggplot object for the factors.}
-#'     \item{\code{plot_l}}{A ggplot object for the loadings.}
-#'   }
+#'
+#'   \item{\code{plot_f}}{A ggplot object for the factors.}
+#' 
+#'   \item{\code{plot_l}}{A ggplot object for the loadings.}
 #'
 #' @param data The flash data object.
 #'
@@ -53,9 +53,8 @@ flash_plot_factors =
 #' @title Factor plot.
 #'
 #' @return list of factor, loading and variance of noise matrix
-#'  \describe{
-#'    \item{\code{plot_f}}{A ggplot object for the factors.}
-#'  }
+#'
+#'    \item{\code{plot_f}}{A ggplot object for the factors.
 #'
 #' @param f Factor to plot.
 #'
