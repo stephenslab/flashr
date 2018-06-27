@@ -208,6 +208,8 @@ flash_add_greedy = function(data,
     data = flash_set_data(data)
   }
   var_type = match.arg(var_type)
+  ebnm_param = handle_ebnm_param(ebnm_param)
+
   f = f_init
 
   for (k in 1:Kmax) {
@@ -217,8 +219,10 @@ flash_add_greedy = function(data,
                  var_type,
                  init_fn,
                  tol,
-                 ebnm_fn,
-                 ebnm_param,
+                 ebnm_fn_l[k],
+                 ebnm_param_l[[k]],
+                 ebnm_fn_f[k],
+                 ebnm_param_f[[k]],
                  verbose,
                  nullcheck,
                  seed = NULL)
