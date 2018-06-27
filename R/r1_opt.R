@@ -63,10 +63,12 @@ r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
     f = f_init
     l2 = l2_init
     f2 = f2_init
+
+    # Default initialization of l2 and f2.
     if (is.null(l2))
         {
             l2 = l^2
-        }  # default initialization of l2 and f2
+        }  
     if (is.null(f2)) {
         f2 = f^2
     }
@@ -77,7 +79,7 @@ r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
     penloglik_f = NULL
 
     if (calc_F) {
-        F_obj = -Inf  #variable to store value of objective function
+        F_obj = -Inf   # Variable to store value of objective function.
         KL_f = 0
         KL_l = 0
     } else {
@@ -87,7 +89,9 @@ r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
     }
 
     diff = 1
-    R2new = R2 - 2 * outer(l, f) * R + outer(l2, f2)  # expected squared residuals with l and f included
+
+    # Expected squared residuals with l and f included.
+    R2new = R2 - 2 * outer(l, f) * R + outer(l2, f2)  
     iter = 0
 
     while ((diff > tol) & (iter < maxiter)) {
@@ -100,9 +104,13 @@ r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
         if (length(f_subset) > 0) {
             s2 = 1/(t(l2) %*% tau[, f_subset, drop = FALSE])
             if (any(is.finite(s2))) {
-                # check some finite values before proceeding
-                x = (t(l) %*% (R[, f_subset, drop = FALSE] * tau[, f_subset, drop = FALSE])) * s2
-                # if a value of s2 is numerically negative, set it to a small positive number
+                
+                # Check some finite values before proceeding.
+                x = (t(l) %*% (R[, f_subset, drop = FALSE] *
+                               tau[, f_subset, drop = FALSE])) * s2
+                
+                # If a value of s2 is numerically negative, set it to
+                # a small positive number.
                 s = sqrt(pmax(s2, .Machine$double.eps))
                 ebnm_f = ebnm_fn(x, s, ebnm_param)
                 f[f_subset] = ebnm_f$postmean
@@ -111,7 +119,9 @@ r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
                 penloglik_f = ebnm_f$penloglik
 
                 if (calc_F) {
-                  KL_f = ebnm_f$penloglik - NM_posterior_e_loglik(x, s, ebnm_f$postmean, ebnm_f$postmean2)
+                  KL_f = ebnm_f$penloglik -
+                    NM_posterior_e_loglik(x, s, ebnm_f$postmean,
+                                          ebnm_f$postmean2)
                 }
             }
         }
@@ -119,9 +129,13 @@ r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
         if (length(l_subset) > 0) {
             s2 = 1/(tau[l_subset, , drop = FALSE] %*% f2)
             if (any(is.finite(s2))) {
-                # check some finite values before proceeding
-                x = ((R[l_subset, , drop = FALSE] * tau[l_subset, , drop = FALSE]) %*% f) * s2
-                # if a value of s2 is numerically negative, set it to a small positive number
+                
+                # Check some finite values before proceeding.
+                x = ((R[l_subset, , drop = FALSE] *
+                      tau[l_subset, , drop = FALSE]) %*% f) * s2
+                
+                # If a value of s2 is numerically negative, set it to
+                # a small positive number.
                 s = sqrt(pmax(s2, .Machine$double.eps))
                 ebnm_l = ebnm_fn(x, s, ebnm_param)
                 l[l_subset] = ebnm_l$postmean
@@ -130,7 +144,9 @@ r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
                 penloglik_l = ebnm_l$penloglik
 
                 if (calc_F) {
-                  KL_l = ebnm_l$penloglik - NM_posterior_e_loglik(x, s, ebnm_l$postmean, ebnm_l$postmean2)
+                  KL_l = ebnm_l$penloglik -
+                    NM_posterior_e_loglik(x, s, ebnm_l$postmean,
+                                          ebnm_l$postmean2)
                 }
             }
         }
@@ -139,21 +155,28 @@ r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
         R2new = R2 - 2 * outer(l, f) * R + outer(l2, f2)
 
         if (calc_F) {
-            Fnew = KLobj + KL_l + KL_f + e_loglik_from_R2_and_tau(R2new, tau, missing)
+            Fnew = KLobj + KL_l + KL_f +
+              e_loglik_from_R2_and_tau(R2new, tau, missing)
             if (verbose) {
                 message(paste0("Objective:", Fnew))
             }
             diff = Fnew - F_obj
 
             if (diff < 0 & verbose) {
-                warning("An iteration decreased the objective. This happens occasionally, perhaps due to numeric reasons.
-You could ignore this warning, but you might like to check out
-https://github.com/stephenslab/flashr/issues/26 for more details.")
+              warning(paste("An iteration decreased the objective.",
+                            "This happens occasionally, perhaps due to",
+                            "numeric reasons. You could ignore this",
+                            "warning, but you might like to check out",
+                            "https://github.com/stephenslab/flashr/issues/26",
+                            "for more details."))
             }
             F_obj = Fnew
-        } else {
-            # check convergence by percentage changes in l and f normalize l and f so that f has unit norm note that this
-            # messes up stored log-likelihoods etc... so not recommended
+          } else {
+              
+            # Check convergence by percentage changes in l and f
+            # normalize l and f so that f has unit norm note that this
+            # messes up stored log-likelihoods etc... so not
+            # recommended.
             warning("renormalization step not fully tested; be careful!")
             norm = sqrt(sum(f^2))
             f = f/norm
@@ -163,10 +186,12 @@ https://github.com/stephenslab/flashr/issues/26 for more details.")
 
             all_diff = abs(c(l, f)/c(l_old, f_old) - 1)
             if (all(is.nan(all_diff))) {
-                # all old and new entries of l and f are zero
+                
+                # All old and new entries of l and f are zero.
                 diff = 0
             } else {
-                # ignore entries where both old and new values are zero:
+                
+                # Ignore entries where both old and new values are zero.
                 diff = max(all_diff[!is.nan(all_diff)])
             }
             if (verbose) {
@@ -175,8 +200,10 @@ https://github.com/stephenslab/flashr/issues/26 for more details.")
         }
     }
 
-    return(list(l = l, f = f, l2 = l2, f2 = f2, tau = tau, F_obj = F_obj, KL_l = KL_l, KL_f = KL_f, gl = gl, gf = gf,
-        penloglik_l = penloglik_l, penloglik_f = penloglik_f, ebnm_param = ebnm_param))
+    return(list(l = l, f = f, l2 = l2, f2 = f2, tau = tau, F_obj = F_obj,
+                KL_l = KL_l, KL_f = KL_f, gl = gl, gf = gf,
+                penloglik_l = penloglik_l, penloglik_f = penloglik_f,
+                ebnm_param = ebnm_param))
 }
 
 # Put the results into f.
@@ -216,5 +243,5 @@ update_f_from_r1_opt_results = function(f, k, res) {
 # Compute the expected log-likelihood (at non-missing locations) based
 # on expected squared residuals and tau.
 e_loglik_from_R2_and_tau = function(R2, tau, missing) {
-    -0.5 * sum(log((2 * pi)/tau[!missing]) + tau[!missing] * R2[!missing])
+  -0.5 * sum(log((2 * pi)/tau[!missing]) + tau[!missing] * R2[!missing])
 }
