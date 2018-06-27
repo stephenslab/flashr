@@ -2,6 +2,9 @@ language: r
 cache: packages
 latex: false
 
+r_packages:
+  - covr
+  
 env:
   global:
     - _R_CHECK_FORCE_SUGGESTS_: false
@@ -9,6 +12,9 @@ env:
 r_github_packages: stephens999/ashr
 r_github_packages: stephenslab/ebnm
 
+after_success:
+  - Rscript -e 'covr::codecov()'
+
 branches:
   only:
-  - master
+    - master
