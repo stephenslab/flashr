@@ -94,13 +94,9 @@ Follow these steps to quickly get started using `flashr`.
 
 ## Developer notes
 
-+ Run this R command to build the website using
-  [pkgdown](https://github.com/r-lib/pkgdown) (make sure you are
-  connected to Internet while running these commands):
-
-  ```R
-  pkgdown::build_site(mathjax = FALSE)
-  ```
++ Run `pkgdown::build_site(mathjax = FALSE)` in R to build the website
+using [pkgdown](https://github.com/r-lib/pkgdown). Make sure you are
+connected to Internet while running these commands.
 
 ## Credits
 

@@ -13,6 +13,7 @@ install:
 
 environment:
   global:
+    _R_CHECK_FORCE_SUGGESTS_: false
     USE_RTOOLS: yes
     WARNINGS_ARE_ERRORS: 1
     R_VERSION: release
