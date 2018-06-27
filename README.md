@@ -1,6 +1,7 @@
 # flashr: Empirical Bayes Factor Analysis in R
 
-[![Travis Build Status](https://travis-ci.org/stephenslab/flashr.svg?branch=master)](https://travis-ci.org/stephenslab/flashr)
+[![Travis Build Status](https://travis-ci.org/stephenslab/flashr.svg?branch=master)](https://travis-ci.org/stephenslab/flashr) 
+[![codecov](https://codecov.io/gh/stephenslab/flashr/branch/master/graph/badge.svg)](https://codecov.io/gh/stephenslab/flashr)
 
 Methods for matrix factorization based on
 [Empirical Bayes Matrix Factorization](https://arxiv.org/abs/1802.06931).
