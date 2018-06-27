@@ -18,7 +18,7 @@ Depends: R (>= 3.3)
 Imports: 
     ashr (>= 2.2-4),
     assertthat,
-    ebnm,
+    ebnm (>= 0.1-11),
     ggplot2,
     softImpute,
     stats,
