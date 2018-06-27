@@ -20,11 +20,10 @@ flash_plot_factors(data, f, k = 1, loading_label = FALSE,
 }
 \value{
 List containing:
-
- \itemize{
-  \item{\code{plot_f}} {A ggplot object for the factors.}
-  \item{\code{plot_l}} {A ggplot object for the loadings}
- }
+  \describe{
+    \item{\code{plot_f}}{A ggplot object for the factors.}
+    \item{\code{plot_l}}{A ggplot object for the loadings.}
+  }
 }
 \description{
 Plot the factor/loading pairs from flash results.

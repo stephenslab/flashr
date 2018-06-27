@@ -19,8 +19,8 @@ plot_one_factor(f, pve, k, f_labels = NA, y_lab = "factor values")
 }
 \value{
 list of factor, loading and variance of noise matrix
- \itemize{
-  \item{\code{plot_f}} {is a ggplot object for the factors}
+ \describe{
+   \item{\code{plot_f}}{A ggplot object for the factors.}
  }
 }
 \description{
