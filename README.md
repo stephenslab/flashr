@@ -1,4 +1,4 @@
-# flashr
+# flashr: Empirical Bayes Factor Analysis in R
 
 [![Travis Build Status](https://travis-ci.org/stephenslab/flashr.svg?branch=master)](https://travis-ci.org/stephenslab/flashr)
 
@@ -37,9 +37,9 @@ Follow these steps to quickly get started using `flashr`.
    it can take several minutes to build the vignettes:
 
    ```R
-   # install.packages("devtools")
+   install.packages("devtools")
    library(devtools)
-   install_github("stephenslab/flashr@v0.5-6",build_vignettes=TRUE)
+   install_github("stephenslab/flashr@v0.5-6",build_vignettes = TRUE)
    ```
 
    This command should automatically retrieve and install the `ashr`
@@ -91,16 +91,15 @@ Follow these steps to quickly get started using `flashr`.
 6. See the [online documentation](https://stephenslab.github.io/flashr) 
    learn more about the `flashr` package.
 
-## How to build static HTML documentation
+## Developer notes
 
-These are the R commands to build the website using
-[pkgdown](https://github.com/r-lib/pkgdown) (make sure you are
-connected to Internet while running these commands):
++ Run this R command to build the website using
+  [pkgdown](https://github.com/r-lib/pkgdown) (make sure you are
+  connected to Internet while running these commands):
 
-```R
-library(pkgdown)
-build_site(mathjax = FALSE)
-```
+  ```R
+  pkgdown::build_site(mathjax = FALSE)
+  ```
 
 ## Credits
 
