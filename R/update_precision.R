@@ -12,12 +12,13 @@
 #'
 #' @export
 #'
-flash_update_precision = function(data,
-                                  f,
-                                  var_type = c("by_column", "by_row", "constant",
-                                               "zero", "kroneker")) {
+flash_update_precision =
+  function(data, f,
+           var_type = c("by_column", "by_row", "constant",
+                        "zero", "kroneker")) {
     if (var_type == "zero" & is.null(data$S)) {
-      stop("Flash data object must include standard errors when var_type is zero.")
+      stop(paste("Flash data object must include standard errors when",
+                 "var_type is zero."))
     }
     if (!is.null(data$S) & var_type != "zero") {
       stop("Standard errors are currently only used when var_type is zero.")
@@ -53,12 +54,12 @@ compute_precision = function(R2, missing, var_type, S) {
 # @param R2 n by p matrix of squared residuals (with NAs for missing).
 # @return n by p matrix of precisions (separate value for each column).
 mle_precision_by_column = function (R2) {
-    sigma2 = colMeans(R2, na.rm = TRUE)  # a p vector
+    sigma2 = colMeans(R2, na.rm = TRUE)  # A p vector.
 
     # If a value of tau becomes numerically negative, set it to a
     # small positive number.
     tau = pmax(1/sigma2, .Machine$double.eps)
-    return(outer(rep(1, nrow(R2)), tau))  # an n by p matrix
+    return(outer(rep(1, nrow(R2)), tau)) # An n by p matrix.
 }
 
 # @title mle for precision (separate parameter for each column).
@@ -70,5 +71,5 @@ mle_precision_constant = function(R2) {
     # If a value of tau becomes numerically negative, set it to a
     # small positive number.
     tau = pmax(1/sigma2, .Machine$double.eps)
-    return(matrix(tau, nrow = nrow(R2), ncol = ncol(R2)))  # an n by p matrix
+    return(matrix(tau, nrow = nrow(R2), ncol = ncol(R2))) # An n by p matrix.
 }

@@ -2,10 +2,9 @@
 #'
 #' @return List containing:
 #'
-#'  \itemize{
-#'   \item{\code{plot_f}} {A ggplot object for the factors.}
-#'   \item{\code{plot_l}} {A ggplot object for the loadings}
-#'  }
+#'   \item{\code{plot_f}}{A ggplot object for the factors.}
+#' 
+#'   \item{\code{plot_l}}{A ggplot object for the loadings.}
 #'
 #' @param data The flash data object.
 #'
@@ -27,11 +26,11 @@ flash_plot_factors =
     sample_name = rownames(Y)
     variable_name = colnames(Y)
 
-    # plot the expectation of PVE
+    # Plot the expectation of PVE.
     K = flash_get_k(f)
     pve = flash_get_pve(f)
 
-    # plot the factors
+    # Plot the factors.
     if (factor_label == TRUE) {
         plot_f = plot_one_factor(flash_get_f(f), pve[k], k,
           f_labels = colnames(Y), y_lab = "factor values")
@@ -40,7 +39,7 @@ flash_plot_factors =
           f_labels = NA, y_lab = "factor values")
     }
 
-    # plot the loadings
+    # Plot the loadings.
     if (loading_label == TRUE) {
         plot_l = plot_one_factor(flash_get_l(f), pve[k], k,
             f_labels = row.names(Y), y_lab = "loading values")
@@ -54,9 +53,8 @@ flash_plot_factors =
 #' @title Factor plot.
 #'
 #' @return list of factor, loading and variance of noise matrix
-#'  \itemize{
-#'   \item{\code{plot_f}} {is a ggplot object for the factors}
-#'  }
+#'
+#'    \item{\code{plot_f}}{A ggplot object for the factors.
 #'
 #' @param f Factor to plot.
 #'
@@ -96,7 +94,7 @@ plot_one_factor = function(f, pve, k, f_labels = NA, y_lab = "factor values") {
                             variablenames = f_labels,
                             hjust = factor(sign(f)))
 
-        # 120% lim
+        # 120% limit.
         range_f = max(f) - min(f)
         upper_f = max(f, 0) + 0.15 * range_f
         lower_f = min(f, 0) - 0.15 * range_f

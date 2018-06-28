@@ -84,30 +84,38 @@
 <h2 class="hasAnchor">
 <a href="#quick-start" class="anchor"></a>Quick start</h2>
 <p>Follow these steps to quickly get started using <code>flashr</code>.</p>
-<p>Install the <a href="https://github.com/stephenslab/flashr/releases/tag/v0.5-6">latest release of the flashr package</a> using <a href="https://github.com/r-lib/devtools">devtools</a>. Please note that it can take several minutes to build the vignettes:</p>
-<p><code># install.packages("devtools")<br>
-library(devtools)<br>
-install_github("stephenslab/flashr@v0.5-6",build_vignettes=TRUE)</code></p>
+<ol>
+<li>Install the <a href="https://github.com/stephenslab/flashr/releases/tag/v0.5-6">latest release of the flashr package</a> using <a href="https://github.com/r-lib/devtools">devtools</a>. Please note that it can take several minutes to build the vignettes:</li>
+</ol>
+<p><code>R    # install.packages("devtools")    library(devtools)    install_github("stephenslab/flashr@v0.5-6",build_vignettes=TRUE)</code></p>
 <p>This command should automatically retrieve and install the <code>ashr</code> and <code>ebnm</code> packages from GitHub (and possibly other packages). If it does not, install <code>ashr</code> and <code>ebnm</code> separately using devtools:</p>
-<p><code>install_github("stephens999/ashr")<br>
-install_github("stephenslab/ebnm")</code></p>
+<p><code>R    install_github("stephens999/ashr")    install_github("stephenslab/ebnm")</code></p>
 <p><em>Note:</em> If you are interested in attempting to reproduce the results in the Wei and Stephens (2018) manuscript, the flashr release that most closely matches the package used in the paper is <a href="https://github.com/stephenslab/flashr/releases/tag/v0.4-10">version 0.4-10</a>. This release can be installed by running the following in R:</p>
-<p><code>install_github("stephenslab/flashr@v0.4-10")</code></p>
-<p>Optionally, install MOSEK and the Rmosek package, for faster model fitting. See the <a href="https://github.com/stephens999/ashr">ashr GitHub repository</a> for details.</p>
-<p>Run a few toy examples illustrating the <code>flash</code> function:</p>
-<p><code>example("flash")</code></p>
-Explore the <a href="https://stephenslab.github.io/flashr/articles/flash_intro.html">introductory flashr vignette</a>:
-<p><code>vignette("flash_intro")</code></p>
-Explore the <a href="https://stephenslab.github.io/flashr/articles/flash_advanced.html">vignette illustrating some more advanced features of flashr</a>:
-<p><code>vignette("flash_advanced")</code></p>
-See the <a href="https://stephenslab.github.io/flashr">online documentation</a> learn more about the <code>flashr</code> package.
+<p><code>R    install_github("stephenslab/flashr@v0.4-10")</code></p>
+<ol>
+<li><p>Optionally, install MOSEK and the Rmosek package, for faster model fitting. See the <a href="https://github.com/stephens999/ashr">ashr GitHub repository</a> for details.</p></li>
+<li><p>Run a few toy examples illustrating the <code>flash</code> function:</p></li>
+</ol>
+<p><code>R    example("flash")</code></p>
+<ol>
+<li>Explore the <a href="https://stephenslab.github.io/flashr/articles/flash_intro.html">introductory flashr vignette</a>:</li>
+</ol>
+<p><code>R    vignette("flash_intro")</code></p>
+<ol>
+<li>Explore the <a href="https://stephenslab.github.io/flashr/articles/flash_advanced.html">vignette illustrating some more advanced features of flashr</a>:</li>
+</ol>
+<p><code>R    vignette("flash_advanced")</code></p>
+<ol>
+<li>See the <a href="https://stephenslab.github.io/flashr">online documentation</a> learn more about the <code>flashr</code> package.</li>
+</ol>
 </div>
-<div id="how-to-build-static-html-documentation" class="section level2">
+<div id="developer-notes" class="section level2">
 <h2 class="hasAnchor">
-<a href="#how-to-build-static-html-documentation" class="anchor"></a>How to build static HTML documentation</h2>
-<p>These are the R commands to build the website using <a href="https://github.com/r-lib/pkgdown">pkgdown</a> (make sure you are connected to Internet while running these commands):</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(pkgdown)
-<span class="kw"><a href="http://pkgdown.r-lib.org/reference/build_site.html">build_site</a></span>(<span class="dt">mathjax =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<a href="#developer-notes" class="anchor"></a>Developer notes</h2>
+<ul>
+<li>Run this R command to build the website using <a href="https://github.com/r-lib/pkgdown">pkgdown</a> (make sure you are connected to Internet while running these commands):</li>
+</ul>
+<p><code>R   pkgdown::build_site(mathjax = FALSE)</code></p>
 </div>
 <div id="credits" class="section level2">
 <h2 class="hasAnchor">

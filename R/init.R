@@ -67,6 +67,7 @@ flash_init_null = function() {
 #' @importFrom softImpute softImpute
 #'
 #' @export
+#' 
 udv_si = function(Y, K = 1) {
   suppressWarnings(res <- softImpute(Y, rank.max = K,
                                      type = "als", lambda = 0))
@@ -135,17 +136,19 @@ udv_random = function (Y, K = 1) {
 #
 # @param s List with elements (u,v,d).
 #
-# @param K The number of factors to use (factors 1:K are used).
+# @param K The number of factors to use (factors \code{1:K} are used).
 #
 # @return A flash fit object ready for optimization.
 #
 flash_init_udv = function(s, K = 1) {
     s$u = as.matrix(s$u)
     s$v = as.matrix(s$v)
+
+    # Deals with case these are vectors (K = 1).
     if (ncol(s$u) > K)
         {
             s$u = s$u[, 1:K, drop = FALSE]
-        }  # deals with case these are vectors (K=1)
+        }  
     if (ncol(s$v) > K) {
         s$v = s$v[, 1:K, drop = FALSE]
     }

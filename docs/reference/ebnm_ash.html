@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>A wrapper to the ash function for flash. — ebnm_ash • flashr</title>
+<title>ebnm_ash — ebnm_ash • flashr</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -27,7 +27,7 @@
 <script src="../pkgdown.js"></script>
   
   
-<meta property="og:title" content="A wrapper to the ash function for flash. — ebnm_ash" />
+<meta property="og:title" content="ebnm_ash — ebnm_ash" />
 
 <meta property="og:description" content="A wrapper to the ash function for flash." />
 <meta name="twitter:card" content="summary" />
@@ -86,29 +86,34 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>A wrapper to the ash function for flash.</h1>
+    <h1>ebnm_ash</h1>
     </div>
 
     
     <p>A wrapper to the ash function for flash.</p>
     
 
-    <pre class="usage"><span class='fu'>ebnm_ash</span>(<span class='no'>x</span>, <span class='no'>s</span>, <span class='no'>ash_param</span>)</pre>
+    <pre class="usage"><span class='fu'>ebnm_ash</span>(<span class='no'>x</span>, <span class='no'>s</span>, <span class='no'>ash_param</span>, <span class='kw'>return_sampler</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>Describe parameter here.</p></td>
+      <td><p>A vector of observations.</p></td>
     </tr>
     <tr>
       <th>s</th>
-      <td><p>Describe parameter here.</p></td>
+      <td><p>A vector of standard errors.</p></td>
     </tr>
     <tr>
       <th>ash_param</th>
-      <td><p>Describe parameter here.</p></td>
+      <td><p>A list of parameters to be passed into ash.</p></td>
+    </tr>
+    <tr>
+      <th>return_sampler</th>
+      <td><p>Indicates whether a posterior sampler should be returned rather
+than summary results.</p></td>
     </tr>
     </table>
     

@@ -108,9 +108,9 @@
     
 
     <pre class="usage"><span class='fu'>flash_add_greedy</span>(<span class='no'>data</span>, <span class='kw'>Kmax</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>f_init</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>var_type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"by_column"</span>,
-  <span class='st'>"constant"</span>), <span class='kw'>init_fn</span> <span class='kw'>=</span> <span class='st'>"udv_si"</span>, <span class='kw'>tol</span> <span class='kw'>=</span> <span class='fl'>0.01</span>, <span class='kw'>ebnm_fn</span> <span class='kw'>=</span> <span class='no'>ebnm_pn</span>,
-  <span class='kw'>ebnm_param</span> <span class='kw'>=</span> <span class='fu'>flash_default_ebnm_param</span>(<span class='no'>ebnm_fn</span>), <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>nullcheck</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>123</span>)</pre>
+  <span class='st'>"by_row"</span>, <span class='st'>"constant"</span>, <span class='st'>"zero"</span>, <span class='st'>"kroneker"</span>), <span class='kw'>init_fn</span> <span class='kw'>=</span> <span class='st'>"udv_si"</span>, <span class='kw'>tol</span> <span class='kw'>=</span> <span class='fl'>0.01</span>,
+  <span class='kw'>ebnm_fn</span> <span class='kw'>=</span> <span class='no'>ebnm_pn</span>, <span class='kw'>ebnm_param</span> <span class='kw'>=</span> <span class='fu'>flash_default_ebnm_param</span>(<span class='no'>ebnm_fn</span>),
+  <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>nullcheck</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>seed</span> <span class='kw'>=</span> <span class='fl'>123</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -122,20 +122,23 @@
     </tr>
     <tr>
       <th>Kmax</th>
-      <td><p>Description of input argument goes here.</p></td>
+      <td><p>The maximum number of factors to be added to the flash
+object. (If <code>nullcheck = TRUE</code>, the actual number of factors
+added might be less than <code>Kmax</code>.)</p></td>
     </tr>
     <tr>
       <th>f_init</th>
-      <td><p>if supplied, a flash object to which a single new
-factor is to be added.</p></td>
+      <td><p>The flash object to which new factors are to be added.
+If <code>f_init = NULL</code>, then a new flash fit object is created.</p></td>
     </tr>
     <tr>
       <th>var_type</th>
-      <td><p>type of variance structure to assume for residuals.</p></td>
+      <td><p>The type of variance structure to assume for
+residuals.</p></td>
     </tr>
     <tr>
       <th>init_fn</th>
-      <td><p>function to be used to initialize the factor. This
+      <td><p>The function used to initialize factors. This
 function should take parameters (Y,K) where Y is an n by p matrix
 of data (or a flash data object) and K is a number of factors.  It
 should output a list with elements (u,d,v) where u is n by K matrix
@@ -146,35 +149,37 @@ matrix.)</p></td>
     </tr>
     <tr>
       <th>tol</th>
-      <td><p>Specify how much objective can change in a single
+      <td><p>Specifies how much the objective can change in a single
 iteration to be considered not converged.</p></td>
     </tr>
     <tr>
       <th>ebnm_fn</th>
-      <td><p>function to solve the Empirical Bayes Normal Means problem</p></td>
+      <td><p>The function used to solve the Empirical Bayes Normal
+Means problem.</p></td>
     </tr>
     <tr>
       <th>ebnm_param</th>
-      <td><p>named list containing parameters to be passed to
-ebnm_fn when optimizing; defaults set by flash_default_ebnm_param()</p></td>
+      <td><p>A named list containing parameters to be passed to
+ebnm_fn when optimizing; defaults are set by
+<code>flash_default_ebnm_param()</code>.</p></td>
     </tr>
     <tr>
       <th>verbose</th>
-      <td><p>if TRUE various output progress updates will be printed</p></td>
+      <td><p>If TRUE, various progress updates will be printed.</p></td>
     </tr>
     <tr>
       <th>nullcheck</th>
-      <td><p>flag whether to check, after running hill-climbing
-updates, whether the achieved optimum is better than setting factor
-to 0. If this check is performed and fails then the factor will be
-set to 0 in the returned fit.</p></td>
+      <td><p>If TRUE, then after running hill-climbing updates,
+<code>flash</code> will check whether the achieved optimum is better than
+setting the factor to 0. If the check is performed and fails then
+the factor will be set to 0 in the returned fit.</p></td>
     </tr>
     <tr>
       <th>seed</th>
-      <td><p>a random number seed to use before running method - for
-reproducibility. Set to NULL if you don't want seed set.  (The seed
-can affect initialization when there are missing data; otherwise
-the algorithm is deterministic)</p></td>
+      <td><p>A random number seed to use before running <code>flash</code>
+- for reproducibility. Set to NULL if you don't want the seed set.
+(The seed can affect initialization when there are missing data;
+otherwise the algorithm is deterministic.)</p></td>
     </tr>
     </table>
     

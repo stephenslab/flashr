@@ -15,16 +15,18 @@ flash_get_ldf(f, k = NULL, drop_zero_factors = TRUE)
 that are zero.}
 }
 \value{
-A list with the following elements:
-\itemize{
-\item{l} A matrix whose columns contain the standardized loadings
-  (ie norm 1).
-\item{d} A vector of weights (analogous to the singular values in
-  an svd).
-\item{f} A matrix whose columns contain the standardized factors
+A list with the following elements. These are analogous to
+  the u, d and v returned by \code{svd}, but columns of l and f are
+  not orthogonal.
+
+\item{l}{A matrix whose columns contain the standardized loadings
   (ie norm 1).}
-These are analogous to the u, d and v returned by \code{svd}, but
-columns of l and f are not orthogonal.
+
+\item{d}{A vector of weights (analogous to the singular values in
+  an svd).}
+
+\item{f}{A matrix whose columns contain the standardized factors
+  (i.e., norm 1).}
 }
 \description{
 flash_get_ldf
