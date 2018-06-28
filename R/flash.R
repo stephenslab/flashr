@@ -280,19 +280,15 @@ flash_backfit = function(data,
                          verbose = FALSE,
                          nullcheck = TRUE,
                          maxiter = 1000) {
-  f = f_init
   if (is.matrix(data)) {
     data = flash_set_data(data)
   }
-  if (is.null(kset)) {
-    kset = 1:flash_get_k(f)
-  } else if (!is.numeric(kset) || max(kset) > flash_get_k(f)) {
-    stop(paste("Invalid kset. Kset should be a vector containing the",
-               "indices of the factors to be optimized."))
-  }
+  kset = handle_kset(kset, f_init)
   var_type = match.arg(var_type)
   ebnm_fn = handle_ebnm_fn(ebnm_fn)
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, length(kset))
+
+  f = f_init
 
   if (verbose) {
     message("iteration:1")

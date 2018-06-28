@@ -20,9 +20,16 @@
 #'
 #' @export
 #'
-flash_lf_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_pn,
-                            fixed=c("factors", "loadings")) {
-  if (is.null(kset)) {kset = 1:flash_get_k(f)}
+flash_lf_sampler = function(data,
+                            f,
+                            kset = NULL,
+                            ebnm_fn = "ebnm_pn",
+                            fixed = c("factors", "loadings")) {
+  if (is.matrix(data)) {
+    data = flash_set_data(data)
+  }
+  kset = handle_kset(kset, f)
+
   fixed = match.arg(fixed)
   if (fixed == "factors") {
     return(flash_lf_sampler_fixedf(data, f, kset, ebnm_fn))
@@ -48,8 +55,7 @@ flash_lf_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_pn,
 # @return A function that takes a single parameter nsamp, the number of samples of LF to be
 # produced by the sampler.
 #
-flash_lf_sampler_fixedf = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
-  if (is.null(kset)) {kset = 1:flash_get_k(f)}
+flash_lf_sampler_fixedf = function(data, f, kset, ebnm_fn) {
   l_sampler = flash_l_sampler(data, f, kset, ebnm_fn)
 
   function(nsamp) {
@@ -76,7 +82,6 @@ flash_lf_sampler_fixedf = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
 # produced by the sampler.
 #
 flash_lf_sampler_fixedl = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
-  if (is.null(kset)) {kset = 1:flash_get_k(f)}
   f_sampler = flash_f_sampler(data, f, kset, ebnm_fn)
 
   function(nsamp) {
@@ -106,12 +111,19 @@ flash_lf_sampler_fixedl = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
 #' @export
 #'
 flash_l_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
-  if (is.matrix(data)) {data = flash_set_data(data)}
-  if (is.null(kset)) {kset = 1:flash_get_k(f)}
+  if (is.matrix(data)) {
+    data = flash_set_data(data)
+  }
+  kset = handle_kset(kset, f)
 
   sampler_list = vector("list", flash_get_k(f))
   for (k in kset) {
-    sampler_list[[k]] = flash_update_single_loading(data, f, k, ebnm_fn, return_sampler=T)
+    # Use ebnm parameters from flash object
+    ebnm_param = f$ebnm_param_l[[k]]
+    sampler_list[[k]] = flash_update_single_loading(data, f, k,
+                                                    ebnm_fn,
+                                                    ebnm_param,
+                                                    return_sampler=T)
   }
 
   function(nsamp) {

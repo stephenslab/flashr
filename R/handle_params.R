@@ -1,3 +1,13 @@
+handle_kset = function(kset, f) {
+  if (is.null(kset)) {
+    kset = 1:flash_get_k(f)
+  } else if (!is.numeric(kset) || max(kset) > flash_get_k(f)) {
+    stop(paste("Invalid kset. Kset should be a vector containing the",
+               "indices of the factors to be optimized."))
+  }
+  kset
+}
+
 handle_init_fn = function(init_fn) {
   if (!exists(init_fn, mode="function")) {
     stop("The specified init_fn does not exist.")
