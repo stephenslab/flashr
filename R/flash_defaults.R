@@ -11,24 +11,42 @@ flash_default_ebnm_param = function(ebnm_fn) {
     }
 }
 
+handle_init_fn = function(init_fn) {
+  if (!exists(init_fn, mode="function")) {
+    stop("The specified init_fn does not exist.")
+  }
+  init_fn
+}
+
 handle_ebnm_fn = function(ebnm_fn) {
-  if (xor(is.null(ebnm_fn$l), is.null(ebnm_fn$f))) {
-    stop("if ebnm_fn is specified for l then it must also be specified for f")
+  if (!is.list(ebnm_fn)) {
+    ebnm_fn_l = ebnm_fn
+    ebnm_fn_f = ebnm_fn
+  } else if (xor(is.null(ebnm_fn$l), is.null(ebnm_fn$f))) {
+    stop(paste("If ebnm_fn is specified for either loadings or factors",
+               "then it must be specified for both."))
   } else if (!is.null(ebnm_fn$l)) {
     ebnm_fn_l = ebnm_fn$l
     ebnm_fn_f = ebnm_fn$f
   } else {
-    ebnm_fn_l = ebnm_fn
-    ebnm_fn_f = ebnm_fn
+    stop("Invalid input to ebnm_fn.")
+  }
+  if (!exists(ebnm_fn_l, mode="function")
+      | !exists(ebnm_fn_f, mode="function")) {
+    stop("The specified ebnm function does not exist.")
   }
   list(l = ebnm_fn_l, f = ebnm_fn_f)
 }
 
-handle_ebnm_param = function(ebnm_param, k) {
+handle_ebnm_param = function(ebnm_param, ebnm_fn, n_expected) {
   # Check to see whether parameters are specified separately for loadings
   #   and factors:
+  if (is.null(ebnm_param)) {
+    ebnm_param = rep(list(list()), n_expected)
+  }
   if (xor(is.null(ebnm_param$l), is.null(ebnm_param$f))) {
-    stop("if ebnm_param is specified for l then it must also be specified for f")
+    stop(paste("if ebnm_param is specified for either loadings or",
+               "factors then it must be specified for both."))
   } else if (!is.null(ebnm_param$l)) {
     ebnm_param_l = ebnm_param$l
     ebnm_param_f = ebnm_param$f
@@ -36,13 +54,49 @@ handle_ebnm_param = function(ebnm_param, k) {
     ebnm_param_l = ebnm_param
     ebnm_param_f = ebnm_param
   }
+
   # Check to see whether there are different parameters for each
-  #   subsequent loading/factor (k of them are required):
+  #   subsequent loading/factor (n_expected of them are required):
   if (!is.list(ebnm_param_l[[1]])) {
-    ebnm_param_l = rep(list(ebnm_param_l), k)
+    ebnm_param_l = rep(list(ebnm_param_l), n_expected)
+  } else if (length(ebnm_param_l) < n_expected) {
+    stop(paste("If different ebnm parameters are used for each loading",
+               "then ebnm_param$l must be a list of", n_expected,
+               "lists."))
   }
   if (!is.list(ebnm_param_f[[1]])) {
-    ebnm_param_f = rep(list(ebnm_param_f), k)
+    ebnm_param_f = rep(list(ebnm_param_f), n_expected)
+  } else if (length(ebnm_param_f) < n_expected) {
+    stop(paste("If different ebnm parameters are used for each factor",
+               "then ebnm_param$f must be a list of", n_expected,
+               "lists."))
   }
+
+  # Add defaults:
+  ebnm_param_l = lapply(ebnm_param_l,
+                        function(x) {add_ebnm_fn_defaults(x, ebnm_fn$l)})
+  ebnm_param_f = lapply(ebnm_param_f,
+                        function(x) {add_ebnm_fn_defaults(x, ebnm_fn$f)})
   list(l = ebnm_param_l, f = ebnm_param_f)
+}
+
+add_ebnm_fn_defaults = function(ebnm_param, ebnm_fn) {
+  if (ebnm_fn == "ebnm_ash") {
+    return(add_ebnm_ash_defaults(ebnm_param))
+  } else if (ebnm_fn == "ebnm_pn") {
+    return(ebnm_param)
+  }
+}
+
+add_ebnm_ash_defaults = function(ebnm_param) {
+  if (is.null(ebnm_param$output)) {
+    ebnm_param$output = "flash_data"
+  }
+  if (is.null(ebnm_param$mixcompdist)) {
+    ebnm_param$mixcompdist = "normal"
+  }
+  if (is.null(ebnm_param$method)) {
+    ebnm_param$method = "shrink"
+  }
+  ebnm_param
 }

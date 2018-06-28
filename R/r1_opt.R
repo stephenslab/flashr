@@ -53,11 +53,26 @@
 #
 # @return An updated flash object.
 #
-r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
-    l_subset = 1:length(l_init), f_subset = 1:length(f_init),
-    ebnm_fn = ebnm_pn, ebnm_param = flash_default_ebnm_param(ebnm_fn),
-    var_type, tol = 0.001, calc_F = TRUE, missing = NULL,
-    verbose = FALSE, maxiter = 5000, KLobj = 0, S = NULL) {
+r1_opt = function(R,
+                  R2,
+                  l_init,
+                  f_init,
+                  l2_init,
+                  f2_init,
+                  l_subset,
+                  f_subset,
+                  ebnm_fn_l,
+                  ebnm_param_l,
+                  ebnm_fn_f,
+                  ebnm_param_f,
+                  var_type,
+                  tol,
+                  calc_F,
+                  missing,
+                  verbose,
+                  maxiter,
+                  KLobj,
+                  S) {
 
     l = l_init
     f = f_init
@@ -65,12 +80,11 @@ r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
     f2 = f2_init
 
     # Default initialization of l2 and f2.
-    if (is.null(l2))
-        {
-            l2 = l^2
-        }  
+    if (is.null(l2)) {
+      l2 = l^2
+    }
     if (is.null(f2)) {
-        f2 = f^2
+      f2 = f^2
     }
 
     gl = NULL
@@ -91,7 +105,7 @@ r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
     diff = 1
 
     # Expected squared residuals with l and f included.
-    R2new = R2 - 2 * outer(l, f) * R + outer(l2, f2)  
+    R2new = R2 - 2 * outer(l, f) * R + outer(l2, f2)
     iter = 0
 
     while ((diff > tol) & (iter < maxiter)) {
@@ -104,15 +118,15 @@ r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
         if (length(f_subset) > 0) {
             s2 = 1/(t(l2) %*% tau[, f_subset, drop = FALSE])
             if (any(is.finite(s2))) {
-                
+
                 # Check some finite values before proceeding.
                 x = (t(l) %*% (R[, f_subset, drop = FALSE] *
                                tau[, f_subset, drop = FALSE])) * s2
-                
+
                 # If a value of s2 is numerically negative, set it to
                 # a small positive number.
                 s = sqrt(pmax(s2, .Machine$double.eps))
-                ebnm_f = ebnm_fn(x, s, ebnm_param)
+                ebnm_f = do.call(ebnm_fn_f, list(x, s, ebnm_param_f))
                 f[f_subset] = ebnm_f$postmean
                 f2[f_subset] = ebnm_f$postmean2
                 gf = ebnm_f$fitted_g
@@ -129,15 +143,15 @@ r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
         if (length(l_subset) > 0) {
             s2 = 1/(tau[l_subset, , drop = FALSE] %*% f2)
             if (any(is.finite(s2))) {
-                
+
                 # Check some finite values before proceeding.
                 x = ((R[l_subset, , drop = FALSE] *
                       tau[l_subset, , drop = FALSE]) %*% f) * s2
-                
+
                 # If a value of s2 is numerically negative, set it to
                 # a small positive number.
                 s = sqrt(pmax(s2, .Machine$double.eps))
-                ebnm_l = ebnm_fn(x, s, ebnm_param)
+                ebnm_l = do.call(ebnm_fn_l, list(x, s, ebnm_param_l))
                 l[l_subset] = ebnm_l$postmean
                 l2[l_subset] = ebnm_l$postmean2
                 gl = ebnm_l$fitted_g
@@ -172,7 +186,7 @@ r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
             }
             F_obj = Fnew
           } else {
-              
+
             # Check convergence by percentage changes in l and f
             # normalize l and f so that f has unit norm note that this
             # messes up stored log-likelihoods etc... so not
@@ -186,11 +200,11 @@ r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
 
             all_diff = abs(c(l, f)/c(l_old, f_old) - 1)
             if (all(is.nan(all_diff))) {
-                
+
                 # All old and new entries of l and f are zero.
                 diff = 0
             } else {
-                
+
                 # Ignore entries where both old and new values are zero.
                 diff = max(all_diff[!is.nan(all_diff)])
             }
@@ -203,7 +217,7 @@ r1_opt = function(R, R2, l_init, f_init, l2_init = NULL, f2_init = NULL,
     return(list(l = l, f = f, l2 = l2, f2 = f2, tau = tau, F_obj = F_obj,
                 KL_l = KL_l, KL_f = KL_f, gl = gl, gf = gf,
                 penloglik_l = penloglik_l, penloglik_f = penloglik_f,
-                ebnm_param = ebnm_param))
+                ebnm_param_l = ebnm_param_l, ebnm_param_f = ebnm_param_f))
 }
 
 # Put the results into f.
@@ -214,8 +228,8 @@ update_f_from_r1_opt_results = function(f, k, res) {
     f$EF2[, k] = res$f2
     f$tau = res$tau
 
-    f$ebnm_param_f[[k]] = res$ebnm_param
-    f$ebnm_param_l[[k]] = res$ebnm_param
+    f$ebnm_param_f[[k]] = res$ebnm_param_f
+    f$ebnm_param_l[[k]] = res$ebnm_param_l
 
     if (!is.null(res$gf)) {
         f$gf[[k]] = res$gf

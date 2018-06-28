@@ -7,8 +7,11 @@
 # @param ebnm_fn function to solve the Empirical Bayes normal means problem
 # @param ebnm_param parameters to be passed to ebnm_fn when optimizing
 # @return an updated flash object
-flash_update_single_loading = function(data,f,k,ebnm_fn = ebnm_pn,
-                                       ebnm_param = flash_default_ebnm_param(ebnm_fn),
+flash_update_single_loading = function(data,
+                                       f,
+                                       k,
+                                       ebnm_fn,
+                                       ebnm_param,
                                        return_sampler = F) {
     subset = which(!f$fixl[, k])  # check which elements are not fixed
     if (length(subset) > 0) {
@@ -28,7 +31,7 @@ flash_update_single_loading = function(data,f,k,ebnm_fn = ebnm_pn,
             x = ((Rk * tau) %*% f$EF[,k]) * s2
             # if a value of s2 becomes numerically negative, set it to a small positive number
             s = sqrt(pmax(s2, .Machine$double.eps))
-            a = ebnm_fn(x, s, ebnm_param, return_sampler)
+            a = do.call(ebnm_fn, list(x, s, ebnm_param, return_sampler))
             if (return_sampler) {
                 if (is.null(a$post_sampler)) {
                     stop("No sampler implemented for that ebnm function.")
@@ -58,8 +61,11 @@ flash_update_single_loading = function(data,f,k,ebnm_fn = ebnm_pn,
 #
 # @return an updated flash object
 #
-flash_update_single_factor = function(data, f, k, ebnm_fn = ebnm_pn,
-                                      ebnm_param = flash_default_ebnm_param(ebnm_fn),
+flash_update_single_factor = function(data,
+                                      f,
+                                      k,
+                                      ebnm_fn,
+                                      ebnm_param,
                                       return_sampler = F) {
     subset = which(!f$fixf[, k])  # check which elements are not fixed
     if (length(subset) > 0) {
@@ -78,7 +84,7 @@ flash_update_single_factor = function(data, f, k, ebnm_fn = ebnm_pn,
             x = (t(Rk * tau) %*% f$EL[, k]) * s2
             # if a value of s2 becomes numerically negative, set it to a small positive number
             s = sqrt(pmax(s2, .Machine$double.eps))
-            a = ebnm_fn(x, s, ebnm_param, return_sampler)
+            a = do.call(ebnm_fn, list(x, s, ebnm_param, return_sampler))
             if (return_sampler) {
                 if (is.null(a$post_sampler)) {
                     stop("No sampler implemented for that ebnm function.")
@@ -101,10 +107,17 @@ flash_update_single_factor = function(data, f, k, ebnm_fn = ebnm_pn,
 
 # @title Update a single flash factor-loading combination (and precision).
 # @inheritParams flash_update_single_loading
-flash_update_single_fl = function(data, f, k, var_type, ebnm_fn = ebnm_pn, ebnm_param = flash_default_ebnm_param(ebnm_fn)) {
+flash_update_single_fl = function(data,
+                                  f,
+                                  k,
+                                  var_type,
+                                  ebnm_fn_l,
+                                  ebnm_param_l,
+                                  ebnm_fn_f,
+                                  ebnm_param_f) {
     f = flash_update_precision(data, f, var_type)
-    f = flash_update_single_factor(data, f, k, ebnm_fn, ebnm_param)
-    f = flash_update_single_loading(data, f, k, ebnm_fn, ebnm_param)
+    f = flash_update_single_loading(data, f, k, ebnm_fn_l, ebnm_param_l)
+    f = flash_update_single_factor(data, f, k, ebnm_fn_f, ebnm_param_f)
     return(f)
 }
 
@@ -138,16 +151,42 @@ flash_update_single_fl = function(data, f, k, var_type, ebnm_fn = ebnm_pn, ebnm_
 #
 # @return An updated flash object.
 #
-flash_optimize_single_fl = function(data, f, k, var_type, nullcheck = TRUE, tol = 0.01, ebnm_fn = ebnm_pn, ebnm_param = flash_default_ebnm_param(ebnm_fn),
-    verbose = FALSE) {
+flash_optimize_single_fl = function(data,
+                                    f,
+                                    k,
+                                    var_type,
+                                    nullcheck,
+                                    tol,
+                                    ebnm_fn_l,
+                                    ebnm_param_l,
+                                    ebnm_fn_f,
+                                    ebnm_param_f,
+                                    verbose,
+                                    maxiter) {
     f_subset = which(!f$fixf[, k])
     l_subset = which(!f$fixl[, k])
     KLobj = sum(unlist(f$KL_l)) + sum(unlist(f$KL_f)) - f$KL_l[[k]] - f$KL_f[[k]]
 
-    res = r1_opt(flash_get_Rk(data, f, k), flash_get_R2k(data, f, k),
-        f$EL[, k], f$EF[, k], f$EL2[, k], f$EF2[, k], l_subset, f_subset,
-        ebnm_fn, ebnm_param, var_type, tol, calc_F = TRUE, missing = data$missing,
-        verbose = verbose, KLobj = KLobj, S = data$S)
+    res = r1_opt(flash_get_Rk(data, f, k),
+                 flash_get_R2k(data, f, k),
+                 f$EL[, k],
+                 f$EF[, k],
+                 f$EL2[, k],
+                 f$EF2[, k],
+                 l_subset,
+                 f_subset,
+                 ebnm_fn_l,
+                 ebnm_param_l,
+                 ebnm_fn_f,
+                 ebnm_param_f,
+                 var_type,
+                 tol,
+                 calc_F = TRUE,
+                 data$missing,
+                 verbose,
+                 maxiter,
+                 KLobj,
+                 data$S)
 
     f = update_f_from_r1_opt_results(f, k, res)
 

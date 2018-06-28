@@ -108,10 +108,11 @@ flash = function(data,
                               "zero", "kroneker"),
                  init_fn = "udv_si",
                  tol = 1e-2,
-                 ebnm_fn = ebnm_pn,
-                 ebnm_param = flash_default_ebnm_param(ebnm_fn),
+                 ebnm_fn = "ebnm_pn",
+                 ebnm_param = NULL,
                  verbose = FALSE,
                  nullcheck = TRUE,
+                 maxiter = 1000,
                  seed = 123,
                  greedy = TRUE,
                  backfit = FALSE) {
@@ -126,19 +127,18 @@ flash = function(data,
   }
 
   if (greedy) {
-    f = flash_add_greedy(
-      data,
-      Kmax,
-      f_init,
-      var_type,
-      init_fn,
-      tol,
-      ebnm_fn,
-      ebnm_param,
-      verbose,
-      nullcheck,
-      seed
-    )
+    f = flash_add_greedy(data,
+                         Kmax,
+                         f_init,
+                         var_type,
+                         init_fn,
+                         tol,
+                         ebnm_fn,
+                         ebnm_param,
+                         verbose,
+                         nullcheck,
+                         maxiter,
+                         seed)
   } else {
     f = f_init
   }
@@ -146,7 +146,7 @@ flash = function(data,
   if (backfit) {
     f = flash_backfit(data,
                       f,
-                      kset=NULL,
+                      kset = NULL,
                       var_type,
                       tol,
                       ebnm_fn,
@@ -165,8 +165,9 @@ flash = function(data,
 #'   adding a new factor and then optimizing it.  It is "greedy" in that
 #'   it does not return to re-optimize previous factors.  The function
 #'   stops when an added factor contributes nothing, or Kmax is reached.
-#'   Each new factor is intialized by applying the function `init_fn` to
-#'   the residuals after removing previously-fitted factors.
+#'   Each new factor is intialized by applying the function
+#'   \code{init_fn} to the residuals after removing previously-fitted
+#'   factors.
 #'
 #' @inheritParams flash
 #'
@@ -196,10 +197,11 @@ flash_add_greedy = function(data,
                                          "zero", "kroneker"),
                             init_fn = "udv_si",
                             tol = 1e-2,
-                            ebnm_fn = ebnm_pn,
-                            ebnm_param = flash_default_ebnm_param(ebnm_fn),
+                            ebnm_fn = "ebnm_pn",
+                            ebnm_param = NULL,
                             verbose = FALSE,
                             nullcheck = TRUE,
+                            maxiter = 1000,
                             seed = 123) {
   if (!is.null(seed)) {
     set.seed(seed)
@@ -208,7 +210,9 @@ flash_add_greedy = function(data,
     data = flash_set_data(data)
   }
   var_type = match.arg(var_type)
-  ebnm_param = handle_ebnm_param(ebnm_param)
+  init_fn = handle_init_fn(init_fn)
+  ebnm_fn = handle_ebnm_fn(ebnm_fn)
+  ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, Kmax)
 
   f = f_init
 
@@ -219,12 +223,13 @@ flash_add_greedy = function(data,
                  var_type,
                  init_fn,
                  tol,
-                 ebnm_fn_l[k],
-                 ebnm_param_l[[k]],
-                 ebnm_fn_f[k],
-                 ebnm_param_f[[k]],
+                 ebnm_fn$l,
+                 ebnm_param$l[[k]],
+                 ebnm_fn$f,
+                 ebnm_param$f[[k]],
                  verbose,
                  nullcheck,
+                 maxiter,
                  seed = NULL)
 
     # Test whether the factor/loading combination is effectively zero.
@@ -271,8 +276,8 @@ flash_backfit = function(data,
                          var_type = c("by_column", "by_row", "constant",
                                       "zero", "kroneker"),
                          tol = 1e-2,
-                         ebnm_fn = ebnm_pn,
-                         ebnm_param = flash_default_ebnm_param(ebnm_fn),
+                         ebnm_fn = "ebnm_pn",
+                         ebnm_param = NULL,
                          verbose = FALSE,
                          nullcheck = TRUE,
                          maxiter = 1000) {
@@ -282,15 +287,26 @@ flash_backfit = function(data,
   }
   if (is.null(kset)) {
     kset = 1:flash_get_k(f)
+  } else if (!is.numeric(kset) && max(kset) > flash_get_k(f)) {
+    stop("Invalid kset.")
   }
   var_type = match.arg(var_type)
+  ebnm_fn = handle_ebnm_fn(ebnm_fn)
+  ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, length(kset))
 
   if (verbose) {
     message("iteration:1")
   }
 
-  for (k in kset) {
-    f = flash_update_single_fl(data, f, k, var_type, ebnm_fn, ebnm_param)
+  for (i in 1:length(kset)) {
+    f = flash_update_single_fl(data,
+                               f,
+                               kset[i],
+                               var_type,
+                               ebnm_fn$l,
+                               ebnm_param$l[[i]],
+                               ebnm_fn$f,
+                               ebnm_param$f[[i]])
   }
 
   c = flash_get_objective(data, f)
@@ -304,11 +320,19 @@ flash_backfit = function(data,
   while((diff > tol) & (iteration <= maxiter)) {
 
     # There are two steps; first backfit, then null check
-    # (if nullcheck removes some factors then the whole process is repeated)
+    # (if nullcheck removes some factors then the whole process
+    # is repeated)
     while((diff > tol) & (iteration <= maxiter)){
       if(verbose){message("iteration:", iteration)}
-      for(k in kset){
-        f = flash_update_single_fl(data, f, k, var_type, ebnm_fn, ebnm_param)
+      for (i in 1:length(kset)) {
+        f = flash_update_single_fl(data,
+                                   f,
+                                   kset[i],
+                                   var_type,
+                                   ebnm_fn$l,
+                                   ebnm_param$l[[i]],
+                                   ebnm_fn$f,
+                                   ebnm_param$f[[i]])
       }
       cnew = flash_get_objective(data, f)
       diff = cnew - c
@@ -318,11 +342,12 @@ flash_backfit = function(data,
     }
 
     if (nullcheck) {
-      #remove factors that actually hurt objective
+      # remove factors that actually hurt objective
       kset = 1:flash_get_k(f)
       f = perform_nullcheck(data, f, kset, var_type, verbose)
 
-      # recompute objective; if it changes then whole process will be repeated
+      # recompute objective; if it changes then the whole process will
+      # be repeated
       cnew = flash_get_objective(data, f)
       diff = cnew - c
       c = cnew
@@ -342,63 +367,34 @@ flash_backfit = function(data,
 #
 # @inheritParams flash
 #
-# @examples
-#
-# ftrue = rnorm(100)
-# ltrue = rnorm(20)
-#
-# # Set up a simulated matrix with rank 1 plus noise structure.
-# Y = ltrue %*% t(ftrue)+rnorm(2000)
-# f = flash_r1(Y)
-# ldf = flash_get_ldf(f)
-#
-# # Plot true l against estimated l (note estimate is normalized).
-# plot(ltrue,ldf$l)
-#
-# # Plot true f against estimated f (note estimate is normalized).
-# plot(ftrue,ldf$f)
-#
-# # Plot true lf' against estimated lf'; the scale of the estimate
-# # matches the data.
-# plot(ltrue %*% t(ftrue), flash_get_lf(f))
-#
-# # Example to use the more flexible ebnm function in ashr.
-# f2 = flash_r1(Y,ebnm_fn = ebnm_ash)
-#
-# # Example to show how to pass parameters to ashr.
-# f3 = flash_r1(Y,ebnm_fn = ebnm_ash,
-#               ebnm_param = list(mixcompdist = "normal",method="fdr"))
-#
 flash_r1 = function(data,
-                    f_init = NULL,
-                    var_type = c("by_column", "by_row", "constant",
-                                 "zero", "kroneker"),
-                    init_fn = "udv_si",
-                    tol = 1e-2,
-                    ebnm_fn = ebnm_pn,
-                    ebnm_param = flash_default_ebnm_param(ebnm_fn),
-                    verbose = FALSE,
-                    nullcheck = TRUE,
-                    seed = 123) {
-  if (!is.null(seed)) {
-    set.seed(seed)
-  }
-  if (is.matrix(data)) {
-    data = flash_set_data(data)
-  }
-  var_type = match.arg(var_type)
+                    f_init,
+                    var_type,
+                    init_fn,
+                    tol,
+                    ebnm_fn_l,
+                    ebnm_param_l,
+                    ebnm_fn_f,
+                    ebnm_param_f,
+                    verbose,
+                    maxiter,
+                    nullcheck,
+                    seed) {
   f = flash_add_factors_from_data(data,
                                   K = 1,
-                                  f_init = f_init,
-                                  init_fn = init_fn)
+                                  f_init,
+                                  init_fn)
   f = flash_optimize_single_fl(data,
                                f,
                                flash_get_k(f),
                                var_type,
                                nullcheck,
                                tol,
-                               ebnm_fn,
-                               ebnm_param,
-                               verbose)
+                               ebnm_fn_l,
+                               ebnm_param_l,
+                               ebnm_fn_f,
+                               ebnm_param_f,
+                               verbose,
+                               maxiter)
   return(f)
 }
