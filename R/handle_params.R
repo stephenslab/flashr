@@ -1,16 +1,3 @@
-flash_default_ebnm_param = function(ebnm_fn) {
-    if (identical(ebnm_fn, ebnm_ash)) {
-        return(list(output      = "flash_data",
-                    mixcompdist = "normal",
-                    method      = "shrink"))
-    } else if (identical(ebnm_fn, ebnm_pn)) {
-        return(list())
-    } else {
-        stop(paste("No defaults available for ebnm_param for that ebnm",
-                   "function---please supply them"))
-    }
-}
-
 handle_init_fn = function(init_fn) {
   if (!exists(init_fn, mode="function")) {
     stop("The specified init_fn does not exist.")
@@ -41,12 +28,10 @@ handle_ebnm_fn = function(ebnm_fn) {
 handle_ebnm_param = function(ebnm_param, ebnm_fn, n_expected) {
   # Check to see whether parameters are specified separately for loadings
   #   and factors:
-  if (is.null(ebnm_param)) {
-    ebnm_param = rep(list(list()), n_expected)
-  }
   if (xor(is.null(ebnm_param$l), is.null(ebnm_param$f))) {
     stop(paste("if ebnm_param is specified for either loadings or",
-               "factors then it must be specified for both."))
+               "factors then it must be specified for both. (Use an",
+               "empty list to specify no parameters.)"))
   } else if (!is.null(ebnm_param$l)) {
     ebnm_param_l = ebnm_param$l
     ebnm_param_f = ebnm_param$f
@@ -57,14 +42,19 @@ handle_ebnm_param = function(ebnm_param, ebnm_fn, n_expected) {
 
   # Check to see whether there are different parameters for each
   #   subsequent loading/factor (n_expected of them are required):
-  if (!is.list(ebnm_param_l[[1]])) {
+  if (length(ebnm_param_l) == 0) {
+    # NULL or empty list
+    ebnm_param_l = rep(list(list()), n_expected)
+  } else if (!is.list(ebnm_param_l[[1]])) {
     ebnm_param_l = rep(list(ebnm_param_l), n_expected)
   } else if (length(ebnm_param_l) < n_expected) {
     stop(paste("If different ebnm parameters are used for each loading",
                "then ebnm_param$l must be a list of", n_expected,
                "lists."))
   }
-  if (!is.list(ebnm_param_f[[1]])) {
+  if (length(ebnm_param_f) == 0) {
+    ebnm_param_f = rep(list(list()), n_expected)
+  } else if (!is.list(ebnm_param_f[[1]])) {
     ebnm_param_f = rep(list(ebnm_param_f), n_expected)
   } else if (length(ebnm_param_f) < n_expected) {
     stop(paste("If different ebnm parameters are used for each factor",
@@ -89,9 +79,6 @@ add_ebnm_fn_defaults = function(ebnm_param, ebnm_fn) {
 }
 
 add_ebnm_ash_defaults = function(ebnm_param) {
-  if (is.null(ebnm_param$output)) {
-    ebnm_param$output = "flash_data"
-  }
   if (is.null(ebnm_param$mixcompdist)) {
     ebnm_param$mixcompdist = "normal"
   }

@@ -201,7 +201,6 @@ flash_add_greedy = function(data,
                             ebnm_param = NULL,
                             verbose = FALSE,
                             nullcheck = TRUE,
-                            maxiter = 1000,
                             seed = 123) {
   if (!is.null(seed)) {
     set.seed(seed)
@@ -229,7 +228,7 @@ flash_add_greedy = function(data,
                  ebnm_param$f[[k]],
                  verbose,
                  nullcheck,
-                 maxiter,
+                 maxiter = 5000,
                  seed = NULL)
 
     # Test whether the factor/loading combination is effectively zero.
@@ -287,8 +286,9 @@ flash_backfit = function(data,
   }
   if (is.null(kset)) {
     kset = 1:flash_get_k(f)
-  } else if (!is.numeric(kset) && max(kset) > flash_get_k(f)) {
-    stop("Invalid kset.")
+  } else if (!is.numeric(kset) || max(kset) > flash_get_k(f)) {
+    stop(paste("Invalid kset. Kset should be a vector containing the",
+               "indices of the factors to be optimized."))
   }
   var_type = match.arg(var_type)
   ebnm_fn = handle_ebnm_fn(ebnm_fn)
@@ -361,9 +361,7 @@ flash_backfit = function(data,
 
 # @title Fits a rank 1 Empirical Bayes Matrix Factorization model.
 #
-# @return A fitted flash object. Use \code{flash_get_ldf} to access
-#   standardized loadings and factors; use \code{flash_get_lf} to
-#   access fitted LF'.
+# @return A fitted flash object.
 #
 # @inheritParams flash
 #
