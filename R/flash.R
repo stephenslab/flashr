@@ -112,7 +112,6 @@ flash = function(data,
                  ebnm_param = NULL,
                  verbose = FALSE,
                  nullcheck = TRUE,
-                 maxiter = 1000,
                  seed = 123,
                  greedy = TRUE,
                  backfit = FALSE) {
@@ -137,7 +136,6 @@ flash = function(data,
                          ebnm_param,
                          verbose,
                          nullcheck,
-                         maxiter,
                          seed)
   } else {
     f = f_init
