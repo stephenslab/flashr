@@ -48,6 +48,12 @@ test_that("argument checking works", {
                                      2),
                    list(l=list(new_ash, new_ash),
                         f=list(ash_defaults, ash_defaults)))
+  expect_identical(handle_ebnm_param(list(l=list(),
+                                          f=list(mixcompdist="uniform")),
+                                     handle_ebnm_fn("ebnm_ash"),
+                                     2),
+                   list(l=list(ash_defaults, ash_defaults),
+                        f=list(new_ash, new_ash)))
   # different ebnm_param for each loading/factor:
   expect_identical(handle_ebnm_param(list(list(mixcompdist="uniform"),
                                           list()),
@@ -64,6 +70,7 @@ test_that("argument checking works", {
                                       list()),
                                  handle_ebnm_fn("ebnm_ash"),
                                  3))
+
   expect_error(handle_ebnm_param(c(mixcompdist="uniform", method="fdr")))
 })
 

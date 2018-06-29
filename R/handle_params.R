@@ -169,7 +169,7 @@ handle_ebnm_param = function(ebnm_param, ebnm_fn, n_expected) {
   } else if (!is.null(names(ebnm_param_f))) {
     ebnm_param_f = rep(list(ebnm_param_f), n_expected)
   }
-  else if (length(ebnm_param_f) < n_expected) {
+  else if (length(ebnm_param_f) != n_expected) {
     stop(paste("If different ebnm parameters are used for each factor",
                "then ebnm_param$f must be a list of", n_expected,
                "lists."))
