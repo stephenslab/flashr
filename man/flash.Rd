@@ -116,7 +116,7 @@ f3 = flash(Y,
 f4 = flash(Y,
            ebnm_fn=list(l="ebnm_pn", f="ebnm_ash"),
            ebnm_param=list(l=list(),
-                           f=list(g=ashr::normalmix(1,0,1), fixg=T)))
+                           f=list(g=ashr::normalmix(1,0,1), fixg=TRUE)))
 
 # Example to show how to use a different initialization function.
 library(softImpute)

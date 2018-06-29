@@ -50,29 +50,26 @@ flash_plot_factors =
     return(list(plot_f = plot_f, plot_l = plot_l))
 }
 
-#' @title Factor plot.
-#'
-#' @return list of factor, loading and variance of noise matrix
-#'
-#'    \item{\code{plot_f}} A ggplot object for the factors.
-#'
-#' @param f Factor to plot.
-#'
-#' @param pve PVE for this factor.
-#'
-#' @param k The order of the factor.
-#'
-#' @param f_labels The labels for the factor.
-#'
-#' @param y_lab The name of the Y axis.
-#'
-#' @details Plots the factors in a barplot.
-#'
-#' @importFrom ggplot2 ggplot aes_string scale_fill_manual labs geom_bar
-#' @importFrom ggplot2 geom_text theme_minimal ylim
-#'
-#' @export
-#'
+# @title Factor plot.
+#
+# @return list of factor, loading and variance of noise matrix
+#    \item{\code{plot_f}} A ggplot object for the factors.
+#
+# @param f Factor to plot.
+#
+# @param pve PVE for this factor.
+#
+# @param k The order of the factor.
+#
+# @param f_labels The labels for the factor.
+#
+# @param y_lab The name of the Y axis.
+#
+# @details Plots the factors in a barplot.
+#
+# @importFrom ggplot2 ggplot aes_string scale_fill_manual labs geom_bar
+# @importFrom ggplot2 geom_text theme_minimal ylim
+#
 plot_one_factor = function(f, pve, k, f_labels = NA, y_lab = "factor values") {
     P = length(f)
     if (any(is.na(f_labels))) {
