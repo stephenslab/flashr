@@ -105,14 +105,15 @@ handle_ebnm_fn = function(ebnm_fn) {
 #   adds default parameters when available.
 #
 # @param ebnm_param The parameters to be passed into ebnm_fn. Several
-#   types of arguments are possible. NULL will return default parameters
-#   (or empty lists when no defaults are available). A single list will
-#   supply the parameters for both EBNM functions. A list with fields l
-#   and f will separately supply parameters for the functions used for
-#   loadings and factors. A list of n lists will separately specify
-#   parameters for each factor/loading combination. Finally, the latter
-#   two types of argument can be combined, so that the user may supply
-#   a list with fields l and f, each of which is a list of n lists.
+#   types of argument are possible. NULL will return default parameters
+#   (or empty lists when no defaults are available). A single named list
+#   will supply the parameters for both EBNM functions. A list with
+#   fields l and f will separately supply parameters for the functions
+#   used for loadings and factors. A list of n named lists will
+#   separately specify parameters for each factor/loading combination.
+#   Finally, the latter two types of argument can be combined, so that
+#   the user may supply a list with fields l and f, each of which is a
+#   list of n named lists.
 #
 # @param ebnm_fn A list with fields l and f specifying the functions
 #   used to solve the EBNM problem for loadings and factors. The output
@@ -151,18 +152,24 @@ handle_ebnm_param = function(ebnm_param, ebnm_fn, n_expected) {
   if (length(ebnm_param_l) == 0) {
     # NULL or empty list
     ebnm_param_l = rep(list(list()), n_expected)
-  } else if (!is.list(ebnm_param_l[[1]])) {
+  }
+  # If the list is named, it gives parameters for all loadings:
+  else if (!is.null(names(ebnm_param_l))) {
     ebnm_param_l = rep(list(ebnm_param_l), n_expected)
-  } else if (length(ebnm_param_l) != n_expected) {
+  }
+  # And an unnamed list gives parameters separately for each loading:
+  else if (length(ebnm_param_l) != n_expected) {
     stop(paste("If different ebnm parameters are used for each loading",
                "then ebnm_param$l must be a list of", n_expected,
                "lists."))
   }
   if (length(ebnm_param_f) == 0) {
     ebnm_param_f = rep(list(list()), n_expected)
-  } else if (!is.list(ebnm_param_f[[1]])) {
+
+  } else if (!is.null(names(ebnm_param_f))) {
     ebnm_param_f = rep(list(ebnm_param_f), n_expected)
-  } else if (length(ebnm_param_f) < n_expected) {
+  }
+  else if (length(ebnm_param_f) < n_expected) {
     stop(paste("If different ebnm parameters are used for each factor",
                "then ebnm_param$f must be a list of", n_expected,
                "lists."))

@@ -160,10 +160,17 @@ flash_update_single_fl = function(data,
 #
 # @param tol A tolerance for the optimization.
 #
-# @param ebnm_fn Function to solve the Empirical Bayes normal means
-#   problem.
+# @param ebnm_fn_l Function to solve the Empirical Bayes Normal Means
+#   problem (used for loadings).
 #
-# @param ebnm_param Parameters to be passed to ebnm_fn when optimizing.
+# @param ebnm_param_l Parameters to be passed to ebnm_fn_l when
+#   optimizing.
+#
+# @param ebnm_fn_f Function to solve the Empirical Bayes Normal Means
+#   problem (used for factors).
+#
+# @param ebnm_param_f Parameters to be passed to ebnm_fn_f when
+#   optimizing.
 #
 # @param verbose If TRUE, various output progress updates will be printed.
 #
