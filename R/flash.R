@@ -168,6 +168,7 @@ flash = function(data,
   return(f)
 }
 
+
 #' @title Fit Empirical Bayes Matrix Factorization (greedy algorithm)
 #'
 #' @description This implements the greedy algorithm from Wang and
@@ -387,6 +388,7 @@ flash_backfit = function(data,
 
   return(f)
 }
+
 
 # @title Fits a rank 1 Empirical Bayes Matrix Factorization model.
 #
