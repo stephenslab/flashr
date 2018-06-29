@@ -19,10 +19,10 @@
 #' @param fixed Indicates whether to fix factors or loadings at their
 #'   posterior mean.
 #'
-#' @return A function that takes a single parameter nsamp, the number of
-#'   samples of LF to be produced by the sampler. Care should be used
-#'   when setting nsamp, because the sampler returns a list of matrices
-#'   which are each of the same size as the data matrix.
+#' @return A function that takes a single parameter \code{nsamp}, the
+#'   number of samples of LF to be produced by the sampler. Care should
+#'   be used when setting \code{nsamp}, because the sampler returns a
+#'   list of matrices which are each of the same size as the data matrix.
 #'
 #' @export
 #'

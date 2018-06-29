@@ -36,11 +36,16 @@ matrix.)}
 iteration to be considered not converged.}
 
 \item{ebnm_fn}{The function used to solve the Empirical Bayes Normal
-Means problem.}
+Means problem. Either a single character string (giving the name of
+of the function) or a list with fields \code{l} and \code{f}
+(specifying different functions to be used for loadings and factors)
+are acceptable arguments.}
 
 \item{ebnm_param}{A named list containing parameters to be passed to
-ebnm_fn when optimizing; defaults are set by
-\code{flash_default_ebnm_param()}.}
+\code{ebnm_fn} when optimizing. A list with fields \code{l} and
+\code{f} (each of which is a named list) will separately supply
+parameters for loadings and factors. Set to NULL to use
+defaults.}
 
 \item{verbose}{If TRUE, various progress updates will be printed.}
 
@@ -74,10 +79,10 @@ This is the main interface for fitting EBMF models
 \examples{
 
 set.seed(1) # for reproducibility
-ftrue = matrix(rnorm(200),ncol=2)
-ltrue = matrix(rnorm(40),ncol=2)
-ltrue[1:10,1] = 0 # set up some sparsity
-ltrue[11:20,2] = 0
+ftrue = matrix(rnorm(200), ncol=2)
+ltrue = matrix(rnorm(40), ncol=2)
+ltrue[1:10, 1] = 0 # set up some sparsity
+ltrue[11:20, 2] = 0
 Y = ltrue \%*\% t(ftrue)+rnorm(2000) # set up a simulated matrix
 f = flash(Y)
 ldf = flash_get_ldf(f)
@@ -88,26 +93,34 @@ ldf$d
 
 # Plot true l against estimated l; with this seed it turns out the
 # 2nd loading/factor corresponds to the first column of ltrue.
-plot(ltrue[,1],ldf$l[,2])
+plot(ltrue[,1], ldf$l[,2])
 
 # Plot true f against estimated f (note estimate is normalized).
-plot(ftrue[,1],ldf$f[,2])
+plot(ftrue[,1], ldf$f[,2])
 
 # Plot true lf' against estimated lf'; the scale of the estimate
 # matches the data.
 plot(ltrue \%*\% t(ftrue), flash_get_lf(f))
 
 # Example to use the more flexible ebnm function in ashr.
-f2 = flash(Y,ebnm_fn="ebnm_ash")
+f2 = flash(Y, ebnm_fn="ebnm_ash")
 
 # Example to show how to pass parameters to ashr (may be most
 # useful for research use).
-f3 = flash(Y,ebnm_fn="ebnm_ash",
-           ebnm_param=list(mixcompdist="normal",method="fdr"))
+f3 = flash(Y,
+           ebnm_fn="ebnm_ash",
+           ebnm_param=list(mixcompdist="normal", method="fdr"))
+
+# Example to show how to separately specify parameters for factors
+# and loadings.
+f4 = flash(Y,
+           ebnm_fn=list(l="ebnm_pn", f="ebnm_ash"),
+           ebnm_param=list(l=list(),
+                           f=list(g=ashr::normalmix(1,0,1), fixg=T)))
 
 # Example to show how to use a different initialization function.
 library(softImpute)
-f4 = flash(Y,init_fn = function(x,K=1){softImpute(x,K,lambda=10)})
+f5 = flash(Y, init_fn=function(x, K=1){softImpute(x, K, lambda=10)})
 
 }
 \seealso{

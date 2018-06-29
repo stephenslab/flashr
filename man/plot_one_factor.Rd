@@ -17,6 +17,11 @@ plot_one_factor(f, pve, k, f_labels = NA, y_lab = "factor values")
 
 \item{y_lab}{The name of the Y axis.}
 }
+\value{
+list of factor, loading and variance of noise matrix
+
+   \item{\code{plot_f}} A ggplot object for the factors.
+}
 \description{
 Factor plot.
 }

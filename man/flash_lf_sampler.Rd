@@ -8,23 +8,29 @@ flash_lf_sampler(data, f, kset = NULL, ebnm_fn = "ebnm_pn",
   fixed = c("factors", "loadings"))
 }
 \arguments{
-\item{data}{a flash data object}
+\item{data}{An n by p matrix or a flash data object created using
+\code{flash_set_data}.}
 
-\item{f}{a flash fit object}
+\item{f}{A fitted flash object.}
 
-\item{kset}{the indices of factor/loadings to include when sampling LF (defaults to all)}
+\item{kset}{The indices of factors to be optimized (NULL indicates
+all factors).}
 
-\item{ebnm_fn}{function used to solve the Empirical Bayes Normal Means problem}
+\item{ebnm_fn}{The function used to solve the Empirical Bayes Normal
+Means problem.}
 
-\item{fixed}{indicates whether to fix factors or loadings at their posterior mean}
+\item{fixed}{Indicates whether to fix factors or loadings at their
+posterior mean.}
 }
 \value{
-A function that takes a single parameter nsamp, the number of samples of LF to be
-produced by the sampler. Care should be used when setting nsamp, because the sampler
-returns a list of matrices which are each of the same size as the data matrix.
+A function that takes a single parameter \code{nsamp}, the
+  number of samples of LF to be produced by the sampler. Care should
+  be used when setting \code{nsamp}, because the sampler returns a
+  list of matrices which are each of the same size as the data matrix.
 }
 \description{
-Generates function that samples LF from a flash fit object, with either L or F
-fixed at its posterior mean and the columns of F or L sampled independently from their
-marginal posteriors.
+Generates function that samples LF from a flash fit
+  object, with either L or F fixed at its posterior mean and the
+  columns of F or L sampled independently from their marginal
+  posteriors.
 }

@@ -266,7 +266,7 @@ flash_add_greedy = function(data,
 #'   just one iteration we suggest setting \code{maxiter = 1} and
 #'   \code{nullcheck = FALSE}.
 #'
-#' @inheritDotParams -ebnm_param flash
+#' @inheritParams flash
 #'
 #' @param ebnm_param A named list containing parameters to be passed to
 #'   \code{ebnm_fn} when optimizing. A list with fields \code{l} and
