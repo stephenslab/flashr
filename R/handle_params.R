@@ -1,3 +1,14 @@
+# @title Handle kset parameter
+#
+# @description Checks that kset is numeric and not out of bounds for the
+#   flash object. Defaults to kset = 1:flash_get_k(f).
+#
+# @param kset A vector of factor indices.
+#
+# @param f A fitted flash object.
+#
+# @return kset (with values possibly defaulted in).
+#
 handle_kset = function(kset, f) {
   if (is.null(kset)) {
     # Default:
@@ -9,14 +20,40 @@ handle_kset = function(kset, f) {
   kset
 }
 
+
+# @title Handle init_fn parameter
+#
+# @description Checks that init_fn is a valid function.
+#
+# @param init_fn An initialization function. Either the name of a
+#   function or the function itself (as a character string) are
+#   acceptable arguments.
+#
+# @return init_fn
+#
 handle_init_fn = function(init_fn) {
-  # Either a function or the name of a function (as a string) are ok.
   if (!is.function(init_fn) && !exists(init_fn, mode="function")) {
     stop("The specified init_fn does not exist.")
   }
   init_fn
 }
 
+
+# @title Handle ebnm_fn parameter
+#
+# @description Checks that the argument to ebnm_fn refers to a valid
+#   function. If ebnm_pn is used, checks that package ebnm is installed.
+#   If not, returns "ebnm_ash" instead (with a message to the user).
+#
+# @param ebnm_fn The function used to solve the empirical Bayes normal
+#   means problem. Either a single character string (giving the name of
+#   of the function) or a list with fields l and f (specifying
+#   different functions to be used for loadings and factors) are
+#   acceptable arguments.
+#
+# @return ebnm_fn as a list with fields l and f (if a single function is
+#   passed in, then it will be the value for both fields).
+#
 handle_ebnm_fn = function(ebnm_fn) {
   if (!is.list(ebnm_fn)) {
     if (length(ebnm_fn) != 1) {
@@ -61,6 +98,34 @@ handle_ebnm_fn = function(ebnm_fn) {
   list(l = ebnm_fn_l, f = ebnm_fn_f)
 }
 
+
+# @title Handle ebnm_param parameter
+#
+# @description Checks that the argument to ebnm_param makes sense and
+#   adds default parameters when available.
+#
+# @param ebnm_param The parameters to be passed into ebnm_fn. Several
+#   types of arguments are possible. NULL will return default parameters
+#   (or empty lists when no defaults are available). A single list will
+#   supply the parameters for both EBNM functions. A list with fields l
+#   and f will separately supply parameters for the functions used for
+#   loadings and factors. A list of n lists will separately specify
+#   parameters for each factor/loading combination. Finally, the latter
+#   two types of argument can be combined, so that the user may supply
+#   a list with fields l and f, each of which is a list of n lists.
+#
+# @param ebnm_fn A list with fields l and f specifying the functions
+#   used to solve the EBNM problem for loadings and factors. The output
+#   of handle_ebnm_fn will be the usual input here.
+#
+# @param n_expected The number of lists to expect if separate parameters
+#   are used for each factor/loading combination. (That is, the number
+#   of distinct factor/loadings to which ebnm_fn will be applied.)
+#
+# @return ebnm_param as a list with fields l and f, each of which is a
+#   list of n_expected lists. When available, default parameters are
+#   added.
+#
 handle_ebnm_param = function(ebnm_param, ebnm_fn, n_expected) {
   if (!is.null(ebnm_param) && !is.list(ebnm_param)) {
     stop(paste("Invalid argument for parameter ebnm_param. A list (or",
@@ -111,14 +176,39 @@ handle_ebnm_param = function(ebnm_param, ebnm_fn, n_expected) {
   list(l = ebnm_param_l, f = ebnm_param_f)
 }
 
+# @title Add defaults to ebnm_param
+#
+# @description Adds default parameters to ebnm_param, depending on
+#   which function is used for the EBNM problem. At present, defaults
+#   are only added when ebnm_ash is used.
+#
+# @param ebnm_param The parameters to be passed into ebnm_fn, given as
+#   a single list.
+#
+# @param ebnm_fn The name of the function used to solve the EBNM
+#   problem, given as a character string.
+#
+# @return ebnm_param, with defaults added when available.
+#
 add_ebnm_fn_defaults = function(ebnm_param, ebnm_fn) {
   if (ebnm_fn == "ebnm_ash") {
     return(add_ebnm_ash_defaults(ebnm_param))
   } else if (ebnm_fn == "ebnm_pn") {
     return(ebnm_param)
   }
+  ebnm_param
 }
 
+# @title Add ebnm_ash defaults to ebnm_param
+#
+# @description Adds default ebnm_ash parameters to ebnm_param.
+#
+# @param ebnm_param The parameters to be passed into ebnm_fn, given as
+#   a single list.
+#
+# @return ebnm_param, with ash defaults added (when not specified by the
+#   user).
+#
 add_ebnm_ash_defaults = function(ebnm_param) {
   if (is.null(ebnm_param$mixcompdist)) {
     ebnm_param$mixcompdist = "normal"

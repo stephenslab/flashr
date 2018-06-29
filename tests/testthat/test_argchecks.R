@@ -14,7 +14,6 @@ test_that("argument checking works", {
   expect_error(handle_kset(1:3, f))
   expect_error(handle_kset(list(1, 2), f))
 
-
   # init_fn:
   expect_identical(handle_init_fn("udv_si"), "udv_si")
   expect_identical(handle_init_fn(udv_si), udv_si)
