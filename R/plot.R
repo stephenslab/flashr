@@ -54,7 +54,7 @@ flash_plot_factors =
 #'
 #' @return list of factor, loading and variance of noise matrix
 #'
-#'    \item{\code{plot_f}} {A ggplot object for the factors.}
+#'    \item{\code{plot_f}}{A ggplot object for the factors.}
 #'
 #' @param f Factor to plot.
 #'
