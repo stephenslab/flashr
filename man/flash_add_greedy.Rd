@@ -6,8 +6,8 @@
 \usage{
 flash_add_greedy(data, Kmax = 1, f_init = NULL, var_type = c("by_column",
   "by_row", "constant", "zero", "kroneker"), init_fn = "udv_si", tol = 0.01,
-  ebnm_fn = ebnm_pn, ebnm_param = flash_default_ebnm_param(ebnm_fn),
-  verbose = FALSE, nullcheck = TRUE, seed = 123)
+  ebnm_fn = "ebnm_pn", ebnm_param = NULL, verbose = FALSE,
+  nullcheck = TRUE, seed = 123)
 }
 \arguments{
 \item{data}{An n by p matrix or a flash data object created using
@@ -64,8 +64,9 @@ This implements the greedy algorithm from Wang and
   adding a new factor and then optimizing it.  It is "greedy" in that
   it does not return to re-optimize previous factors.  The function
   stops when an added factor contributes nothing, or Kmax is reached.
-  Each new factor is intialized by applying the function `init_fn` to
-  the residuals after removing previously-fitted factors.
+  Each new factor is intialized by applying the function
+  \code{init_fn} to the residuals after removing previously-fitted
+  factors.
 }
 \examples{
 l = rnorm(100)

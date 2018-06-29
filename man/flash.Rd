@@ -6,9 +6,8 @@
 \usage{
 flash(data, Kmax = 100, f_init = NULL, var_type = c("by_column", "by_row",
   "constant", "zero", "kroneker"), init_fn = "udv_si", tol = 0.01,
-  ebnm_fn = ebnm_pn, ebnm_param = flash_default_ebnm_param(ebnm_fn),
-  verbose = FALSE, nullcheck = TRUE, seed = 123, greedy = TRUE,
-  backfit = FALSE)
+  ebnm_fn = "ebnm_pn", ebnm_param = NULL, verbose = FALSE,
+  nullcheck = TRUE, seed = 123, greedy = TRUE, backfit = FALSE)
 }
 \arguments{
 \item{data}{An n by p matrix or a flash data object created using
@@ -99,12 +98,12 @@ plot(ftrue[,1],ldf$f[,2])
 plot(ltrue \%*\% t(ftrue), flash_get_lf(f))
 
 # Example to use the more flexible ebnm function in ashr.
-f2 = flash(Y,ebnm_fn = ebnm_ash)
+f2 = flash(Y,ebnm_fn="ebnm_ash")
 
 # Example to show how to pass parameters to ashr (may be most
 # useful for research use).
-f3 = flash(Y,ebnm_fn = ebnm_ash,
-           ebnm_param = list(mixcompdist = "normal",method="fdr"))
+f3 = flash(Y,ebnm_fn="ebnm_ash",
+           ebnm_param=list(mixcompdist="normal",method="fdr"))
 
 # Example to show how to use a different initialization function.
 library(softImpute)
