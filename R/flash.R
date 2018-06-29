@@ -292,11 +292,11 @@ flash_add_greedy = function(data,
 #'
 #' # Example to illustrate different types of arguments to ebnm_param.
 #' # 1. Fix a N(0, 1) prior on the loadings.
-#' ebnm_param_l = list(g=ashr::normalmix(1,0,1), fixg=T)
+#' ebnm_param_l = list(g=ashr::normalmix(1,0,1), fixg=TRUE)
 #' fg2 = flash_add_greedy(Y, 10, ebnm_fn="ebnm_ash",
 #'                        ebnm_param=list(l=ebnm_param_l, f=list()))
 #' # 2. Now refit factors, forcing loadings to use prior from greedy fit.
-#' ebnm_param_f = lapply(fg2$gf, function(g) {list(g=g, fixg=T)})
+#' ebnm_param_f = lapply(fg2$gf, function(g) {list(g=g, fixg=TRUE)})
 #' fb2 = flash_backfit(Y, fg2, kset=1:2, ebnm_fn="ebnm_ash",
 #'                     ebnm_param=list(l=list(), f=ebnm_param_f))
 #'
