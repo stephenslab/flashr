@@ -88,12 +88,12 @@
 #' plot(ltrue %*% t(ftrue), flash_get_lf(f))
 #'
 #' # Example to use the more flexible ebnm function in ashr.
-#' f2 = flash(Y,ebnm_fn = ebnm_ash)
+#' f2 = flash(Y,ebnm_fn="ebnm_ash")
 #'
 #' # Example to show how to pass parameters to ashr (may be most
 #' # useful for research use).
-#' f3 = flash(Y,ebnm_fn = ebnm_ash,
-#'            ebnm_param = list(mixcompdist = "normal",method="fdr"))
+#' f3 = flash(Y,ebnm_fn="ebnm_ash",
+#'            ebnm_param=list(mixcompdist="normal",method="fdr"))
 #'
 #' # Example to show how to use a different initialization function.
 #' library(softImpute)
