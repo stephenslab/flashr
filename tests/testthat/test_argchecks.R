@@ -66,5 +66,5 @@ test_that("argument checking works", {
                                  handle_ebnm_fn("ebnm_ash"),
                                  3))
   expect_error(handle_ebnm_param(c(mixcompdist="uniform", method="fdr")))
-}
+})
 
