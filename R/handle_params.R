@@ -34,6 +34,13 @@ handle_ebnm_fn = function(ebnm_fn) {
     stop("Invalid entry for parameter ebnm_fn.")
   }
 
+  if (is.function(ebnm_fn_l) || is.function(ebnm_fn_f)) {
+    stop(paste("Invalid entry for parameter ebnm_fn. Please supply a",
+               "character string such as \"ebnm_pn\" or \"ebnm_ash\".",
+               "If using a custom function then enclose the name of the",
+               "function in quotes."))
+  }
+
   if (ebnm_fn_l == "ebnm_pn" || ebnm_fn_f == "ebnm_pn") {
     if (!requireNamespace("ebnm", quietly = TRUE)) {
       message(paste("ebnm package not installed. ebnm_ash will be used",
