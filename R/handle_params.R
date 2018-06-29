@@ -1,5 +1,6 @@
 handle_kset = function(kset, f) {
   if (is.null(kset)) {
+    # Default:
     kset = 1:flash_get_k(f)
   } else if (!is.numeric(kset) || max(kset) > flash_get_k(f)) {
     stop(paste("Invalid kset. Kset should be a vector containing the",
@@ -19,23 +20,21 @@ handle_init_fn = function(init_fn) {
 handle_ebnm_fn = function(ebnm_fn) {
   if (!is.list(ebnm_fn)) {
     if (length(ebnm_fn) != 1) {
-      stop(paste("Either a single function or a list with fields l",
-                 "and f must be specified for parameter ebnm_fn."))
+      stop(paste("Either a single character string or a list with fields",
+                 "l and f must be specified for parameter ebnm_fn."))
     }
     ebnm_fn_l = ebnm_fn
     ebnm_fn_f = ebnm_fn
-  } else if (xor(is.null(ebnm_fn$l), is.null(ebnm_fn$f))) {
-    stop(paste("If ebnm_fn is specified for either loadings or factors",
-               "then it must be specified for both."))
-  } else if (!is.null(ebnm_fn$l)) {
+  } else if (is.null(ebnm_fn$l) || is.null(ebnm_fn$f)) {
+    stop(paste("If a list is specified for parameter ebnm_fn, then it",
+               "must include fields l and f."))
+  } else {
     ebnm_fn_l = ebnm_fn$l
     ebnm_fn_f = ebnm_fn$f
-  } else {
-    stop("Invalid entry for parameter ebnm_fn.")
   }
 
   if (is.function(ebnm_fn_l) || is.function(ebnm_fn_f)) {
-    stop(paste("Invalid entry for parameter ebnm_fn. Please supply a",
+    stop(paste("Invalid argument for parameter ebnm_fn. Please supply a",
                "character string such as \"ebnm_pn\" or \"ebnm_ash\".",
                "If using a custom function then enclose the name of the",
                "function in quotes."))
@@ -63,6 +62,11 @@ handle_ebnm_fn = function(ebnm_fn) {
 }
 
 handle_ebnm_param = function(ebnm_param, ebnm_fn, n_expected) {
+  if (!is.null(ebnm_param) && !is.list(ebnm_param)) {
+    stop(paste("Invalid argument for parameter ebnm_param. A list (or",
+               "NULL) was expected."))
+  }
+
   # Check to see whether parameters are specified separately for loadings
   #   and factors:
   if (xor(is.null(ebnm_param$l), is.null(ebnm_param$f))) {
@@ -84,7 +88,7 @@ handle_ebnm_param = function(ebnm_param, ebnm_fn, n_expected) {
     ebnm_param_l = rep(list(list()), n_expected)
   } else if (!is.list(ebnm_param_l[[1]])) {
     ebnm_param_l = rep(list(ebnm_param_l), n_expected)
-  } else if (length(ebnm_param_l) < n_expected) {
+  } else if (length(ebnm_param_l) != n_expected) {
     stop(paste("If different ebnm parameters are used for each loading",
                "then ebnm_param$l must be a list of", n_expected,
                "lists."))
