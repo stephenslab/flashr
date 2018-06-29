@@ -9,7 +9,8 @@ handle_kset = function(kset, f) {
 }
 
 handle_init_fn = function(init_fn) {
-  if (!exists(init_fn, mode="function")) {
+  # Either a function or the name of a function (as a string) are ok.
+  if (!is.function(init_fn) && !exists(init_fn, mode="function")) {
     stop("The specified init_fn does not exist.")
   }
   init_fn
@@ -33,7 +34,7 @@ handle_ebnm_fn = function(ebnm_fn) {
     stop("Invalid entry for parameter ebnm_fn.")
   }
 
-  if(ebnm_fn_l == "ebnm_pn" || ebnm_fn_f == "ebnm_pn") {
+  if (ebnm_fn_l == "ebnm_pn" || ebnm_fn_f == "ebnm_pn") {
     if (!requireNamespace("ebnm", quietly = TRUE)) {
       message(paste("ebnm package not installed. ebnm_ash will be used",
                     "instead of ebnm_pn."))
