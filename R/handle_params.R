@@ -17,6 +17,10 @@ handle_init_fn = function(init_fn) {
 
 handle_ebnm_fn = function(ebnm_fn) {
   if (!is.list(ebnm_fn)) {
+    if (length(ebnm_fn) != 1) {
+      stop(paste("Either a single function or a list with fields l",
+                 "and f must be specified for parameter ebnm_fn."))
+    }
     ebnm_fn_l = ebnm_fn
     ebnm_fn_f = ebnm_fn
   } else if (xor(is.null(ebnm_fn$l), is.null(ebnm_fn$f))) {
@@ -26,12 +30,27 @@ handle_ebnm_fn = function(ebnm_fn) {
     ebnm_fn_l = ebnm_fn$l
     ebnm_fn_f = ebnm_fn$f
   } else {
-    stop("Invalid input to ebnm_fn.")
+    stop("Invalid entry for parameter ebnm_fn.")
   }
+
+  if(ebnm_fn_l == "ebnm_pn" || ebnm_fn_f == "ebnm_pn") {
+    if (!requireNamespace("ebnm", quietly = TRUE)) {
+      message(paste("ebnm package not installed. ebnm_ash will be used",
+                    "instead of ebnm_pn."))
+      if (ebnm_fn_l == "ebnm_pn") {
+        ebnm_fn_l = "ebnm_ash"
+      }
+      if (ebnm_fn_f == "ebnm_pn") {
+        ebnm_fn_f = "ebnm_ash"
+      }
+    }
+  }
+
   if (!exists(ebnm_fn_l, mode="function")
-      | !exists(ebnm_fn_f, mode="function")) {
+      || !exists(ebnm_fn_f, mode="function")) {
     stop("The specified ebnm function does not exist.")
   }
+
   list(l = ebnm_fn_l, f = ebnm_fn_f)
 }
 
