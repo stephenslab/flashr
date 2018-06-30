@@ -91,7 +91,7 @@ Follow these steps to quickly get started using `flashr`.
    ```
 
 6. See the [online documentation](https://stephenslab.github.io/flashr) 
-   learn more about the `flashr` package.
+   to learn more about the `flashr` package.
 
 ## Developer notes
 
