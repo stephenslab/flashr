@@ -54,7 +54,7 @@ Follow these steps to quickly get started using `flashr`.
    ```
 
    *Note:* If you are interested in attempting to reproduce the
-   results in the Wei and Stephens (2018) manuscript, the flashr
+   results in the Wang and Stephens (2018) manuscript, the flashr
    release that most closely matches the package used in the paper is
    [version
    0.4-10](https://github.com/stephenslab/flashr/releases/tag/v0.4-10).
