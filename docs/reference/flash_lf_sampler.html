@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Add a set of fixed factors to a flash fit object. — flash_add_fixed_f • flashr</title>
+<title>Generates LF sampler — flash_lf_sampler • flashr</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -27,9 +27,11 @@
 <script src="../pkgdown.js"></script>
   
   
-<meta property="og:title" content="Add a set of fixed factors to a flash fit object. — flash_add_fixed_f" />
+<meta property="og:title" content="Generates LF sampler — flash_lf_sampler" />
 
-<meta property="og:description" content="Add a set of fixed factors to a flash fit object." />
+<meta property="og:description" content="Generates function that samples LF from a flash fit object, with either L or F
+fixed at its posterior mean and the columns of F or L sampled independently from their
+marginal posteriors." />
 <meta name="twitter:card" content="summary" />
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
@@ -86,14 +88,17 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Add a set of fixed factors to a flash fit object.</h1>
+    <h1>Generates LF sampler</h1>
     </div>
 
     
-    <p>Add a set of fixed factors to a flash fit object.</p>
+    <p>Generates function that samples LF from a flash fit object, with either L or F
+fixed at its posterior mean and the columns of F or L sampled independently from their
+marginal posteriors.</p>
     
 
-    <pre class="usage"><span class='fu'>flash_add_fixed_f</span>(<span class='no'>data</span>, <span class='no'>FF</span>, <span class='kw'>f_init</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>fixf</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>flash_lf_sampler</span>(<span class='no'>data</span>, <span class='no'>f</span>, <span class='kw'>kset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ebnm_fn</span> <span class='kw'>=</span> <span class='no'>ebnm_pn</span>,
+  <span class='kw'>fixed</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"factors"</span>, <span class='st'>"loadings"</span>))</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -103,29 +108,28 @@
       <td><p>a flash data object</p></td>
     </tr>
     <tr>
-      <th>FF</th>
-      <td><p>The factors, a p by K matrix. Missing values will be
-initialized by the mean of the relevant column (but will generally
-be re-estimated when refitting the model).</p></td>
+      <th>f</th>
+      <td><p>a flash fit object</p></td>
     </tr>
     <tr>
-      <th>f_init</th>
-      <td><p>A flash fit object to which factors are to be added
-(if NULL then a new fit object is created).</p></td>
+      <th>kset</th>
+      <td><p>the indices of factor/loadings to include when sampling LF (defaults to all)</p></td>
     </tr>
     <tr>
-      <th>fixf</th>
-      <td><p>A p by K matrix of TRUE/FALSE values indicating which
-elements of FF should be considered fixed and not changed during
-updates. Default is to fix all non-missing values, so missing
-values will be updated when f is updated.</p></td>
+      <th>ebnm_fn</th>
+      <td><p>function used to solve the Empirical Bayes Normal Means problem</p></td>
+    </tr>
+    <tr>
+      <th>fixed</th>
+      <td><p>indicates whether to fix factors or loadings at their posterior mean</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A flash fit object, with factors initialized from FF, and
-  corresponding loadings initialized to 0.</p>
+    <p>A function that takes a single parameter nsamp, the number of samples of LF to be
+produced by the sampler. Care should be used when setting nsamp, because the sampler
+returns a list of matrices which are each of the same size as the data matrix.</p>
     
 
   </div>

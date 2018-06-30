@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Add a set of fixed factors to a flash fit object. — flash_add_fixed_f • flashr</title>
+<title>Generates sampler for F — flash_f_sampler • flashr</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -27,9 +27,11 @@
 <script src="../pkgdown.js"></script>
   
   
-<meta property="og:title" content="Add a set of fixed factors to a flash fit object. — flash_add_fixed_f" />
+<meta property="og:title" content="Generates sampler for F — flash_f_sampler" />
 
-<meta property="og:description" content="Add a set of fixed factors to a flash fit object." />
+<meta property="og:description" content="Generates function that samples F from a flash fit object. The columns of F are
+sampled independently from their marginal posteriors (conditional on L being fixed at
+its expectation)." />
 <meta name="twitter:card" content="summary" />
 <!-- mathjax -->
 <script src='https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
@@ -86,14 +88,16 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Add a set of fixed factors to a flash fit object.</h1>
+    <h1>Generates sampler for F</h1>
     </div>
 
     
-    <p>Add a set of fixed factors to a flash fit object.</p>
+    <p>Generates function that samples F from a flash fit object. The columns of F are
+sampled independently from their marginal posteriors (conditional on L being fixed at
+its expectation).</p>
     
 
-    <pre class="usage"><span class='fu'>flash_add_fixed_f</span>(<span class='no'>data</span>, <span class='no'>FF</span>, <span class='kw'>f_init</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>fixf</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>flash_f_sampler</span>(<span class='no'>data</span>, <span class='no'>f</span>, <span class='kw'>kset</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ebnm_fn</span> <span class='kw'>=</span> <span class='no'>ebnm_pn</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -103,29 +107,23 @@
       <td><p>a flash data object</p></td>
     </tr>
     <tr>
-      <th>FF</th>
-      <td><p>The factors, a p by K matrix. Missing values will be
-initialized by the mean of the relevant column (but will generally
-be re-estimated when refitting the model).</p></td>
+      <th>f</th>
+      <td><p>a flash fit object</p></td>
     </tr>
     <tr>
-      <th>f_init</th>
-      <td><p>A flash fit object to which factors are to be added
-(if NULL then a new fit object is created).</p></td>
+      <th>kset</th>
+      <td><p>the indices of factor/loadings to include when sampling LF (defaults to all)</p></td>
     </tr>
     <tr>
-      <th>fixf</th>
-      <td><p>A p by K matrix of TRUE/FALSE values indicating which
-elements of FF should be considered fixed and not changed during
-updates. Default is to fix all non-missing values, so missing
-values will be updated when f is updated.</p></td>
+      <th>ebnm_fn</th>
+      <td><p>function used to solve the Empirical Bayes Normal Means problem</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A flash fit object, with factors initialized from FF, and
-  corresponding loadings initialized to 0.</p>
+    <p>A function that takes a single parameter nsamp, the number of samples of F to be
+produced by the sampler. This sampler returns a list of matrices.</p>
     
 
   </div>

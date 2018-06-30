@@ -1,4 +1,5 @@
 ^\.travis\.yml$
+^appveyor\.yml$
 ^flashr\.Rproj$
 ^\.Rproj\.user$
 ^_pkgdown\.yaml$
