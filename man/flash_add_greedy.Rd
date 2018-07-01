@@ -6,8 +6,8 @@
 \usage{
 flash_add_greedy(data, Kmax = 1, f_init = NULL, var_type = c("by_column",
   "by_row", "constant", "zero", "kroneker"), init_fn = "udv_si", tol = 0.01,
-  ebnm_fn = ebnm_pn, ebnm_param = flash_default_ebnm_param(ebnm_fn),
-  verbose = FALSE, nullcheck = TRUE, seed = 123)
+  ebnm_fn = "ebnm_pn", ebnm_param = NULL, verbose = FALSE,
+  nullcheck = TRUE, seed = 123)
 }
 \arguments{
 \item{data}{An n by p matrix or a flash data object created using
@@ -36,11 +36,16 @@ matrix.)}
 iteration to be considered not converged.}
 
 \item{ebnm_fn}{The function used to solve the Empirical Bayes Normal
-Means problem.}
+Means problem. Either a single character string (giving the name of
+of the function) or a list with fields \code{l} and \code{f}
+(specifying different functions to be used for loadings and factors)
+are acceptable arguments.}
 
 \item{ebnm_param}{A named list containing parameters to be passed to
-ebnm_fn when optimizing; defaults are set by
-\code{flash_default_ebnm_param()}.}
+\code{ebnm_fn} when optimizing. A list with fields \code{l} and
+\code{f} (each of which is a named list) will separately supply
+parameters for loadings and factors. Set to NULL to use
+defaults.}
 
 \item{verbose}{If TRUE, various progress updates will be printed.}
 
@@ -64,13 +69,14 @@ This implements the greedy algorithm from Wang and
   adding a new factor and then optimizing it.  It is "greedy" in that
   it does not return to re-optimize previous factors.  The function
   stops when an added factor contributes nothing, or Kmax is reached.
-  Each new factor is intialized by applying the function `init_fn` to
-  the residuals after removing previously-fitted factors.
+  Each new factor is intialized by applying the function
+  \code{init_fn} to the residuals after removing previously-fitted
+  factors.
 }
 \examples{
 l = rnorm(100)
 f = rnorm(10)
-Y = outer(l,f) + matrix(rnorm(1000),nrow=100)
+Y = outer(l, f) + matrix(rnorm(1000), nrow=100)
 f = flash_add_greedy(Y,10)
 
 # Gives the weights for each factor (analogue of singular values).
@@ -78,8 +84,8 @@ flash_get_ldf(f)$d
 
 # Example to show how to use a different initialization function.
 library(softImpute)
-f2 = flash_add_greedy(Y,10,init_fn = function(x,K=1){
-  softImpute(x,K,lambda=10)
+f2 = flash_add_greedy(Y, 10, init_fn=function(x, K=1) {
+  softImpute(x, K, lambda=10)
 })
 
 }

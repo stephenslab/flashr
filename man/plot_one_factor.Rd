@@ -17,6 +17,9 @@ plot_one_factor(f, pve, k, f_labels = NA, y_lab = "factor values")
 
 \item{y_lab}{The name of the Y axis.}
 }
+\value{
+A ggplot object for the factors.
+}
 \description{
 Factor plot.
 }

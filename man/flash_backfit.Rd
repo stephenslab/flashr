@@ -5,9 +5,8 @@
 \title{Refines a fit of the flash model to data by "backfitting".}
 \usage{
 flash_backfit(data, f_init, kset = NULL, var_type = c("by_column", "by_row",
-  "constant", "zero", "kroneker"), tol = 0.01, ebnm_fn = ebnm_pn,
-  ebnm_param = flash_default_ebnm_param(ebnm_fn), verbose = FALSE,
-  nullcheck = TRUE, maxiter = 1000)
+  "constant", "zero", "kroneker"), tol = 0.01, ebnm_fn = "ebnm_pn",
+  ebnm_param = NULL, verbose = FALSE, nullcheck = TRUE, maxiter = 1000)
 }
 \arguments{
 \item{data}{An n by p matrix or a flash data object created using
@@ -25,11 +24,21 @@ residuals.}
 iteration to be considered not converged.}
 
 \item{ebnm_fn}{The function used to solve the Empirical Bayes Normal
-Means problem.}
+Means problem. Either a single character string (giving the name of
+of the function) or a list with fields \code{l} and \code{f}
+(specifying different functions to be used for loadings and factors)
+are acceptable arguments.}
 
 \item{ebnm_param}{A named list containing parameters to be passed to
-ebnm_fn when optimizing; defaults are set by
-\code{flash_default_ebnm_param()}.}
+\code{ebnm_fn} when optimizing. A list with fields \code{l} and
+\code{f} (each of which is a named list) will separately supply
+parameters for the loadings and factors. An unnamed list of
+\code{length(kset)} named lists will separately supply parameters
+for each factor/loading in \code{kset}. Finally, a list with fields
+\code{l} and \code{f}, each of which contains an unnamed list of
+\code{length(kset)} named lists, will separately supply parameters
+for each distinct loading and each distinct factor. Set to NULL to
+use defaults.}
 
 \item{verbose}{If TRUE, various progress updates will be printed.}
 
@@ -38,9 +47,10 @@ ebnm_fn when optimizing; defaults are set by
 setting the factor to 0. If the check is performed and fails then
 the factor will be set to 0 in the returned fit.}
 
-\item{maxiter}{A maximum number of iterations to perform (in the
-inner loop). To perform just one iteration we suggest setting
-\code{maxiter = 1} and \code{nullcheck = FALSE}.}
+\item{maxiter}{A maximum number of iterations to perform (not
+including repeated fittings if \code{nullcheck} fails). To perform
+just one iteration we suggest setting \code{maxiter = 1} and
+\code{nullcheck = FALSE}.}
 }
 \value{
 A fitted flash object.
@@ -51,11 +61,21 @@ Iterates through the factors of a flash object,
 }
 \examples{
 
-l = rnorm(100) #simulate some rank 1 data
-f = rnorm(10)
-Y = outer(l,f) + matrix(rnorm(1000),nrow=100)
-fg = flash_add_greedy(Y,10)
-fb = flash_backfit(Y,fg) # refines fit from greedy by backfitting
+LL = matrix(rnorm(200), ncol=2) # simulate some rank 2 data
+FF = matrix(rnorm(20), nrow=2)
+Y = LL \%*\% FF + matrix(rnorm(1000), nrow=100)
+fg = flash_add_greedy(Y, 10)
+fb = flash_backfit(Y, fg) # refines fit from greedy by backfitting
 flash_get_ldf(fb)$d
+
+# Example to illustrate different types of arguments to ebnm_param.
+# 1. Fix a N(0, 1) prior on the loadings.
+ebnm_param_l = list(g=ashr::normalmix(1,0,1), fixg=TRUE)
+fg2 = flash_add_greedy(Y, 10, ebnm_fn="ebnm_ash",
+                       ebnm_param=list(l=ebnm_param_l, f=list()))
+# 2. Now refit factors, forcing loadings to use prior from greedy fit.
+ebnm_param_f = lapply(fg2$gf, function(g) {list(g=g, fixg=TRUE)})
+fb2 = flash_backfit(Y, fg2, kset=1:2, ebnm_fn="ebnm_ash",
+                    ebnm_param=list(l=list(), f=ebnm_param_f))
 
 }

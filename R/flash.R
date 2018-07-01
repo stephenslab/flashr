@@ -31,11 +31,16 @@
 #'   iteration to be considered not converged.
 #'
 #' @param ebnm_fn The function used to solve the Empirical Bayes Normal
-#'   Means problem.
+#'   Means problem. Either a single character string (giving the name of
+#'   of the function) or a list with fields \code{l} and \code{f}
+#'   (specifying different functions to be used for loadings and factors)
+#'   are acceptable arguments.
 #'
 #' @param ebnm_param A named list containing parameters to be passed to
-#'   ebnm_fn when optimizing; defaults are set by
-#'   \code{flash_default_ebnm_param()}.
+#'   \code{ebnm_fn} when optimizing. A list with fields \code{l} and
+#'   \code{f} (each of which is a named list) will separately supply
+#'   parameters for loadings and factors. Set to NULL to use
+#'   defaults.
 #'
 #' @param verbose If TRUE, various progress updates will be printed.
 #'
@@ -64,10 +69,10 @@
 #' @examples
 #'
 #' set.seed(1) # for reproducibility
-#' ftrue = matrix(rnorm(200),ncol=2)
-#' ltrue = matrix(rnorm(40),ncol=2)
-#' ltrue[1:10,1] = 0 # set up some sparsity
-#' ltrue[11:20,2] = 0
+#' ftrue = matrix(rnorm(200), ncol=2)
+#' ltrue = matrix(rnorm(40), ncol=2)
+#' ltrue[1:10, 1] = 0 # set up some sparsity
+#' ltrue[11:20, 2] = 0
 #' Y = ltrue %*% t(ftrue)+rnorm(2000) # set up a simulated matrix
 #' f = flash(Y)
 #' ldf = flash_get_ldf(f)
@@ -78,26 +83,34 @@
 #'
 #' # Plot true l against estimated l; with this seed it turns out the
 #' # 2nd loading/factor corresponds to the first column of ltrue.
-#' plot(ltrue[,1],ldf$l[,2])
+#' plot(ltrue[,1], ldf$l[,2])
 #'
 #' # Plot true f against estimated f (note estimate is normalized).
-#' plot(ftrue[,1],ldf$f[,2])
+#' plot(ftrue[,1], ldf$f[,2])
 #'
 #' # Plot true lf' against estimated lf'; the scale of the estimate
 #' # matches the data.
 #' plot(ltrue %*% t(ftrue), flash_get_lf(f))
 #'
 #' # Example to use the more flexible ebnm function in ashr.
-#' f2 = flash(Y,ebnm_fn = ebnm_ash)
+#' f2 = flash(Y, ebnm_fn="ebnm_ash")
 #'
 #' # Example to show how to pass parameters to ashr (may be most
 #' # useful for research use).
-#' f3 = flash(Y,ebnm_fn = ebnm_ash,
-#'            ebnm_param = list(mixcompdist = "normal",method="fdr"))
+#' f3 = flash(Y,
+#'            ebnm_fn="ebnm_ash",
+#'            ebnm_param=list(mixcompdist="normal", method="fdr"))
+#'
+#' # Example to show how to separately specify parameters for factors
+#' # and loadings.
+#' f4 = flash(Y,
+#'            ebnm_fn=list(l="ebnm_pn", f="ebnm_ash"),
+#'            ebnm_param=list(l=list(),
+#'                            f=list(g=ashr::normalmix(1,0,1), fixg=TRUE)))
 #'
 #' # Example to show how to use a different initialization function.
 #' library(softImpute)
-#' f4 = flash(Y,init_fn = function(x,K=1){softImpute(x,K,lambda=10)})
+#' f5 = flash(Y, init_fn=function(x, K=1){softImpute(x, K, lambda=10)})
 #'
 #' @export
 #'
@@ -108,8 +121,8 @@ flash = function(data,
                               "zero", "kroneker"),
                  init_fn = "udv_si",
                  tol = 1e-2,
-                 ebnm_fn = ebnm_pn,
-                 ebnm_param = flash_default_ebnm_param(ebnm_fn),
+                 ebnm_fn = "ebnm_pn",
+                 ebnm_param = NULL,
                  verbose = FALSE,
                  nullcheck = TRUE,
                  seed = 123,
@@ -126,19 +139,17 @@ flash = function(data,
   }
 
   if (greedy) {
-    f = flash_add_greedy(
-      data,
-      Kmax,
-      f_init,
-      var_type,
-      init_fn,
-      tol,
-      ebnm_fn,
-      ebnm_param,
-      verbose,
-      nullcheck,
-      seed
-    )
+    f = flash_add_greedy(data,
+                         Kmax,
+                         f_init,
+                         var_type,
+                         init_fn,
+                         tol,
+                         ebnm_fn,
+                         ebnm_param,
+                         verbose,
+                         nullcheck,
+                         seed)
   } else {
     f = f_init
   }
@@ -146,7 +157,7 @@ flash = function(data,
   if (backfit) {
     f = flash_backfit(data,
                       f,
-                      kset=NULL,
+                      kset = NULL,
                       var_type,
                       tol,
                       ebnm_fn,
@@ -157,6 +168,7 @@ flash = function(data,
   return(f)
 }
 
+
 #' @title Fit Empirical Bayes Matrix Factorization (greedy algorithm)
 #'
 #' @description This implements the greedy algorithm from Wang and
@@ -165,8 +177,9 @@ flash = function(data,
 #'   adding a new factor and then optimizing it.  It is "greedy" in that
 #'   it does not return to re-optimize previous factors.  The function
 #'   stops when an added factor contributes nothing, or Kmax is reached.
-#'   Each new factor is intialized by applying the function `init_fn` to
-#'   the residuals after removing previously-fitted factors.
+#'   Each new factor is intialized by applying the function
+#'   \code{init_fn} to the residuals after removing previously-fitted
+#'   factors.
 #'
 #' @inheritParams flash
 #'
@@ -175,7 +188,7 @@ flash = function(data,
 #' @examples
 #' l = rnorm(100)
 #' f = rnorm(10)
-#' Y = outer(l,f) + matrix(rnorm(1000),nrow=100)
+#' Y = outer(l, f) + matrix(rnorm(1000), nrow=100)
 #' f = flash_add_greedy(Y,10)
 #'
 #' # Gives the weights for each factor (analogue of singular values).
@@ -183,8 +196,8 @@ flash = function(data,
 #'
 #' # Example to show how to use a different initialization function.
 #' library(softImpute)
-#' f2 = flash_add_greedy(Y,10,init_fn = function(x,K=1){
-#'   softImpute(x,K,lambda=10)
+#' f2 = flash_add_greedy(Y, 10, init_fn=function(x, K=1) {
+#'   softImpute(x, K, lambda=10)
 #' })
 #'
 #' @export
@@ -196,8 +209,8 @@ flash_add_greedy = function(data,
                                          "zero", "kroneker"),
                             init_fn = "udv_si",
                             tol = 1e-2,
-                            ebnm_fn = ebnm_pn,
-                            ebnm_param = flash_default_ebnm_param(ebnm_fn),
+                            ebnm_fn = "ebnm_pn",
+                            ebnm_param = NULL,
                             verbose = FALSE,
                             nullcheck = TRUE,
                             seed = 123) {
@@ -208,6 +221,10 @@ flash_add_greedy = function(data,
     data = flash_set_data(data)
   }
   var_type = match.arg(var_type)
+  init_fn = handle_init_fn(init_fn)
+  ebnm_fn = handle_ebnm_fn(ebnm_fn)
+  ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, Kmax)
+
   f = f_init
 
   for (k in 1:Kmax) {
@@ -217,10 +234,13 @@ flash_add_greedy = function(data,
                  var_type,
                  init_fn,
                  tol,
-                 ebnm_fn,
-                 ebnm_param,
+                 ebnm_fn$l,
+                 ebnm_param$l[[k]],
+                 ebnm_fn$f,
+                 ebnm_param$f[[k]],
                  verbose,
                  nullcheck,
+                 maxiter = 5000,
                  seed = NULL)
 
     # Test whether the factor/loading combination is effectively zero.
@@ -242,22 +262,44 @@ flash_add_greedy = function(data,
 #' @param kset The indices of factors to be optimized (NULL indicates
 #'   all factors).
 #'
-#' @param maxiter A maximum number of iterations to perform (in the
-#'   inner loop). To perform just one iteration we suggest setting
-#'   \code{maxiter = 1} and \code{nullcheck = FALSE}.
+#' @param maxiter A maximum number of iterations to perform (not
+#'   including repeated fittings if \code{nullcheck} fails). To perform
+#'   just one iteration we suggest setting \code{maxiter = 1} and
+#'   \code{nullcheck = FALSE}.
 #'
 #' @inheritParams flash
+#'
+#' @param ebnm_param A named list containing parameters to be passed to
+#'   \code{ebnm_fn} when optimizing. A list with fields \code{l} and
+#'   \code{f} (each of which is a named list) will separately supply
+#'   parameters for the loadings and factors. An unnamed list of
+#'   \code{length(kset)} named lists will separately supply parameters
+#'   for each factor/loading in \code{kset}. Finally, a list with fields
+#'   \code{l} and \code{f}, each of which contains an unnamed list of
+#'   \code{length(kset)} named lists, will separately supply parameters
+#'   for each distinct loading and each distinct factor. Set to NULL to
+#'   use defaults.
 #'
 #' @return A fitted flash object.
 #'
 #' @examples
 #'
-#' l = rnorm(100) #simulate some rank 1 data
-#' f = rnorm(10)
-#' Y = outer(l,f) + matrix(rnorm(1000),nrow=100)
-#' fg = flash_add_greedy(Y,10)
-#' fb = flash_backfit(Y,fg) # refines fit from greedy by backfitting
+#' LL = matrix(rnorm(200), ncol=2) # simulate some rank 2 data
+#' FF = matrix(rnorm(20), nrow=2)
+#' Y = LL %*% FF + matrix(rnorm(1000), nrow=100)
+#' fg = flash_add_greedy(Y, 10)
+#' fb = flash_backfit(Y, fg) # refines fit from greedy by backfitting
 #' flash_get_ldf(fb)$d
+#'
+#' # Example to illustrate different types of arguments to ebnm_param.
+#' # 1. Fix a N(0, 1) prior on the loadings.
+#' ebnm_param_l = list(g=ashr::normalmix(1,0,1), fixg=TRUE)
+#' fg2 = flash_add_greedy(Y, 10, ebnm_fn="ebnm_ash",
+#'                        ebnm_param=list(l=ebnm_param_l, f=list()))
+#' # 2. Now refit factors, forcing loadings to use prior from greedy fit.
+#' ebnm_param_f = lapply(fg2$gf, function(g) {list(g=g, fixg=TRUE)})
+#' fb2 = flash_backfit(Y, fg2, kset=1:2, ebnm_fn="ebnm_ash",
+#'                     ebnm_param=list(l=list(), f=ebnm_param_f))
 #'
 #' @export
 #'
@@ -267,26 +309,34 @@ flash_backfit = function(data,
                          var_type = c("by_column", "by_row", "constant",
                                       "zero", "kroneker"),
                          tol = 1e-2,
-                         ebnm_fn = ebnm_pn,
-                         ebnm_param = flash_default_ebnm_param(ebnm_fn),
+                         ebnm_fn = "ebnm_pn",
+                         ebnm_param = NULL,
                          verbose = FALSE,
                          nullcheck = TRUE,
                          maxiter = 1000) {
-  f = f_init
   if (is.matrix(data)) {
     data = flash_set_data(data)
   }
-  if (is.null(kset)) {
-    kset = 1:flash_get_k(f)
-  }
+  kset = handle_kset(kset, f_init)
   var_type = match.arg(var_type)
+  ebnm_fn = handle_ebnm_fn(ebnm_fn)
+  ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, length(kset))
+
+  f = f_init
 
   if (verbose) {
     message("iteration:1")
   }
 
-  for (k in kset) {
-    f = flash_update_single_fl(data, f, k, var_type, ebnm_fn, ebnm_param)
+  for (i in 1:length(kset)) {
+    f = flash_update_single_fl(data,
+                               f,
+                               kset[i],
+                               var_type,
+                               ebnm_fn$l,
+                               ebnm_param$l[[i]],
+                               ebnm_fn$f,
+                               ebnm_param$f[[i]])
   }
 
   c = flash_get_objective(data, f)
@@ -300,11 +350,19 @@ flash_backfit = function(data,
   while((diff > tol) & (iteration <= maxiter)) {
 
     # There are two steps; first backfit, then null check
-    # (if nullcheck removes some factors then the whole process is repeated)
+    # (if nullcheck removes some factors then the whole process
+    # is repeated)
     while((diff > tol) & (iteration <= maxiter)){
       if(verbose){message("iteration:", iteration)}
-      for(k in kset){
-        f = flash_update_single_fl(data, f, k, var_type, ebnm_fn, ebnm_param)
+      for (i in 1:length(kset)) {
+        f = flash_update_single_fl(data,
+                                   f,
+                                   kset[i],
+                                   var_type,
+                                   ebnm_fn$l,
+                                   ebnm_param$l[[i]],
+                                   ebnm_fn$f,
+                                   ebnm_param$f[[i]])
       }
       cnew = flash_get_objective(data, f)
       diff = cnew - c
@@ -314,11 +372,12 @@ flash_backfit = function(data,
     }
 
     if (nullcheck) {
-      #remove factors that actually hurt objective
+      # remove factors that actually hurt objective
       kset = 1:flash_get_k(f)
       f = perform_nullcheck(data, f, kset, var_type, verbose)
 
-      # recompute objective; if it changes then whole process will be repeated
+      # recompute objective; if it changes then the whole process will
+      # be repeated
       cnew = flash_get_objective(data, f)
       diff = cnew - c
       c = cnew
@@ -330,71 +389,41 @@ flash_backfit = function(data,
   return(f)
 }
 
+
 # @title Fits a rank 1 Empirical Bayes Matrix Factorization model.
 #
-# @return A fitted flash object. Use \code{flash_get_ldf} to access
-#   standardized loadings and factors; use \code{flash_get_lf} to
-#   access fitted LF'.
+# @return A fitted flash object.
 #
 # @inheritParams flash
 #
-# @examples
-#
-# ftrue = rnorm(100)
-# ltrue = rnorm(20)
-#
-# # Set up a simulated matrix with rank 1 plus noise structure.
-# Y = ltrue %*% t(ftrue)+rnorm(2000)
-# f = flash_r1(Y)
-# ldf = flash_get_ldf(f)
-#
-# # Plot true l against estimated l (note estimate is normalized).
-# plot(ltrue,ldf$l)
-#
-# # Plot true f against estimated f (note estimate is normalized).
-# plot(ftrue,ldf$f)
-#
-# # Plot true lf' against estimated lf'; the scale of the estimate
-# # matches the data.
-# plot(ltrue %*% t(ftrue), flash_get_lf(f))
-#
-# # Example to use the more flexible ebnm function in ashr.
-# f2 = flash_r1(Y,ebnm_fn = ebnm_ash)
-#
-# # Example to show how to pass parameters to ashr.
-# f3 = flash_r1(Y,ebnm_fn = ebnm_ash,
-#               ebnm_param = list(mixcompdist = "normal",method="fdr"))
-#
 flash_r1 = function(data,
-                    f_init = NULL,
-                    var_type = c("by_column", "by_row", "constant",
-                                 "zero", "kroneker"),
-                    init_fn = "udv_si",
-                    tol = 1e-2,
-                    ebnm_fn = ebnm_pn,
-                    ebnm_param = flash_default_ebnm_param(ebnm_fn),
-                    verbose = FALSE,
-                    nullcheck = TRUE,
-                    seed = 123) {
-  if (!is.null(seed)) {
-    set.seed(seed)
-  }
-  if (is.matrix(data)) {
-    data = flash_set_data(data)
-  }
-  var_type = match.arg(var_type)
+                    f_init,
+                    var_type,
+                    init_fn,
+                    tol,
+                    ebnm_fn_l,
+                    ebnm_param_l,
+                    ebnm_fn_f,
+                    ebnm_param_f,
+                    verbose,
+                    maxiter,
+                    nullcheck,
+                    seed) {
   f = flash_add_factors_from_data(data,
                                   K = 1,
-                                  f_init = f_init,
-                                  init_fn = init_fn)
+                                  f_init,
+                                  init_fn)
   f = flash_optimize_single_fl(data,
                                f,
                                flash_get_k(f),
                                var_type,
                                nullcheck,
                                tol,
-                               ebnm_fn,
-                               ebnm_param,
-                               verbose)
+                               ebnm_fn_l,
+                               ebnm_param_l,
+                               ebnm_fn_f,
+                               ebnm_param_f,
+                               verbose,
+                               maxiter)
   return(f)
 }

@@ -167,7 +167,7 @@ methods give similar average performance, and `ebnm_pn` is (currently)
 faster, and so this is the default.
 
 ```{r}
-f_greedy_ash = flash_add_greedy(data,Kmax=10,ebnm_fn = ebnm_ash)
+f_greedy_ash = flash_add_greedy(data,Kmax=10,ebnm_fn="ebnm_ash")
 flash_get_objective(data,f_greedy_ash)
 ```
 
