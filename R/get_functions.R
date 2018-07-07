@@ -1,5 +1,10 @@
 # Functions for extracting useful information about the object.
 
+flash_get_rank = function(f) {
+  ldf = flash_get_ldf(f)
+  return(length(ldf$d))
+}
+
 #' @title Return the estimated LF' matrix.
 #'
 #' @param f A flash fit object.
@@ -19,7 +24,7 @@ flash_get_lf = function(f) {
 #'
 #' @param f A flash fit object.
 #'
-#' @param k Indices of loadings/factors to be returned.
+#' @param kset Indices of loadings/factors to be returned.
 #'
 #' @param drop_zero_factors Flag whether to remove any factor/loadings
 #'   that are zero.
@@ -30,33 +35,31 @@ flash_get_lf = function(f) {
 #' @return A list with the following elements. These are analogous to
 #'   the u, d and v returned by \code{svd}, but columns of l and f are
 #'   not orthogonal.
-#' 
+#'
 #' \item{l}{A matrix whose columns contain the standardized loadings
 #'   (ie norm 1).}
-#' 
+#'
 #' \item{d}{A vector of weights (analogous to the singular values in
 #'   an svd).}
-#' 
+#'
 #' \item{f}{A matrix whose columns contain the standardized factors
 #'   (i.e., norm 1).}
 #'
 #' @export
 #'
-flash_get_ldf = function(f, k = NULL, drop_zero_factors =TRUE) {
-  if (is.null(k)) {
-    k = 1:flash_get_k(f)
-  }
-  ll = f$EL[, k, drop=FALSE]
-  ff = f$EF[, k, drop=FALSE]
-  d= sqrt(colSums(ll^2) * colSums(ff^2))
+flash_get_ldf = function(f, kset = NULL, drop_zero_factors = TRUE) {
+  kset = handle_kset(kset, f)
+  ll = f$EL[, kset, drop=FALSE]
+  ff = f$EF[, kset, drop=FALSE]
+  d = sqrt(colSums(ll^2) * colSums(ff^2))
 
   ll = scale(ll, scale=sqrt(colSums(ll^2)), center=FALSE)
   ff = scale(ff, scale=sqrt(colSums(ff^2)), center=FALSE)
 
   if(drop_zero_factors) {
-    ll = ll[,d!=0,drop=FALSE]
-    ff = ff[,d!=0,drop=FALSE]
-    d = d[d!=0,drop=FALSE]
+    ll = ll[, d!=0, drop=FALSE]
+    ff = ff[, d!=0, drop=FALSE]
+    d = d[d!=0, drop=FALSE]
   }
 
   list(d = d,
@@ -80,7 +83,7 @@ flash_get_R = function(data, f) {
     if (is.null(f$EL))
         {
             return(data$Y)
-        }  
+        }
  else {
         return(data$Y - flash_get_lf(f))
     }
@@ -94,7 +97,7 @@ flash_get_R_withmissing = function(data, f) {
     if (is.null(f$EL))
         {
             return(get_Yorig(data))
-        }  
+        }
  else {
         return(get_Yorig(data) - flash_get_lf(f))
     }
@@ -138,14 +141,8 @@ flash_get_f = function(f) {
   f$EF
 }
 
-#' @title Get number of factors in a fit object.
-#'
-#' @param f A flash fit object.
-#'
-#' @details Returns the number of factors in a flash fit.
-#'
-#' @export
-#'
+# @title Get number of factors in a fit object.
+# @details Returns the number of factors in a flash fit.
 flash_get_k = function(f) {
     k = ncol(f$EL)
     if (is.null(k)) {
