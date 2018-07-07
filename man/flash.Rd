@@ -14,8 +14,7 @@ flash(data, Kmax = 100, f_init = NULL, var_type = c("by_column", "by_row",
 \code{flash_set_data}.}
 
 \item{Kmax}{The maximum number of factors to be added to the flash
-object. (If \code{nullcheck = TRUE}, the actual number of factors
-added might be less than \code{Kmax}.)}
+object.}
 
 \item{f_init}{The flash object to which new factors are to be added.
 If \code{f_init = NULL}, then a new flash fit object is created.}
@@ -26,21 +25,22 @@ residuals.}
 \item{init_fn}{The function used to initialize factors. Options
 include:
 \itemize{
-  \item "udv_si": Provides a simple wrapper to \code{softImpute} to
-    provide a rank 1 initialization. Uses \code{type = "als"}
-    option.
-  \item "udv_si_svd": Uses \code{softImpute} with option
+  \item \code{"udv_si"}: Provides a simple wrapper to \code{softImpute} to
+    provide a rank-one initialization. Uses option
+    \code{type = "als"}.
+  \item \code{"udv_si_svd"}: Uses \code{softImpute} with option
     \code{type = "svd"}.
-  \item "udv_svd": Provides a simple wrapper to \code{svd}.
-  \item "udv_random": Provides a random initialization of factors.
+  \item \code{"udv_svd"}: Provides a simple wrapper to \code{svd}.
+  \item \code{"udv_random"}: Provides a random initialization of factors.
 }
 A user-specified function can also be used. This function should
-take parameters (Y, K), where Y is an n by p matrix of data (or a
-flash data object) and K is a number of factors.  It should output
-a list with elements (u, d, v) where u is n by K matrix, v is a p
-by K matrix and d is a K vector. (If the input data includes missing
-values, then the function must be able to deal with missing values
-in its input matrix.)}
+take parameters \code{(Y, K)}, where \code{Y} is an n by p matrix of
+data (or a flash data object) and \code{K} is the number of factors.
+It should output a list with elements \code{(u, d, v)}, where
+\code{u} is a n by K matrix, \code{v} is a p by K matrix, and
+\code{d} is a K vector. (If the input data includes missing values,
+then the function must be able to deal with missing values in its
+input matrix.)}
 
 \item{tol}{Specifies how much the objective can change in a single
 iteration to be considered not converged.}
