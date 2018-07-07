@@ -32,21 +32,23 @@ flash_add_lf = function(data, LL, FF, f_init=NULL, fixl=NULL, fixf=NULL) {
   return(f)
 }
 
-# @title Add factors to a flash fit object based on data.
-#
-# @description Computes the current residuals from data and f_init
-#   and adds K new factors based on init_fn applied to these
-#   residuals. (If f_init is NULL then the residuals are the data).
-#
-# @param data A flash data object.
-#
-# @param K Number of factors to add.
-#
-# @param f_init An existing flash fit object to add to.
-#
-# @param init_fn The function to use to initialize new factors
-#   (typically some kind of svd-like function).
-#
+#' @title Add factors to a flash fit object based on data.
+#'
+#' @description Computes the current residuals from data and f_init
+#'   and adds K new factors based on init_fn applied to these
+#'   residuals. (If f_init is NULL then the residuals are the data).
+#'
+#' @param data A flash data object.
+#'
+#' @param K Number of factors to add.
+#'
+#' @param f_init An existing flash fit object to add to.
+#'
+#' @param init_fn The function to use to initialize new factors
+#'   (typically some kind of svd-like function).
+#'
+#' @export
+#'
 flash_add_factors_from_data = function(data, K, f_init=NULL,
                                        init_fn="udv_si") {
   if (is.null(f_init)) {
