@@ -18,14 +18,24 @@
 #' @param var_type The type of variance structure to assume for
 #'   residuals.
 #'
-#' @param init_fn The function used to initialize factors. This
-#'   function should take parameters (Y,K) where Y is an n by p matrix
-#'   of data (or a flash data object) and K is a number of factors.  It
-#'   should output a list with elements (u,d,v) where u is n by K matrix
-#'   v is a p by K matrix and d is a K vector. See \code{udv_si} for an
-#'   example.  (If the input data includes missing values then this
-#'   function must be able to deal with missing values in its input
-#'   matrix.)
+#' @param init_fn The function used to initialize factors. Options
+#'   include:
+#'   \itemize{
+#'     \item "udv_si": Provides a simple wrapper to \code{softImpute} to
+#'       provide a rank 1 initialization. Uses \code{type = "als"}
+#'       option.
+#'     \item "udv_si_svd": Uses \code{softImpute} with option
+#'       \code{type = "svd"}.
+#'     \item "udv_svd": Provides a simple wrapper to \code{svd}.
+#'     \item "udv_random": Provides a random initialization of factors.
+#'   }
+#'   A user-specified function can also be used. This function should
+#'   take parameters (Y, K), where Y is an n by p matrix of data (or a
+#'   flash data object) and K is a number of factors.  It should output
+#'   a list with elements (u, d, v) where u is n by K matrix, v is a p
+#'   by K matrix and d is a K vector. (If the input data includes missing
+#'   values, then the function must be able to deal with missing values
+#'   in its input matrix.)
 #'
 #' @param tol Specifies how much the objective can change in a single
 #'   iteration to be considered not converged.
