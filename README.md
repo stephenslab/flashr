@@ -54,7 +54,7 @@ Follow these steps to quickly get started using `flashr`.
    ```
 
    *Note:* If you are interested in attempting to reproduce the
-   results in the Wei and Stephens (2018) manuscript, the flashr
+   results in the Wang and Stephens (2018) manuscript, the flashr
    release that most closely matches the package used in the paper is
    [version
    0.4-10](https://github.com/stephenslab/flashr/releases/tag/v0.4-10).
@@ -91,13 +91,13 @@ Follow these steps to quickly get started using `flashr`.
    ```
 
 6. See the [online documentation](https://stephenslab.github.io/flashr) 
-   learn more about the `flashr` package.
+   to learn more about the `flashr` package.
 
 ## Developer notes
 
 + Run `pkgdown::build_site(mathjax = FALSE)` in R to build the website
 using [pkgdown](https://github.com/r-lib/pkgdown). Make sure you are
-connected to Internet while running these commands.
+connected to the Internet while running these commands.
 
 ## Credits
 
