@@ -54,8 +54,8 @@ ebnm_ash = function(x, s, ash_param, return_sampler = FALSE) {
 # @importFrom ebnm ebnm_point_laplace
 #
 ebnm_pl = function(x, s, ebnm_param, return_sampler = FALSE) {
-    res = do.call(ebnm_point_laplace, c(list(x = as.vector(x),
-                  s = as.vector(s)), ebnm_param))
+    res = do.call(ebnm::ebnm_point_laplace,
+                  c(list(x = as.vector(x), s = as.vector(s)), ebnm_param))
     return(list(postmean  = res$result$PosteriorMean,
                 postmean2 = res$result$PosteriorMean2,
                 fitted_g  = res$fitted_g,
@@ -83,7 +83,8 @@ ebnm_pn = function(x, s, ebnm_param, return_sampler = FALSE) {
     ebnm_param = modifyList(ebnm_param, list(output = "post_sampler"))
   }
 
-  res = do.call(ebnm_point_normal, c(list(x = as.vector(x), s = as.vector(s)), ebnm_param))
+  res = do.call(ebnm::ebnm_point_normal, c
+                (list(x = as.vector(x), s = as.vector(s)), ebnm_param))
 
   if (return_sampler) {
     return(res)
