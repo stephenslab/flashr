@@ -170,5 +170,6 @@ flash_zero_out_factor = function(data, f, k = 1) {
     f$gf[[k]]   = NULL
     f$KL_l[[k]] = 0
     f$KL_f[[k]] = 0  # KL divergences for each l and f.
+    class(f) = "flash"
     return(f)
 }
