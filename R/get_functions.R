@@ -1,6 +1,8 @@
 # Functions for extracting useful information about the object.
 
-#' @title Return the estimated LF' matrix.
+#' @title Estimate LF'
+#'
+#' @description Return the estimated LF' matrix.
 #'
 #' @param f A flash fit object.
 #'
@@ -15,7 +17,7 @@ flash_get_lf = function(f) {
     return(f$EL %*% t(f$EF))
 }
 
-#' @title flash_get_ldf
+#' @title Get LDF from a flash object
 #'
 #' @description Returns standardized loadings, factors, and weights from
 #' a flash object.
@@ -24,21 +26,20 @@ flash_get_lf = function(f) {
 #'
 #' @param kset Indices of loadings/factors to be returned.
 #'
-#' @param drop_zero_factors Flag whether to remove any factor/loadings
-#'   that are zero.
+#' @param drop_zero_factors If \code{TRUE}, then any factor/loadings
+#'   that are zero will be removed.
 #'
 #' @return A list with the following elements. These are analogous to
-#'   the u, d and v returned by \code{svd}, but columns of l and f are
-#'   not orthogonal.
-#'
-#' \item{l}{A matrix whose columns contain the standardized loadings
-#'   (ie norm 1).}
-#'
-#' \item{d}{A vector of weights (analogous to the singular values in
-#'   an svd).}
-#'
-#' \item{f}{A matrix whose columns contain the standardized factors
-#'   (i.e., norm 1).}
+#'   the \code{u}, \code{d} and \code{v} returned by \code{svd}, but
+#'   the columns of \code{l} and \code{f} are not orthogonal.
+#'   \itemize{
+#'     \item \code{l}: A matrix whose columns contain the standardized
+#'       loadings (i.e., with norm 1).
+#'     \item \code{d}: A vector of weights (analogous to the singular
+#'       values in an SVD).
+#'     \item \code{f}: A matrix whose columns contain the standardized
+#'       factors (i.e., with norm 1).
+#'   }
 #'
 #' @export
 #'
@@ -62,10 +63,10 @@ flash_get_ldf = function(f, kset = NULL, drop_zero_factors = TRUE) {
        f = ff)
 }
 
-#' @title Get number of factors in a fit object.
+#' @title Get number of factors in a flash object
 #'
-#' @description Returns the number of factors in a flash fit. Factors
-#'   that have been zeroed out are not counted.
+#' @description Returns the number of factors in a flash object.
+#'   Factors that have been zeroed out are not counted.
 #'
 #' @param f A flash fit object
 #'
@@ -76,17 +77,17 @@ flash_get_rank = function(f) {
   return(length(ldf$d))
 }
 
-#' @title flash_get_pve
+#' @title Get PVE from a flash object
 #'
-#' @description Returns the factor contributions ('proportion of
-#' variance explained') by each factor/loading combination in flash
-#' fit f. Because the factors are not required to be orthogonal this
-#' should be interpreted loosely: eg PVE could total more than 1.
+#' @description Returns the factor contributions (proportion of
+#' variance explained) for each factor/loading combination in flash
+#' fit \code{f}. Because the factors are not required to be orthogonal,
+#' this should be interpreted loosely: e.g., PVE could total more than 1.
 #'
 #' @param f A flash fit object.
 #'
-#' @param drop_zero_factors Flag whether to remove any factor/loadings
-#'   that are zero.
+#' @param drop_zero_factors If \code{TRUE}, then any factor/loadings
+#'   that are zero will be removed.
 #'
 #' @export
 #'

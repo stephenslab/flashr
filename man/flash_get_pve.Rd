@@ -2,16 +2,19 @@
 % Please edit documentation in R/get_functions.R
 \name{flash_get_pve}
 \alias{flash_get_pve}
-\title{flash_get_pve}
+\title{Get PVE from a flash object}
 \usage{
-flash_get_pve(f)
+flash_get_pve(f, drop_zero_factors = TRUE)
 }
 \arguments{
 \item{f}{A flash fit object.}
+
+\item{drop_zero_factors}{If \code{TRUE}, then any factor/loadings
+that are zero will be removed.}
 }
 \description{
-Returns the factor contributions ('proportion of
-variance explained') by each factor/loading combination in flash
-fit f. Because the factors are not required to be orthogonal this
-should be interpreted loosely: eg PVE could total more than 1.
+Returns the factor contributions (proportion of
+variance explained) for each factor/loading combination in flash
+fit \code{f}. Because the factors are not required to be orthogonal,
+this should be interpreted loosely: e.g., PVE could total more than 1.
 }

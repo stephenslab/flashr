@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_functions.R
 \name{flash_get_lf}
 \alias{flash_get_lf}
-\title{Return the estimated LF' matrix.}
+\title{Estimate LF'}
 \usage{
 flash_get_lf(f)
 }
