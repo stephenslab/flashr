@@ -1,10 +1,5 @@
 # Functions for extracting useful information about the object.
 
-flash_get_rank = function(f) {
-  ldf = flash_get_ldf(f)
-  return(length(ldf$d))
-}
-
 #' @title Return the estimated LF' matrix.
 #'
 #' @param f A flash fit object.
@@ -22,15 +17,15 @@ flash_get_lf = function(f) {
 
 #' @title flash_get_ldf
 #'
+#' @description Returns standardized loadings, factors, and weights from
+#' a flash object.
+#'
 #' @param f A flash fit object.
 #'
 #' @param kset Indices of loadings/factors to be returned.
 #'
 #' @param drop_zero_factors Flag whether to remove any factor/loadings
 #'   that are zero.
-#'
-#' @details Returns standardized loadings, factors, and weights from a
-#' flash object.
 #'
 #' @return A list with the following elements. These are analogous to
 #'   the u, d and v returned by \code{svd}, but columns of l and f are
@@ -65,6 +60,40 @@ flash_get_ldf = function(f, kset = NULL, drop_zero_factors = TRUE) {
   list(d = d,
        l = ll,
        f = ff)
+}
+
+#' @title Get number of factors in a fit object.
+#'
+#' @description Returns the number of factors in a flash fit. Factors
+#'   that have been zeroed out are not counted.
+#'
+#' @param f A flash fit object
+#'
+#' @export
+#'
+flash_get_rank = function(f) {
+  ldf = flash_get_ldf(f)
+  return(length(ldf$d))
+}
+
+#' @title flash_get_pve
+#'
+#' @description Returns the factor contributions ('proportion of
+#' variance explained') by each factor/loading combination in flash
+#' fit f. Because the factors are not required to be orthogonal this
+#' should be interpreted loosely: eg PVE could total more than 1.
+#'
+#' @param f A flash fit object.
+#'
+#' @param drop_zero_factors Flag whether to remove any factor/loadings
+#'   that are zero.
+#'
+#' @export
+#'
+flash_get_pve = function(f, drop_zero_factors = TRUE) {
+  s = (flash_get_ldf(f, drop_zero_factors=drop_zero_factors)$d)^2
+  tau = f$tau[f$tau != 0]
+  s/(sum(s) + sum(1/tau))
 }
 
 # @title Get the residuals from a flash data and fit object,
@@ -158,25 +187,4 @@ flash_get_n = function(f) {
 
 flash_get_p = function(f) {
   nrow(f$EF)
-}
-
-#' @title flash_get_pve
-#'
-#' @description Returns the factor contributions ('proportion of
-#' variance explained') by each factor/loading combination in flash
-#' fit f. Because the factors are not required to be orthogonal this
-#' should be interpreted loosely: eg PVE could total more than 1.
-#'
-#' @param f A flash fit object.
-#'
-#' @export
-#'
-flash_get_pve = function(f) {
-    s = (flash_get_ldf(f)$d)^2
-    tau = f$tau[f$tau != 0]
-    s/(sum(s) + sum(1/tau))
-}
-
-flash_get_conv_criteria = function(data, f) {
-    flash_get_objective(data, f)
 }
