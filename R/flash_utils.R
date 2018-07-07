@@ -83,15 +83,23 @@ flash_transpose_data = function(data) {
 #   and f2. The precision (tau) of the combined fit is inherited from f2.
 #
 flash_combine = function(f1, f2) {
-    list(EL = cbind(f1$EL, f2$EL), EF = cbind(f1$EF, f2$EF),
-         EL2 = cbind(f1$EL2, f2$EL2), EF2 = cbind(f1$EF2, f2$EF2),
-         fixl = cbind(f1$fixl, f2$fixl), fixf = cbind(f1$fixf, f2$fixf),
-         gl = c(f1$gl, f2$gl), gf = c(f1$gf, f2$gf),
-         ebnm_param_l = c(f1$ebnm_param_l, f2$ebnm_param_l),
-         ebnm_param_f = c(f1$ebnm_param_f, f2$ebnm_param_f),
-         KL_l = c(f1$KL_l, f2$KL_l), KL_f = c(f1$KL_f, f2$KL_f),
-         penloglik_l = c(f1$penloglik_l, f2$penloglik_l),
-         penloglik_f = c(f1$penloglik_f, f2$penloglik_f), tau = f2$tau)
+    f = list(EL = cbind(f1$EL, f2$EL),
+             EF = cbind(f1$EF, f2$EF),
+             EL2 = cbind(f1$EL2, f2$EL2),
+             EF2 = cbind(f1$EF2, f2$EF2),
+             fixl = cbind(f1$fixl, f2$fixl),
+             fixf = cbind(f1$fixf, f2$fixf),
+             gl = c(f1$gl, f2$gl),
+             gf = c(f1$gf, f2$gf),
+             ebnm_param_l = c(f1$ebnm_param_l, f2$ebnm_param_l),
+             ebnm_param_f = c(f1$ebnm_param_f, f2$ebnm_param_f),
+             KL_l = c(f1$KL_l, f2$KL_l),
+             KL_f = c(f1$KL_f, f2$KL_f),
+             penloglik_l = c(f1$penloglik_l, f2$penloglik_l),
+             penloglik_f = c(f1$penloglik_f, f2$penloglik_f),
+             tau = f2$tau)
+    class(f) = "flash"
+    return(f)
 }
 
 # @title Subset a flash object with respect to its loadings.
@@ -170,6 +178,5 @@ flash_zero_out_factor = function(data, f, k = 1) {
     f$gf[[k]]   = NULL
     f$KL_l[[k]] = 0
     f$KL_f[[k]] = 0  # KL divergences for each l and f.
-    class(f) = "flash"
     return(f)
 }

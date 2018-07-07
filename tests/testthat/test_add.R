@@ -10,14 +10,19 @@ test_that("various additions work", {
   f2 = flash_init_fn(data,"udv_svd",2)
   f3 = flash_add_factors_from_data(data,1,f1,"udv_svd")
   expect_equal(flash_get_lf(f3),flash_get_lf(f2))
+  expect_s3_class(f1, "flash")
+  expect_s3_class(f3, "flash")
 
   f2 = flash_init_null()
   f3 = flash_combine(f2,f1)
   expect_equal(f3,f1)
+  expect_s3_class(f2, "flash")
+  expect_s3_class(f3, "flash")
 
   f1 = flash_add_fixed_l(data, cbind(rep(1,5)))
   f1 = flash_backfit(data,f1)
   expect_equal(f1$EL,cbind(rep(1,5)))
+  expect_s3_class(f1, "flash")
 
   l = rnorm(20)
   f = rep(1,20)
@@ -27,6 +32,5 @@ test_that("various additions work", {
   f1 = flash_add_fixed_f(data, cbind(rep(1,20)))
   f1 = flash_backfit(data,f1,verbose=TRUE)
   expect_equal(f1$EF,cbind(rep(1,20)))
-
-}
-)
+  expect_s3_class(f1, "flash")
+})
