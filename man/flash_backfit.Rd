@@ -27,7 +27,15 @@ iteration to be considered not converged.}
 Means problem. Either a single character string (giving the name of
 of the function) or a list with fields \code{l} and \code{f}
 (specifying different functions to be used for loadings and factors)
-are acceptable arguments.}
+are acceptable arguments. Options include:
+\itemize{
+  \item \code{"ebnm_ash"}: A wrapper to the function
+    \code{\link[ashr]{ash}}.
+  \item \code{"ebnm_pn"}: A wrapper to function
+    \code{\link[ebnm]{ebnm_point_normal}} in package \pkg{ebnm}.
+  \item \code{"ebnm_pl"} A wrapper to function
+    \code{\link[ebnm]{ebnm_point_laplace}} in \pkg{ebnm}.
+}}
 
 \item{ebnm_param}{A named list containing parameters to be passed to
 \code{ebnm_fn} when optimizing. A list with fields \code{l} and
@@ -40,12 +48,13 @@ for each factor/loading in \code{kset}. Finally, a list with fields
 for each distinct loading and each distinct factor. Set to NULL to
 use defaults.}
 
-\item{verbose}{If TRUE, various progress updates will be printed.}
+\item{verbose}{If \code{TRUE}, various progress updates will be
+printed.}
 
-\item{nullcheck}{If TRUE, then after running hill-climbing updates,
-\code{flash} will check whether the achieved optimum is better than
-setting the factor to 0. If the check is performed and fails then
-the factor will be set to 0 in the returned fit.}
+\item{nullcheck}{If \code{TRUE}, then after running hill-climbing
+updates \code{flash} will check whether the achieved optimum is
+better than setting the factor to 0. If the check is performed and
+fails then the factor will be set to 0 in the returned fit.}
 
 \item{maxiter}{A maximum number of iterations to perform (not
 including repeated fittings if \code{nullcheck} fails). To perform

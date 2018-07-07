@@ -20,13 +20,15 @@
 #' @param init_fn The function used to initialize factors. Options
 #'   include:
 #'   \itemize{
-#'     \item \code{"udv_si"}: Provides a simple wrapper to \code{softImpute} to
-#'       provide a rank-one initialization. Uses option
-#'       \code{type = "als"}.
-#'     \item \code{"udv_si_svd"}: Uses \code{softImpute} with option
+#'     \item \code{"udv_si"}: Provides a simple wrapper to
+#'       \code{\link[softImpute]{softImpute}} to provide a rank-one
+#'       initialization. Uses option \code{type = "als"}.
+#'     \item \code{"udv_si_svd"}: Uses
+#'       \code{\link[softImpute]{softImpute}} with option
 #'       \code{type = "svd"}.
 #'     \item \code{"udv_svd"}: Provides a simple wrapper to \code{svd}.
-#'     \item \code{"udv_random"}: Provides a random initialization of factors.
+#'     \item \code{"udv_random"}: Provides a random initialization of
+#'       factors.
 #'   }
 #'   A user-specified function can also be used. This function should
 #'   take parameters \code{(Y, K)}, where \code{Y} is an n by p matrix of
@@ -44,33 +46,42 @@
 #'   Means problem. Either a single character string (giving the name of
 #'   of the function) or a list with fields \code{l} and \code{f}
 #'   (specifying different functions to be used for loadings and factors)
-#'   are acceptable arguments.
+#'   are acceptable arguments. Options include:
+#'   \itemize{
+#'     \item \code{"ebnm_ash"}: A wrapper to the function
+#'       \code{\link[ashr]{ash}}.
+#'     \item \code{"ebnm_pn"}: A wrapper to function
+#'       \code{\link[ebnm]{ebnm_point_normal}} in package \pkg{ebnm}.
+#'     \item \code{"ebnm_pl"} A wrapper to function
+#'       \code{\link[ebnm]{ebnm_point_laplace}} in \pkg{ebnm}.
+#'   }
 #'
 #' @param ebnm_param A named list containing parameters to be passed to
 #'   \code{ebnm_fn} when optimizing. A list with fields \code{l} and
 #'   \code{f} (each of which is a named list) will separately supply
-#'   parameters for loadings and factors. Set to NULL to use
+#'   parameters for loadings and factors. Set to \code{NULL} to use
 #'   defaults.
 #'
-#' @param verbose If TRUE, various progress updates will be printed.
+#' @param verbose If \code{TRUE}, various progress updates will be
+#'   printed.
 #'
-#' @param nullcheck If TRUE, then after running hill-climbing updates,
-#'   \code{flash} will check whether the achieved optimum is better than
-#'   setting the factor to 0. If the check is performed and fails then
-#'   the factor will be set to 0 in the returned fit.
+#' @param nullcheck If \code{TRUE}, then after running hill-climbing
+#'   updates \code{flash} will check whether the achieved optimum is
+#'   better than setting the factor to 0. If the check is performed and
+#'   fails then the factor will be set to 0 in the returned fit.
 #'
 #' @param seed A random number seed to use before running \code{flash}
-#'   - for reproducibility. Set to NULL if you don't want the seed set.
-#'   (The seed can affect initialization when there are missing data;
-#'   otherwise the algorithm is deterministic.)
+#'   - for reproducibility. Set to \code{NULL} if you don't want the
+#'   seed set. (The seed can affect initialization when there are
+#'   missing data; otherwise the algorithm is deterministic.)
 #'
-#' @param greedy If TRUE, factors are added via the greedy algorithm.
-#'   If FALSE, then \code{f_init} must be supplied.
+#' @param greedy If \code{TRUE}, factors are added via the greedy
+#'   algorithm. If \code{FALSE}, then \code{f_init} must be supplied.
 #'
-#' @param backfit If TRUE, factors are refined via the backfitting
+#' @param backfit If \code{TRUE}, factors are refined via the backfitting
 #'   algorithm.
 #'
-#' @seealso flash_add_greedy, flash_backfit
+#' @seealso \code{\link{flash_add_greedy}}, \code{\link{flash_backfit}}
 #'
 #' @return A fitted flash object. Use \code{flash_get_ldf} to access
 #'   standardized loadings and factors; use \code{flash_get_lf} to
