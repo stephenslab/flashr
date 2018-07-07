@@ -12,10 +12,16 @@
 #'
 #' @export
 #'
-flash_update_precision =
-  function(data, f,
-           var_type = c("by_column", "by_row", "constant",
-                        "zero", "kroneker")) {
+flash_update_precision = function(data,
+                                  f,
+                                  var_type = c("by_column", "by_row",
+                                               "constant", "zero",
+                                               "kroneker")) {
+    if (is.matrix(data)) {
+      data = flash_set_data(data)
+    }
+    var_type = match.arg(var_type)
+
     if (var_type == "zero" & is.null(data$S)) {
       stop(paste("Flash data object must include standard errors when",
                  "var_type is zero."))
