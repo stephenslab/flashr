@@ -19,16 +19,16 @@
 #'
 #' @param init_fn The function used to initialize factors. Options
 #'   include:
-#'   \itemize{
-#'     \item \code{"udv_si"}: Provides a simple wrapper to
+#'   \describe{
+#'     \item{\code{"udv_si"}}{Provides a simple wrapper to
 #'       \code{\link[softImpute]{softImpute}} to provide a rank-one
-#'       initialization. Uses option \code{type = "als"}.
-#'     \item \code{"udv_si_svd"}: Uses
+#'       initialization. Uses option \code{type = "als"}.}
+#'     \item{\code{"udv_si_svd"}}{Uses
 #'       \code{\link[softImpute]{softImpute}} with option
-#'       \code{type = "svd"}.
-#'     \item \code{"udv_svd"}: Provides a simple wrapper to \code{svd}.
-#'     \item \code{"udv_random"}: Provides a random initialization of
-#'       factors.
+#'       \code{type = "svd"}.}
+#'     \item{\code{"udv_svd"}}{Provides a simple wrapper to \code{svd}.}
+#'     \item{\code{"udv_random"}}{Provides a random initialization of
+#'       factors.}
 #'   }
 #'   A user-specified function can also be used. This function should
 #'   take parameters \code{(Y, K)}, where \code{Y} is an n by p matrix of
@@ -47,13 +47,13 @@
 #'   of the function) or a list with fields \code{l} and \code{f}
 #'   (specifying different functions to be used for loadings and factors)
 #'   are acceptable arguments. Options include:
-#'   \itemize{
-#'     \item \code{"ebnm_ash"}: A wrapper to the function
-#'       \code{\link[ashr]{ash}}.
-#'     \item \code{"ebnm_pn"}: A wrapper to function
-#'       \code{\link[ebnm]{ebnm_point_normal}} in package \pkg{ebnm}.
-#'     \item \code{"ebnm_pl"} A wrapper to function
-#'       \code{\link[ebnm]{ebnm_point_laplace}} in \pkg{ebnm}.
+#'   \describe{
+#'     \item{\code{"ebnm_ash"}}{A wrapper to the function
+#'       \code{\link[ashr]{ash}}.}
+#'     \item{\code{"ebnm_pn"}}{A wrapper to function
+#'       \code{\link[ebnm]{ebnm_point_normal}} in package \pkg{ebnm}.}
+#'     \item{\code{"ebnm_pl"}}{A wrapper to function
+#'       \code{\link[ebnm]{ebnm_point_laplace}} in \pkg{ebnm}.}
 #'   }
 #'
 #' @param ebnm_param A named list containing parameters to be passed to

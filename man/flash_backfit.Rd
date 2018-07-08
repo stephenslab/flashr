@@ -28,13 +28,13 @@ Means problem. Either a single character string (giving the name of
 of the function) or a list with fields \code{l} and \code{f}
 (specifying different functions to be used for loadings and factors)
 are acceptable arguments. Options include:
-\itemize{
-  \item \code{"ebnm_ash"}: A wrapper to the function
-    \code{\link[ashr]{ash}}.
-  \item \code{"ebnm_pn"}: A wrapper to function
-    \code{\link[ebnm]{ebnm_point_normal}} in package \pkg{ebnm}.
-  \item \code{"ebnm_pl"} A wrapper to function
-    \code{\link[ebnm]{ebnm_point_laplace}} in \pkg{ebnm}.
+\describe{
+  \item{\code{"ebnm_ash"}}{A wrapper to the function
+    \code{\link[ashr]{ash}}.}
+  \item{\code{"ebnm_pn"}}{A wrapper to function
+    \code{\link[ebnm]{ebnm_point_normal}} in package \pkg{ebnm}.}
+  \item{\code{"ebnm_pl"}}{A wrapper to function
+    \code{\link[ebnm]{ebnm_point_laplace}} in \pkg{ebnm}.}
 }}
 
 \item{ebnm_param}{A named list containing parameters to be passed to
