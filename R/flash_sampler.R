@@ -105,6 +105,9 @@ flash_l_sampler = function(data, f, kset=NULL) {
   for (k in kset) {
     # Use ebnm function and parameters from flash object
     ebnm_fn = f$ebnm_fn[[k]]
+    if (is.null(ebnm_fn)) {
+      stop(paste("Factor/loading", k, "has not yet been fit."))
+    }
     ebnm_param = f$ebnm_param_l[[k]]
     sampler_list[[k]] = flash_update_single_loading(data, f, k,
                                                     ebnm_fn,
