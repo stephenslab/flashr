@@ -9,7 +9,8 @@ test_that("various additions work", {
   f1 = flash_init_fn(data,"udv_svd",1)
   f2 = flash_init_fn(data,"udv_svd",2)
   f3 = flash_add_factors_from_data(data,1,f1,"udv_svd")
-  expect_equal(flash_get_lf(f3),flash_get_lf(f2))
+  expect_equal(flash_get_fitted_values(f3),
+               flash_get_fitted_values(f2))
   expect_s3_class(f1, "flash")
   expect_s3_class(f3, "flash")
 

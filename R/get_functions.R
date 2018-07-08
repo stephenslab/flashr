@@ -10,11 +10,11 @@
 #'
 #' @export
 #'
-flash_get_lf = function(f) {
-    if (is.null(f$EL)) {
-        return(NULL)
-    }
-    return(f$EL %*% t(f$EF))
+flash_get_fitted_values = function(f) {
+  if (is.null(f$EL)) {
+    return(NULL)
+  }
+  return(f$EL %*% t(f$EF))
 }
 
 #' @title Get LDF from a flash object
@@ -116,7 +116,7 @@ flash_get_R = function(data, f) {
             return(data$Y)
         }
  else {
-        return(data$Y - flash_get_lf(f))
+        return(data$Y - flash_get_fitted_values(f))
     }
 }
 
@@ -130,7 +130,7 @@ flash_get_R_withmissing = function(data, f) {
             return(get_Yorig(data))
         }
  else {
-        return(get_Yorig(data) - flash_get_lf(f))
+        return(get_Yorig(data) - flash_get_fitted_values(f))
     }
 }
 

@@ -88,8 +88,8 @@ algorithm.}
 }
 \value{
 A fitted flash object. Use \code{flash_get_ldf} to access
-  standardized loadings and factors; use \code{flash_get_lf} to
-  access fitted LF'.
+  standardized loadings and factors; use
+  \code{flash_get_fitted_values} to access fitted LF'.
 }
 \description{
 This is the main interface for fitting EBMF models
@@ -121,7 +121,7 @@ plot(ftrue[,1], ldf$f[,2])
 
 # Plot true lf' against estimated lf'; the scale of the estimate
 # matches the data.
-plot(ltrue \%*\% t(ftrue), flash_get_lf(f))
+plot(ltrue \%*\% t(ftrue), flash_get_fitted_values(f))
 
 # Example to use the more flexible ebnm function in ashr.
 f2 = flash(Y, ebnm_fn="ebnm_ash")

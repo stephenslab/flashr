@@ -33,7 +33,7 @@ test_that(paste("sampling functions produce objects of correct",
     lf_means = Reduce(`+`, lfsamp) / 10
 
     # Need to suppress warning about scale parameter being a matrix.
-    LF = flash_get_lf(fit)
+    LF = flash_get_fitted_values(fit)
     suppressWarnings(expect_equal(lf_means, LF, tolerance=0.1, scale=LF))
 
     # Fix some elements.
