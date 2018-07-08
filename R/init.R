@@ -39,8 +39,6 @@ flash_init_lf = function(LL, FF, fixl = NULL, fixf = NULL) {
     f$ebnm_param_f = list()
     f$KL_l = as.list(rep(0, flash_get_k(f)))
     f$KL_f = as.list(rep(0, flash_get_k(f))) # KL divergences for each l and f.
-    f$penloglik_l = as.list(rep(0, flash_get_k(f)))
-    f$penloglik_f = as.list(rep(0, flash_get_k(f)))
     f = c(f, list(tau = NULL))
     class(f) = "flash"
     return(f)

@@ -43,8 +43,6 @@ flash_transpose = function(f) {
           which(tmp == "ebnm_fn_f"))] = c("ebnm_fn_f", "ebnm_fn_l")
     tmp[c(which(tmp == "ebnm_param_l"),
           which(tmp == "ebnm_param_f"))] = c("ebnm_param_f", "ebnm_param_l")
-    tmp[c(which(tmp == "penloglik_l"),
-          which(tmp == "penloglik_f"))] = c("penloglik_f", "penloglik_l")
     names(f) = tmp
     if (is.matrix(f$tau)) {
         f$tau = t(f$tau)
@@ -99,8 +97,6 @@ flash_combine = function(f1, f2) {
              ebnm_param_f = c(f1$ebnm_param_f, f2$ebnm_param_f),
              KL_l = c(f1$KL_l, f2$KL_l),
              KL_f = c(f1$KL_f, f2$KL_f),
-             penloglik_l = c(f1$penloglik_l, f2$penloglik_l),
-             penloglik_f = c(f1$penloglik_f, f2$penloglik_f),
              tau = f2$tau)
     class(f) = "flash"
     return(f)
