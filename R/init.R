@@ -55,20 +55,18 @@ flash_init_null = function() {
     return(f)
 }
 
-#' @title udv_si
-#'
-#' @description Provides a simple wrapper to \code{softImpute} to
-#'   provide a rank 1 initialization. Uses \code{type = "als"} option.
-#'
-#' @param Y An n by p matrix.
-#'
-#' @param K Number of factors to use.
-#'
-#' @return A list with components (u,d,v).
-#'
+# @title udv_si
+#
+# @description Provides a simple wrapper to \code{softImpute} to
+#   provide a rank 1 initialization. Uses \code{type = "als"} option.
+#
+# @param Y An n by p matrix.
+#
+# @param K Number of factors to use.
+#
+# @return A list with components (u,d,v).
+#
 #' @importFrom softImpute softImpute
-#'
-#' @export
 #'
 udv_si = function(Y, K = 1) {
   suppressWarnings(res <- softImpute(Y, rank.max = K,
@@ -76,56 +74,50 @@ udv_si = function(Y, K = 1) {
   return(res)
 }
 
-#' @title udv_si
-#'
-#' @description provides a simple wrapper to \code{softImpute} to
-#'   provide a rank 1 initialization. Uses \code{type = "svd"} option.
-#'
-#' @param Y an n by p matrix
-#'
-#' @param K number of factors to use
-#'
-#' @return A list with components (u,d,v)
-#'
+# @title udv_si_svd
+#
+# @description provides a simple wrapper to \code{softImpute} to
+#   provide a rank 1 initialization. Uses \code{type = "svd"} option.
+#
+# @param Y an n by p matrix
+#
+# @param K number of factors to use
+#
+# @return A list with components (u,d,v)
+#
 #' @importFrom softImpute softImpute
-#'
-#' @export
 #'
 udv_si_svd = function(Y, K = 1) {
   suppressWarnings(res <- softImpute(Y,rank.max = K,type = "svd",lambda = 0))
   return(res)
 }
 
-#' @title udv_svd
-#'
-#' @description Provides a simple wrapper to svd.
-#'
-#' @param Y An n by p matrix.
-#'
-#' @param K Number of factors to use.
-#'
-#' @return A list with components (u,d,v).
-#'
-#' @export
-#'
+# @title udv_svd
+#
+# @description Provides a simple wrapper to svd.
+#
+# @param Y An n by p matrix.
+#
+# @param K Number of factors to use.
+#
+# @return A list with components (u,d,v).
+#
 udv_svd = function (Y, K = 1) {
   svd(Y, K, K)
 }
 
-#' @title udv_random
-#'
-#' @description Provides a random initialization of factors.
-#'
-#' @param Y An n by p matrix.
-#'
-#' @param K Number of factors.
-#'
-#' @return A list with components (u,d,v), with elements of u and v
-#'   i.i.d. N(0,1).
-#'
+# @title udv_random
+#
+# @description Provides a random initialization of factors.
+#
+# @param Y An n by p matrix.
+#
+# @param K Number of factors.
+#
+# @return A list with components (u,d,v), with elements of u and v
+#   i.i.d. N(0,1).
+#
 #' @importFrom stats rnorm
-#'
-#' @export
 #'
 udv_random = function (Y, K = 1) {
   n = nrow(Y)
