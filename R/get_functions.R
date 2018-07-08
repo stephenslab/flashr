@@ -32,14 +32,15 @@ flash_get_lf = function(f) {
 #' @return A list with the following elements. These are analogous to
 #'   the \code{u}, \code{d} and \code{v} returned by \code{svd}, but
 #'   the columns of \code{l} and \code{f} are not orthogonal.
-#'   \itemize{
-#'     \item \code{l}: A matrix whose columns contain the standardized
-#'       loadings (i.e., with norm 1).
-#'     \item \code{d}: A vector of weights (analogous to the singular
-#'       values in an SVD).
-#'     \item \code{f}: A matrix whose columns contain the standardized
-#'       factors (i.e., with norm 1).
-#'   }
+#'
+#'   \item{\code{l}}{A matrix whose columns contain the standardized
+#'     loadings (i.e., with norm 1).}
+#'
+#'   \item{\code{d}}{A vector of weights (analogous to the singular
+#'     values in an SVD).}
+#'
+#'   \item{\code{f}}{A matrix whose columns contain the standardized
+#'     factors (i.e., with norm 1).}
 #'
 #' @export
 #'
