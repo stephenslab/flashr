@@ -40,6 +40,7 @@ flash_init_lf = function(LL, FF, fixl = NULL, fixf = NULL) {
     f$penloglik_l = as.list(rep(0, flash_get_k(f)))
     f$penloglik_f = as.list(rep(0, flash_get_k(f)))
     f = c(f, list(tau = NULL))
+    class(f) = "flash"
     return(f)
 }
 
@@ -50,6 +51,7 @@ flash_init_lf = function(LL, FF, fixl = NULL, fixf = NULL) {
 flash_init_null = function() {
     f = list(EL = NULL, EF = NULL, fixl = NULL, fixf = NULL, EL2 = NULL, EF2 = NULL, gl = NULL, gf = NULL, ebnm_param_l = NULL,
         ebnm_param_f = NULL, KL_l = NULL, KL_f = NULL, tau = NULL)
+    class(f) = "flash"
     return(f)
 }
 
