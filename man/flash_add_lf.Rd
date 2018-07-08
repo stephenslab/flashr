@@ -2,31 +2,33 @@
 % Please edit documentation in R/flash_add.R
 \name{flash_add_lf}
 \alias{flash_add_lf}
-\title{Add factors or loadings to f.}
+\title{Add factor/loading pairs to a flash object}
 \usage{
 flash_add_lf(data, LL, FF, f_init = NULL, fixl = NULL, fixf = NULL)
 }
 \arguments{
-\item{data}{A flash data object.}
+\item{data}{An n by p matrix or a flash data object created using
+\code{flash_set_data}.}
 
 \item{LL}{The loadings, an n by K matrix.}
 
 \item{FF}{The factors, a p by K matrix.}
 
-\item{f_init}{A flash object to which new factors are to be added
-(if NULL then a new fit object is created).}
+\item{f_init}{The flash object to which new factors are to be added.
+If \code{f_init = NULL}, then a new flash fit object is created.}
 
-\item{fixl}{An n by K matrix of TRUE/FALSE values indicating which
-elements of LL should be considered fixed and not changed during
-updates. Useful for including a mean factor for example.}
+\item{fixl}{An n by K matrix of \code{TRUE}/\code{FALSE} values
+indicating which elements of \code{LL} should be considered fixed
+and not changed during updates. Useful for including a mean factor
+for example.}
 
-\item{fixf}{A p by K matrix of TRUE/FALSE values; same as fixl but
-for factors FF.}
+\item{fixf}{A p by K matrix of \code{TRUE}/\code{FALSE} values; same
+as \code{fixl} but for factors \code{FF}.}
 }
 \value{
 A flash fit object, with additional factors initialized
-  using LL and FF.
+  using \code{LL} and \code{FF}.
 }
 \description{
-Add factors or loadings to f.
+Adds specified factor/loading pairs to a flash object.
 }

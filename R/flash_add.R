@@ -1,27 +1,30 @@
-#' @title Add factors or loadings to f.
+#' @title Add factor/loading pairs to a flash object
 #'
-#' @param data A flash data object.
+#' @description Adds specified factor/loading pairs to a flash object.
+#'
+#' @inheritParams flash
 #'
 #' @param LL The loadings, an n by K matrix.
 #'
 #' @param FF The factors, a p by K matrix.
 #'
-#' @param f_init A flash object to which new factors are to be added
-#'   (if NULL then a new fit object is created).
+#' @param fixl An n by K matrix of \code{TRUE}/\code{FALSE} values
+#'   indicating which elements of \code{LL} should be considered fixed
+#'   and not changed during updates. Useful for including a mean factor
+#'   for example.
 #'
-#' @param fixl An n by K matrix of TRUE/FALSE values indicating which
-#'   elements of LL should be considered fixed and not changed during
-#'   updates. Useful for including a mean factor for example.
-#'
-#' @param fixf A p by K matrix of TRUE/FALSE values; same as fixl but
-#'   for factors FF.
+#' @param fixf A p by K matrix of \code{TRUE}/\code{FALSE} values; same
+#'   as \code{fixl} but for factors \code{FF}.
 #'
 #' @return A flash fit object, with additional factors initialized
-#'   using LL and FF.
+#'   using \code{LL} and \code{FF}.
 #'
 #' @export
 #'
 flash_add_lf = function(data, LL, FF, f_init=NULL, fixl=NULL, fixf=NULL) {
+  if (is.matrix(data)) {
+    data = flash_set_data(data)
+  }
   if (is.null(f_init)){
     f_init = flash_init_null()
   }
@@ -32,25 +35,24 @@ flash_add_lf = function(data, LL, FF, f_init=NULL, fixl=NULL, fixf=NULL) {
   return(f)
 }
 
-#' @title Add factors to a flash fit object based on data.
+#' @title Add factors to a flash object based on data
 #'
-#' @description Computes the current residuals from data and f_init
-#'   and adds K new factors based on init_fn applied to these
-#'   residuals. (If f_init is NULL then the residuals are the data).
+#' @description Computes the current residuals from \code{data} and
+#'   \code{f_init} and adds \code{K} new factors based on \code{init_fn}
+#'   applied to these residuals. (If \code{f_init} is \code{NULL} then
+#'   the residuals are the data.)
 #'
-#' @param data A flash data object.
+#' @inheritParams flash
 #'
-#' @param K Number of factors to add.
-#'
-#' @param f_init An existing flash fit object to add to.
-#'
-#' @param init_fn The function to use to initialize new factors
-#'   (typically some kind of svd-like function).
+#' @param K The number of factors to add.
 #'
 #' @export
 #'
 flash_add_factors_from_data = function(data, K, f_init=NULL,
                                        init_fn="udv_si") {
+  if (is.matrix(data)) {
+    data = flash_set_data(data)
+  }
   if (is.null(f_init)) {
     f_init = flash_init_null()
   }
@@ -64,26 +66,20 @@ flash_add_factors_from_data = function(data, K, f_init=NULL,
 
 #' @title Add a set of fixed loadings to a flash fit object.
 #'
-#' @param data A flash data object.
+#' @inheritParams flash
 #'
 #' @param LL The loadings, an n by K matrix. Missing values will be
 #'   initialized by the mean of the relevant column (but will generally
 #'   be re-estimated when refitting the model).
 #'
-#' @param f_init A flash fit object to which loadings are to be added
-#'   (if NULL then a new fit object is created).
+#' @param fixl An n by K matrix of \code{TRUE}/\code{FALSE} values
+#'   indicating which elements of \code{LL} should be considered fixed
+#'   and not changed during updates.  The default is to fix all
+#'   non-missing values, so missing values will be updated when the
+#'   flash object is updated.
 #'
-#' @param fixl An n by K matrix of TRUE/FALSE values indicating which
-#'   elements of LL should be considered fixed and not changed during
-#'   updates.  Default is to fix all non-missing values, so missing
-#'   values will be updated when f is updated.
-#'
-#' @param init_fn An initialization function, which takes as input an
-#   (n by p matrix, or flash data object) and K, a number of factors,
-#   and and outputs a list with elements (u,d,v).
-#'
-#' @return A flash fit object, with loadings initialized from LL, and
-#'   corresponding factors initialized to 0.
+#' @return A flash fit object, with loadings initialized from \code{LL},
+#'   and corresponding factors initialized to zero.
 #'
 #' @export
 #'
@@ -165,22 +161,20 @@ find_col_blocks = function(X) {
 
 #' @title Add a set of fixed factors to a flash fit object.
 #'
-#' @param data a flash data object
+#' @inheritParams flash
 #'
 #' @param FF The factors, a p by K matrix. Missing values will be
 #'   initialized by the mean of the relevant column (but will generally
 #'   be re-estimated when refitting the model).
 #'
-#' @param f_init A flash fit object to which factors are to be added
-#'   (if NULL then a new fit object is created).
+#' @param fixf A p by K matrix of of \code{TRUE}/\code{FALSE} values
+#'   indicating which elements of \code{FF} should be considered fixed
+#'   and not changed during updates.  The default is to fix all
+#'   non-missing values, so missing values will be updated when the
+#'   flash object is updated.
 #'
-#' @param fixf A p by K matrix of TRUE/FALSE values indicating which
-#'   elements of FF should be considered fixed and not changed during
-#'   updates. Default is to fix all non-missing values, so missing
-#'   values will be updated when f is updated.
-#'
-#' @return A flash fit object, with factors initialized from FF, and
-#'   corresponding loadings initialized to 0.
+#' @return A flash fit object, with factors initialized from \code{FF},
+#'   and corresponding loadings initialized to zero.
 #'
 #' @export
 #'

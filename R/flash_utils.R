@@ -1,25 +1,26 @@
-#' @title Use a flash fit to fill in missing entries.
+#' @title Use a flash fit to fill in missing entries
 #'
 #' @description Fills in missing entries of Y by using the relevant
 #'   entries of the estimated LDF' from the flash fit.
 #'
-#' @param Y A flash data object, or an n by p matrix, used to fit f.
+#' @inheritParams flash
 #'
-#' @param f The flash fit object obtained from running flash on Y.
+#' @param f A flash fit object obtained from running \code{flash} on
+#'   \code{data}.
 #'
-#' @return A matrix with non-missing entries the same as $Y$, and
-#'   missing entries imputed from the flash fit
+#' @return A matrix with non-missing entries the same as Y, and
+#'   missing entries imputed from the flash fit.
 #'
 #' @export
 #'
-flash_fill = function(Y, f){
-  if(class(Y)=="flash_data"){Y = get_Yorig(Y)}
-  if(!is.matrix(Y))
-    stop("for flash_fill Y must be a matrix or flash data object")
-  if(dim(Y)[1]!=flash_get_n(f)){stop("dimensions of Y must match flash fit")}
-  if(dim(Y)[2]!=flash_get_p(f)){stop("dimensions of Y must match flash fit")}
-  Y[is.na(Y)] = flash_get_lf(f)[is.na(Y)]
-  return(Y)
+flash_fill = function(data, f){
+  if(class(data)=="flash_data"){data = get_Yorig(data)}
+  if(!is.matrix(data))
+    stop("for flash_fill data must be a matrix or flash data object")
+  if(dim(data)[1]!=flash_get_n(f)){stop("dimensions of data must match flash fit")}
+  if(dim(data)[2]!=flash_get_p(f)){stop("dimensions of data must match flash fit")}
+  data[is.na(data)] = flash_get_lf(f)[is.na(data)]
+  return(data)
 }
 
 # @title Transpose a flash fit object.
@@ -153,23 +154,22 @@ flash_subset_data = function(data, row_subset = NULL, col_subset = NULL) {
     return(subdata)
 }
 
-#' @title Zero out a factor from f.
+#' @title Zero out factor from flash object
 #'
-#' @param data A flash data object.
+#' @description The factor and loadings of the kth factor of \code{f}
+#'   are made to be zero (except for elements of the factor/loading that
+#'   are designated to be fixed). This effectively reduces the rank by 1,
+#'   but the zero factor/loading is retained in \code{f} so that
+#'   the number and indexing of factor/loading matrices in \code{f}
+#'   remains the same.
 #'
 #' @param f A flash fit object.
 #'
-#' @param k Index of factor/loading to zero out.
-#'
-#' @details The factor and loadings of the kth factor of f are made to
-#'   be zero (except for elements of the factor/loading that are
-#'   designated to be fixed). This effectively reduces the rank by 1,
-#'   although the zero factor/loading is kept in f so the number and
-#'   indexing of factor/loading matrices in f remains the same.
+#' @param k The index of the factor/loading pair to zero out.
 #'
 #' @export
 #'
-flash_zero_out_factor = function(data, f, k = 1) {
+flash_zero_out_factor = function(f, k) {
     f$EL[!f$fixl[, k], k] = 0
     f$EL2[!f$fixl[, k], k] = 0
     f$EF[!f$fixf[, k], k] = 0
