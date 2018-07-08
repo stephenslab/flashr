@@ -4,7 +4,7 @@
 #'
 #' @description Return the estimated LF' matrix.
 #'
-#' @param f A flash fit object.
+#' @inheritParams flash_get_ldf
 #'
 #' @return The estimated value of LF', an n by p matrix.
 #'
@@ -69,7 +69,7 @@ flash_get_ldf = function(f, kset = NULL, drop_zero_factors = TRUE) {
 #' @description Returns the number of factors in a flash object.
 #'   Factors that have been zeroed out are not counted.
 #'
-#' @param f A flash fit object
+#' @inheritParams flash_get_ldf
 #'
 #' @export
 #'
@@ -85,10 +85,7 @@ flash_get_nfactors = function(f) {
 #' fit \code{f}. Because the factors are not required to be orthogonal,
 #' this should be interpreted loosely: e.g., PVE could total more than 1.
 #'
-#' @param f A flash fit object.
-#'
-#' @param drop_zero_factors If \code{TRUE}, then any factor/loadings
-#'   that are zero will be removed.
+#' @inheritParams flash_get_ldf
 #'
 #' @export
 #'

@@ -7,7 +7,7 @@
 flash_get_nfactors(f)
 }
 \arguments{
-\item{f}{A flash fit object}
+\item{f}{A flash fit object.}
 }
 \description{
 Returns the number of factors in a flash object.
