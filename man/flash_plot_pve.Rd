@@ -2,19 +2,23 @@
 % Please edit documentation in R/plot.R
 \name{flash_plot_pve}
 \alias{flash_plot_pve}
-\title{Scree plot.}
+\title{Scree plot}
 \usage{
-flash_plot_pve(f, main = "Scree plot of PVE for each factor")
+flash_plot_pve(f, main = "Scree plot of PVE for each factor",
+  drop_zero_factors = TRUE)
 }
 \arguments{
-\item{f}{The flash fit object.}
+\item{f}{A flash fit object.}
 
 \item{main}{The main caption to use for the plot.}
+
+\item{drop_zero_factors}{If \code{TRUE}, then any factor/loadings
+that are zero will be removed.}
 }
 \value{
-A ggplot plot object.
+A \pkg{ggplot} plot object.
 }
 \description{
-Create a scree plot giving proportion of variance
+Create a scree plot giving the proportion of variance
 explained by each factor.
 }
