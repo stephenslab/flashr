@@ -33,6 +33,8 @@ flash_init_lf = function(LL, FF, fixl = NULL, fixf = NULL) {
 
     f$gl = list()
     f$gf = list()
+    f$ebnm_fn_l = list()
+    f$ebnm_fn_f = list()
     f$ebnm_param_l = list()
     f$ebnm_param_f = list()
     f$KL_l = as.list(rep(0, flash_get_k(f)))
