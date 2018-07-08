@@ -195,7 +195,7 @@ since we did not add a non-zero mean to the simulation.)
 f = flash_add_fixed_l(data,LL = cbind(rep(1,n)))
 f = flash_add_factors_from_data(data,K=10,f_init=f)
 f = flash_backfit(data,f)
-flash_get_rank(f) # tells you how many nonzero factors f has
+flash_get_nfactors(f) # tells you how many nonzero factors f has
 head(flash_get_ldf(f,1,drop_zero_factors = FALSE)$l)
 # Note this is 0 as the factor has no weight
 flash_get_ldf(f,1,drop_zero_factors = FALSE)$d

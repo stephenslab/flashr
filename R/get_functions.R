@@ -73,7 +73,7 @@ flash_get_ldf = function(f, kset = NULL, drop_zero_factors = TRUE) {
 #'
 #' @export
 #'
-flash_get_rank = function(f) {
+flash_get_nfactors = function(f) {
   ldf = flash_get_ldf(f)
   return(length(ldf$d))
 }
