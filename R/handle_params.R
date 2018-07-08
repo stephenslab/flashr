@@ -1,3 +1,20 @@
+# @title Handle data parameter
+#
+# @description If data is a matrix, calls flash_set_data.
+#
+# @param data An n by p matrix or a flash data object.
+#
+# @return A flash data object.
+#
+handle_data = function(data) {
+  if (is.matrix(data)) {
+    data = flash_set_data(data)
+  } else if (class(data) != "flash_data") {
+    stop("Data must be a matrix or a flash data object.")
+  }
+  data
+}
+
 # @title Handle kset parameter
 #
 # @description Checks that kset is numeric and not out of bounds for the

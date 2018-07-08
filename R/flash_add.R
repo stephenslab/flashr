@@ -22,9 +22,7 @@
 #' @export
 #'
 flash_add_lf = function(data, LL, FF, f_init=NULL, fixl=NULL, fixf=NULL) {
-  if (is.matrix(data)) {
-    data = flash_set_data(data)
-  }
+  data = handle_data(data)
   if (is.null(f_init)){
     f_init = flash_init_null()
   }
@@ -50,9 +48,7 @@ flash_add_lf = function(data, LL, FF, f_init=NULL, fixl=NULL, fixf=NULL) {
 #'
 flash_add_factors_from_data = function(data, K, f_init=NULL,
                                        init_fn="udv_si") {
-  if (is.matrix(data)) {
-    data = flash_set_data(data)
-  }
+  data = handle_data(data)
   if (is.null(f_init)) {
     f_init = flash_init_null()
   }
@@ -84,8 +80,8 @@ flash_add_factors_from_data = function(data, K, f_init=NULL,
 #' @export
 #'
 flash_add_fixed_l = function(data, LL, f_init=NULL, fixl=NULL,
-  init_fn="udv_si") {
-  if(is.matrix(data)){data = flash_set_data(data)}
+                             init_fn="udv_si") {
+  data = handle_data(data)
   if(is.null(f_init)){f_init = flash_init_null()}
   if(is.null(fixl)){fixl = !is.na(LL)}
 
@@ -179,7 +175,7 @@ find_col_blocks = function(X) {
 #' @export
 #'
 flash_add_fixed_f = function(data, FF, f_init=NULL, fixf=NULL) {
-  if (is.matrix(data)) {data = flash_set_data(data)}
+  data = handle_data(data)
 
   tf = flash_add_fixed_l(flash_transpose_data(data), FF, flash_transpose(f_init), fixf)
   return(flash_transpose(tf))

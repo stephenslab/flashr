@@ -252,9 +252,7 @@ flash_add_greedy = function(data,
   if (!is.null(seed)) {
     set.seed(seed)
   }
-  if (is.matrix(data)) {
-    data = flash_set_data(data)
-  }
+  data = handle_data(data)
   var_type = match.arg(var_type)
   init_fn = handle_init_fn(init_fn)
   ebnm_fn = handle_ebnm_fn(ebnm_fn)
@@ -349,9 +347,7 @@ flash_backfit = function(data,
                          verbose = FALSE,
                          nullcheck = TRUE,
                          maxiter = 1000) {
-  if (is.matrix(data)) {
-    data = flash_set_data(data)
-  }
+  data = handle_data(data)
   kset = handle_kset(kset, f_init)
   var_type = match.arg(var_type)
   ebnm_fn = handle_ebnm_fn(ebnm_fn)
