@@ -104,7 +104,7 @@ flash_l_sampler = function(data, f, kset=NULL) {
   sampler_list = vector("list", flash_get_k(f))
   for (k in kset) {
     # Use ebnm function and parameters from flash object
-    ebnm_fn = f$ebnm_fn[[k]]
+    ebnm_fn = f$ebnm_fn_l[[k]]
     if (is.null(ebnm_fn)) {
       stop(paste("Factor/loading", k, "has not yet been fit."))
     }
