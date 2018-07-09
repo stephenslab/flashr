@@ -250,6 +250,7 @@ flash_add_greedy = function(data,
 
   for (k in 1:Kmax) {
     message("fitting factor/loading ", k)
+    old_f = f
     f = flash_r1(data,
                  f,
                  var_type,
@@ -265,8 +266,13 @@ flash_add_greedy = function(data,
                  seed = NULL)
 
     # Test whether the factor/loading combination is effectively zero.
-    if (is_tiny_fl(f, flash_get_k(f)))
+    if (is_tiny_fl(f, flash_get_k(f))) {
+      if (flash_get_k(f) > 1) {
+        # Remove zero factor as long as it doesn't create an empty object
+        f = old_f
+      }
       break
+    }
   }
 
   return(f)
