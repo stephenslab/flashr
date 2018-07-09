@@ -190,19 +190,3 @@ flash_add_fixed_f = function(data, FF, f_init=NULL, fixf=NULL) {
   tf = flash_add_fixed_l(flash_transpose_data(data), FF, flash_transpose(f_init), fixf)
   return(flash_transpose(tf))
 }
-
-# @title Initialize a flash fit object by applying a function to data.
-#
-# @param data a flash data object.
-#
-# @param init_fn An initialization function, which takes as input an
-#   (n by p matrix, or flash data object) and K, a number of factors,
-#   and and outputs a list with elements (u,d,v).
-#
-# @return A flash fit object.
-#
-flash_init_fn = function(data, init_fn, K=1) {
-  s = do.call(init_fn, list(get_Yorig(data), K))
-  f = flash_init_udv(s, K)
-  return(f)
-}
