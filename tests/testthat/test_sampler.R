@@ -25,7 +25,7 @@ test_that(paste("sampling functions produce objects of correct",
     expect_equal(sampled_means_l, fit$EL, tolerance = sqrt(var_l))
 
     # Test LF sampler.
-    lfsampler = flash_lf_sampler(data, fit, ebnm_fn=ebnm_fn, fixed="f")
+    lfsampler = flash_lf_sampler(data, fit, fixed="f")
     lfsamp = lfsampler(10)
     expect_length(lfsamp, 10)
     expect_equal(dim(lfsamp[[1]]), c(20, 30))
@@ -33,13 +33,13 @@ test_that(paste("sampling functions produce objects of correct",
     lf_means = Reduce(`+`, lfsamp) / 10
 
     # Need to suppress warning about scale parameter being a matrix.
-    LF = flash_get_lf(fit)
+    LF = flash_get_fitted_values(fit)
     suppressWarnings(expect_equal(lf_means, LF, tolerance=0.1, scale=LF))
 
     # Fix some elements.
     fit = flash_add_fixed_f(data, matrix(1, nrow=30, ncol=1),
             fixf = matrix(c(rep(TRUE,10),rep(FALSE,20)),ncol=1))
-    fit = suppressWarnings(flash_backfit(data, fit, ebnm_fn=ebnm_fn))
+    fit = suppressWarnings(flash_backfit(data, fit))
 
     # Check flash_f_sampler.
     fsampler = flash_f_sampler(data, fit, 1:flash_get_k(fit), ebnm_fn=ebnm_fn)
@@ -56,7 +56,7 @@ test_that(paste("sampling functions produce objects of correct",
     expect_equal(sampled_means_f[11:30], fit$EF[11:30],
                  tolerance = sqrt(var_f[11:30]))
 
-    flsampler = flash_lf_sampler(data, fit, ebnm_fn=ebnm_fn, fixed="l")
+    flsampler = flash_lf_sampler(data, fit, fixed="l")
     flsamp = flsampler(10)
     expect_length(flsamp, 10)
     expect_equal(dim(flsamp[[1]]), c(20, 30))

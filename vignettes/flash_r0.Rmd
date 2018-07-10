@@ -37,7 +37,7 @@ the objective function! That is the optimization did not
 work very well (because deleting the factor is actually a special
 case of the model). 
 ```{r}
-f0 = flash_zero_out_factor(data,f1,1)
+f0 = flash_zero_out_factor(f1,1)
 f0 = flash_update_precision(data,f0)
 flash_get_objective(data,f0)
 ```
@@ -62,7 +62,7 @@ for(i in 1:100){
   Y = matrix(rnorm(n*p),nrow=n)
   data = flash_set_data(Y)
   f1= flash(data,Kmax=1,nullcheck=FALSE)
-  f0 = flash_zero_out_factor(data,f1,1)
+  f0 = flash_zero_out_factor(f1,1)
   f0 = flash_update_precision(data,f0)
   F1minusF0[i] = flash_get_objective(data,f1) - flash_get_objective(data,f0)
 }

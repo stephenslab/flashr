@@ -37,7 +37,7 @@ Run flash (with $K=1$) on the full data
 ```{r}
   data = flash_set_data(Y)
   f= flash(data,Kmax=1,verbose=TRUE)
-  plot(LF,flash_get_lf(f),main="True LF vs fitted value (full data)",xlab="true LF",ylab="fitted LF")
+  plot(LF,flash_get_fitted_values(f),main="True LF vs fitted value (full data)",xlab="true LF",ylab="fitted LF")
   abline(a=0,b=1,col="red")
 ```
 
@@ -45,26 +45,26 @@ And on missing data
 ```{r}  
   data.miss = flash_set_data(Y.miss)
   f.miss = flash(data.miss,Kmax=1,verbose=TRUE)
-  plot(LF,flash_get_lf(f.miss),main="True LF vs fitted values (missing data)",xlab="true LF",ylab="fitted LF")
+  plot(LF,flash_get_fitted_values(f.miss),main="True LF vs fitted values (missing data)",xlab="true LF",ylab="fitted LF")
   abline(a=0,b=1,col="red")
 ```
 
 And compute overall RMSE of estimated low-rank structure.
 ```{r}  
-  sqrt(mean((LF-flash_get_lf(f))^2))
-  sqrt(mean((LF-flash_get_lf(f.miss))^2))
+  sqrt(mean((LF-flash_get_fitted_values(f))^2))
+  sqrt(mean((LF-flash_get_fitted_values(f.miss))^2))
 ```
 
 And try setting the var_type slightly differently:
 ```{r}
   f= flash(data,Kmax=1,var_type = "constant",verbose=TRUE)
-  plot(LF,flash_get_lf(f),main="True LF vs fitted value (full data)",xlab="true LF",ylab="fitted LF")
+  plot(LF,flash_get_fitted_values(f),main="True LF vs fitted value (full data)",xlab="true LF",ylab="fitted LF")
   abline(a=0,b=1,col="red")
-  sqrt(mean((LF-flash_get_lf(f))^2))
+  sqrt(mean((LF-flash_get_fitted_values(f))^2))
   
   f.miss = flash(data.miss,Kmax=1,var_type = "constant",verbose=TRUE)
-  plot(LF,flash_get_lf(f.miss),main="True LF vs fitted values (missing data)",xlab="true LF",ylab="fitted LF")
+  plot(LF,flash_get_fitted_values(f.miss),main="True LF vs fitted values (missing data)",xlab="true LF",ylab="fitted LF")
   abline(a=0,b=1,col="red")
-  sqrt(mean((LF-flash_get_lf(f.miss))^2))
+  sqrt(mean((LF-flash_get_fitted_values(f.miss))^2))
 ```
 

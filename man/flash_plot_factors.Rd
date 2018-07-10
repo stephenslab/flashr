@@ -4,19 +4,22 @@
 \alias{flash_plot_factors}
 \title{Plot the factor/loading pairs from flash results.}
 \usage{
-flash_plot_factors(data, f, k = 1, loading_label = FALSE,
+flash_plot_factors(data, f, kset = NULL, loading_label = FALSE,
   factor_label = FALSE)
 }
 \arguments{
-\item{data}{The flash data object.}
+\item{data}{An n by p matrix or a flash data object created using
+\code{flash_set_data}.}
 
-\item{f}{The flash fit object.}
+\item{f}{A flash fit object.}
 
-\item{k}{The indices of the factor/loading pairs to be plotted.}
+\item{kset}{The indices of the factor/loading pairs to be plotted.}
 
-\item{loading_label}{The label to use for the loading plots.}
+\item{loading_label}{If \code{TRUE}, then the row names of the data
+matrix will be used to label the loading plots.}
 
-\item{factor_label}{The label to use for the factor plots.}
+\item{factor_label}{If \code{TRUE}, then the column names of the data
+matrix will be used to label the factor plots.}
 }
 \value{
 List containing:
@@ -26,8 +29,5 @@ List containing:
   \item{\code{plot_l}}{A ggplot object for the loadings.}
 }
 \description{
-Plot the factor/loading pairs from flash results.
-}
-\details{
 Plots each factor and loading as a barplot.
 }

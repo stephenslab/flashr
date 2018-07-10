@@ -13,6 +13,8 @@ test_that("argument checking works", {
   expect_identical(handle_kset(1:2, f), 1:2)
   expect_error(handle_kset(1:3, f))
   expect_error(handle_kset(list(1, 2), f))
+  nullf = flash_init_null()
+  expect_error(handle_kset(NULL, nullf))
 
   # init_fn:
   expect_identical(handle_init_fn("udv_si"), "udv_si")

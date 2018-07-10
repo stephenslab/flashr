@@ -2,22 +2,44 @@
 % Please edit documentation in R/flash_add.R
 \name{flash_add_factors_from_data}
 \alias{flash_add_factors_from_data}
-\title{Add factors to a flash fit object based on data.}
+\title{Add factors to a flash object based on data}
 \usage{
 flash_add_factors_from_data(data, K, f_init = NULL, init_fn = "udv_si")
 }
 \arguments{
-\item{data}{A flash data object.}
+\item{data}{An n by p matrix or a flash data object created using
+\code{flash_set_data}.}
 
-\item{K}{Number of factors to add.}
+\item{K}{The number of factors to add.}
 
-\item{f_init}{An existing flash fit object to add to.}
+\item{f_init}{The flash object to which new factors are to be added.
+If \code{f_init = NULL}, then a new flash fit object is created.}
 
-\item{init_fn}{The function to use to initialize new factors
-(typically some kind of svd-like function).}
+\item{init_fn}{The function used to initialize factors. Options
+include:
+\describe{
+  \item{\code{"udv_si"}}{Provides a simple wrapper to
+    \code{\link[softImpute]{softImpute}} to provide a rank-one
+    initialization. Uses option \code{type = "als"}.}
+  \item{\code{"udv_si_svd"}}{Uses
+    \code{\link[softImpute]{softImpute}} with option
+    \code{type = "svd"}.}
+  \item{\code{"udv_svd"}}{Provides a simple wrapper to \code{svd}.}
+  \item{\code{"udv_random"}}{Provides a random initialization of
+    factors.}
+}
+A user-specified function can also be used. This function should
+take parameters \code{(Y, K)}, where \code{Y} is an n by p matrix of
+data (or a flash data object) and \code{K} is the number of factors.
+It should output a list with elements \code{(u, d, v)}, where
+\code{u} is a n by K matrix, \code{v} is a p by K matrix, and
+\code{d} is a K vector. (If the input data includes missing values,
+then the function must be able to deal with missing values in its
+input matrix.)}
 }
 \description{
-Computes the current residuals from data and f_init
-  and adds K new factors based on init_fn applied to these
-  residuals. (If f_init is NULL then the residuals are the data).
+Computes the current residuals from \code{data} and
+  \code{f_init} and adds \code{K} new factors based on \code{init_fn}
+  applied to these residuals. (If \code{f_init} is \code{NULL} then
+  the residuals are the data.)
 }

@@ -20,6 +20,7 @@ Imports:
     assertthat,
     ebnm (>= 0.1-11),
     ggplot2,
+    methods,
     softImpute,
     stats,
     utils
