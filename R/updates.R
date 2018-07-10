@@ -51,9 +51,9 @@ flash_update_single_loading = function(data,
             f$EL[subset, k] = a$postmean
             f$EL2[subset, k] = a$postmean2
             f$gl[[k]] = a$fitted_g
+            f$ebnm_fn_l[[k]] = ebnm_fn
             f$ebnm_param_l[[k]] = ebnm_param
             f$KL_l[[k]] = a$penloglik - NM_posterior_e_loglik(x, s, a$postmean, a$postmean2)
-            f$penloglik_l[[k]] = a$penloglik
         } else if (return_sampler) {
             # if all else fails, sample values at their expectation
             return(sampler(rep(TRUE, length(f$EL[, k])), NULL,
@@ -109,9 +109,9 @@ flash_update_single_factor = function(data,
             f$EF[subset, k] = a$postmean
             f$EF2[subset, k] = a$postmean2
             f$gf[[k]] = a$fitted_g
+            f$ebnm_fn_f[[k]] = ebnm_fn
             f$ebnm_param_f[[k]] = ebnm_param
             f$KL_f[[k]] = a$penloglik - NM_posterior_e_loglik(x, s, a$postmean, a$postmean2)
-            f$penloglik_f[[k]] = a$penloglik
         } else if (return_sampler) {
             # if all else fails, sample values at their expectation
             return(sampler(rep(TRUE, length(f$EF[, k])), NULL,
@@ -254,7 +254,7 @@ perform_nullcheck = function(data, f, kset, var_type, verbose) {
         f_changed = FALSE
         for (k in kset) {
 
-            f0 = flash_zero_out_factor(data, f, k)
+            f0 = flash_zero_out_factor(f, k)
             f0 = flash_update_precision(data, f0, var_type)
             F0 = flash_get_objective(data, f0)
             F1 = flash_get_objective(data, f)

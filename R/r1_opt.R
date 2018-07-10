@@ -223,7 +223,7 @@ r1_opt = function(R,
 
     return(list(l = l, f = f, l2 = l2, f2 = f2, tau = tau, F_obj = F_obj,
                 KL_l = KL_l, KL_f = KL_f, gl = gl, gf = gf,
-                penloglik_l = penloglik_l, penloglik_f = penloglik_f,
+                ebnm_fn_l = ebnm_fn_l, ebnm_fn_f = ebnm_fn_f,
                 ebnm_param_l = ebnm_param_l, ebnm_param_f = ebnm_param_f))
 }
 
@@ -235,6 +235,8 @@ update_f_from_r1_opt_results = function(f, k, res) {
     f$EF2[, k] = res$f2
     f$tau = res$tau
 
+    f$ebnm_fn_f[[k]] = res$ebnm_fn_f
+    f$ebnm_fn_l[[k]] = res$ebnm_fn_l
     f$ebnm_param_f[[k]] = res$ebnm_param_f
     f$ebnm_param_l[[k]] = res$ebnm_param_l
 
@@ -252,12 +254,6 @@ update_f_from_r1_opt_results = function(f, k, res) {
         f$KL_l[[k]] = res$KL_l
     }
 
-    if (!is.null(res$penloglik_f)) {
-        f$penloglik_f[[k]] = res$penloglik_f
-    }
-    if (!is.null(res$penloglik_l)) {
-        f$penloglik_l[[k]] = res$penloglik_l
-    }
     return(f)
 }
 
