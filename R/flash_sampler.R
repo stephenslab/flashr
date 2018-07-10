@@ -13,9 +13,6 @@
 #' @param kset The indices of factors to be optimized (NULL indicates
 #'   all factors).
 #'
-#' @param ebnm_fn The function used to solve the Empirical Bayes Normal
-#'   Means problem.
-#'
 #' @param fixed Indicates whether to fix factors or loadings at their
 #'   posterior mean.
 #'
@@ -29,16 +26,15 @@
 flash_lf_sampler = function(data,
                             f,
                             kset = NULL,
-                            ebnm_fn = "ebnm_pn",
                             fixed = c("factors", "loadings")) {
   data = handle_data(data)
   kset = handle_kset(kset, f)
 
   fixed = match.arg(fixed)
   if (fixed == "factors") {
-    return(flash_lf_sampler_fixedf(data, f, kset, ebnm_fn))
+    return(flash_lf_sampler_fixedf(data, f, kset))
   } else if (fixed == "loadings") {
-    return(flash_lf_sampler_fixedl(data, f, kset, ebnm_fn))
+    return(flash_lf_sampler_fixedl(data, f, kset))
   }
 }
 
@@ -54,8 +50,8 @@ flash_lf_sampler = function(data,
 # @return A function that takes a single parameter nsamp, the number of
 #   samples of LF to be produced by the sampler.
 #
-flash_lf_sampler_fixedf = function(data, f, kset, ebnm_fn) {
-  l_sampler = flash_l_sampler(data, f, kset, ebnm_fn)
+flash_lf_sampler_fixedf = function(data, f, kset) {
+  l_sampler = flash_l_sampler(data, f, kset)
 
   function(nsamp) {
     lsamp = l_sampler(nsamp)
@@ -75,8 +71,8 @@ flash_lf_sampler_fixedf = function(data, f, kset, ebnm_fn) {
 # @return A function that takes a single parameter nsamp, the number of
 #   samples of LF to be produced by the sampler.
 #
-flash_lf_sampler_fixedl = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
-  f_sampler = flash_f_sampler(data, f, kset, ebnm_fn)
+flash_lf_sampler_fixedl = function(data, f, kset=NULL) {
+  f_sampler = flash_f_sampler(data, f, kset)
 
   function(nsamp) {
     fsamp = f_sampler(nsamp)
@@ -97,13 +93,19 @@ flash_lf_sampler_fixedl = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
 #   samples of L to be produced by the sampler. This sampler returns a list
 #   of matrices.
 #
-flash_l_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
-  data = handle_data(data)
+flash_l_sampler = function(data, f, kset=NULL) {
+  if (is.matrix(data)) {
+    data = flash_set_data(data)
+  }
   kset = handle_kset(kset, f)
 
   sampler_list = vector("list", flash_get_k(f))
   for (k in kset) {
-    # Use ebnm parameters from flash object
+    # Use ebnm function and parameters from flash object
+    ebnm_fn = f$ebnm_fn_l[[k]]
+    if (is.null(ebnm_fn)) {
+      stop(paste("Factor/loading", k, "has not yet been fit."))
+    }
     ebnm_param = f$ebnm_param_l[[k]]
     sampler_list[[k]] = flash_update_single_loading(data, f, k,
                                                     ebnm_fn,
@@ -126,7 +128,6 @@ flash_l_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
   }
 }
 
-
 # @title Generates sampler for F
 #
 # @description Generates function that samples F from a flash fit object.
@@ -139,11 +140,12 @@ flash_l_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
 #   samples of F to be produced by the sampler. This sampler returns a list
 #   of matrices.
 #
-flash_f_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
-  data = handle_data(data)
-  return(flash_l_sampler(flash_transpose_data(data), flash_transpose(f), kset, ebnm_fn))
+flash_f_sampler = function(data, f, kset=NULL) {
+  if (is.matrix(data)) {data = flash_set_data(data)}
+  return(flash_l_sampler(flash_transpose_data(data),
+                         flash_transpose(f),
+                         kset))
 }
-
 
 # @title Generates sampler for a single factor/loading
 #
