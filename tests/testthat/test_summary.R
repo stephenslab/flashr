@@ -14,5 +14,5 @@ test_that("summary produces expected output", {
   smry2 = summary(fl, Y)
   expect_type(smry2$objective, "double")
 
-  expect_output(print(fl), "Summary of flash object")
+  #expect_output(print(fl), "Summary of flash object")
 })

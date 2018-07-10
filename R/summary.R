@@ -26,8 +26,6 @@
 #'   \item{objective}{The value of the objective function attained by the
 #'     fit. See \code{\link{flash_get_objective}}.}
 #'
-#' @importFrom methods is
-#'
 summary.flash = function(f, data, ...) {
   if (class(f) != "flash") {
     stop("Input argument f must be an instance of class \"flash\".")
@@ -48,6 +46,8 @@ summary.flash = function(f, data, ...) {
   return(out)
 }
 
+#' @importFrom methods is
+#'
 print.summary.flash = function(summary, digits = 3, ...) {
   if (!is(summary, "summary.flash")) {
     stop("Input must be an instance of class \"summary.flash\".")
