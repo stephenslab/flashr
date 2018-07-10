@@ -61,7 +61,9 @@ flash_lf_sampler_fixedf = function(data, f, kset, ebnm_fn) {
 
   function(nsamp) {
     lsamp = l_sampler(nsamp)
-    return(mapply(function(L) {L %*% t(f$EF[, kset])}, lsamp, SIMPLIFY=FALSE))
+    return(mapply(function(L) {L %*% t(f$EF[, kset])},
+                  lsamp,
+                  SIMPLIFY=FALSE))
   }
 }
 
@@ -77,12 +79,14 @@ flash_lf_sampler_fixedf = function(data, f, kset, ebnm_fn) {
 # @return A function that takes a single parameter nsamp, the number of
 #   samples of LF to be produced by the sampler.
 #
-flash_lf_sampler_fixedl = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
+flash_lf_sampler_fixedl = function(data, f, kset, ebnm_fn) {
   f_sampler = flash_f_sampler(data, f, kset, ebnm_fn)
 
   function(nsamp) {
     fsamp = f_sampler(nsamp)
-    return(mapply(function(F) {f$EL[, kset] %*% t(F)}, fsamp, SIMPLIFY=FALSE))
+    return(mapply(function(F) {f$EL[, kset] %*% t(F)},
+                  fsamp,
+                  SIMPLIFY=FALSE))
   }
 }
 
@@ -90,29 +94,23 @@ flash_lf_sampler_fixedl = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
 # @title Generates sampler for L
 #
 # @description Generates function that samples L from a flash fit object.
-#   The columns of L are sampled independently from their marginal posteriors
-#   (conditional on F being fixed at its expectation).
+#   The columns of L are sampled independently from their marginal
+#   posteriors (conditional on F being fixed at its expectation).
 #
 # @inheritParams flash_lf_sampler
 #
 # @return A function that takes a single parameter nsamp, the number of
-#   samples of L to be produced by the sampler. This sampler returns a list
-#   of matrices.
+#   samples of L to be produced by the sampler. This sampler returns a
+#   list of matrices.
 #
-flash_l_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
-  if (is.matrix(data)) {
-    data = flash_set_data(data)
-  }
-  kset = handle_kset(kset, f)
-
+flash_l_sampler = function(data, f, kset, ebnm_fn) {
   sampler_list = vector("list", flash_get_k(f))
   for (k in kset) {
     # Use ebnm parameters from flash object
     ebnm_param = f$ebnm_param_l[[k]]
-    sampler_list[[k]] = flash_update_single_loading(data, f, k,
-                                                    ebnm_fn,
-                                                    ebnm_param,
-                                                    return_sampler=T)
+    ebnm_param = add_l_sampler_params(ebnm_param, ebnm_fn, f, k)
+    sampler_list[[k]] = flash_single_l_sampler(data, f, k, ebnm_fn,
+                                               ebnm_param)
   }
 
   function(nsamp) {
@@ -130,6 +128,16 @@ flash_l_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
   }
 }
 
+add_l_sampler_params = function(ebnm_param, ebnm_fn, f, k) {
+  ebnm_param$output = "post_sampler"
+  # Only works for ebnm_ash due to bug in ebnm_pn
+  if (ebnm_fn == "ebnm_ash") {
+    ebnm_param$g = f$gl[[k]]
+    ebnm_param$fixg = TRUE
+  }
+  ebnm_param
+}
+
 
 # @title Generates sampler for F
 #
@@ -143,7 +151,7 @@ flash_l_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
 #   samples of F to be produced by the sampler. This sampler returns a list
 #   of matrices.
 #
-flash_f_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
+flash_f_sampler = function(data, f, kset, ebnm_fn) {
   if (is.matrix(data)) {data = flash_set_data(data)}
   return(flash_l_sampler(flash_transpose_data(data), flash_transpose(f), kset, ebnm_fn))
 }

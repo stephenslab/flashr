@@ -15,56 +15,59 @@
 #
 # @return an updated flash object
 #
-flash_update_single_loading = function(data,
-                                       f,
-                                       k,
-                                       ebnm_fn,
-                                       ebnm_param,
-                                       return_sampler = F) {
-    subset = which(!f$fixl[, k])  # check which elements are not fixed
-    if (length(subset) > 0) {
-        # and only do the update if some elements are not fixed
-
-        tau = f$tau[subset, , drop = FALSE]
-
-        if (data$anyNA)
-            {
-                tau = tau * (!data$missing[subset, ])
-            }  # set missing values to have precision 0
-
-        s2 = 1/(tau %*% f$EF2[, k])
-        if (sum(is.finite(s2)) > 0) {
-            # check some finite values before proceeding
-            Rk = flash_get_Rk(data, f, k)[subset, ]  # residuals excluding factor k
-            x = ((Rk * tau) %*% f$EF[,k]) * s2
-            # if a value of s2 becomes numerically negative, set it to a
-            # small positive number
-            s = sqrt(pmax(s2, .Machine$double.eps))
-            a = do.call(ebnm_fn, list(x, s, ebnm_param, return_sampler))
-            if (return_sampler) {
-                if (is.null(a$post_sampler)) {
-                    stop("No sampler implemented for that ebnm function.")
-                }
-                return(sampler(f$fixl[, k], a$post_sampler,
-                               f$EL[f$fixl[, k], k]))
-            }
-            f$EL[subset, k] = a$postmean
-            f$EL2[subset, k] = a$postmean2
-            f$gl[[k]] = a$fitted_g
-            f$ebnm_param_l[[k]] = ebnm_param
-            f$KL_l[[k]] = a$penloglik - NM_posterior_e_loglik(x, s, a$postmean, a$postmean2)
-            f$penloglik_l[[k]] = a$penloglik
-        } else if (return_sampler) {
-            # if all else fails, sample values at their expectation
-            return(sampler(rep(TRUE, length(f$EL[, k])), NULL,
-                           f$EL[, k]))
-        }
+flash_update_single_loading = function(data, f, k, ebnm_fn, ebnm_param) {
+    subset = which(!f$fixl[, k])
+    # Do not update if all elements are fixed:
+    if (length(subset) == 0) {
+        return(f)
     }
+
+    ebnm_args = calc_ebnm_l_args(data, f, k, subset)
+    if (is.null(ebnm_args)) {
+        return(f)
+    }
+    a = do.call(ebnm_fn, list(ebnm_args$x, ebnm_args$s, ebnm_param))
+
+    f$EL[subset, k] = a$postmean
+    f$EL2[subset, k] = a$postmean2
+    f$gl[[k]] = a$fitted_g
+    f$ebnm_param_l[[k]] = ebnm_param
+    f$KL_l[[k]] = a$penloglik - NM_posterior_e_loglik(ebnm_args$x,
+                                                      ebnm_args$s,
+                                                      a$postmean,
+                                                      a$postmean2)
+    f$penloglik_l[[k]] = a$penloglik
+
     return(f)
 }
 
 
-# @title  Update a flash factor
+# TODO document
+#
+flash_single_l_sampler = function(data, f, k, ebnm_fn, ebnm_param) {
+    subset = which(!f$fixl[, k])
+    if (length(subset) == 0) {
+        # All values are fixed:
+        return(sampler(rep(TRUE, length(f$EL[, k])), NULL, f$EL[, k]))
+    }
+
+    ebnm_args = calc_ebnm_l_args(data, f, k, subset)
+    if (is.null(ebnm_args)) {
+        stop(paste("All standard errors for either factor or loading", k,
+                   "are infinite. Impossible to create sampler."))
+    }
+
+    a = do.call(ebnm_fn, list(ebnm_args$x, ebnm_args$s, ebnm_param))
+
+    if (is.null(a$post_sampler)) {
+        stop("No sampler implemented for that ebnm function.")
+    }
+
+    return(sampler(f$fixl[, k], a$post_sampler, f$EL[f$fixl[, k], k]))
+}
+
+
+# @title Update a flash factor
 #
 # @description Updates factor k of f to increase the objective F.
 #   Updates only the factor, once (not the loading).
@@ -73,53 +76,65 @@ flash_update_single_loading = function(data,
 #
 # @return an updated flash object
 #
-flash_update_single_factor = function(data,
-                                      f,
-                                      k,
-                                      ebnm_fn,
-                                      ebnm_param,
-                                      return_sampler = F) {
-    subset = which(!f$fixf[, k])  # check which elements are not fixed
-    if (length(subset) > 0) {
-        # and only do the update if some elements are not fixed
-
-        tau = f$tau[, subset, drop = FALSE]
-        if (data$anyNA)
-            {
-                tau = tau * (!data$missing[, subset])
-            }  # set missing values to have precision 0
-
-        s2 = 1/(t(tau) %*% f$EL2[, k])
-        if (sum(is.finite(s2)) > 0) {
-            # check some finite values before proceeding
-            Rk = flash_get_Rk(data, f, k)[, subset]  #residuals excluding factor k
-            x = (t(Rk * tau) %*% f$EL[, k]) * s2
-            # if a value of s2 becomes numerically negative, set it to a
-            # small positive number
-            s = sqrt(pmax(s2, .Machine$double.eps))
-            a = do.call(ebnm_fn, list(x, s, ebnm_param, return_sampler))
-            if (return_sampler) {
-                if (is.null(a$post_sampler)) {
-                    stop("No sampler implemented for that ebnm function.")
-                }
-                return(sampler(f$fixf[, k], a$post_sampler,
-                               f$EF[f$fixl[, k], k]))
-            }
-
-            f$EF[subset, k] = a$postmean
-            f$EF2[subset, k] = a$postmean2
-            f$gf[[k]] = a$fitted_g
-            f$ebnm_param_f[[k]] = ebnm_param
-            f$KL_f[[k]] = a$penloglik - NM_posterior_e_loglik(x, s, a$postmean, a$postmean2)
-            f$penloglik_f[[k]] = a$penloglik
-        } else if (return_sampler) {
-            # if all else fails, sample values at their expectation
-            return(sampler(rep(TRUE, length(f$EF[, k])), NULL,
-                           f$EF[, k]))
-        }
+flash_update_single_factor = function(data, f, k, ebnm_fn, ebnm_param) {
+    subset = which(!f$fixf[, k])
+    # Do not update if all elements are fixed:
+    if (length(subset) == 0) {
+        return(f)
     }
+
+    ebnm_args = calc_ebnm_f_args(data, f, k, subset)
+    if (is.null(ebnm_args)) {
+        return(f)
+    }
+
+    a = do.call(ebnm_fn, list(ebnm_args$x, ebnm_args$s, ebnm_param))
+
+    f$EF[subset, k] = a$postmean
+    f$EF2[subset, k] = a$postmean2
+    f$gf[[k]] = a$fitted_g
+    f$ebnm_param_f[[k]] = ebnm_param
+    f$KL_f[[k]] = a$penloglik - NM_posterior_e_loglik(ebnm_args$x,
+                                                      ebnm_args$s,
+                                                      a$postmean,
+                                                      a$postmean2)
+    f$penloglik_f[[k]] = a$penloglik
+
     return(f)
 }
+
+
+calc_ebnm_l_args = function(data, f, k, subset) {
+    calc_ebnm_args(subset, flash_get_Rk(data, f, k),
+                   data$missing, f$tau, f$EF, f$EF2, k)
+}
+
+
+calc_ebnm_f_args = function(data, f, k, subset) {
+    calc_ebnm_args(subset, t(flash_get_Rk(data, f, k)),
+                   t(data$missing), t(f$tau), f$EL, f$EL2, k)
+}
+
+
+calc_ebnm_args = function(subset, Rk, missing, tau, EX, EX2, k) {
+    tau = tau[subset, , drop = FALSE]
+    missing = missing[subset, , drop = FALSE]
+    tau[missing] = 0
+    Rk = Rk[subset, , drop = FALSE]
+
+    s2 = 1/(tau %*% EX2[, k])
+    if (sum(is.finite(s2)) == 0) {
+        return(NULL)
+    } # return NULL if there are no finite values
+
+    x = ((Rk * tau) %*% EX[, k]) * s2
+    # if a value of s2 becomes numerically negative, set it to a
+    # small positive number
+    s = sqrt(pmax(s2, .Machine$double.eps))
+
+    list(x = x, s = s)
+}
+
 
 # @title Update a single flash factor-loading combination (and precision).
 #
@@ -138,6 +153,7 @@ flash_update_single_fl = function(data,
     f = flash_update_single_factor(data, f, k, ebnm_fn_f, ebnm_param_f)
     return(f)
 }
+
 
 # @title Optimize a flash factor-loading combination.
 #
@@ -223,6 +239,7 @@ flash_optimize_single_fl = function(data,
     return(f)
 }
 
+
 # @title Zeros out factors when that improves the objective.
 #
 # @description Sometimes zeroing out a factor can improve the
@@ -267,7 +284,7 @@ perform_nullcheck = function(data, f, kset, var_type, verbose) {
 
             if (F0 > F1) {
                 if (verbose) {
-                  message("factor zeroed out")
+                    message("factor zeroed out")
                 }
                 f = f0
                 f_changed = TRUE
@@ -281,5 +298,3 @@ perform_nullcheck = function(data, f, kset, var_type, verbose) {
     }
     return(f)
 }
-
-

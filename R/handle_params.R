@@ -217,6 +217,7 @@ add_ebnm_fn_defaults = function(ebnm_param, ebnm_fn) {
 #   user).
 #
 add_ebnm_ash_defaults = function(ebnm_param) {
+  ebnm_param$output = "flash_data"
   if (is.null(ebnm_param$mixcompdist)) {
     ebnm_param$mixcompdist = "normal"
   }
