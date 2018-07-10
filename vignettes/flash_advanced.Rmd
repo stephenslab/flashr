@@ -91,13 +91,13 @@ f = flash_backfit(data,f,verbose=FALSE)
 
 Having fit the model we might want to extract the fitted factors and
 loadings.  You can do that using functions like `flash_get_ldf` to get
-the standardized loadings, factors and weights. Also `flash_get_lf`
+the standardized loadings, factors and weights. Also `flash_get_fitted_values`
 gets the product (LDF').  And `flash_get_objective` will return the
 measure of goodness-of-fit achieved (the variational lower bound,
 F). This can be helpful for comparing multiple fits to the same data.
 
 ```{r, fig.width = 5, fig.height = 5}
-plot(flash_get_lf(f), LL %*% t(FF),
+plot(flash_get_fitted_values(f), LL %*% t(FF),
      main="compare fitted values with true LF'")
 flash_get_ldf(f)$d
 flash_get_objective(data,f)
@@ -146,10 +146,10 @@ results are pretty similar in terms of mean squared error
 (MSE). Notice that backfitting improved MSE vs greedy.
 
 ```{r}
-mean((flash_get_lf(f_cheat) - LL %*% t(FF))^2)
-mean((flash_get_lf(f_greedy_bf) - LL %*% t(FF))^2)
-mean((flash_get_lf(f) - LL %*% t(FF))^2)
-mean((flash_get_lf(f_greedy) - LL %*% t(FF))^2)
+mean((flash_get_fitted_values(f_cheat) - LL %*% t(FF))^2)
+mean((flash_get_fitted_values(f_greedy_bf) - LL %*% t(FF))^2)
+mean((flash_get_fitted_values(f) - LL %*% t(FF))^2)
+mean((flash_get_fitted_values(f_greedy) - LL %*% t(FF))^2)
 ```
 
 # Setting the function used to solve the EBNM problem
@@ -195,7 +195,7 @@ since we did not add a non-zero mean to the simulation.)
 f = flash_add_fixed_l(data,LL = cbind(rep(1,n)))
 f = flash_add_factors_from_data(data,K=10,f_init=f)
 f = flash_backfit(data,f)
-flash_get_k(f) #tells you how many factors f has
+flash_get_nfactors(f) # tells you how many nonzero factors f has
 head(flash_get_ldf(f,1,drop_zero_factors = FALSE)$l)
 # Note this is 0 as the factor has no weight
 flash_get_ldf(f,1,drop_zero_factors = FALSE)$d

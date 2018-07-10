@@ -1,67 +1,98 @@
 # Functions for extracting useful information about the object.
 
-#' @title Return the estimated LF' matrix.
+#' @title Estimate LF'
 #'
-#' @param f A flash fit object.
+#' @description Return the estimated LF' matrix.
+#'
+#' @inheritParams flash_get_ldf
 #'
 #' @return The estimated value of LF', an n by p matrix.
 #'
 #' @export
 #'
-flash_get_lf = function(f) {
-    if (is.null(f$EL)) {
-        return(NULL)
-    }
-    return(f$EL %*% t(f$EF))
+flash_get_fitted_values = function(f) {
+  if (is.null(f$EL)) {
+    return(NULL)
+  }
+  return(f$EL %*% t(f$EF))
 }
 
-#' @title flash_get_ldf
+#' @title Get LDF from a flash object
+#'
+#' @description Returns standardized loadings, factors, and weights from
+#' a flash object.
 #'
 #' @param f A flash fit object.
 #'
-#' @param k Indices of loadings/factors to be returned.
+#' @param kset Indices of loadings/factors to be returned.
 #'
-#' @param drop_zero_factors Flag whether to remove any factor/loadings
-#'   that are zero.
-#'
-#' @details Returns standardized loadings, factors, and weights from a
-#' flash object.
+#' @param drop_zero_factors If \code{TRUE}, then any factor/loadings
+#'   that are zero will be removed.
 #'
 #' @return A list with the following elements. These are analogous to
-#'   the u, d and v returned by \code{svd}, but columns of l and f are
-#'   not orthogonal.
-#' 
-#' \item{l}{A matrix whose columns contain the standardized loadings
-#'   (ie norm 1).}
-#' 
-#' \item{d}{A vector of weights (analogous to the singular values in
-#'   an svd).}
-#' 
-#' \item{f}{A matrix whose columns contain the standardized factors
-#'   (i.e., norm 1).}
+#'   the \code{u}, \code{d} and \code{v} returned by \code{svd}, but
+#'   the columns of \code{l} and \code{f} are not orthogonal.
+#'
+#'   \item{\code{l}}{A matrix whose columns contain the standardized
+#'     loadings (i.e., with norm 1).}
+#'
+#'   \item{\code{d}}{A vector of weights (analogous to the singular
+#'     values in an SVD).}
+#'
+#'   \item{\code{f}}{A matrix whose columns contain the standardized
+#'     factors (i.e., with norm 1).}
 #'
 #' @export
 #'
-flash_get_ldf = function(f, k = NULL, drop_zero_factors =TRUE) {
-  if (is.null(k)) {
-    k = 1:flash_get_k(f)
-  }
-  ll = f$EL[, k, drop=FALSE]
-  ff = f$EF[, k, drop=FALSE]
-  d= sqrt(colSums(ll^2) * colSums(ff^2))
+flash_get_ldf = function(f, kset = NULL, drop_zero_factors = TRUE) {
+  kset = handle_kset(kset, f)
+  ll = f$EL[, kset, drop=FALSE]
+  ff = f$EF[, kset, drop=FALSE]
+  d = sqrt(colSums(ll^2) * colSums(ff^2))
 
   ll = scale(ll, scale=sqrt(colSums(ll^2)), center=FALSE)
   ff = scale(ff, scale=sqrt(colSums(ff^2)), center=FALSE)
 
   if(drop_zero_factors) {
-    ll = ll[,d!=0,drop=FALSE]
-    ff = ff[,d!=0,drop=FALSE]
-    d = d[d!=0,drop=FALSE]
+    ll = ll[, d!=0, drop=FALSE]
+    ff = ff[, d!=0, drop=FALSE]
+    d = d[d!=0, drop=FALSE]
   }
 
   list(d = d,
        l = ll,
        f = ff)
+}
+
+#' @title Get number of factors in a flash object
+#'
+#' @description Returns the number of factors in a flash object.
+#'   Factors that have been zeroed out are not counted.
+#'
+#' @inheritParams flash_get_ldf
+#'
+#' @export
+#'
+flash_get_nfactors = function(f) {
+  ldf = flash_get_ldf(f)
+  return(length(ldf$d))
+}
+
+#' @title Get PVE from a flash object
+#'
+#' @description Returns the factor contributions (proportion of
+#' variance explained) for each factor/loading combination in flash
+#' fit \code{f}. Because the factors are not required to be orthogonal,
+#' this should be interpreted loosely: e.g., PVE could total more than 1.
+#'
+#' @inheritParams flash_get_ldf
+#'
+#' @export
+#'
+flash_get_pve = function(f, drop_zero_factors = TRUE) {
+  s = (flash_get_ldf(f, drop_zero_factors=drop_zero_factors)$d)^2
+  tau = f$tau[f$tau != 0]
+  s/(sum(s) + sum(1/tau))
 }
 
 # @title Get the residuals from a flash data and fit object,
@@ -80,9 +111,9 @@ flash_get_R = function(data, f) {
     if (is.null(f$EL))
         {
             return(data$Y)
-        }  
+        }
  else {
-        return(data$Y - flash_get_lf(f))
+        return(data$Y - flash_get_fitted_values(f))
     }
 }
 
@@ -94,9 +125,9 @@ flash_get_R_withmissing = function(data, f) {
     if (is.null(f$EL))
         {
             return(get_Yorig(data))
-        }  
+        }
  else {
-        return(get_Yorig(data) - flash_get_lf(f))
+        return(get_Yorig(data) - flash_get_fitted_values(f))
     }
 }
 
@@ -138,14 +169,8 @@ flash_get_f = function(f) {
   f$EF
 }
 
-#' @title Get number of factors in a fit object.
-#'
-#' @param f A flash fit object.
-#'
-#' @details Returns the number of factors in a flash fit.
-#'
-#' @export
-#'
+# @title Get number of factors in a fit object.
+# @details Returns the number of factors in a flash fit.
 flash_get_k = function(f) {
     k = ncol(f$EL)
     if (is.null(k)) {
@@ -161,25 +186,4 @@ flash_get_n = function(f) {
 
 flash_get_p = function(f) {
   nrow(f$EF)
-}
-
-#' @title flash_get_pve
-#'
-#' @description Returns the factor contributions ('proportion of
-#' variance explained') by each factor/loading combination in flash
-#' fit f. Because the factors are not required to be orthogonal this
-#' should be interpreted loosely: eg PVE could total more than 1.
-#'
-#' @param f A flash fit object.
-#'
-#' @export
-#'
-flash_get_pve = function(f) {
-    s = (flash_get_ldf(f)$d)^2
-    tau = f$tau[f$tau != 0]
-    s/(sum(s) + sum(1/tau))
-}
-
-flash_get_conv_criteria = function(data, f) {
-    flash_get_objective(data, f)
 }

@@ -27,9 +27,7 @@ flash_lf_sampler = function(data,
                             f,
                             kset = NULL,
                             fixed = c("factors", "loadings")) {
-  if (is.matrix(data)) {
-    data = flash_set_data(data)
-  }
+  data = handle_data(data)
   kset = handle_kset(kset, f)
 
   fixed = match.arg(fixed)
@@ -130,7 +128,6 @@ flash_l_sampler = function(data, f, kset=NULL) {
   }
 }
 
-
 # @title Generates sampler for F
 #
 # @description Generates function that samples F from a flash fit object.
@@ -149,7 +146,6 @@ flash_f_sampler = function(data, f, kset=NULL) {
                          flash_transpose(f),
                          kset))
 }
-
 
 # @title Generates sampler for a single factor/loading
 #
