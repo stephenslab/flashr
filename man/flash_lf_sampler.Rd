@@ -4,8 +4,7 @@
 \alias{flash_lf_sampler}
 \title{Generates LF sampler}
 \usage{
-flash_lf_sampler(data, f, kset = NULL, ebnm_fn = "ebnm_pn",
-  fixed = c("factors", "loadings"))
+flash_lf_sampler(data, f, kset = NULL, fixed = c("factors", "loadings"))
 }
 \arguments{
 \item{data}{An n by p matrix or a flash data object created using
@@ -15,9 +14,6 @@ flash_lf_sampler(data, f, kset = NULL, ebnm_fn = "ebnm_pn",
 
 \item{kset}{The indices of factors to be optimized (NULL indicates
 all factors).}
-
-\item{ebnm_fn}{The function used to solve the Empirical Bayes Normal
-Means problem.}
 
 \item{fixed}{Indicates whether to fix factors or loadings at their
 posterior mean.}

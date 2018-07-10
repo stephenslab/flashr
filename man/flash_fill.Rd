@@ -2,18 +2,20 @@
 % Please edit documentation in R/flash_utils.R
 \name{flash_fill}
 \alias{flash_fill}
-\title{Use a flash fit to fill in missing entries.}
+\title{Use a flash fit to fill in missing entries}
 \usage{
-flash_fill(Y, f)
+flash_fill(data, f)
 }
 \arguments{
-\item{Y}{A flash data object, or an n by p matrix, used to fit f.}
+\item{data}{An n by p matrix or a flash data object created using
+\code{flash_set_data}.}
 
-\item{f}{The flash fit object obtained from running flash on Y.}
+\item{f}{A flash fit object obtained from running \code{flash} on
+\code{data}.}
 }
 \value{
-A matrix with non-missing entries the same as $Y$, and
-  missing entries imputed from the flash fit
+A matrix with non-missing entries the same as Y, and
+  missing entries imputed from the flash fit.
 }
 \description{
 Fills in missing entries of Y by using the relevant
