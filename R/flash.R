@@ -84,8 +84,8 @@
 #' @seealso \code{\link{flash_add_greedy}}, \code{\link{flash_backfit}}
 #'
 #' @return A fitted flash object. Use \code{flash_get_ldf} to access
-#'   standardized loadings and factors; use \code{flash_get_lf} to
-#'   access fitted LF'.
+#'   standardized loadings and factors; use
+#'   \code{flash_get_fitted_values} to access fitted LF'.
 #'
 #' @examples
 #'
@@ -111,7 +111,7 @@
 #'
 #' # Plot true lf' against estimated lf'; the scale of the estimate
 #' # matches the data.
-#' plot(ltrue %*% t(ftrue), flash_get_lf(f))
+#' plot(ltrue %*% t(ftrue), flash_get_fitted_values(f))
 #'
 #' # Example to use the more flexible ebnm function in ashr.
 #' f2 = flash(Y, ebnm_fn="ebnm_ash")

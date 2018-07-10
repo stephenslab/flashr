@@ -10,6 +10,9 @@
 # @return kset (with values possibly defaulted in).
 #
 handle_kset = function(kset, f) {
+  if (flash_get_k(f) == 0) {
+    stop("No factors have been added to the flash object yet.")
+  }
   if (is.null(kset)) {
     # Default:
     kset = 1:flash_get_k(f)
