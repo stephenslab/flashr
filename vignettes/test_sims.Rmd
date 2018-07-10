@@ -37,7 +37,7 @@ test_sims = function(flash_fn=flashr::flash_add_greedy,flash_param = list(),simf
     d = simfn()
     #print(d$Y)
     f = do.call(flash_fn,modifyList(flash_param,list(data=d$Y)))
-    rmse[i] = sqrt(mean((flashr::flash_get_lf(f)-d$LF)^2))
+    rmse[i] = sqrt(mean((flashr::flash_get_fitted_values(f)-d$LF)^2))
   }
   return(rmse)
 }

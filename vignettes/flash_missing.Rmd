@@ -38,9 +38,9 @@ fgb = flash_backfit(dmiss,fg)
 s = softImpute::softImpute(Ymiss,rank.max=10,type="svd")
 index = which(is.na(Ymiss))
 s_imp = (s$u %*% diag(s$d) %*% t(s$v))[index]
-f_imp = flash_get_lf(f)[index]
-fg_imp = flash_get_lf(fg)[index]
-fgb_imp = flash_get_lf(fgb)[index]
+f_imp = flash_get_fitted_values(f)[index]
+fg_imp = flash_get_fitted_values(fg)[index]
+fgb_imp = flash_get_fitted_values(fgb)[index]
 
 opt = (LL %*% t(FF))[index]
 mean((s_imp-opt)^2)
@@ -80,9 +80,9 @@ fgb = flash_backfit(dmiss,fg)
 s = softImpute::softImpute(Ymiss,rank.max=10,type="svd")
 index = which(is.na(Ymiss))
 s_imp = (s$u %*% diag(s$d) %*% t(s$v))[index]
-f_imp = flash_get_lf(f)[index]
-fg_imp = flash_get_lf(fg)[index]
-fgb_imp = flash_get_lf(fgb)[index]
+f_imp = flash_get_fitted_values(f)[index]
+fg_imp = flash_get_fitted_values(fg)[index]
+fgb_imp = flash_get_fitted_values(fgb)[index]
 
 opt = (LL %*% t(FF))[index]
 mean((s_imp-opt)^2)
