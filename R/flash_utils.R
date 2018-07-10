@@ -19,7 +19,7 @@ flash_fill = function(data, f){
     stop("for flash_fill data must be a matrix or flash data object")
   if(dim(data)[1]!=flash_get_n(f)){stop("dimensions of data must match flash fit")}
   if(dim(data)[2]!=flash_get_p(f)){stop("dimensions of data must match flash fit")}
-  data[is.na(data)] = flash_get_lf(f)[is.na(data)]
+  data[is.na(data)] = flash_get_fitted_values(f)[is.na(data)]
   return(data)
 }
 
