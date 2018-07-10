@@ -31,9 +31,7 @@ flash_lf_sampler = function(data,
                             kset = NULL,
                             ebnm_fn = "ebnm_pn",
                             fixed = c("factors", "loadings")) {
-  if (is.matrix(data)) {
-    data = flash_set_data(data)
-  }
+  data = handle_data(data)
   kset = handle_kset(kset, f)
 
   fixed = match.arg(fixed)
@@ -100,9 +98,7 @@ flash_lf_sampler_fixedl = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
 #   of matrices.
 #
 flash_l_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
-  if (is.matrix(data)) {
-    data = flash_set_data(data)
-  }
+  data = handle_data(data)
   kset = handle_kset(kset, f)
 
   sampler_list = vector("list", flash_get_k(f))
@@ -144,7 +140,7 @@ flash_l_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
 #   of matrices.
 #
 flash_f_sampler = function(data, f, kset=NULL, ebnm_fn=ebnm_pn) {
-  if (is.matrix(data)) {data = flash_set_data(data)}
+  data = handle_data(data)
   return(flash_l_sampler(flash_transpose_data(data), flash_transpose(f), kset, ebnm_fn))
 }
 
