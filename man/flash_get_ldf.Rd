@@ -2,36 +2,33 @@
 % Please edit documentation in R/get_functions.R
 \name{flash_get_ldf}
 \alias{flash_get_ldf}
-\title{flash_get_ldf}
+\title{Get LDF from a flash object}
 \usage{
-flash_get_ldf(f, k = NULL, drop_zero_factors = TRUE)
+flash_get_ldf(f, kset = NULL, drop_zero_factors = TRUE)
 }
 \arguments{
 \item{f}{A flash fit object.}
 
-\item{k}{Indices of loadings/factors to be returned.}
+\item{kset}{Indices of loadings/factors to be returned.}
 
-\item{drop_zero_factors}{Flag whether to remove any factor/loadings
-that are zero.}
+\item{drop_zero_factors}{If \code{TRUE}, then any factor/loadings
+that are zero will be removed.}
 }
 \value{
 A list with the following elements. These are analogous to
-  the u, d and v returned by \code{svd}, but columns of l and f are
-  not orthogonal.
+  the \code{u}, \code{d} and \code{v} returned by \code{svd}, but
+  the columns of \code{l} and \code{f} are not orthogonal.
 
-\item{l}{A matrix whose columns contain the standardized loadings
-  (ie norm 1).}
+  \item{\code{l}}{A matrix whose columns contain the standardized
+    loadings (i.e., with norm 1).}
 
-\item{d}{A vector of weights (analogous to the singular values in
-  an svd).}
+  \item{\code{d}}{A vector of weights (analogous to the singular
+    values in an SVD).}
 
-\item{f}{A matrix whose columns contain the standardized factors
-  (i.e., norm 1).}
+  \item{\code{f}}{A matrix whose columns contain the standardized
+    factors (i.e., with norm 1).}
 }
 \description{
-flash_get_ldf
-}
-\details{
-Returns standardized loadings, factors, and weights from a
-flash object.
+Returns standardized loadings, factors, and weights from
+a flash object.
 }

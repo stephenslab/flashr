@@ -33,12 +33,12 @@ flash_init_lf = function(LL, FF, fixl = NULL, fixf = NULL) {
 
     f$gl = list()
     f$gf = list()
+    f$ebnm_fn_l = list()
+    f$ebnm_fn_f = list()
     f$ebnm_param_l = list()
     f$ebnm_param_f = list()
     f$KL_l = as.list(rep(0, flash_get_k(f)))
     f$KL_f = as.list(rep(0, flash_get_k(f))) # KL divergences for each l and f.
-    f$penloglik_l = as.list(rep(0, flash_get_k(f)))
-    f$penloglik_f = as.list(rep(0, flash_get_k(f)))
     f = c(f, list(tau = NULL))
     class(f) = "flash"
     return(f)
@@ -52,6 +52,55 @@ flash_init_null = function() {
     f = list(EL = NULL, EF = NULL, fixl = NULL, fixf = NULL, EL2 = NULL, EF2 = NULL, gl = NULL, gf = NULL, ebnm_param_l = NULL,
         ebnm_param_f = NULL, KL_l = NULL, KL_f = NULL, tau = NULL)
     class(f) = "flash"
+    return(f)
+}
+
+# @title Initialize a flash fit object by applying a function to data.
+#
+# @param data a flash data object.
+#
+# @param init_fn An initialization function, which takes as input an
+#   (n by p matrix, or flash data object) and K, a number of factors,
+#   and and outputs a list with elements (u,d,v).
+#
+# @return A flash fit object.
+#
+flash_init_fn = function(data, init_fn, K=1) {
+  s = do.call(init_fn, list(get_Yorig(data), K))
+  f = flash_init_udv(s, K)
+
+  l_names = rownames(get_Yorig(data))
+  f_names = colnames(get_Yorig(data))
+  rownames(f$EL) = rownames(f$EL2) = rownames(f$fixl) = l_names
+  rownames(f$EF) = rownames(f$EF2) = rownames(f$fixf) = f_names
+  return(f)
+}
+
+# @title Initialize a flash fit object from a list with elements (u,d,v).
+#
+# @param s List with elements (u,v,d).
+#
+# @param K The number of factors to use (factors \code{1:K} are used).
+#
+# @return A flash fit object ready for optimization.
+#
+flash_init_udv = function(s, K = 1) {
+    s$u = as.matrix(s$u)
+    s$v = as.matrix(s$v)
+
+    # Deals with case these are vectors (K = 1).
+    if (ncol(s$u) > K)
+        {
+            s$u = s$u[, 1:K, drop = FALSE]
+        }
+    if (ncol(s$v) > K) {
+        s$v = s$v[, 1:K, drop = FALSE]
+    }
+    if (length(s$d) > K) {
+        s$d = s$d[1:K]
+    }
+
+    f = flash_init_lf(t(s$d * t(s$u)), s$v)
     return(f)
 }
 
@@ -124,32 +173,4 @@ udv_random = function (Y, K = 1) {
   p = ncol(Y)
   return(list(u = matrix(rnorm(n * K), ncol = K), d = 1,
               v = matrix(rnorm(p * K), ncol = K)))
-}
-
-# @title Initialize a flash fit object from a list with elements (u,d,v).
-#
-# @param s List with elements (u,v,d).
-#
-# @param K The number of factors to use (factors \code{1:K} are used).
-#
-# @return A flash fit object ready for optimization.
-#
-flash_init_udv = function(s, K = 1) {
-    s$u = as.matrix(s$u)
-    s$v = as.matrix(s$v)
-
-    # Deals with case these are vectors (K = 1).
-    if (ncol(s$u) > K)
-        {
-            s$u = s$u[, 1:K, drop = FALSE]
-        }
-    if (ncol(s$v) > K) {
-        s$v = s$v[, 1:K, drop = FALSE]
-    }
-    if (length(s$d) > K) {
-        s$d = s$d[1:K]
-    }
-
-    f = flash_init_lf(t(s$d * t(s$u)), s$v)
-    return(f)
 }
