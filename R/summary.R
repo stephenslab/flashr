@@ -33,7 +33,6 @@ summary.flash = function(f, data, ...) {
   if (missing(data)) {
     objective = NA
   } else {
-    #data = handle_data(data)
     objective = flash_get_objective(data, f)
   }
 
