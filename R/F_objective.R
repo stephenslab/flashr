@@ -1,15 +1,16 @@
-#' @title Get objective
+#' @title Get value of objective function
 #'
-#' @description Get objective function from flash data and flash fit
-#'   objects.
+#' @description Get value of objective function from data and flash fit
+#'   object.
 #'
-#' @param data A flash data object.
+#' @inheritParams flash
 #'
 #' @param f A flash fit object.
 #'
 #' @export
 #'
 flash_get_objective = function(data, f) {
+  data = handle_data(data)
   return(sum(unlist(f$KL_l)) + sum(unlist(f$KL_f)) + e_loglik(data, f))
 }
 

@@ -7,23 +7,25 @@
 flash_add_fixed_f(data, FF, f_init = NULL, fixf = NULL)
 }
 \arguments{
-\item{data}{a flash data object}
+\item{data}{An n by p matrix or a flash data object created using
+\code{flash_set_data}.}
 
 \item{FF}{The factors, a p by K matrix. Missing values will be
 initialized by the mean of the relevant column (but will generally
 be re-estimated when refitting the model).}
 
-\item{f_init}{A flash fit object to which factors are to be added
-(if NULL then a new fit object is created).}
+\item{f_init}{The flash object to which new factors are to be added.
+If \code{f_init = NULL}, then a new flash fit object is created.}
 
-\item{fixf}{A p by K matrix of TRUE/FALSE values indicating which
-elements of FF should be considered fixed and not changed during
-updates. Default is to fix all non-missing values, so missing
-values will be updated when f is updated.}
+\item{fixf}{A p by K matrix of of \code{TRUE}/\code{FALSE} values
+indicating which elements of \code{FF} should be considered fixed
+and not changed during updates.  The default is to fix all
+non-missing values, so missing values will be updated when the
+flash object is updated.}
 }
 \value{
-A flash fit object, with factors initialized from FF, and
-  corresponding loadings initialized to 0.
+A flash fit object, with factors initialized from \code{FF},
+  and corresponding loadings initialized to zero.
 }
 \description{
 Add a set of fixed factors to a flash fit object.

@@ -1,18 +1,22 @@
 # Functions related to the flash data object.
 
-#' @title Set up data for reading into flash.
+#' @title Set flash data object
 #'
-#' @param Y an n by p data matrix
+#' @description Set up data for reading into flash.
 #'
-#' @param S An n by p matrix of the standard errors of observations of
-#'   Y. (Can be a scalar if all elements of the matrix are equal.)
+#' @param Y An n by p data matrix.
+#'
+#' @param S An n by p matrix of the standard errors of the observations in
+#'   Y. (Can be a scalar if all standard errors are equal.) If
+#'   \code{S = NULL}, then the standard errors will be estimated during
+#'   fitting.
 #'
 #' @details Y can have missing data, but no column or row can be
 #' entirely missing. The flash data object contains flags for dealing
 #' with missing data and a (naively) imputed version of the original
-#' data matrix so that i) some of the initializatinon methods used by
-#' flash (eg svd) do not fail ii) data$Y * data$missing is 0 if the
-#' original data were missing.
+#' data matrix so that i) some of the initialization methods used by
+#' flash (e.g., \code{svd}) do not fail; ii) \code{data$Y * data$missing}
+#' is zero if the original data were missing.
 #'
 #' @return A flash data object.
 #'

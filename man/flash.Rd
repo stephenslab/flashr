@@ -20,7 +20,21 @@ object.}
 If \code{f_init = NULL}, then a new flash fit object is created.}
 
 \item{var_type}{The type of variance structure to assume for
-residuals.}
+residuals. Options include:
+\describe{
+  \item{\code{"by_column"}}{Residuals in any given column are
+    assumed to have the same variance.}
+  \item{\code{"by_row"}}{Residuals in any given row have the
+    same variance.}
+  \item{\code{"constant"}}{All residuals are assumed to have the
+    same variance.}
+  \item{\code{"zero"}}{The variance of the residuals is fixed. To
+    use this variance type, the standard errors must be
+    specified via parameter \code{S} when using
+    \code{flash_set_data} to set the flash data object.}
+  \item{\code{"kroneker"}}{This variance type has not yet been
+    implemented.}
+}}
 
 \item{init_fn}{The function used to initialize factors. Options
 include:
@@ -72,8 +86,8 @@ printed.}
 
 \item{nullcheck}{If \code{TRUE}, then after running hill-climbing
 updates \code{flash} will check whether the achieved optimum is
-better than setting the factor to 0. If the check is performed and
-fails then the factor will be set to 0 in the returned fit.}
+better than setting the factor to zero. If the check is performed
+and fails then the factor will be set to zero in the returned fit.}
 
 \item{seed}{A random number seed to use before running \code{flash}
 - for reproducibility. Set to \code{NULL} if you don't want the

@@ -15,7 +15,21 @@
 #'   If \code{f_init = NULL}, then a new flash fit object is created.
 #'
 #' @param var_type The type of variance structure to assume for
-#'   residuals.
+#'   residuals. Options include:
+#'   \describe{
+#'     \item{\code{"by_column"}}{Residuals in any given column are
+#'       assumed to have the same variance.}
+#'     \item{\code{"by_row"}}{Residuals in any given row have the
+#'       same variance.}
+#'     \item{\code{"constant"}}{All residuals are assumed to have the
+#'       same variance.}
+#'     \item{\code{"zero"}}{The variance of the residuals is fixed. To
+#'       use this variance type, the standard errors must be
+#'       specified via parameter \code{S} when using
+#'       \code{flash_set_data} to set the flash data object.}
+#'     \item{\code{"kroneker"}}{This variance type has not yet been
+#'       implemented.}
+#'   }
 #'
 #' @param init_fn The function used to initialize factors. Options
 #'   include:
@@ -67,8 +81,8 @@
 #'
 #' @param nullcheck If \code{TRUE}, then after running hill-climbing
 #'   updates \code{flash} will check whether the achieved optimum is
-#'   better than setting the factor to 0. If the check is performed and
-#'   fails then the factor will be set to 0 in the returned fit.
+#'   better than setting the factor to zero. If the check is performed
+#'   and fails then the factor will be set to zero in the returned fit.
 #'
 #' @param seed A random number seed to use before running \code{flash}
 #'   - for reproducibility. Set to \code{NULL} if you don't want the
@@ -238,9 +252,7 @@ flash_add_greedy = function(data,
   if (!is.null(seed)) {
     set.seed(seed)
   }
-  if (is.matrix(data)) {
-    data = flash_set_data(data)
-  }
+  data = handle_data(data)
   var_type = match.arg(var_type)
   init_fn = handle_init_fn(init_fn)
   ebnm_fn = handle_ebnm_fn(ebnm_fn)
@@ -250,6 +262,7 @@ flash_add_greedy = function(data,
 
   for (k in 1:Kmax) {
     message("fitting factor/loading ", k)
+    old_f = f
     f = flash_r1(data,
                  f,
                  var_type,
@@ -265,8 +278,13 @@ flash_add_greedy = function(data,
                  seed = NULL)
 
     # Test whether the factor/loading combination is effectively zero.
-    if (is_tiny_fl(f, flash_get_k(f)))
+    if (is_tiny_fl(f, flash_get_k(f))) {
+      if (flash_get_k(f) > 1) {
+        # Remove zero factor as long as it doesn't create an empty object
+        f = old_f
+      }
       break
+    }
   }
 
   return(f)
@@ -280,8 +298,8 @@ flash_add_greedy = function(data,
 #'
 #' @param f_init A fitted flash object to be refined.
 #'
-#' @param kset The indices of factors to be optimized (NULL indicates
-#'   all factors).
+#' @param kset The indices of factors to be optimized (\code{NULL}
+#'   indicates all factors).
 #'
 #' @param maxiter A maximum number of iterations to perform (not
 #'   including repeated fittings if \code{nullcheck} fails). To perform
@@ -298,8 +316,8 @@ flash_add_greedy = function(data,
 #'   for each factor/loading in \code{kset}. Finally, a list with fields
 #'   \code{l} and \code{f}, each of which contains an unnamed list of
 #'   \code{length(kset)} named lists, will separately supply parameters
-#'   for each distinct loading and each distinct factor. Set to NULL to
-#'   use defaults.
+#'   for each distinct loading and each distinct factor. Set to
+#'   \code{NULL} to use defaults.
 #'
 #' @return A fitted flash object.
 #'
@@ -335,9 +353,7 @@ flash_backfit = function(data,
                          verbose = FALSE,
                          nullcheck = TRUE,
                          maxiter = 1000) {
-  if (is.matrix(data)) {
-    data = flash_set_data(data)
-  }
+  data = handle_data(data)
   kset = handle_kset(kset, f_init)
   var_type = match.arg(var_type)
   ebnm_fn = handle_ebnm_fn(ebnm_fn)

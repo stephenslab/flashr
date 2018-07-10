@@ -8,25 +8,47 @@ flash_add_fixed_l(data, LL, f_init = NULL, fixl = NULL,
   init_fn = "udv_si")
 }
 \arguments{
-\item{data}{A flash data object.}
+\item{data}{An n by p matrix or a flash data object created using
+\code{flash_set_data}.}
 
 \item{LL}{The loadings, an n by K matrix. Missing values will be
 initialized by the mean of the relevant column (but will generally
 be re-estimated when refitting the model).}
 
-\item{f_init}{A flash fit object to which loadings are to be added
-(if NULL then a new fit object is created).}
+\item{f_init}{The flash object to which new factors are to be added.
+If \code{f_init = NULL}, then a new flash fit object is created.}
 
-\item{fixl}{An n by K matrix of TRUE/FALSE values indicating which
-elements of LL should be considered fixed and not changed during
-updates.  Default is to fix all non-missing values, so missing
-values will be updated when f is updated.}
+\item{fixl}{An n by K matrix of \code{TRUE}/\code{FALSE} values
+indicating which elements of \code{LL} should be considered fixed
+and not changed during updates.  The default is to fix all
+non-missing values, so missing values will be updated when the
+flash object is updated.}
 
-\item{init_fn}{An initialization function, which takes as input an}
+\item{init_fn}{The function used to initialize factors. Options
+include:
+\describe{
+  \item{\code{"udv_si"}}{Provides a simple wrapper to
+    \code{\link[softImpute]{softImpute}} to provide a rank-one
+    initialization. Uses option \code{type = "als"}.}
+  \item{\code{"udv_si_svd"}}{Uses
+    \code{\link[softImpute]{softImpute}} with option
+    \code{type = "svd"}.}
+  \item{\code{"udv_svd"}}{Provides a simple wrapper to \code{svd}.}
+  \item{\code{"udv_random"}}{Provides a random initialization of
+    factors.}
+}
+A user-specified function can also be used. This function should
+take parameters \code{(Y, K)}, where \code{Y} is an n by p matrix of
+data (or a flash data object) and \code{K} is the number of factors.
+It should output a list with elements \code{(u, d, v)}, where
+\code{u} is a n by K matrix, \code{v} is a p by K matrix, and
+\code{d} is a K vector. (If the input data includes missing values,
+then the function must be able to deal with missing values in its
+input matrix.)}
 }
 \value{
-A flash fit object, with loadings initialized from LL, and
-  corresponding factors initialized to 0.
+A flash fit object, with loadings initialized from \code{LL},
+  and corresponding factors initialized to zero.
 }
 \description{
 Add a set of fixed loadings to a flash fit object.

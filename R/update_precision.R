@@ -1,12 +1,11 @@
-#' @title  Update precision parameter.
+#' @title  Update precision parameter
 #'
-#' @description Updates precision estimate to increase the objective F.
+#' @description Updates the estimated precision to increase the value of
+#'   the objective function.
 #'
-#' @param data A flash data object.
+#' @inheritParams flash
 #'
 #' @param f A flash object.
-#'
-#' @param var_type Indicates what type of variance structure to assume.
 #'
 #' @return An updated flash object.
 #'
@@ -17,9 +16,7 @@ flash_update_precision = function(data,
                                   var_type = c("by_column", "by_row",
                                                "constant", "zero",
                                                "kroneker")) {
-    if (is.matrix(data)) {
-      data = flash_set_data(data)
-    }
+    data = handle_data(data)
     var_type = match.arg(var_type)
 
     if (var_type == "zero" & is.null(data$S)) {

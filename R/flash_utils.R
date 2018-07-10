@@ -1,25 +1,26 @@
-#' @title Use a flash fit to fill in missing entries.
+#' @title Use a flash fit to fill in missing entries
 #'
 #' @description Fills in missing entries of Y by using the relevant
 #'   entries of the estimated LDF' from the flash fit.
 #'
-#' @param Y A flash data object, or an n by p matrix, used to fit f.
+#' @inheritParams flash
 #'
-#' @param f The flash fit object obtained from running flash on Y.
+#' @param f A flash fit object obtained from running \code{flash} on
+#'   \code{data}.
 #'
-#' @return A matrix with non-missing entries the same as $Y$, and
-#'   missing entries imputed from the flash fit
+#' @return A matrix with non-missing entries the same as Y, and
+#'   missing entries imputed from the flash fit.
 #'
 #' @export
 #'
-flash_fill = function(Y, f){
-  if(class(Y)=="flash_data"){Y = get_Yorig(Y)}
-  if(!is.matrix(Y))
-    stop("for flash_fill Y must be a matrix or flash data object")
-  if(dim(Y)[1]!=flash_get_n(f)){stop("dimensions of Y must match flash fit")}
-  if(dim(Y)[2]!=flash_get_p(f)){stop("dimensions of Y must match flash fit")}
-  Y[is.na(Y)] = flash_get_fitted_values(f)[is.na(Y)]
-  return(Y)
+flash_fill = function(data, f){
+  if(class(data)=="flash_data"){data = get_Yorig(data)}
+  if(!is.matrix(data))
+    stop("for flash_fill data must be a matrix or flash data object")
+  if(dim(data)[1]!=flash_get_n(f)){stop("dimensions of data must match flash fit")}
+  if(dim(data)[2]!=flash_get_p(f)){stop("dimensions of data must match flash fit")}
+  data[is.na(data)] = flash_get_fitted_values(f)[is.na(data)]
+  return(data)
 }
 
 # @title Transpose a flash fit object.
@@ -39,10 +40,10 @@ flash_transpose = function(f) {
     tmp[c(which(tmp == "fixl"), which(tmp == "fixf"))] = c("fixf", "fixl")
     tmp[c(which(tmp == "gl"), which(tmp == "gf"))] = c("gf", "gl")
     tmp[c(which(tmp == "KL_l"), which(tmp == "KL_f"))] = c("KL_f", "KL_l")
+    tmp[c(which(tmp == "ebnm_fn_l"),
+          which(tmp == "ebnm_fn_f"))] = c("ebnm_fn_f", "ebnm_fn_l")
     tmp[c(which(tmp == "ebnm_param_l"),
           which(tmp == "ebnm_param_f"))] = c("ebnm_param_f", "ebnm_param_l")
-    tmp[c(which(tmp == "penloglik_l"),
-          which(tmp == "penloglik_f"))] = c("penloglik_f", "penloglik_l")
     names(f) = tmp
     if (is.matrix(f$tau)) {
         f$tau = t(f$tau)
@@ -91,12 +92,12 @@ flash_combine = function(f1, f2) {
              fixf = cbind(f1$fixf, f2$fixf),
              gl = c(f1$gl, f2$gl),
              gf = c(f1$gf, f2$gf),
+             ebnm_fn_l = c(f1$ebnm_fn_l, f2$ebnm_fn_l),
+             ebnm_fn_f = c(f1$ebnm_fn_f, f2$ebnm_fn_f),
              ebnm_param_l = c(f1$ebnm_param_l, f2$ebnm_param_l),
              ebnm_param_f = c(f1$ebnm_param_f, f2$ebnm_param_f),
              KL_l = c(f1$KL_l, f2$KL_l),
              KL_f = c(f1$KL_f, f2$KL_f),
-             penloglik_l = c(f1$penloglik_l, f2$penloglik_l),
-             penloglik_f = c(f1$penloglik_f, f2$penloglik_f),
              tau = f2$tau)
     class(f) = "flash"
     return(f)
@@ -153,23 +154,22 @@ flash_subset_data = function(data, row_subset = NULL, col_subset = NULL) {
     return(subdata)
 }
 
-#' @title Zero out a factor from f.
+#' @title Zero out factor from flash object
 #'
-#' @param data A flash data object.
+#' @description The factor and loadings of the kth factor of \code{f}
+#'   are made to be zero (except for elements of the factor/loading that
+#'   are designated to be fixed). This effectively reduces the rank by 1,
+#'   but the zero factor/loading is retained in \code{f} so that
+#'   the number and indexing of factor/loading matrices in \code{f}
+#'   remains the same.
 #'
 #' @param f A flash fit object.
 #'
-#' @param k Index of factor/loading to zero out.
-#'
-#' @details The factor and loadings of the kth factor of f are made to
-#'   be zero (except for elements of the factor/loading that are
-#'   designated to be fixed). This effectively reduces the rank by 1,
-#'   although the zero factor/loading is kept in f so the number and
-#'   indexing of factor/loading matrices in f remains the same.
+#' @param k The index of the factor/loading pair to zero out.
 #'
 #' @export
 #'
-flash_zero_out_factor = function(data, f, k = 1) {
+flash_zero_out_factor = function(f, k) {
     f$EL[!f$fixl[, k], k] = 0
     f$EL2[!f$fixl[, k], k] = 0
     f$EF[!f$fixf[, k], k] = 0
