@@ -31,39 +31,14 @@ flash_update_single_loading = function(data, f, k, ebnm_fn, ebnm_param) {
     f$EL[subset, k] = a$postmean
     f$EL2[subset, k] = a$postmean2
     f$gl[[k]] = a$fitted_g
+    f$ebnm_fn_l[[k]] = ebnm_fn
     f$ebnm_param_l[[k]] = ebnm_param
     f$KL_l[[k]] = a$penloglik - NM_posterior_e_loglik(ebnm_args$x,
                                                       ebnm_args$s,
                                                       a$postmean,
                                                       a$postmean2)
-    f$penloglik_l[[k]] = a$penloglik
 
     return(f)
-}
-
-
-# TODO document
-#
-flash_single_l_sampler = function(data, f, k, ebnm_fn, ebnm_param) {
-    subset = which(!f$fixl[, k])
-    if (length(subset) == 0) {
-        # All values are fixed:
-        return(sampler(rep(TRUE, length(f$EL[, k])), NULL, f$EL[, k]))
-    }
-
-    ebnm_args = calc_ebnm_l_args(data, f, k, subset)
-    if (is.null(ebnm_args)) {
-        stop(paste("All standard errors for either factor or loading", k,
-                   "are infinite. Impossible to create sampler."))
-    }
-
-    a = do.call(ebnm_fn, list(ebnm_args$x, ebnm_args$s, ebnm_param))
-
-    if (is.null(a$post_sampler)) {
-        stop("No sampler implemented for that ebnm function.")
-    }
-
-    return(sampler(f$fixl[, k], a$post_sampler, f$EL[f$fixl[, k], k]))
 }
 
 
@@ -93,12 +68,12 @@ flash_update_single_factor = function(data, f, k, ebnm_fn, ebnm_param) {
     f$EF[subset, k] = a$postmean
     f$EF2[subset, k] = a$postmean2
     f$gf[[k]] = a$fitted_g
+    f$ebnm_fn_f[[k]] = ebnm_fn
     f$ebnm_param_f[[k]] = ebnm_param
     f$KL_f[[k]] = a$penloglik - NM_posterior_e_loglik(ebnm_args$x,
                                                       ebnm_args$s,
                                                       a$postmean,
                                                       a$postmean2)
-    f$penloglik_f[[k]] = a$penloglik
 
     return(f)
 }

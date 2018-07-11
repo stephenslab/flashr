@@ -5,7 +5,7 @@ test_that("passing in and saving ebnm parameters works", {
   LF = outer(l,f)
   Y = LF + rnorm(5*20)
   f = flash_add_greedy(Y, Kmax=1, nullcheck=FALSE, ebnm_fn="ebnm_ash")
-  flash_defaults = list(output="flash_data", mixcompdist="normal", method="shrink")
+  flash_defaults = list(mixcompdist="normal", method="shrink")
   expect_equal(f$ebnm_param_l[[1]], flash_defaults)
   expect_equal(f$ebnm_param_f[[1]], flash_defaults)
   ebnm_param_l = list(mixcompdist="uniform", method="shrink", g=f$gl[[1]],
@@ -15,6 +15,6 @@ test_that("passing in and saving ebnm parameters works", {
                        ebnm_param=list(l=ebnm_param_l, f=list()))
   expect_equal(f$ebnm_fn_l[[1]], "ebnm_ash")
   expect_equal(f$ebnm_fn_f[[1]], "ebnm_pn")
-  expect_equal(f$ebnm_param_l[[1]], c(ebnm_param_l, output="flash_data"))
+  expect_equal(f$ebnm_param_l[[1]], ebnm_param_l)
   expect_equal(f$ebnm_param_f[[1]], list())
 })

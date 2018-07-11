@@ -7,5 +7,4 @@ test_that("test R2 computation matches R^2 when EL2=EL^2 and EF2=EF^2 ", {
   R = Y - flash_get_fitted_values(f)
   R2 = R^2
   expect_equal(R2,flash_get_R2(data,f))
-}
-)
+})

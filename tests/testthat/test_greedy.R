@@ -10,5 +10,4 @@ test_that("greedy works a simple example as expected", {
   expect_equal(flash_get_k(f),1)  # (the zero factor gets removed here)
   f2 = flash_add_greedy(data,3,f_init=f)
   expect_equal(flash_get_objective(data,f),flash_get_objective(data,f2))
-}
-)
+})
