@@ -11,11 +11,14 @@ flash_zero_out_factor(f, k)
 
 \item{k}{The index of the factor/loading pair to zero out.}
 }
+\value{
+The flash object with the kth factor/loading zeroed out.
+}
 \description{
 The factor and loadings of the kth factor of \code{f}
   are made to be zero (except for elements of the factor/loading that
   are designated to be fixed). This effectively reduces the rank by 1,
   but the zero factor/loading is retained in \code{f} so that
   the number and indexing of factor/loading matrices in \code{f}
-  remains the same.
+  remain the same.
 }

@@ -10,7 +10,7 @@ flash_fill(data, f)
 \item{data}{An n by p matrix or a flash data object created using
 \code{flash_set_data}.}
 
-\item{f}{A flash fit object obtained from running \code{flash} on
+\item{f}{A fitted flash object obtained from running \code{flash} on
 \code{data}.}
 }
 \value{
