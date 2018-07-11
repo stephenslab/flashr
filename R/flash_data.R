@@ -1,5 +1,3 @@
-# Functions related to the flash data object.
-
 #' @title Set flash data object
 #'
 #' @description Set up data for reading into flash.
@@ -24,16 +22,16 @@
 #'
 flash_set_data = function(Y, S = NULL) {
 
-    # initialize data
+    # Initialize data.
     data = list(Yorig = Y, S = S, anyNA = anyNA(Y), missing = is.na(Y))
 
     if (anyNA(Y)) {
-        # replace missing data with 0s
+        # Replace missing data with 0s.
         if (any(rowSums(!data$missing) == 0)) {
-            stop("data must not have all missing rows")
+            stop("Data must not have all missing rows.")
         }
         if (any(colSums(!data$missing) == 0)) {
-            stop("data must not have all missing columns")
+            stop("Data must not have all missing columns.")
         }
         Y[data$missing] = 0
     }

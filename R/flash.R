@@ -280,7 +280,7 @@ flash_add_greedy = function(data,
     # Test whether the factor/loading combination is effectively zero.
     if (is_tiny_fl(f, flash_get_k(f))) {
       if (flash_get_k(f) > 1) {
-        # Remove zero factor as long as it doesn't create an empty object
+        # Remove zero factor as long as it doesn't create an empty object.
         f = old_f
       }
       break
@@ -409,12 +409,12 @@ flash_backfit = function(data,
     }
 
     if (nullcheck) {
-      # remove factors that actually hurt objective
+      # Remove factors that actually hurt the objective.
       kset = 1:flash_get_k(f)
       f = perform_nullcheck(data, f, kset, var_type, verbose)
 
-      # recompute objective; if it changes then the whole process will
-      # be repeated
+      # Recompute objective; if it changes then the whole process will
+      # be repeated.
       cnew = flash_get_objective(data, f)
       diff = cnew - c
       c = cnew
