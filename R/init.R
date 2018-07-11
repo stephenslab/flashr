@@ -20,28 +20,29 @@
 #' @importFrom assertthat assert_that
 #'
 flash_init_lf = function(LL, FF, fixl = NULL, fixf = NULL) {
-    assert_that(ncol(LL) == ncol(FF))
-    if (is.null(fixl)) {
-        fixl = matrix(FALSE, ncol = ncol(LL), nrow = nrow(LL))
-    }
-    if (is.null(fixf)) {
-        fixf = matrix(FALSE, ncol = ncol(FF), nrow = nrow(FF))
-    }
+  assert_that(ncol(LL) == ncol(FF))
+  if (is.null(fixl)) {
+    fixl = matrix(FALSE, ncol = ncol(LL), nrow = nrow(LL))
+  }
+  if (is.null(fixf)) {
+    fixf = matrix(FALSE, ncol = ncol(FF), nrow = nrow(FF))
+  }
 
-    f = list(EL = LL, EF = FF, EL2 = LL^2, EF2 = FF^2, fixl = fixl,
-             fixf = fixf)
+  f = list(EL = LL, EF = FF, EL2 = LL^2, EF2 = FF^2,
+           fixl = fixl, fixf = fixf)
 
-    f$gl = list()
-    f$gf = list()
-    f$ebnm_fn_l = list()
-    f$ebnm_fn_f = list()
-    f$ebnm_param_l = list()
-    f$ebnm_param_f = list()
-    f$KL_l = as.list(rep(0, flash_get_k(f)))
-    f$KL_f = as.list(rep(0, flash_get_k(f))) # KL divergences for each l and f.
-    f = c(f, list(tau = NULL))
-    class(f) = "flash"
-    return(f)
+  f$gl = list()
+  f$gf = list()
+  f$ebnm_fn_l = list()
+  f$ebnm_fn_f = list()
+  f$ebnm_param_l = list()
+  f$ebnm_param_f = list()
+  f$KL_l = as.list(rep(0, flash_get_k(f)))
+  f$KL_f = as.list(rep(0, flash_get_k(f)))
+  f = c(f, list(tau = NULL))
+  class(f) = "flash"
+
+  return(f)
 }
 
 # @title Initialize an empty flash fit object.
@@ -49,11 +50,16 @@ flash_init_lf = function(LL, FF, fixl = NULL, fixf = NULL) {
 # @return An empty flash fit object.
 #
 flash_init_null = function() {
-    f = list(EL = NULL, EF = NULL, fixl = NULL, fixf = NULL, EL2 = NULL, EF2 = NULL, gl = NULL, gf = NULL, ebnm_param_l = NULL,
-        ebnm_param_f = NULL, KL_l = NULL, KL_f = NULL, tau = NULL)
-    class(f) = "flash"
-    return(f)
+  f = list(EL = NULL, EF = NULL, EL2 = NULL, EF2 = NULL,
+           fixl = NULL, fixf = NULL, gl = NULL, gf = NULL,
+           ebnm_fn_l = NULL, ebnm_fn_f = NULL,
+           ebnm_param_l = NULL, ebnm_param_f = NULL,
+           KL_l = NULL, KL_f = NULL, tau = NULL)
+  class(f) = "flash"
+
+  return(f)
 }
+
 
 # @title Initialize a flash fit object by applying a function to data.
 #
@@ -73,8 +79,10 @@ flash_init_fn = function(data, init_fn, K=1) {
   f_names = colnames(get_Yorig(data))
   rownames(f$EL) = rownames(f$EL2) = rownames(f$fixl) = l_names
   rownames(f$EF) = rownames(f$EF2) = rownames(f$fixf) = f_names
+
   return(f)
 }
+
 
 # @title Initialize a flash fit object from a list with elements (u,d,v).
 #
@@ -85,24 +93,25 @@ flash_init_fn = function(data, init_fn, K=1) {
 # @return A flash fit object ready for optimization.
 #
 flash_init_udv = function(s, K = 1) {
-    s$u = as.matrix(s$u)
-    s$v = as.matrix(s$v)
+  s$u = as.matrix(s$u)
+  s$v = as.matrix(s$v)
 
-    # Deals with case these are vectors (K = 1).
-    if (ncol(s$u) > K)
-        {
-            s$u = s$u[, 1:K, drop = FALSE]
-        }
-    if (ncol(s$v) > K) {
-        s$v = s$v[, 1:K, drop = FALSE]
-    }
-    if (length(s$d) > K) {
-        s$d = s$d[1:K]
-    }
+  # Deals with case these are vectors (K = 1).
+  if (ncol(s$u) > K)
+  {
+    s$u = s$u[, 1:K, drop = FALSE]
+  }
+  if (ncol(s$v) > K) {
+    s$v = s$v[, 1:K, drop = FALSE]
+  }
+  if (length(s$d) > K) {
+    s$d = s$d[1:K]
+  }
 
-    f = flash_init_lf(t(s$d * t(s$u)), s$v)
-    return(f)
+  f = flash_init_lf(t(s$d * t(s$u)), s$v)
+  return(f)
 }
+
 
 # @title udv_si
 #
@@ -123,16 +132,13 @@ udv_si = function(Y, K = 1) {
   return(res)
 }
 
+
 # @title udv_si_svd
 #
 # @description provides a simple wrapper to \code{softImpute} to
 #   provide a rank 1 initialization. Uses \code{type = "svd"} option.
 #
-# @param Y an n by p matrix
-#
-# @param K number of factors to use
-#
-# @return A list with components (u,d,v)
+# @inherit udv_si
 #
 #' @importFrom softImpute softImpute
 #'
@@ -141,27 +147,23 @@ udv_si_svd = function(Y, K = 1) {
   return(res)
 }
 
+
 # @title udv_svd
 #
 # @description Provides a simple wrapper to svd.
 #
-# @param Y An n by p matrix.
-#
-# @param K Number of factors to use.
-#
-# @return A list with components (u,d,v).
+# @inherit udv_si
 #
 udv_svd = function (Y, K = 1) {
   svd(Y, K, K)
 }
 
+
 # @title udv_random
 #
 # @description Provides a random initialization of factors.
 #
-# @param Y An n by p matrix.
-#
-# @param K Number of factors.
+# @inherit udv_si
 #
 # @return A list with components (u,d,v), with elements of u and v
 #   i.i.d. N(0,1).
