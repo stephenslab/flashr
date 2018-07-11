@@ -12,8 +12,10 @@ handle_data = function(data) {
   } else if (class(data) != "flash_data") {
     stop("Data must be a matrix or a flash data object.")
   }
-  data
+
+  return(data)
 }
+
 
 # @title Handle kset parameter
 #
@@ -30,6 +32,7 @@ handle_kset = function(kset, f) {
   if (flash_get_k(f) == 0) {
     stop("No factors have been added to the flash object yet.")
   }
+
   if (is.null(kset)) {
     # Default:
     kset = 1:flash_get_k(f)
@@ -37,7 +40,8 @@ handle_kset = function(kset, f) {
     stop(paste("Invalid kset. Kset should be a vector containing the",
                "indices of the factors to be optimized."))
   }
-  kset
+
+  return(kset)
 }
 
 
@@ -55,7 +59,8 @@ handle_init_fn = function(init_fn) {
   if (!is.function(init_fn) && !exists(init_fn, mode="function")) {
     stop("The specified init_fn does not exist.")
   }
-  init_fn
+
+  return(init_fn)
 }
 
 
@@ -115,7 +120,7 @@ handle_ebnm_fn = function(ebnm_fn) {
     stop("The specified ebnm function does not exist.")
   }
 
-  list(l = ebnm_fn_l, f = ebnm_fn_f)
+  return(list(l = ebnm_fn_l, f = ebnm_fn_f))
 }
 
 
@@ -200,8 +205,9 @@ handle_ebnm_param = function(ebnm_param, ebnm_fn, n_expected) {
                         function(x) {add_ebnm_fn_defaults(x, ebnm_fn$l)})
   ebnm_param_f = lapply(ebnm_param_f,
                         function(x) {add_ebnm_fn_defaults(x, ebnm_fn$f)})
-  list(l = ebnm_param_l, f = ebnm_param_f)
+  return(list(l = ebnm_param_l, f = ebnm_param_f))
 }
+
 
 # @title Add defaults to ebnm_param
 #
@@ -223,8 +229,10 @@ add_ebnm_fn_defaults = function(ebnm_param, ebnm_fn) {
   } else if (ebnm_fn == "ebnm_pn") {
     return(ebnm_param)
   }
-  ebnm_param
+
+  return(ebnm_param)
 }
+
 
 # @title Add ebnm_ash defaults to ebnm_param
 #
@@ -243,5 +251,5 @@ add_ebnm_ash_defaults = function(ebnm_param) {
   if (is.null(ebnm_param$method)) {
     ebnm_param$method = "shrink"
   }
-  ebnm_param
+  return(ebnm_param)
 }

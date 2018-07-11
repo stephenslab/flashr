@@ -32,7 +32,8 @@ test_that("argument checking works", {
   expect_error(handle_ebnm_fn("sfdskjfhskdjhfk"))
 
   # ebnm_param:
-  ash_defaults=list(mixcompdist="normal", method="shrink")
+  ash_defaults=list(mixcompdist="normal",
+                    method="shrink")
   # defaults:
   expect_identical(handle_ebnm_param(NULL,
                                      handle_ebnm_fn("ebnm_ash"),

@@ -16,7 +16,7 @@ test_that(paste("sampling functions produce objects of correct",
     fit = flash_add_greedy(data, 2, ebnm_fn=ebnm_fn)
 
     # Check flash_l_sampler.
-    lsampler = flash_l_sampler(data, fit)
+    lsampler = flash_l_sampler(data, fit, 1:flash_get_k(fit))
     lsamp = lsampler(50)
     expect_length(lsamp, 50)
     expect_equal(dim(lsamp[[1]]), c(20, 2))
@@ -25,7 +25,7 @@ test_that(paste("sampling functions produce objects of correct",
     expect_equal(sampled_means_l, fit$EL, tolerance = sqrt(var_l))
 
     # Test LF sampler.
-    lfsampler = flash_lf_sampler(data, fit, fixed="f")
+    lfsampler = flash_sampler(data, fit, fixed="f")
     lfsamp = lfsampler(10)
     expect_length(lfsamp, 10)
     expect_equal(dim(lfsamp[[1]]), c(20, 30))
@@ -42,7 +42,7 @@ test_that(paste("sampling functions produce objects of correct",
     fit = suppressWarnings(flash_backfit(data, fit))
 
     # Check flash_f_sampler.
-    fsampler = flash_f_sampler(data, fit)
+    fsampler = flash_f_sampler(data, fit, 1:flash_get_k(fit))
     fsamp = fsampler(50)
     expect_length(fsamp, 50)
     expect_length(fsamp[[1]], 30)
@@ -56,7 +56,7 @@ test_that(paste("sampling functions produce objects of correct",
     expect_equal(sampled_means_f[11:30], fit$EF[11:30],
                  tolerance = sqrt(var_f[11:30]))
 
-    flsampler = flash_lf_sampler(data, fit, fixed="l")
+    flsampler = flash_sampler(data, fit, fixed="l")
     flsamp = flsampler(10)
     expect_length(flsamp, 10)
     expect_equal(dim(flsamp[[1]]), c(20, 30))

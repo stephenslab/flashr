@@ -17,10 +17,11 @@ flash_get_fitted_values = function(f) {
   return(f$EL %*% t(f$EF))
 }
 
+
 #' @title Get LDF from a flash object
 #'
 #' @description Returns standardized loadings, factors, and weights from
-#' a flash object.
+#'   a flash object.
 #'
 #' @param f A flash fit object.
 #'
@@ -59,10 +60,11 @@ flash_get_ldf = function(f, kset = NULL, drop_zero_factors = TRUE) {
     d = d[d!=0, drop=FALSE]
   }
 
-  list(d = d,
-       l = ll,
-       f = ff)
+  return(list(d = d,
+              l = ll,
+              f = ff))
 }
+
 
 #' @title Get number of factors in a flash object
 #'
@@ -78,6 +80,7 @@ flash_get_nfactors = function(f) {
   return(length(ldf$d))
 }
 
+
 #' @title Get PVE from a flash object
 #'
 #' @description Returns the factor contributions (proportion of
@@ -92,98 +95,102 @@ flash_get_nfactors = function(f) {
 flash_get_pve = function(f, drop_zero_factors = TRUE) {
   s = (flash_get_ldf(f, drop_zero_factors=drop_zero_factors)$d)^2
   tau = f$tau[f$tau != 0]
-  s/(sum(s) + sum(1/tau))
+  return(s/(sum(s) + sum(1/tau)))
 }
+
 
 # @title Get the residuals from a flash data and fit object,
 #   excluding factor k.
 flash_get_Rk = function(data, f, k) {
-    if (flash_get_k(f) < k) {
-        stop("factor k does not exist")
-    }
-    return(data$Y - f$EL[, -k, drop = FALSE] %*% t(f$EF[, -k, drop = FALSE]))
+  if (flash_get_k(f) < k) {
+    stop("Factor k does not exist.")
+  }
+  return(data$Y - f$EL[, -k, drop = FALSE] %*% t(f$EF[, -k, drop = FALSE]))
 }
+
 
 # @title Get the residuals from data and a flash fit object.
 flash_get_R = function(data, f) {
 
-    # If f is null, return Y.
-    if (is.null(f$EL))
-        {
-            return(data$Y)
-        }
- else {
-        return(data$Y - flash_get_fitted_values(f))
-    }
+  # If f is null, return Y.
+  if (is.null(f$EL)) {
+    return(data$Y)
+  } else {
+    return(data$Y - flash_get_fitted_values(f))
+  }
 }
+
 
 # @title Get the residuals from data and a flash fit object, with
 #   missing data as in original.
 flash_get_R_withmissing = function(data, f) {
 
-    # If f is null, return Y.
-    if (is.null(f$EL))
-        {
-            return(get_Yorig(data))
-        }
- else {
-        return(get_Yorig(data) - flash_get_fitted_values(f))
-    }
+  # If f is null, return Y.
+  if (is.null(f$EL)) {
+    return(get_Yorig(data))
+  } else {
+    return(get_Yorig(data) - flash_get_fitted_values(f))
+  }
 }
 
+
 # @title Get the expected squared residuals from a flash data and fit
-# object.
+#   object.
 flash_get_R2 = function(data, f) {
-    if (is.null(f$EL)) {
-        return(data$Y^2)
-    } else {
-        LF = f$EL %*% t(f$EF)
-        return((data$Y - LF)^2 + f$EL2 %*% t(f$EF2) - f$EL^2 %*% t(f$EF^2))
-    }
+  if (is.null(f$EL)) {
+    return(data$Y^2)
+  } else {
+    LF = f$EL %*% t(f$EF)
+    return((data$Y - LF)^2 + f$EL2 %*% t(f$EF2) - f$EL^2 %*% t(f$EF^2))
+  }
 }
+
 
 # @title Get the expected squared residuals from a flash data and fit
 #   object excluding factor k.
 flash_get_R2k = function(data, f, k) {
-    if (is.null(f$EL)) {
-        return(data$Y^2)
-    } else {
-        return(flash_get_Rk(data, f, k)^2 +
-               f$EL2[, -k, drop = FALSE] %*% t(f$EF2[, -k, drop = FALSE]) -
-               f$EL[, -k, drop = FALSE]^2 %*%
-               t(f$EF[, -k, drop = FALSE]^2))
-    }
+  if (is.null(f$EL)) {
+    return(data$Y^2)
+  } else {
+    return(flash_get_Rk(data, f, k)^2 +
+             f$EL2[, -k, drop = FALSE] %*% t(f$EF2[, -k, drop = FALSE]) -
+             f$EL[, -k, drop = FALSE]^2 %*%
+             t(f$EF[, -k, drop = FALSE]^2))
+  }
 }
+
 
 # @title is_tiny_fl
 # @details Checks whether kth factor/loading combination is tiny.
 is_tiny_fl = function(f, k, tol = 1e-08) {
-    return(sum(f$EL[, k]^2) * sum(f$EF[, k]^2) < tol)
+  return(sum(f$EL[, k]^2) * sum(f$EF[, k]^2) < tol)
 }
 
-flash_get_l = function(f) {
-  f$EL
-}
-
-flash_get_f = function(f) {
-  f$EF
-}
 
 # @title Get number of factors in a fit object.
 # @details Returns the number of factors in a flash fit.
 flash_get_k = function(f) {
-    k = ncol(f$EL)
-    if (is.null(k)) {
-        return(0)
-    } else {
-        return(k)
-    }
+  k = ncol(f$EL)
+  if (is.null(k)) {
+    return(0)
+  } else {
+    return(k)
+  }
+}
+
+
+flash_get_l = function(f) {
+  return(f$EL)
+}
+
+flash_get_f = function(f) {
+  return(f$EF)
 }
 
 flash_get_n = function(f) {
-    nrow(f$EL)
+  return(nrow(f$EL))
 }
 
 flash_get_p = function(f) {
-  nrow(f$EF)
+  return(nrow(f$EF))
 }

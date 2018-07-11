@@ -30,5 +30,5 @@ A list with the following elements. These are analogous to
 }
 \description{
 Returns standardized loadings, factors, and weights from
-a flash object.
+  a flash object.
 }

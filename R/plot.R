@@ -49,10 +49,10 @@ flash_plot_factors = function(data,
       f_labels = NA
     }
     plot_f[[k]] = plot_one_factor(flash_get_f(f)[, k],
-                             pve[k],
-                             k,
-                             f_labels = f_labels,
-                             y_lab = "factor values")
+                                  pve[k],
+                                  k,
+                                  f_labels = f_labels,
+                                  y_lab = "factor values")
 
     # Plot the loadings.
     if (loading_label == TRUE) {
@@ -61,13 +61,14 @@ flash_plot_factors = function(data,
       f_labels = NA
     }
     plot_l[[k]] = plot_one_factor(flash_get_l(f)[, k],
-                             pve[k],
-                             k,
-                             f_labels = f_labels,
-                             y_lab = "loading values")
+                                  pve[k],
+                                  k,
+                                  f_labels = f_labels,
+                                  y_lab = "loading values")
   }
   return(list(plot_f = plot_f, plot_l = plot_l))
 }
+
 
 # @title Factor plot.
 #
@@ -136,6 +137,7 @@ plot_one_factor = function(f,
       labs(title = paste("Factor", k, "with PVE =", round(pve, 3)),
            x = x_lab, y = y_lab)
   }
+
   return(plot_f)
 }
 
@@ -167,5 +169,6 @@ flash_plot_pve = function(f,
               environment = environment()) +
        geom_point(size = 4) + geom_line(linetype = "dotdash") +
        labs(title = main, x = "factor index")
+
   return(p)
 }

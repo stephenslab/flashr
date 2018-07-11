@@ -46,6 +46,7 @@ summary.flash = function(f, data, ...) {
   return(out)
 }
 
+
 #' @importFrom methods is
 #'
 print.summary.flash = function(summary, digits = 3, ...) {
@@ -80,6 +81,7 @@ print.summary.flash = function(summary, digits = 3, ...) {
 
   return(invisible(summary))
 }
+
 
 print.flash <- function (f, data, digits = 3, ...) {
   print(summary(f, data), digits, ...)
