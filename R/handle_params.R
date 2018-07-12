@@ -3,7 +3,12 @@
 # @description Checks that input to f is valid and initializes a null
 #   flash fit object when necessary.
 #
-# @param f A flash fit object
+# @param f A flash fit object.
+#
+# @param allow_null If TRUE, accepts NULL as a valid argument.
+#
+# @param init_null_f If TRUE and f is NULL, initializes a flash object
+#   via a call to flash_init_null().
 #
 # @return f The flash object.
 #
@@ -28,7 +33,10 @@ handle_f = function(f, allow_null = TRUE, init_null_f = FALSE) {
 #
 # @param data An n by p matrix or a flash data object.
 #
-# @return A flash data object.
+# @param output If "flash_data", returns a flash data object. If
+#   "matrix", returns a matrix.
+#
+# @return A matrix or flash data object.
 #
 handle_data = function(data, output = "flash_data") {
   if (!is.matrix(data) && class(data) != "flash_data") {
@@ -47,7 +55,7 @@ handle_data = function(data, output = "flash_data") {
 
 # @title Handle k parameter
 #
-# @description Checks that factor k exists
+# @description Checks that factor k exists.
 #
 # @param k The factor index.
 #
@@ -62,6 +70,7 @@ handle_k = function(k, f) {
 
   return(k)
 }
+
 
 # @title Handle kset parameter
 #
