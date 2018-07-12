@@ -99,6 +99,7 @@ r1_opt = function(R,
   penloglik_f = NULL
 
   if (calc_F) {
+    all_obj = NULL
     F_obj = -Inf   # Variable to store value of objective function.
     KL_f = 0
     KL_l = 0
@@ -177,6 +178,7 @@ r1_opt = function(R,
     if (calc_F) {
       Fnew = KLobj + KL_l + KL_f +
         e_loglik_from_R2_and_tau(R2new, tau, missing)
+      all_obj = c(all_obj, Fnew)
       if (verbose) {
         message(paste0("Objective:", Fnew))
       }
@@ -223,7 +225,8 @@ r1_opt = function(R,
   return(list(l = l, f = f, l2 = l2, f2 = f2, tau = tau, F_obj = F_obj,
               KL_l = KL_l, KL_f = KL_f, gl = gl, gf = gf,
               ebnm_fn_l = ebnm_fn_l, ebnm_fn_f = ebnm_fn_f,
-              ebnm_param_l = ebnm_param_l, ebnm_param_f = ebnm_param_f))
+              ebnm_param_l = ebnm_param_l, ebnm_param_f = ebnm_param_f,
+              obj_by_iter = all_obj))
 }
 
 # Put the results into f.

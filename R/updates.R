@@ -208,7 +208,7 @@ flash_optimize_single_fl = function(data,
     f = perform_nullcheck(data, f, k, var_type, verbose)
   }
 
-  return(f)
+  return(list(f=f, obj_by_iter=res$obj_by_iter))
 }
 
 

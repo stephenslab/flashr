@@ -257,21 +257,25 @@ flash_add_greedy = function(data,
   ebnm_fn = handle_ebnm_fn(ebnm_fn)
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, Kmax)
 
+  obj_by_iter = list()
+
   for (k in 1:Kmax) {
     message("fitting factor/loading ", k)
     old_f = f
-    f = flash_r1(data,
-                 f,
-                 var_type,
-                 init_fn,
-                 tol,
-                 ebnm_fn$l,
-                 ebnm_param$l[[k]],
-                 ebnm_fn$f,
-                 ebnm_param$f[[k]],
-                 verbose,
-                 nullcheck,
-                 maxiter = 5000)
+    res = flash_r1(data,
+                   f,
+                   var_type,
+                   init_fn,
+                   tol,
+                   ebnm_fn$l,
+                   ebnm_param$l[[k]],
+                   ebnm_fn$f,
+                   ebnm_param$f[[k]],
+                   verbose,
+                   nullcheck,
+                   maxiter = 5000)
+    f = res$f
+    obj_by_iter[[k]] = res$obj_by_iter
 
     # Test whether the factor/loading combination is effectively zero.
     if (is_tiny_fl(f, flash_get_k(f))) {
@@ -283,7 +287,7 @@ flash_add_greedy = function(data,
     }
   }
 
-  return(f)
+  return(list(f=f, obj_by_iter=obj_by_iter))
 }
 
 
@@ -371,9 +375,10 @@ flash_backfit = function(data,
                                ebnm_param$f[[i]])
   }
 
-  c = flash_get_objective(data, f)
+  obj = flash_get_objective(data, f)
+  obj_by_iter = obj
   if (verbose) {
-    message("objective: ", c)
+    message("objective: ", obj)
   }
 
   diff = Inf
@@ -397,9 +402,10 @@ flash_backfit = function(data,
                                    ebnm_param$f[[i]])
       }
       cnew = flash_get_objective(data, f)
-      diff = cnew - c
-      c = cnew
-      if(verbose){message("objective: ",c)}
+      diff = cnew - obj
+      obj = cnew
+      obj_by_iter = c(obj_by_iter, obj)
+      if(verbose){message("objective: ", obj)}
       iteration = iteration + 1
     }
 
@@ -411,14 +417,14 @@ flash_backfit = function(data,
       # Recompute objective; if it changes then the whole process will
       # be repeated.
       cnew = flash_get_objective(data, f)
-      diff = cnew - c
-      c = cnew
+      diff = cnew - obj
+      obj = cnew
       iteration = 1
     }
 
   }
 
-  return(f)
+  return(list(f=f, obj_by_iter=obj_by_iter))
 }
 
 
