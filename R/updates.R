@@ -62,7 +62,6 @@ flash_update_single_factor = function(data, f, k, ebnm_fn, ebnm_param) {
   if (is.null(ebnm_args)) {
     return(f)
   }
-
   a = do.call(ebnm_fn, list(ebnm_args$x, ebnm_args$s, ebnm_param))
 
   f$EF[subset, k] = a$postmean
@@ -104,7 +103,7 @@ calc_ebnm_args = function(subset, Rk, missing, tau, EX, EX2, k) {
   # small positive number
   s = sqrt(pmax(s2, .Machine$double.eps))
 
-  list(x = x, s = s)
+  return(list(x = x, s = s))
 }
 
 
@@ -123,6 +122,7 @@ flash_update_single_fl = function(data,
   f = flash_update_precision(data, f, var_type)
   f = flash_update_single_loading(data, f, k, ebnm_fn_l, ebnm_param_l)
   f = flash_update_single_factor(data, f, k, ebnm_fn_f, ebnm_param_f)
+
   return(f)
 }
 
@@ -237,7 +237,7 @@ flash_optimize_single_fl = function(data,
 #
 perform_nullcheck = function(data, f, kset, var_type, verbose) {
 
-  f_changed = TRUE  #we are going to iterate until f does not change
+  f_changed = TRUE  # We are going to iterate until f does not change.
   while (f_changed) {
 
     f_changed = FALSE

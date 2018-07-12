@@ -16,7 +16,7 @@
 flash_fill = function(data, f){
   data = handle_data(data, output = "matrix")
 
-  if(dim(data)[1] != flash_get_n(f) || dim(data)[2] != flash_get_p(f)) {
+  if (dim(data)[1] != flash_get_n(f) || dim(data)[2] != flash_get_p(f)) {
     stop("Dimensions of data must match flash fit.")
   }
 
@@ -163,6 +163,7 @@ flash_subset_l = function(f, subset) {
   subf$tau = subf$tau[subset, , drop = F]
   subf$KL_l = NULL
   subf$KL_f = NULL
+
   return(subf)
 }
 
@@ -183,6 +184,7 @@ flash_subset_f = function(f, subset) {
   subf$tau = subf$tau[, subset, drop = F]
   subf$KL_l = NULL
   subf$KL_f = NULL
+
   return(subf)
 }
 
