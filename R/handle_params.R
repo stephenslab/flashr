@@ -1,3 +1,27 @@
+# @title Handle flash object parameter
+#
+# @description Checks that input to f is valid and initializes a null
+#   flash fit object when necessary.
+#
+# @param f A flash fit object
+#
+# @return f The flash object.
+#
+handle_f = function(f, allow_null = TRUE, init_null_f = FALSE) {
+  if (!allow_null && class(f) != "flash") {
+    stop("f must be a flash fit object.")
+  }
+  if (!is.null(f) && class(f) != "flash") {
+    stop("f must be NULL or a flash fit object.")
+  }
+  if (init_null_f && is.null(f)) {
+    f = flash_init_null()
+  }
+
+  return(f)
+}
+
+
 # @title Handle data parameter
 #
 # @description If data is a matrix, calls flash_set_data.
@@ -6,16 +30,38 @@
 #
 # @return A flash data object.
 #
-handle_data = function(data) {
-  if (is.matrix(data)) {
-    data = flash_set_data(data)
-  } else if (class(data) != "flash_data") {
+handle_data = function(data, output = "flash_data") {
+  if (!is.matrix(data) && class(data) != "flash_data") {
     stop("Data must be a matrix or a flash data object.")
+  }
+  if (is.matrix(data) && output == "flash_data") {
+    data = flash_set_data(data)
+  }
+  if (class(data) == "flash_data" && output == "matrix") {
+    data = get_Yorig(data)
   }
 
   return(data)
 }
 
+
+# @title Handle k parameter
+#
+# @description Checks that factor k exists
+#
+# @param k The factor index.
+#
+# @param f A fitted flash object.
+#
+# @return k
+#
+handle_k = function(k, f) {
+  if (flash_get_k(f) < k) {
+    stop("Factor k does not exist.")
+  }
+
+  return(k)
+}
 
 # @title Handle kset parameter
 #

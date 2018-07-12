@@ -14,12 +14,8 @@
 #' @export
 #'
 flash_fill = function(data, f){
-  if (class(data)=="flash_data") {
-    data = get_Yorig(data)
-  }
-  if (!is.matrix(data)) {
-    stop("For flash_fill, data must be a matrix or a flash data object.")
-  }
+  data = handle_data(data, output = "matrix")
+
   if(dim(data)[1] != flash_get_n(f) || dim(data)[2] != flash_get_p(f)) {
     stop("Dimensions of data must match flash fit.")
   }
@@ -48,6 +44,9 @@ flash_fill = function(data, f){
 #' @export
 #'
 flash_zero_out_factor = function(f, k) {
+  f = handle_f(f, allow_null = FALSE)
+  k = handle_k(k, f)
+
   f$EL[!f$fixl[, k], k] = 0
   f$EL2[!f$fixl[, k], k] = 0
   f$EF[!f$fixf[, k], k] = 0

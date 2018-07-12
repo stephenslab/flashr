@@ -28,9 +28,8 @@ flash_plot_factors = function(data,
                               kset = NULL,
                               loading_label = FALSE,
                               factor_label = FALSE) {
-  if (class(data) == "flash_data") {
-    data = get_Yorig(data)
-  }
+  data = handle_data(data, output = "matrix")
+  # f is handled by flash_get_pve
   # think about how to handle possible indexing problems caused by
   # dropping zero factors
   kset = handle_kset(kset, f)
@@ -163,6 +162,8 @@ plot_one_factor = function(f,
 flash_plot_pve = function(f,
                           main = "Scree plot of PVE for each factor",
                           drop_zero_factors = TRUE) {
+  # handling is done by flash_get_pve
+
   pve = flash_get_pve(f, drop_zero_factors)
   pve_dat = data.frame(factor_index = seq(1, length(pve)), PVE = pve)
   p <- ggplot(pve_dat, aes_string("factor_index", "PVE"),
