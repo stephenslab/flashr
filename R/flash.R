@@ -245,6 +245,7 @@ flash_add_greedy = function(data,
                             ebnm_param = NULL,
                             verbose = FALSE,
                             nullcheck = TRUE,
+                            stopAtObj = NULL,
                             seed = 123) {
   if (!is.null(seed)) {
     set.seed(seed)
@@ -257,7 +258,7 @@ flash_add_greedy = function(data,
   ebnm_fn = handle_ebnm_fn(ebnm_fn)
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, Kmax)
 
-  obj_by_iter = list()
+  all_obj = list()
 
   for (k in 1:Kmax) {
     message("fitting factor/loading ", k)
@@ -273,9 +274,10 @@ flash_add_greedy = function(data,
                    ebnm_param$f[[k]],
                    verbose,
                    nullcheck,
-                   maxiter = 5000)
+                   maxiter = 5000,
+                   stopAtObj)
     f = res$f
-    obj_by_iter[[k]] = res$obj_by_iter
+    all_obj[[k]] = res$obj
 
     # Test whether the factor/loading combination is effectively zero.
     if (is_tiny_fl(f, flash_get_k(f))) {
@@ -287,7 +289,7 @@ flash_add_greedy = function(data,
     }
   }
 
-  return(list(f=f, obj_by_iter=obj_by_iter))
+  return(list(f=f, obj=all_obj))
 }
 
 
@@ -445,7 +447,8 @@ flash_r1 = function(data,
                     ebnm_param_f,
                     verbose,
                     maxiter,
-                    nullcheck) {
+                    nullcheck,
+                    stopAtObj) {
 
   f = flash_add_factors_from_data(data,
                                   K = 1,
@@ -463,7 +466,8 @@ flash_r1 = function(data,
                                ebnm_fn_f,
                                ebnm_param_f,
                                verbose,
-                               maxiter)
+                               maxiter,
+                               stopAtObj)
 
   return(f)
 }

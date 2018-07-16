@@ -119,9 +119,13 @@ flash_update_single_fl = function(data,
                                   ebnm_param_l,
                                   ebnm_fn_f,
                                   ebnm_param_f) {
+  #message(paste("k:", k))
   f = flash_update_precision(data, f, var_type)
+  #message(flash_get_objective(data, f))
   f = flash_update_single_loading(data, f, k, ebnm_fn_l, ebnm_param_l)
+  #message(flash_get_objective(data, f))
   f = flash_update_single_factor(data, f, k, ebnm_fn_f, ebnm_param_f)
+  #message(flash_get_objective(data, f))
 
   return(f)
 }
@@ -175,7 +179,8 @@ flash_optimize_single_fl = function(data,
                                     ebnm_fn_f,
                                     ebnm_param_f,
                                     verbose,
-                                    maxiter) {
+                                    maxiter,
+                                    stopAtObj) {
   f_subset = which(!f$fixf[, k])
   l_subset = which(!f$fixl[, k])
   KLobj = (sum(unlist(f$KL_l)) + sum(unlist(f$KL_f))
@@ -200,7 +205,8 @@ flash_optimize_single_fl = function(data,
                verbose,
                maxiter,
                KLobj,
-               data$S)
+               data$S,
+               stopAtObj)
 
   f = update_f_from_r1_opt_results(f, k, res)
 
@@ -208,7 +214,9 @@ flash_optimize_single_fl = function(data,
     f = perform_nullcheck(data, f, k, var_type, verbose)
   }
 
-  return(list(f=f, obj_by_iter=res$obj_by_iter))
+  return(list(f = f, obj = list(after_tau=res$obj_after_tau,
+                                after_l = res$obj_after_l,
+                                after_f = res$obj_after_f)))
 }
 
 

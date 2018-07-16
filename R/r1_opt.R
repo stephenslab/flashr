@@ -79,7 +79,8 @@ r1_opt = function(R,
                   verbose,
                   maxiter,
                   KLobj,
-                  S) {
+                  S,
+                  stopAtObj) {
   l = l_init
   f = f_init
   l2 = l2_init
@@ -99,7 +100,10 @@ r1_opt = function(R,
   penloglik_f = NULL
 
   if (calc_F) {
-    all_obj = NULL
+    obj_after_tau = NULL
+    obj_after_l = NULL
+    obj_after_f = NULL
+
     F_obj = -Inf   # Variable to store value of objective function.
     KL_f = 0
     KL_l = 0
@@ -121,6 +125,12 @@ r1_opt = function(R,
     f_old = f
 
     tau = compute_precision(R2new, missing, var_type, S)
+
+    if (calc_F && iter > 1) {
+      obj_after_tau = c(obj_after_tau,
+                        KLobj + KL_l + KL_f +
+                          e_loglik_from_R2_and_tau(R2new, tau, missing))
+    }
 
     if (length(f_subset) > 0) {
       s2 = 1/(t(l2) %*% tau[, f_subset, drop = FALSE])
@@ -145,6 +155,13 @@ r1_opt = function(R,
                                   ebnm_f$postmean2)
         }
       }
+    }
+
+    if (calc_F && iter > 1) {
+      R2new = R2 - 2 * outer(l, f) * R + outer(l2, f2)
+      obj_after_f = c(obj_after_f,
+                      KLobj + KL_l + KL_f +
+                        e_loglik_from_R2_and_tau(R2new, tau, missing))
     }
 
     if (length(l_subset) > 0) {
@@ -172,13 +189,17 @@ r1_opt = function(R,
       }
     }
 
-
     R2new = R2 - 2 * outer(l, f) * R + outer(l2, f2)
 
     if (calc_F) {
       Fnew = KLobj + KL_l + KL_f +
         e_loglik_from_R2_and_tau(R2new, tau, missing)
-      all_obj = c(all_obj, Fnew)
+      if (iter > 1) {
+        obj_after_l = c(obj_after_l, Fnew)
+      }
+      if (!is.null(stopAtObj) && Fnew > stopAtObj) {
+        break
+      }
       if (verbose) {
         message(paste0("Objective:", Fnew))
       }
@@ -226,7 +247,8 @@ r1_opt = function(R,
               KL_l = KL_l, KL_f = KL_f, gl = gl, gf = gf,
               ebnm_fn_l = ebnm_fn_l, ebnm_fn_f = ebnm_fn_f,
               ebnm_param_l = ebnm_param_l, ebnm_param_f = ebnm_param_f,
-              obj_by_iter = all_obj))
+              obj_after_tau = obj_after_tau,
+              obj_after_l = obj_after_l, obj_after_f = obj_after_f))
 }
 
 # Put the results into f.
