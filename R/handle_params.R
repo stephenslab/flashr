@@ -1,19 +1,74 @@
+# @title Handle flash object parameter
+#
+# @description Checks that input to f is valid and initializes a null
+#   flash fit object when necessary.
+#
+# @param f A flash fit object.
+#
+# @param allow_null If TRUE, accepts NULL as a valid argument.
+#
+# @param init_null_f If TRUE and f is NULL, initializes a flash object
+#   via a call to flash_init_null().
+#
+# @return f The flash object.
+#
+handle_f = function(f, allow_null = TRUE, init_null_f = FALSE) {
+  if (!allow_null && class(f) != "flash") {
+    stop("f must be a flash fit object.")
+  }
+  if (!is.null(f) && class(f) != "flash") {
+    stop("f must be NULL or a flash fit object.")
+  }
+  if (init_null_f && is.null(f)) {
+    f = flash_init_null()
+  }
+
+  return(f)
+}
+
+
 # @title Handle data parameter
 #
 # @description If data is a matrix, calls flash_set_data.
 #
 # @param data An n by p matrix or a flash data object.
 #
-# @return A flash data object.
+# @param output If "flash_data", returns a flash data object. If
+#   "matrix", returns a matrix.
 #
-handle_data = function(data) {
-  if (is.matrix(data)) {
-    data = flash_set_data(data)
-  } else if (class(data) != "flash_data") {
+# @return A matrix or flash data object.
+#
+handle_data = function(data, output = "flash_data") {
+  if (!is.matrix(data) && class(data) != "flash_data") {
     stop("Data must be a matrix or a flash data object.")
+  }
+  if (is.matrix(data) && output == "flash_data") {
+    data = flash_set_data(data)
+  }
+  if (class(data) == "flash_data" && output == "matrix") {
+    data = get_Yorig(data)
   }
 
   return(data)
+}
+
+
+# @title Handle k parameter
+#
+# @description Checks that factor k exists.
+#
+# @param k The factor index.
+#
+# @param f A fitted flash object.
+#
+# @return k
+#
+handle_k = function(k, f) {
+  if (flash_get_k(f) < k) {
+    stop("Factor k does not exist.")
+  }
+
+  return(k)
 }
 
 
@@ -160,11 +215,11 @@ handle_ebnm_param = function(ebnm_param, ebnm_fn, n_expected) {
 
   # Check to see whether parameters are specified separately for loadings
   #   and factors:
-  if (xor(is.null(ebnm_param$l), is.null(ebnm_param$f))) {
+  if (xor(is.null(ebnm_param[["l"]]), is.null(ebnm_param[["f"]]))) {
     stop(paste("if ebnm_param is specified for either loadings or",
                "factors then it must be specified for both. (Use an",
                "empty list to specify no parameters.)"))
-  } else if (!is.null(ebnm_param$l)) {
+  } else if (!is.null(ebnm_param[["l"]])) {
     ebnm_param_l = ebnm_param$l
     ebnm_param_f = ebnm_param$f
   } else {

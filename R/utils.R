@@ -14,13 +14,9 @@
 #' @export
 #'
 flash_fill = function(data, f){
-  if (class(data)=="flash_data") {
-    data = get_Yorig(data)
-  }
-  if (!is.matrix(data)) {
-    stop("For flash_fill, data must be a matrix or a flash data object.")
-  }
-  if(dim(data)[1] != flash_get_n(f) || dim(data)[2] != flash_get_p(f)) {
+  data = handle_data(data, output = "matrix")
+
+  if (dim(data)[1] != flash_get_n(f) || dim(data)[2] != flash_get_p(f)) {
     stop("Dimensions of data must match flash fit.")
   }
 
@@ -48,12 +44,15 @@ flash_fill = function(data, f){
 #' @export
 #'
 flash_zero_out_factor = function(f, k) {
+  f = handle_f(f, allow_null = FALSE)
+  k = handle_k(k, f)
+
   f$EL[!f$fixl[, k], k] = 0
   f$EL2[!f$fixl[, k], k] = 0
   f$EF[!f$fixf[, k], k] = 0
   f$EF2[!f$fixf[, k], k] = 0
-  f$gl[[k]]   = NULL
-  f$gf[[k]]   = NULL
+  f$gl[[k]] = list(NULL)
+  f$gf[[k]] = list(NULL)
   f$KL_l[[k]] = 0
   f$KL_f[[k]] = 0
 
@@ -162,8 +161,9 @@ flash_subset_l = function(f, subset) {
   subf$EL2 = subf$EL2[subset, , drop = F]
   subf$fixl = subf$fixl[subset, , drop = F]
   subf$tau = subf$tau[subset, , drop = F]
-  subf$KL_l = NULL
-  subf$KL_f = NULL
+  subf$KL_l = list(NULL)
+  subf$KL_f = list(NULL)
+
   return(subf)
 }
 
@@ -182,8 +182,9 @@ flash_subset_f = function(f, subset) {
   subf$EF2 = subf$EF2[subset, , drop = F]
   subf$fixf = subf$fixf[subset, , drop = F]
   subf$tau = subf$tau[, subset, drop = F]
-  subf$KL_l = NULL
-  subf$KL_f = NULL
+  subf$KL_l = list(NULL)
+  subf$KL_f = list(NULL)
+
   return(subf)
 }
 

@@ -11,9 +11,12 @@
 #' @export
 #'
 flash_get_fitted_values = function(f) {
+  f = handle_f(f, allow_null = FALSE)
+
   if (is.null(f$EL)) {
     return(NULL)
   }
+
   return(f$EL %*% t(f$EF))
 }
 
@@ -46,7 +49,9 @@ flash_get_fitted_values = function(f) {
 #' @export
 #'
 flash_get_ldf = function(f, kset = NULL, drop_zero_factors = TRUE) {
+  f = handle_f(f, allow_null = FALSE)
   kset = handle_kset(kset, f)
+
   ll = f$EL[, kset, drop=FALSE]
   ff = f$EF[, kset, drop=FALSE]
   d = sqrt(colSums(ll^2) * colSums(ff^2))
@@ -76,7 +81,10 @@ flash_get_ldf = function(f, kset = NULL, drop_zero_factors = TRUE) {
 #' @export
 #'
 flash_get_nfactors = function(f) {
+  f = handle_f(f, allow_null = FALSE)
+
   ldf = flash_get_ldf(f)
+
   return(length(ldf$d))
 }
 
@@ -93,8 +101,11 @@ flash_get_nfactors = function(f) {
 #' @export
 #'
 flash_get_pve = function(f, drop_zero_factors = TRUE) {
+  f = handle_f(f, allow_null = FALSE)
+
   s = (flash_get_ldf(f, drop_zero_factors=drop_zero_factors)$d)^2
   tau = f$tau[f$tau != 0]
+
   return(s/(sum(s) + sum(1/tau)))
 }
 

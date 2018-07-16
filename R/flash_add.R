@@ -21,11 +21,10 @@
 #'
 #' @export
 #'
-flash_add_lf = function(data, LL, FF, f_init=NULL, fixl=NULL, fixf=NULL) {
+flash_add_lf = function(data, LL, FF, f_init = NULL,
+                        fixl = NULL, fixf = NULL) {
   data = handle_data(data)
-  if (is.null(f_init)){
-    f_init = flash_init_null()
-  }
+  f_init = handle_f(f_init, init_null_f = TRUE)
 
   f2 = flash_init_lf(LL, FF, fixl, fixf)
   f = flash_combine(f_init, f2)
@@ -46,12 +45,11 @@ flash_add_lf = function(data, LL, FF, f_init=NULL, fixl=NULL, fixf=NULL) {
 #'
 #' @export
 #'
-flash_add_factors_from_data = function(data, K, f_init=NULL,
-                                       init_fn="udv_si") {
+flash_add_factors_from_data = function(data, K, f_init = NULL,
+                                       init_fn = "udv_si") {
   data = handle_data(data)
-  if (is.null(f_init)) {
-    f_init = flash_init_null()
-  }
+  f_init = handle_f(f_init, init_null_f = TRUE)
+  init_fn = handle_init_fn(init_fn)
 
   R  = flash_get_R_withmissing(data, f_init)
   f2 = flash_init_fn(flash_set_data(R), init_fn, K)
@@ -79,11 +77,14 @@ flash_add_factors_from_data = function(data, K, f_init=NULL,
 #'
 #' @export
 #'
-flash_add_fixed_l = function(data, LL, f_init=NULL, fixl=NULL,
-                             init_fn="udv_si") {
+flash_add_fixed_l = function(data, LL, f_init = NULL, fixl = NULL,
+                             init_fn = "udv_si") {
   data = handle_data(data)
-  if(is.null(f_init)){f_init = flash_init_null()}
-  if(is.null(fixl)){fixl = !is.na(LL)}
+  f_init = handle_f(f_init, init_null_f = TRUE)
+
+  if (is.null(fixl)) {
+    fixl = !is.na(LL)
+  }
 
   LL_init = LL
   FF_init = matrix(0, nrow=ncol(data$Y), ncol=ncol(LL))
@@ -176,7 +177,12 @@ find_col_blocks = function(X) {
 #'
 flash_add_fixed_f = function(data, FF, f_init=NULL, fixf=NULL) {
   data = handle_data(data)
+  # f_init is handled by flash_add_fixed_l
 
-  tf = flash_add_fixed_l(flash_transpose_data(data), FF, flash_transpose(f_init), fixf)
+  tf = flash_add_fixed_l(flash_transpose_data(data),
+                         FF,
+                         flash_transpose(f_init),
+                         fixf)
+
   return(flash_transpose(tf))
 }

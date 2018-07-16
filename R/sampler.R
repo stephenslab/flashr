@@ -28,6 +28,7 @@ flash_sampler = function(data,
                          kset = NULL,
                          fixed = c("factors", "loadings")) {
   data = handle_data(data)
+  f = handle_f(f, allow_null = FALSE)
   kset = handle_kset(kset, f)
 
   fixed = match.arg(fixed)

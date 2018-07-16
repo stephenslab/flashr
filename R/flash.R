@@ -163,13 +163,10 @@ flash = function(data,
                  seed = 123,
                  greedy = TRUE,
                  backfit = FALSE) {
-  if (!is.null(seed)) {
-    set.seed(seed)
-  }
-  if(!greedy & is.null(f_init)){
+  if (!greedy & is.null(f_init)) {
     stop("If greedy is false then must provide f_init")
   }
-  if(!greedy & !backfit){
+  if (!greedy & !backfit) {
     warning("If both greedy and backfit are false then nothing to do!")
   }
 
@@ -252,13 +249,13 @@ flash_add_greedy = function(data,
   if (!is.null(seed)) {
     set.seed(seed)
   }
+
   data = handle_data(data)
+  f = handle_f(f_init)
   var_type = match.arg(var_type)
   init_fn = handle_init_fn(init_fn)
   ebnm_fn = handle_ebnm_fn(ebnm_fn)
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, Kmax)
-
-  f = f_init
 
   for (k in 1:Kmax) {
     message("fitting factor/loading ", k)
@@ -274,13 +271,12 @@ flash_add_greedy = function(data,
                  ebnm_param$f[[k]],
                  verbose,
                  nullcheck,
-                 maxiter = 5000,
-                 seed = NULL)
+                 maxiter = 5000)
 
     # Test whether the factor/loading combination is effectively zero.
     if (is_tiny_fl(f, flash_get_k(f))) {
+      # Remove zero factor as long as it doesn't create an empty object.
       if (flash_get_k(f) > 1) {
-        # Remove zero factor as long as it doesn't create an empty object.
         f = old_f
       }
       break
@@ -354,12 +350,11 @@ flash_backfit = function(data,
                          nullcheck = TRUE,
                          maxiter = 1000) {
   data = handle_data(data)
+  f = handle_f(f_init)
   kset = handle_kset(kset, f_init)
   var_type = match.arg(var_type)
   ebnm_fn = handle_ebnm_fn(ebnm_fn)
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, length(kset))
-
-  f = f_init
 
   if (verbose) {
     message("iteration:1")
@@ -444,12 +439,13 @@ flash_r1 = function(data,
                     ebnm_param_f,
                     verbose,
                     maxiter,
-                    nullcheck,
-                    seed) {
+                    nullcheck) {
+
   f = flash_add_factors_from_data(data,
                                   K = 1,
                                   f_init,
                                   init_fn)
+
   f = flash_optimize_single_fl(data,
                                f,
                                flash_get_k(f),
@@ -462,5 +458,6 @@ flash_r1 = function(data,
                                ebnm_param_f,
                                verbose,
                                maxiter)
+
   return(f)
 }

@@ -17,6 +17,7 @@ flash_update_precision = function(data,
                                                "constant", "zero",
                                                "kroneker")) {
   data = handle_data(data)
+  f = handle_f(f)
   var_type = match.arg(var_type)
 
   if (var_type == "zero" & is.null(data$S)) {
