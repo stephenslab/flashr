@@ -80,7 +80,7 @@ flash_add_factors_from_data = function(data, K, f_init = NULL,
 flash_add_fixed_l = function(data, LL, f_init = NULL, fixl = NULL,
                              init_fn = "udv_si") {
   data = handle_data(data)
-  f_init = handle_f(f_init)
+  f_init = handle_f(f_init, init_null_f = TRUE)
 
   if (is.null(fixl)) {
     fixl = !is.na(LL)

@@ -9,7 +9,7 @@ test_that("plotting functions work", {
   pveplot = flash_plot_pve(fl)
   expect_s3_class(pveplot, "ggplot")
 
-  factorplots = flash_plot_factors(data, fl)
+  factorplots = flash_plot_factors(Y, fl)
   expect_named(factorplots, c("plot_f", "plot_l"))
   expect_s3_class(factorplots$plot_f[[1]], "ggplot")
 })

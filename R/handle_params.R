@@ -215,11 +215,11 @@ handle_ebnm_param = function(ebnm_param, ebnm_fn, n_expected) {
 
   # Check to see whether parameters are specified separately for loadings
   #   and factors:
-  if (xor(is.null(ebnm_param$l), is.null(ebnm_param$f))) {
+  if (xor(is.null(ebnm_param[["l"]]), is.null(ebnm_param[["f"]]))) {
     stop(paste("if ebnm_param is specified for either loadings or",
                "factors then it must be specified for both. (Use an",
                "empty list to specify no parameters.)"))
-  } else if (!is.null(ebnm_param$l)) {
+  } else if (!is.null(ebnm_param[["l"]])) {
     ebnm_param_l = ebnm_param$l
     ebnm_param_f = ebnm_param$f
   } else {
