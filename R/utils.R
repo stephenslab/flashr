@@ -124,9 +124,16 @@ flash_transpose_data = function(data) {
 # @param f2 The second flash fit object.
 #
 # @return A flash fit object whose factors are concatenations of f1
-#   and f2. The precision (tau) of the combined fit is inherited from f2.
+#   and f2. If both precision matrices (tau) are nonnull, then the
+#   combined fit inherits tau from f2.
 #
 flash_combine = function(f1, f2) {
+  if (is.null(f2$tau)) {
+    tau = f1$tau
+  } else {
+    tau = f2$tau
+  }
+
   f = list(EL = cbind(f1$EL, f2$EL),
            EF = cbind(f1$EF, f2$EF),
            EL2 = cbind(f1$EL2, f2$EL2),
@@ -141,8 +148,9 @@ flash_combine = function(f1, f2) {
            ebnm_param_f = c(f1$ebnm_param_f, f2$ebnm_param_f),
            KL_l = c(f1$KL_l, f2$KL_l),
            KL_f = c(f1$KL_f, f2$KL_f),
-           tau = f2$tau)
+           tau = tau)
   class(f) = "flash"
+
   return(f)
 }
 
