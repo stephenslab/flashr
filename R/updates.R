@@ -186,6 +186,7 @@ flash_optimize_single_fl = function(data,
   KLobj = (sum(unlist(f$KL_l)) + sum(unlist(f$KL_f))
            - f$KL_l[[k]] - f$KL_f[[k]])
 
+  t0 = Sys.time()
   res = r1_opt(flash_get_Rk(data, f, k),
                flash_get_R2k(data, f, k),
                f$EL[, k],
@@ -214,7 +215,8 @@ flash_optimize_single_fl = function(data,
     f = perform_nullcheck(data, f, k, var_type, verbose)
   }
 
-  return(list(f = f, obj = list(after_tau=res$obj_after_tau,
+  return(list(f = f,
+              obj = list(after_tau = res$obj_after_tau,
                                 after_l = res$obj_after_l,
                                 after_f = res$obj_after_f)))
 }

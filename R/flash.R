@@ -259,6 +259,7 @@ flash_add_greedy = function(data,
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, Kmax)
 
   all_obj = list()
+  all_t = list()
 
   for (k in 1:Kmax) {
     message("fitting factor/loading ", k)
@@ -278,6 +279,7 @@ flash_add_greedy = function(data,
                    stopAtObj)
     f = res$f
     all_obj[[k]] = res$obj
+    all_t[[k]] = res$init_time
 
     # Test whether the factor/loading combination is effectively zero.
     if (is_tiny_fl(f, flash_get_k(f))) {
@@ -289,7 +291,7 @@ flash_add_greedy = function(data,
     }
   }
 
-  return(list(f=f, obj=all_obj))
+  return(list(f=f, obj=all_obj, init_time=all_t))
 }
 
 
@@ -450,10 +452,12 @@ flash_r1 = function(data,
                     nullcheck,
                     stopAtObj) {
 
+  t0 = Sys.time()
   f = flash_add_factors_from_data(data,
                                   K = 1,
                                   f_init,
                                   init_fn)
+  t1 = Sys.time()
 
   f = flash_optimize_single_fl(data,
                                f,
@@ -468,6 +472,7 @@ flash_r1 = function(data,
                                verbose,
                                maxiter,
                                stopAtObj)
+  f$init_time = t1 - t0
 
   return(f)
 }
