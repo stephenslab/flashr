@@ -180,7 +180,8 @@ flash_optimize_single_fl = function(data,
                                     ebnm_param_f,
                                     verbose,
                                     maxiter,
-                                    stopAtObj) {
+                                    stopAtObj,
+                                    warmstart) {
   f_subset = which(!f$fixf[, k])
   l_subset = which(!f$fixl[, k])
   KLobj = (sum(unlist(f$KL_l)) + sum(unlist(f$KL_f))
@@ -207,7 +208,8 @@ flash_optimize_single_fl = function(data,
                maxiter,
                KLobj,
                data$S,
-               stopAtObj)
+               stopAtObj,
+               warmstart)
 
   f = update_f_from_r1_opt_results(f, k, res)
 

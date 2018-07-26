@@ -80,7 +80,8 @@ r1_opt = function(R,
                   maxiter,
                   KLobj,
                   S,
-                  stopAtObj) {
+                  stopAtObj,
+                  warmstart) {
   l = l_init
   f = f_init
   l2 = l2_init
@@ -143,6 +144,10 @@ r1_opt = function(R,
         # If a value of s2 is numerically negative, set it to
         # a small positive number.
         s = sqrt(pmax(s2, .Machine$double.eps))
+
+        if (warmstart && !is.null(gf)) {
+          ebnm_param_f$g = gf
+        }
         ebnm_f = do.call(ebnm_fn_f, list(x, s, ebnm_param_f))
         f[f_subset] = ebnm_f$postmean
         f2[f_subset] = ebnm_f$postmean2
@@ -175,6 +180,10 @@ r1_opt = function(R,
         # If a value of s2 is numerically negative, set it to
         # a small positive number.
         s = sqrt(pmax(s2, .Machine$double.eps))
+
+        if (warmstart && !is.null(gl)) {
+          ebnm_param_f$g = gl
+        }
         ebnm_l = do.call(ebnm_fn_l, list(x, s, ebnm_param_l))
         l[l_subset] = ebnm_l$postmean
         l2[l_subset] = ebnm_l$postmean2
