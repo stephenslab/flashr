@@ -154,7 +154,7 @@ add_l_sampler_params = function(ebnm_param, ebnm_fn, f, k) {
 #
 flash_single_l_sampler = function(data, f, k, ebnm_fn, ebnm_param) {
   subset = which(!f$fixl[, k])
-  if (length(subset) == 0 || all(f$EL[subset, k] == 0)) {
+  if (length(subset) == 0 || all(f$EL2[subset, k] == 0)) {
     # All values are fixed or all non-fixed values are zero:
     return(sampler(rep(TRUE, length(f$EL[, k])), NULL, f$EL[, k]))
   }
