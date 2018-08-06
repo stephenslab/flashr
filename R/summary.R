@@ -26,6 +26,8 @@
 #'   \item{objective}{The value of the objective function attained by the
 #'     fit. See \code{\link{flash_get_objective}}.}
 #'
+#' @export
+#' 
 summary.flash = function(f, data, ...) {
   if (class(f) != "flash") {
     stop("Input argument f must be an instance of class \"flash\".")
@@ -49,6 +51,8 @@ summary.flash = function(f, data, ...) {
 
 #' @importFrom methods is
 #'
+#' @export
+#' 
 print.summary.flash = function(summary, digits = 3, ...) {
   if (!is(summary, "summary.flash")) {
     stop("Input must be an instance of class \"summary.flash\".")
@@ -76,12 +80,11 @@ print.summary.flash = function(summary, digits = 3, ...) {
       cat(sprintf("  Value of objective function: %0.3f\n", objective))
     }
     cat(paste("\n*See help(summary.flash) for details about how to\n",
-              "extract other useful information from flash objects."))
+              "extract other useful information from flash objects.\n"))
   })
 
   return(invisible(summary))
 }
-
 
 print.flash <- function (f, data, digits = 3, ...) {
   print(summary(f, data), digits, ...)
