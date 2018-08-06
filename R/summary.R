@@ -2,7 +2,7 @@
 #'
 #' @description \code{summary} method for class \code{'flash'}.
 #'
-#' @param f A flash fit object.
+#' @param object A flash fit object.
 #'
 #' @param data A matrix or flash data object created using
 #'   \code{flash_set_data}.
@@ -27,21 +27,21 @@
 #'     fit. See \code{\link{flash_get_objective}}.}
 #'
 #' @export
-#' 
-summary.flash = function(f, data, ...) {
-  if (class(f) != "flash") {
-    stop("Input argument f must be an instance of class \"flash\".")
+#'
+summary.flash = function(object, data, ...) {
+  if (class(object) != "flash") {
+    stop("Input argument object must be an instance of class \"flash\".")
   }
   if (missing(data)) {
     objective = NA
   } else {
-    objective = flash_get_objective(data, f)
+    objective = flash_get_objective(data, object)
   }
 
-  out = list(nfactors = flash_get_nfactors(f),
-             pve = flash_get_pve(f, drop_zero_factors=TRUE),
-             fitted.values = flash_get_fitted_values(f),
-             ldf = flash_get_ldf(f, drop_zero_factors=TRUE),
+  out = list(nfactors = flash_get_nfactors(object),
+             pve = flash_get_pve(object, drop_zero_factors=TRUE),
+             fitted.values = flash_get_fitted_values(object),
+             ldf = flash_get_ldf(object, drop_zero_factors=TRUE),
              objective = objective)
 
   class(out) <- c("summary.flash","list")
@@ -52,13 +52,13 @@ summary.flash = function(f, data, ...) {
 #' @importFrom methods is
 #'
 #' @export
-#' 
-print.summary.flash = function(summary, digits = 3, ...) {
-  if (!is(summary, "summary.flash")) {
+#'
+print.summary.flash = function(x, digits = 3, ...) {
+  if (!is(x, "summary.flash")) {
     stop("Input must be an instance of class \"summary.flash\".")
   }
 
-  with (summary, {
+  with (x, {
     cat("Summary of flash object:\n")
     cat(sprintf("  Number of factor/loading pairs: %d\n", nfactors))
 
@@ -83,7 +83,7 @@ print.summary.flash = function(summary, digits = 3, ...) {
               "extract other useful information from flash objects.\n"))
   })
 
-  return(invisible(summary))
+  return(invisible(x))
 }
 
 print.flash <- function (f, data, digits = 3, ...) {
