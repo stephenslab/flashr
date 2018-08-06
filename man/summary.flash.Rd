@@ -4,10 +4,10 @@
 \alias{summary.flash}
 \title{Summarize flash object}
 \usage{
-\method{summary}{flash}(f, data, ...)
+\method{summary}{flash}(object, data, ...)
 }
 \arguments{
-\item{f}{A flash fit object.}
+\item{object}{A flash fit object.}
 
 \item{data}{A matrix or flash data object created using
 \code{flash_set_data}.}

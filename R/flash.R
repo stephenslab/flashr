@@ -158,7 +158,7 @@ flash = function(data,
                  tol = 1e-2,
                  ebnm_fn = "ebnm_pn",
                  ebnm_param = NULL,
-                 verbose = FALSE,
+                 verbose = TRUE,
                  nullcheck = TRUE,
                  seed = 123,
                  greedy = TRUE,
@@ -243,7 +243,7 @@ flash_add_greedy = function(data,
                             tol = 1e-2,
                             ebnm_fn = "ebnm_pn",
                             ebnm_param = NULL,
-                            verbose = FALSE,
+                            verbose = TRUE,
                             nullcheck = TRUE,
                             seed = 123) {
   if (!is.null(seed)) {
@@ -258,7 +258,7 @@ flash_add_greedy = function(data,
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, Kmax)
 
   for (k in 1:Kmax) {
-    message("fitting factor/loading ", k)
+    message("Fitting factor/loading ", k, "...")
     old_f = f
     f = flash_r1(data,
                  f,
@@ -286,11 +286,53 @@ flash_add_greedy = function(data,
   return(f)
 }
 
+# @title Fits a rank 1 Empirical Bayes Matrix Factorization model.
+#
+# @inheritParams flash_add_greedy
+#
+# @return A fitted flash object.
+#
+flash_r1 = function(data,
+                    f_init,
+                    var_type,
+                    init_fn,
+                    tol,
+                    ebnm_fn_l,
+                    ebnm_param_l,
+                    ebnm_fn_f,
+                    ebnm_param_f,
+                    verbose,
+                    maxiter,
+                    nullcheck) {
+
+  f = flash_add_factors_from_data(data,
+                                  K = 1,
+                                  f_init,
+                                  init_fn)
+
+  f = flash_optimize_single_fl(data,
+                               f,
+                               flash_get_k(f),
+                               var_type,
+                               nullcheck,
+                               tol,
+                               ebnm_fn_l,
+                               ebnm_param_l,
+                               ebnm_fn_f,
+                               ebnm_param_f,
+                               verbose,
+                               maxiter)
+
+  return(f)
+}
+
 
 #' @title Refines a fit of the flash model to data by "backfitting".
 #'
 #' @description Iterates through the factors of a flash object,
 #'   updating each until convergence.
+#'
+#' @inheritParams flash
 #'
 #' @param f_init A fitted flash object to be refined.
 #'
@@ -301,8 +343,6 @@ flash_add_greedy = function(data,
 #'   including repeated fittings if \code{nullcheck} fails). To perform
 #'   just one iteration we suggest setting \code{maxiter = 1} and
 #'   \code{nullcheck = FALSE}.
-#'
-#' @inheritParams flash
 #'
 #' @param ebnm_param A named list containing parameters to be passed to
 #'   \code{ebnm_fn} when optimizing. A list with fields \code{l} and
@@ -346,7 +386,7 @@ flash_backfit = function(data,
                          tol = 1e-2,
                          ebnm_fn = "ebnm_pn",
                          ebnm_param = NULL,
-                         verbose = FALSE,
+                         verbose = TRUE,
                          nullcheck = TRUE,
                          maxiter = 1000) {
   data = handle_data(data)
@@ -357,7 +397,7 @@ flash_backfit = function(data,
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, length(kset))
 
   if (verbose) {
-    message("iteration:1")
+    message("Backfitting flash object...")
   }
 
   for (i in 1:length(kset)) {
@@ -373,7 +413,9 @@ flash_backfit = function(data,
 
   c = flash_get_objective(data, f)
   if (verbose) {
-    message("objective: ", c)
+    message("  Iteration          Objective\n",
+            "          1",
+            sprintf("%19.3f", c))
   }
 
   diff = Inf
@@ -385,7 +427,6 @@ flash_backfit = function(data,
     # (if nullcheck removes some factors then the whole process
     # is repeated)
     while((diff > tol) & (iteration <= maxiter)){
-      if(verbose){message("iteration:", iteration)}
       for (i in 1:length(kset)) {
         f = flash_update_single_fl(data,
                                    f,
@@ -399,7 +440,10 @@ flash_backfit = function(data,
       cnew = flash_get_objective(data, f)
       diff = cnew - c
       c = cnew
-      if(verbose){message("objective: ",c)}
+      if(verbose){
+        message(sprintf("%11d", iteration),
+                sprintf("%19.3f", c))
+      }
       iteration = iteration + 1
     }
 
@@ -417,47 +461,6 @@ flash_backfit = function(data,
     }
 
   }
-
-  return(f)
-}
-
-
-# @title Fits a rank 1 Empirical Bayes Matrix Factorization model.
-#
-# @return A fitted flash object.
-#
-# @inheritParams flash
-#
-flash_r1 = function(data,
-                    f_init,
-                    var_type,
-                    init_fn,
-                    tol,
-                    ebnm_fn_l,
-                    ebnm_param_l,
-                    ebnm_fn_f,
-                    ebnm_param_f,
-                    verbose,
-                    maxiter,
-                    nullcheck) {
-
-  f = flash_add_factors_from_data(data,
-                                  K = 1,
-                                  f_init,
-                                  init_fn)
-
-  f = flash_optimize_single_fl(data,
-                               f,
-                               flash_get_k(f),
-                               var_type,
-                               nullcheck,
-                               tol,
-                               ebnm_fn_l,
-                               ebnm_param_l,
-                               ebnm_fn_f,
-                               ebnm_param_f,
-                               verbose,
-                               maxiter)
 
   return(f)
 }

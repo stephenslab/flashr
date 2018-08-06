@@ -102,13 +102,19 @@ r1_opt = function(R,
     F_obj = -Inf   # Variable to store value of objective function.
     KL_f = 0
     KL_l = 0
+    if (verbose) {
+      message("  Iteration          Objective")
+    }
   } else {
     F_obj = NULL
     KL_f = NULL
     KL_l = NULL
+    if (verbose) {
+      message("  Iteration         Difference")
+    }
   }
 
-  diff = 1
+  diff = Inf
 
   # Expected squared residuals with l and f included.
   R2new = R2 - 2 * outer(l, f) * R + outer(l2, f2)
@@ -171,18 +177,18 @@ r1_opt = function(R,
       }
     }
 
-
     R2new = R2 - 2 * outer(l, f) * R + outer(l2, f2)
 
     if (calc_F) {
       Fnew = KLobj + KL_l + KL_f +
         e_loglik_from_R2_and_tau(R2new, tau, missing)
       if (verbose) {
-        message(paste0("Objective:", Fnew))
+        message(sprintf("%11d", iter),
+                sprintf("%19.3f", Fnew))
       }
       diff = Fnew - F_obj
 
-      if (diff < 0 & verbose) {
+      if (diff < 0) {
         warning(paste("An iteration decreased the objective.",
                       "This happens occasionally, perhaps due to",
                       "numeric reasons. You could ignore this",
@@ -215,7 +221,8 @@ r1_opt = function(R,
         diff = max(all_diff[!is.nan(all_diff)])
       }
       if (verbose) {
-        message(paste0("diff:", diff))
+        message(sprintf("%11d", iter),
+                sprintf("%19.3f", diff))
       }
     }
   }

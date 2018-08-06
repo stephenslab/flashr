@@ -6,7 +6,7 @@
 \usage{
 flash(data, Kmax = 100, f_init = NULL, var_type = c("by_column", "by_row",
   "constant", "zero", "kroneker"), init_fn = "udv_si", tol = 0.01,
-  ebnm_fn = "ebnm_pn", ebnm_param = NULL, verbose = FALSE,
+  ebnm_fn = "ebnm_pn", ebnm_param = NULL, verbose = TRUE,
   nullcheck = TRUE, seed = 123, greedy = TRUE, backfit = FALSE)
 }
 \arguments{

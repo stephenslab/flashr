@@ -236,6 +236,9 @@ flash_optimize_single_fl = function(data,
 # @return A flash object.
 #
 perform_nullcheck = function(data, f, kset, var_type, verbose) {
+  if (verbose) {
+    message("Performing nullcheck...")
+  }
 
   f_changed = TRUE  # We are going to iterate until f does not change.
   while (f_changed) {
@@ -248,25 +251,29 @@ perform_nullcheck = function(data, f, kset, var_type, verbose) {
       F0 = flash_get_objective(data, f0)
       F1 = flash_get_objective(data, f)
 
-      if (verbose) {
-        message("performing nullcheck")
-        message("objective from deleting factor:", F0)
-        message("objective from keeping factor:", F1)
-      }
-
       if (F0 > F1) {
         if (verbose) {
-          message("factor zeroed out")
+          message("  Deleting factor ", k,
+                  " increases objective by ",
+                  signif(F0 - F1, digits=3),
+                  ". Factor zeroed out.")
         }
         f = f0
         f_changed = TRUE
+      } else if (F1 > F0) {
+        if (verbose) {
+          message ("  Deleting factor ", k,
+                   " decreases objective by ",
+                   signif(F1 - F0, digits=3),
+                   ". Factor retained.")
+        }
       }
 
     }
   }
   if (verbose) {
-    message("nullcheck complete, objective:",
-            flash_get_objective(data, f))
+    message("  Nullcheck complete. Objective: ",
+            round(flash_get_objective(data, f), digits=3))
   }
   return(f)
 }
