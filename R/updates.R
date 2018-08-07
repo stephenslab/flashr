@@ -42,8 +42,8 @@ flash_update_single_fl = function(data,
 #
 flash_update_single_loading = function(data, f, k, ebnm_fn, ebnm_param) {
   subset = which(!f$fixl[, k])
-  res = calc_update_vals(data, f, k, subset,
-                         ebnm_fn, ebnm_param, calc_ebnm_l_args)
+  res = calc_update_vals(data, f, k, subset, ebnm_fn, ebnm_param,
+                         loadings = TRUE)
 
   if (!is.null(res)) {
     f$EL[subset, k] = res$EX
@@ -66,8 +66,8 @@ flash_update_single_loading = function(data, f, k, ebnm_fn, ebnm_param) {
 #
 flash_update_single_factor = function(data, f, k, ebnm_fn, ebnm_param) {
   subset = which(!f$fixf[, k])
-  res = calc_update_vals(data, f, k, subset,
-                         ebnm_fn, ebnm_param, calc_ebnm_f_args)
+  res = calc_update_vals(data, f, k, subset, ebnm_fn, ebnm_param,
+                         loadings = FALSE)
 
   if (!is.null(res)) {
     f$EF[subset, k] = res$EX
@@ -107,9 +107,9 @@ calc_update_vals = function(data, f, k, subset,
   }
 
   if (loadings) {
-    ebnm_args = calc_ebnm_f_args(data, f, k, subset, R)
-  } else {
     ebnm_args = calc_ebnm_l_args(data, f, k, subset, R)
+  } else {
+    ebnm_args = calc_ebnm_f_args(data, f, k, subset, R)
   }
   if (is.null(ebnm_args)) {
     return(NULL)
