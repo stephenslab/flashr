@@ -89,8 +89,8 @@ flash_update_single_factor = function(data, f, k, ebnm_fn, ebnm_param) {
 # @param subset The subset of factor or loadings entries that are not
 #   considered fixed (and can thus be updated).
 #
-# @param ebnm_args_fn Should be set to calc_ebnm_l_args for loadings
-#   updates and calc_ebnm_f_args for factor updates
+# @param loadings Should be TRUE for loadings updates and FALSE for
+#   factor updates
 #
 # @param R Optionally, a matrix of residuals can be passed in. This
 #   should speed up calculations when updates are done in parallel.
@@ -100,14 +100,17 @@ flash_update_single_factor = function(data, f, k, ebnm_fn, ebnm_param) {
 #   If no update should be performed, returns NULL.
 #
 calc_update_vals = function(data, f, k, subset,
-                            ebnm_fn, ebnm_param, ebnm_args_fn, R = NULL) {
+                            ebnm_fn, ebnm_param, loadings, R = NULL) {
   # Do not update if all elements are fixed:
   if (length(subset) == 0) {
     return(NULL)
   }
 
-  # Call either calc_ebnm_l_args or calc_ebnm_f_args:
-  ebnm_args = ebnm_args_fn(data, f, k, subset, R)
+  if (loadings) {
+    ebnm_args = calc_ebnm_f_args(data, f, k, subset, R)
+  } else {
+    ebnm_args = calc_ebnm_l_args(data, f, k, subset, R)
+  }
   if (is.null(ebnm_args)) {
     return(NULL)
   }
