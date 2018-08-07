@@ -1,27 +1,23 @@
-# @title Optimize a single loading and factor ('rank 1' model).
+# @title Optimize a flash factor-loading combination.
 #
-# @description This function iteratively optimizes the loading,
-#   factor and residual precision, from residuals and their expected
-#   squared values Currently the tolerance is on the changes in l and f
-#   (not on the objective function)
+# @details Iteratively updates factor and loading k of f (as well as
+#   residual precision) to convergence of objective (used in the greedy
+#   algorithm for example).
 #
-# @param R An n times p matrix of data (expected residuals).
+# @param data A flash data object.
 #
-# @param R2 An n times p matrix of expected squared residuals.
+# @param f A flash object.
 #
-# @param l_init The initial value of loading used for iterative
-#   scheme (n vector).
+# @param k The index of the factor/loading to optimize.
 #
-# @param f_init The initial value of the factor for iterative scheme
-#   (p vector).
+# @param var_type Type of variance structure to assume for residuals.
 #
-# @param l2_init initial value of l2 (optional)
+# @param nullcheck Flag whether to check, after running hill-climbing
+#   updates, whether the achieved optimum is better than setting factor
+#   to 0. If this check is performed and fails then the factor will be
+#   set to 0 in the returned fit.
 #
-# @param f2_init initial value of f2 (optional)
-#
-# @param l_subset Vector of indices of l to update (default is all).
-#
-# @param f_subset Vector of indices of f to update (default is all).
+# @param tol A tolerance for the optimization.
 #
 # @param ebnm_fn_l Function to solve the Empirical Bayes Normal Means
 #   problem (used for loadings).
@@ -35,158 +31,76 @@
 # @param ebnm_param_f Parameters to be passed to ebnm_fn_f when
 #   optimizing.
 #
-# @param var_type The type of variance structure to assume.
-#
-# @param tol A tolerance on changes in l and f to diagnose convergence.
-#
-# @param calc_F Whether to compute the objective function (useful for
-#   testing purposes).
-#
-# @param missing An n times matrix of TRUE/FALSE indicating which
-#   elements of R and R2 should be considered missing (note neither R
-#   nor R2 must have missing values; eg set them to 0).
-#
-# @param verbose If TRUE, then trace of objective function is printed.
-#
-# @param maxiter An upper bound on the number of iterations before
-#   terminating.
-#
-# @param KLobj The value of the KL part of the objective for the
-#   other factors not being optimized (optional, but allows objective
-#   to be computed accurately).
-#
-# @param S Standard errors from flash data object (only used when
-#   var_type = "zero")
+# @param verbose If TRUE, various output progress updates will be printed.
 #
 # @return An updated flash object.
 #
-r1_opt = function(R,
-                  R2,
-                  l_init,
-                  f_init,
-                  l2_init,
-                  f2_init,
-                  l_subset,
-                  f_subset,
-                  ebnm_fn_l,
-                  ebnm_param_l,
-                  ebnm_fn_f,
-                  ebnm_param_f,
-                  var_type,
-                  tol,
-                  calc_F,
-                  missing,
-                  verbose,
-                  maxiter,
-                  KLobj,
-                  S) {
-  l = l_init
-  f = f_init
-  l2 = l2_init
-  f2 = f2_init
-
-  # Default initialization of l2 and f2.
-  if (is.null(l2)) {
-    l2 = l^2
-  }
-  if (is.null(f2)) {
-    f2 = f^2
-  }
-
-  gl = NULL
-  gf = NULL
-  penloglik_l = NULL
-  penloglik_f = NULL
-
-  if (calc_F) {
-    F_obj = -Inf   # Variable to store value of objective function.
-    KL_f = 0
-    KL_l = 0
+flash_optimize_single_fl = function(data,
+                                    f,
+                                    k,
+                                    var_type,
+                                    nullcheck,
+                                    tol,
+                                    ebnm_fn_l,
+                                    ebnm_param_l,
+                                    ebnm_fn_f,
+                                    ebnm_param_f,
+                                    verbose,
+                                    maxiter,
+                                    calc_obj = TRUE) {
+  if (calc_obj) {
+    old_obj = -Inf
+    # Sum of KL differences excluding factor k:
+    KLk = (sum(unlist(f$KL_l)) + sum(unlist(f$KL_f))
+           - f$KL_l[[k]] - f$KL_f[[k]])
     if (verbose) {
       message("  Iteration          Objective")
     }
-  } else {
-    F_obj = NULL
-    KL_f = NULL
-    KL_l = NULL
-    if (verbose) {
-      message("  Iteration         Difference")
-    }
+  } else if (verbose) {
+    message("  Iteration         Difference")
   }
 
   diff = Inf
 
-  # Expected squared residuals with l and f included.
-  R2new = R2 - 2 * outer(l, f) * R + outer(l2, f2)
-  iter = 0
+  R2 = flash_get_R2(data, f)
 
+  # Expected residuals and squared residuals with factor k excluded:
+  Rk = flash_get_Rk(data, f, k)
+  R2k = (R2 + 2 * outer(f$EL[, k], f$EF[, k]) * Rk
+         - outer(f$EL2[, k], f$EF2[, k]))
+
+  iter = 0
   while ((diff > tol) & (iter < maxiter)) {
     iter = iter + 1
-    l_old = l
-    f_old = f
 
-    tau = compute_precision(R2new, missing, var_type, S)
-
-    if (length(f_subset) > 0) {
-      s2 = 1/(t(l2) %*% tau[, f_subset, drop = FALSE])
-      if (any(is.finite(s2))) {
-
-        # Check some finite values before proceeding.
-        x = (t(l) %*% (R[, f_subset, drop = FALSE] *
-                         tau[, f_subset, drop = FALSE])) * s2
-
-        # If a value of s2 is numerically negative, set it to
-        # a small positive number.
-        s = sqrt(pmax(s2, .Machine$double.eps))
-        ebnm_f = do.call(ebnm_fn_f, list(x, s, ebnm_param_f))
-        f[f_subset] = ebnm_f$postmean
-        f2[f_subset] = ebnm_f$postmean2
-        gf = ebnm_f$fitted_g
-        penloglik_f = ebnm_f$penloglik
-
-        if (calc_F) {
-          KL_f = ebnm_f$penloglik -
-            NM_posterior_e_loglik(x, s, ebnm_f$postmean,
-                                  ebnm_f$postmean2)
-        }
-      }
+    if (!calc_obj) {
+      old_vals = c(f$EL[, k], f$EF[, k])
     }
 
-    if (length(l_subset) > 0) {
-      s2 = 1/(tau[l_subset, , drop = FALSE] %*% f2)
-      if (any(is.finite(s2))) {
+    f = flash_update_single_fl(data,
+                               f,
+                               k,
+                               var_type,
+                               ebnm_fn_l,
+                               ebnm_param_l,
+                               ebnm_fn_f,
+                               ebnm_param_f,
+                               Rk,
+                               R2)
 
-        # Check some finite values before proceeding.
-        x = ((R[l_subset, , drop = FALSE] *
-                tau[l_subset, , drop = FALSE]) %*% f) * s2
+    R2 = (R2k - 2 * outer(f$EL[, k], f$EF[, k]) * Rk
+          + outer(f$EL2[, k], f$EF2[, k]))
 
-        # If a value of s2 is numerically negative, set it to
-        # a small positive number.
-        s = sqrt(pmax(s2, .Machine$double.eps))
-        ebnm_l = do.call(ebnm_fn_l, list(x, s, ebnm_param_l))
-        l[l_subset] = ebnm_l$postmean
-        l2[l_subset] = ebnm_l$postmean2
-        gl = ebnm_l$fitted_g
-        penloglik_l = ebnm_l$penloglik
-
-        if (calc_F) {
-          KL_l = ebnm_l$penloglik -
-            NM_posterior_e_loglik(x, s, ebnm_l$postmean,
-                                  ebnm_l$postmean2)
-        }
-      }
-    }
-
-    R2new = R2 - 2 * outer(l, f) * R + outer(l2, f2)
-
-    if (calc_F) {
-      Fnew = KLobj + KL_l + KL_f +
-        e_loglik_from_R2_and_tau(R2new, tau, missing)
+    if (calc_obj) {
+      obj = (KLk + f$KL_l[[k]] + f$KL_f[[k]] +
+               e_loglik_from_R2_and_tau(R2, f$tau, data$missing))
       if (verbose) {
         message(sprintf("%11d", iter),
-                sprintf("%19.3f", Fnew))
+                sprintf("%19.3f", obj))
       }
-      diff = Fnew - F_obj
+
+      diff = obj - old_obj
+      old_obj = obj
 
       if (diff < 0) {
         warning(paste("An iteration decreased the objective.",
@@ -196,27 +110,23 @@ r1_opt = function(R,
                       "https://github.com/stephenslab/flashr/issues/26",
                       "for more details."))
       }
-      F_obj = Fnew
     } else {
-
-      # Check convergence by percentage changes in l and f
-      # normalize l and f so that f has unit norm note that this
+      # Check convergence by percentage changes in EL and EF.
+      # Normalize EL and EF so that EF has unit norm. Note that this
       # messes up stored log-likelihoods etc... so not
       # recommended.
       warning("renormalization step not fully tested; be careful!")
-      norm = sqrt(sum(f^2))
-      f = f/norm
-      f2 = f2/(norm^2)
-      l = l * norm
-      l2 = l2 * (norm^2)
+      norm = sqrt(sum(f$EF[, k]^2))
+      f$EF[, k] = f$EF[, k] / norm
+      f$EF2[, k] = f$EF2[, k] / (norm^2)
+      f$EL[, k] = f$EL[, k] * norm
+      f$EL2[, k] = f$EL2[, k] * (norm^2)
 
-      all_diff = abs(c(l, f)/c(l_old, f_old) - 1)
+      all_diff = abs(c(f$EL[, k], f$EF[, k])/old_vals - 1)
       if (all(is.nan(all_diff))) {
-
-        # All old and new entries of l and f are zero.
+        # All old and new entries of EL and EF are zero.
         diff = 0
       } else {
-
         # Ignore entries where both old and new values are zero.
         diff = max(all_diff[!is.nan(all_diff)])
       }
@@ -227,41 +137,13 @@ r1_opt = function(R,
     }
   }
 
-  return(list(l = l, f = f, l2 = l2, f2 = f2, tau = tau, F_obj = F_obj,
-              KL_l = KL_l, KL_f = KL_f, gl = gl, gf = gf,
-              ebnm_fn_l = ebnm_fn_l, ebnm_fn_f = ebnm_fn_f,
-              ebnm_param_l = ebnm_param_l, ebnm_param_f = ebnm_param_f))
-}
-
-# Put the results into f.
-update_f_from_r1_opt_results = function(f, k, res) {
-  f$EL[, k] = res$l
-  f$EF[, k] = res$f
-  f$EL2[, k] = res$l2
-  f$EF2[, k] = res$f2
-  f$tau = res$tau
-
-  f$ebnm_fn_f[[k]] = res$ebnm_fn_f
-  f$ebnm_fn_l[[k]] = res$ebnm_fn_l
-  f$ebnm_param_f[[k]] = res$ebnm_param_f
-  f$ebnm_param_l[[k]] = res$ebnm_param_l
-
-  if (!is.null(res$gf)) {
-    f$gf[[k]] = res$gf
-  }
-  if (!is.null(res$gl)) {
-    f$gl[[k]] = res$gl
-  }
-
-  if (!is.null(res$KL_f)) {
-    f$KL_f[[k]] = res$KL_f
-  }
-  if (!is.null(res$KL_l)) {
-    f$KL_l[[k]] = res$KL_l
+  if (nullcheck) {
+    f = perform_nullcheck(data, f, k, var_type, verbose)
   }
 
   return(f)
 }
+
 
 # Compute the expected log-likelihood (at non-missing locations) based
 # on expected squared residuals and tau.
