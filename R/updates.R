@@ -1,42 +1,58 @@
+# @title Update a single flash factor/loading combination (and precision).
+#
+# @param data A flash data object.
+#
+# @param f A flash fit object.
+#
+# @param k Index of factor/loading pair to update.
+#
+# @param var_type Variance structure to assume for residuals.
+#
+# @param ebnm_fn_l Function to solve EBNM problem (loadings updates).
+#
+# @param ebnm_param_l Parameters to be passed to ebnm_fn_l.
+#
+# @param ebnm_fn_f Function to solve EBNM problem (factor updates).
+#
+# @param ebnm_param_f Parameters to be passed to ebnm_fn_f.
+#
+# @return An updated flash object.
+#
+flash_update_single_fl = function(data,
+                                  f,
+                                  k,
+                                  var_type,
+                                  ebnm_fn_l,
+                                  ebnm_param_l,
+                                  ebnm_fn_f,
+                                  ebnm_param_f) {
+  f = flash_update_precision(data, f, var_type)
+  f = flash_update_single_loading(data, f, k, ebnm_fn_l, ebnm_param_l)
+  f = flash_update_single_factor(data, f, k, ebnm_fn_f, ebnm_param_f)
+
+  return(f)
+}
+
+
 # @title Update a flash loading
 #
-# @details Updates loading k of f to increase the objective F.
-#   Updates only the loading, once (not the factor).
+# @inheritParams flash_update_single_fl
 #
-# @param data a flash data object
-#
-# @param f a flash fit object
-#
-# @param k the index of the loading to update
-#
-# @param ebnm_fn function to solve the Empirical Bayes normal means problem
-#
-# @param ebnm_param parameters to be passed to ebnm_fn when optimizing
-#
-# @return an updated flash object
+# @return An updated flash object.
 #
 flash_update_single_loading = function(data, f, k, ebnm_fn, ebnm_param) {
   subset = which(!f$fixl[, k])
-  # Do not update if all elements are fixed:
-  if (length(subset) == 0) {
-    return(f)
-  }
+  res = calc_update_vals(data, f, k, subset,
+                         ebnm_fn, ebnm_param, calc_ebnm_l_args)
 
-  ebnm_args = calc_ebnm_l_args(data, f, k, subset)
-  if (is.null(ebnm_args)) {
-    return(f)
+  if (!is.null(res)) {
+    f$EL[subset, k] = res$EX
+    f$EL2[subset, k] = res$EX2
+    f$gl[[k]] = res$g
+    f$ebnm_fn_l[[k]] = ebnm_fn
+    f$ebnm_param_l[[k]] = ebnm_param
+    f$KL_l[[k]] = res$KL
   }
-  a = do.call(ebnm_fn, list(ebnm_args$x, ebnm_args$s, ebnm_param))
-
-  f$EL[subset, k] = a$postmean
-  f$EL2[subset, k] = a$postmean2
-  f$gl[[k]] = a$fitted_g
-  f$ebnm_fn_l[[k]] = ebnm_fn
-  f$ebnm_param_l[[k]] = ebnm_param
-  f$KL_l[[k]] = a$penloglik - NM_posterior_e_loglik(ebnm_args$x,
-                                                    ebnm_args$s,
-                                                    a$postmean,
-                                                    a$postmean2)
 
   return(f)
 }
@@ -44,49 +60,110 @@ flash_update_single_loading = function(data, f, k, ebnm_fn, ebnm_param) {
 
 # @title Update a flash factor
 #
-# @description Updates factor k of f to increase the objective F.
-#   Updates only the factor, once (not the loading).
+# @inheritParams flash_update_single_fl
 #
-# @inheritParams flash_update_single_loading
-#
-# @return an updated flash object
+# @return An updated flash object.
 #
 flash_update_single_factor = function(data, f, k, ebnm_fn, ebnm_param) {
   subset = which(!f$fixf[, k])
-  # Do not update if all elements are fixed:
-  if (length(subset) == 0) {
-    return(f)
-  }
+  res = calc_update_vals(data, f, k, subset,
+                         ebnm_fn, ebnm_param, calc_ebnm_f_args)
 
-  ebnm_args = calc_ebnm_f_args(data, f, k, subset)
-  if (is.null(ebnm_args)) {
-    return(f)
+  if (!is.null(res)) {
+    f$EF[subset, k] = res$EX
+    f$EF2[subset, k] = res$EX2
+    f$gf[[k]] = res$g
+    f$ebnm_fn_f[[k]] = ebnm_fn
+    f$ebnm_param_f[[k]] = ebnm_param
+    f$KL_f[[k]] = res$KL
   }
-  a = do.call(ebnm_fn, list(ebnm_args$x, ebnm_args$s, ebnm_param))
-
-  f$EF[subset, k] = a$postmean
-  f$EF2[subset, k] = a$postmean2
-  f$gf[[k]] = a$fitted_g
-  f$ebnm_fn_f[[k]] = ebnm_fn
-  f$ebnm_param_f[[k]] = ebnm_param
-  f$KL_f[[k]] = a$penloglik - NM_posterior_e_loglik(ebnm_args$x,
-                                                    ebnm_args$s,
-                                                    a$postmean,
-                                                    a$postmean2)
 
   return(f)
 }
 
-calc_ebnm_l_args = function(data, f, k, subset) {
-  calc_ebnm_args(subset, flash_get_Rk(data, f, k),
+
+# @title Calculate updated values for factor/loading updates
+#
+# @inheritParams flash_update_single_loading
+#
+# @param subset The subset of factor or loadings entries that are not
+#   considered fixed (and can thus be updated).
+#
+# @param ebnm_args_fn Should be set to calc_ebnm_l_args for loadings
+#   updates and calc_ebnm_f_args for factor updates
+#
+# @param R Optionally, a matrix of residuals can be passed in. This
+#   should speed up calculations when updates are done in parallel.
+#
+# @return A list with elements EX, EX2, g, and KL (these are updated
+#   values of either EL, EL2, gl, and KL_l or EF, EF2, gf, and KL_f).
+#   If no update should be performed, returns NULL.
+#
+calc_update_vals = function(data, f, k, subset,
+                            ebnm_fn, ebnm_param, ebnm_args_fn, R = NULL) {
+  # Do not update if all elements are fixed:
+  if (length(subset) == 0) {
+    return(NULL)
+  }
+
+  # Call either calc_ebnm_l_args or calc_ebnm_f_args:
+  ebnm_args = ebnm_args_fn(data, f, k, subset, R)
+  if (is.null(ebnm_args)) {
+    return(NULL)
+  }
+  a = do.call(ebnm_fn, list(ebnm_args$x, ebnm_args$s, ebnm_param))
+
+  return(list(EX = a$postmean,
+              EX2 = a$postmean2,
+              g = a$fitted_g,
+              KL = a$penloglik - NM_posterior_e_loglik(ebnm_args$x,
+                                                       ebnm_args$s,
+                                                       a$postmean,
+                                                       a$postmean2)))
+}
+
+
+# @title Call calc_ebnm_args for loadings updates
+#
+# @inheritParams calc_update_vals
+#
+# @return A list with elements x and s (vectors of observations and
+#   standard errors to be passed into ebnm_fn).
+#
+calc_ebnm_l_args = function(data, f, k, subset, R = NULL) {
+  calc_ebnm_args(subset, flash_get_Rk(data, f, k, R),
                  data$missing, f$tau, f$EF, f$EF2, k)
 }
 
-calc_ebnm_f_args = function(data, f, k, subset) {
-  calc_ebnm_args(subset, t(flash_get_Rk(data, f, k)),
+
+# @title Call calc_ebnm_args for factor updates
+#
+# @inherit calc_ebnm_l_args
+#
+calc_ebnm_f_args = function(data, f, k, subset, R = NULL) {
+  calc_ebnm_args(subset, t(flash_get_Rk(data, f, k, R)),
                  t(data$missing), t(f$tau), f$EL, f$EL2, k)
 }
 
+
+# @title Calculates arguments to be passed into ebnm_fn
+#
+# @inheritParams calc_update_vals
+#
+# @param Rk The matrix of residuals excluding factor/loading pair k.
+#
+# @param missing A matrix indicating which observations are missing.
+#
+# @param tau Either f$tau or t(f$tau), depending on whether loadings
+#   or factors are being updated.
+#
+# @param EX Either f$EL or f$EF.
+#
+# @param EX2 Either f$EL2 or f$EF2.
+#
+# @return A list with elements x and s (vectors of observations and
+#   standard errors to be passed into ebnm_fn).
+#
 calc_ebnm_args = function(subset, Rk, missing, tau, EX, EX2, k) {
   tau = tau[subset, , drop = FALSE]
   missing = missing[subset, , drop = FALSE]
@@ -104,26 +181,6 @@ calc_ebnm_args = function(subset, Rk, missing, tau, EX, EX2, k) {
   s = sqrt(pmax(s2, .Machine$double.eps))
 
   return(list(x = x, s = s))
-}
-
-
-# @title Update a single flash factor-loading combination (and precision).
-#
-# @inheritParams flash_update_single_loading
-#
-flash_update_single_fl = function(data,
-                                  f,
-                                  k,
-                                  var_type,
-                                  ebnm_fn_l,
-                                  ebnm_param_l,
-                                  ebnm_fn_f,
-                                  ebnm_param_f) {
-  f = flash_update_precision(data, f, var_type)
-  f = flash_update_single_loading(data, f, k, ebnm_fn_l, ebnm_param_l)
-  f = flash_update_single_factor(data, f, k, ebnm_fn_f, ebnm_param_f)
-
-  return(f)
 }
 
 
