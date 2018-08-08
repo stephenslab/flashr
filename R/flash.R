@@ -258,7 +258,8 @@ flash_add_greedy = function(data,
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, Kmax)
 
   for (k in 1:Kmax) {
-    message("Fitting factor/loading ", k, "...")
+    verbose_greedy_next_fl(k)
+
     old_f = f
     f = flash_r1(data,
                  f,
@@ -286,11 +287,10 @@ flash_add_greedy = function(data,
   return(f)
 }
 
+
 # @title Fits a rank 1 Empirical Bayes Matrix Factorization model.
 #
-# @inheritParams flash_add_greedy
-#
-# @return A fitted flash object.
+# @inherit flash_add_greedy
 #
 flash_r1 = function(data,
                     f_init,
@@ -314,7 +314,6 @@ flash_r1 = function(data,
                                f,
                                flash_get_k(f),
                                var_type,
-                               nullcheck,
                                tol,
                                ebnm_fn_l,
                                ebnm_param_l,
@@ -322,6 +321,14 @@ flash_r1 = function(data,
                                ebnm_param_f,
                                verbose,
                                maxiter)
+
+  if (nullcheck) {
+    f = perform_nullcheck(data,
+                          f,
+                          flash_get_k(f),
+                          var_type,
+                          verbose)
+  }
 
   return(f)
 }
@@ -397,7 +404,7 @@ flash_backfit = function(data,
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, length(kset))
 
   if (verbose) {
-    message("Backfitting flash object...")
+    verbose_backfit_announce()
   }
 
   for (i in 1:length(kset)) {
@@ -411,22 +418,21 @@ flash_backfit = function(data,
                                ebnm_param$f[[i]])
   }
 
-  c = flash_get_objective(data, f)
+  obj = flash_get_objective(data, f)
+  diff = Inf
   if (verbose) {
-    message("  Iteration          Objective\n",
-            "          1",
-            sprintf("%19.3f", c))
+    verbose_obj_table_header()
+    verbose_obj_table_entry(1, obj, diff)
   }
 
-  diff = Inf
   iteration = 2
 
-  while((diff > tol) & (iteration <= maxiter)) {
+  while ((diff > tol) & (iteration <= maxiter)) {
 
     # There are two steps; first backfit, then null check
     # (if nullcheck removes some factors then the whole process
     # is repeated)
-    while((diff > tol) & (iteration <= maxiter)){
+    while ((diff > tol) & (iteration <= maxiter)) {
       for (i in 1:length(kset)) {
         f = flash_update_single_fl(data,
                                    f,
@@ -437,12 +443,11 @@ flash_backfit = function(data,
                                    ebnm_fn$f,
                                    ebnm_param$f[[i]])
       }
-      cnew = flash_get_objective(data, f)
-      diff = cnew - c
-      c = cnew
-      if(verbose){
-        message(sprintf("%11d", iteration),
-                sprintf("%19.3f", c))
+      new_obj = flash_get_objective(data, f)
+      diff = new_obj - obj
+      obj = new_obj
+      if (verbose) {
+        verbose_obj_table_entry(iteration, obj, diff)
       }
       iteration = iteration + 1
     }
@@ -454,9 +459,9 @@ flash_backfit = function(data,
 
       # Recompute objective; if it changes then the whole process will
       # be repeated.
-      cnew = flash_get_objective(data, f)
-      diff = cnew - c
-      c = cnew
+      new_obj = flash_get_objective(data, f)
+      diff = new_obj - obj
+      obj = new_obj
       iteration = 1
     }
 
