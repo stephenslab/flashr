@@ -447,7 +447,7 @@ flash_backfit = function(data,
       diff = new_obj - obj
       obj = new_obj
       if (verbose) {
-        verbose_obj_table_entry(iteration, obj)
+        verbose_obj_table_entry(iteration, obj, diff)
       }
       iteration = iteration + 1
     }

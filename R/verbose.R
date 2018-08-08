@@ -1,3 +1,5 @@
+# Messages displayed when verbose = TRUE.
+
 verbose_greedy_next_fl = function(k) {
   message("Fitting factor/loading ", k, "...")
 }
@@ -7,19 +9,26 @@ verbose_backfit_announce = function() {
 }
 
 verbose_obj_table_header = function() {
-  message("  Iteration          Objective")
+  message("  Iteration         Objective     Difference")
 }
 
 verbose_diff_table_header = function() {
-  message("  Iteration         Difference")
+  message("  Iteration        Difference")
 }
 
-verbose_obj_table_entry = function(iteration, obj) {
-  message(sprintf("%11d", iteration), sprintf("%19.3f", obj))
+verbose_obj_table_entry = function(iteration, obj, diff = NULL) {
+  if (is.null(diff)) {
+    diff_string = "NA"
+  } else {
+    diff_string = formatC(diff, format="e", digits=2)
+  }
+  message(sprintf("%11d", iteration),
+          sprintf("%18.2f", obj),
+          sprintf("%15s", diff_string))
 }
 
 verbose_diff_table_entry = function(iteration, diff) {
-  message(sprintf("%11d", iteration), sprintf("%19.3f", diff))
+  message(sprintf("%11d", iteration), sprintf("%18.2f", diff))
 }
 
 verbose_obj_decrease_warning = function() {

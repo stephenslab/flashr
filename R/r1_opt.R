@@ -98,7 +98,7 @@ flash_optimize_single_fl = function(data,
         verbose_obj_decrease_warning()
       }
       if (verbose) {
-        verbose_obj_table_entry(iter, obj)
+        verbose_obj_table_entry(iter, obj, diff)
       }
     } else {
       # Check convergence by percentage changes in EL and EF.
