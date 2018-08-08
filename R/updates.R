@@ -16,6 +16,11 @@
 #
 # @param ebnm_param_f Parameters to be passed to ebnm_fn_f.
 #
+# @param Rk Optionally, a matrix of residuals (excluding factor k) may
+#   be passed in (for performance reasons).
+#
+# @param R2 A matrix of squared residuals may also be passed in.
+#
 # @return An updated flash object.
 #
 flash_update_single_fl = function(data,
@@ -62,6 +67,8 @@ flash_update_single_fl = function(data,
 #
 # @inheritParams flash_update_single_fl
 #
+# @param calc_obj Specifies whether to calculate KL divergences.
+#
 # @return An updated flash object.
 #
 flash_update_single_loading = function(data,
@@ -99,16 +106,14 @@ flash_update_single_loading = function(data,
 
 # @title Update a flash factor
 #
-# @inheritParams flash_update_single_fl
-#
-# @return An updated flash object.
+# @inherit flash_update_single_loading
 #
 flash_update_single_factor = function(data,
                                       f,
                                       k,
                                       ebnm_fn,
                                       ebnm_param,
-                                      Rk = NULL,
+                                      Rk,
                                       calc_obj = TRUE) {
   subset = which(!f$fixf[, k])
   res = calc_update_vals(data,
@@ -145,9 +150,6 @@ flash_update_single_factor = function(data,
 #
 # @param loadings Should be TRUE for loadings updates and FALSE for
 #   factor updates
-#
-# @param Rk Optionally, a matrix of residuals (excluding factor k) can
-#   be passed in.
 #
 # @return A list with elements EX, EX2, g, and KL (these are updated
 #   values of either EL, EL2, gl, and KL_l or EF, EF2, gf, and KL_f).
@@ -197,7 +199,6 @@ calc_update_vals = function(data,
 # @return A list with elements x and s (vectors of observations and
 #   standard errors to be passed into ebnm_fn).
 #
-
 calc_ebnm_l_args = function(data, f, k, subset, Rk = NULL) {
   tau = f$tau[subset, , drop = FALSE]
   missing = data$missing[subset, , drop = FALSE]

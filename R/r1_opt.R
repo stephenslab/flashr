@@ -12,11 +12,6 @@
 #
 # @param var_type Type of variance structure to assume for residuals.
 #
-# @param nullcheck Flag whether to check, after running hill-climbing
-#   updates, whether the achieved optimum is better than setting factor
-#   to 0. If this check is performed and fails then the factor will be
-#   set to 0 in the returned fit.
-#
 # @param tol A tolerance for the optimization.
 #
 # @param ebnm_fn_l Function to solve the Empirical Bayes Normal Means
@@ -32,6 +27,12 @@
 #   optimizing.
 #
 # @param verbose If TRUE, various output progress updates will be printed.
+#
+# @param maxiter The maximum number of iterations to perform.
+#
+# @param calc_obj If TRUE, convergence will be determined using the
+#   objective function. Otherwise, it will be determined by looking at
+#   percentage changes in EL and EF.
 #
 # @return An updated flash object.
 #
