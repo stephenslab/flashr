@@ -26,7 +26,7 @@ flash_update_single_fl = function(data,
                                   ebnm_param_l,
                                   ebnm_fn_f,
                                   ebnm_param_f,
-                                  R = NULL,
+                                  Rk = NULL,
                                   R2 = NULL) {
   # Update precision:
   if (is.null(R2)) {
@@ -34,7 +34,9 @@ flash_update_single_fl = function(data,
   }
   f$tau = compute_precision(R2, data$missing, var_type, data$S)
 
-  Rk = flash_get_Rk(data, f, k, R)
+  if (is.null(Rk)) {
+    Rk = flash_get_Rk(data, f, k)
+  }
 
   f = flash_update_single_loading(data,
                                   f,

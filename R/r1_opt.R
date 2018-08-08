@@ -113,9 +113,9 @@ flash_optimize_single_fl = function(data,
     } else {
       # Check convergence by percentage changes in EL and EF.
       # Normalize EL and EF so that EF has unit norm. Note that this
-      # messes up stored log-likelihoods etc... so not
-      # recommended.
-      warning("renormalization step not fully tested; be careful!")
+      # messes up stored log-likelihoods etc... so not recommended.
+      warning("Renormalization step not fully tested; be careful!")
+
       norm = sqrt(sum(f$EF[, k]^2))
       f$EF[, k] = f$EF[, k] / norm
       f$EF2[, k] = f$EF2[, k] / (norm^2)
