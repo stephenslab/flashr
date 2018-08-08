@@ -419,12 +419,12 @@ flash_backfit = function(data,
   }
 
   obj = flash_get_objective(data, f)
+  diff = Inf
   if (verbose) {
     verbose_obj_table_header()
-    verbose_obj_table_entry(1, obj)
+    verbose_obj_table_entry(1, obj, diff)
   }
 
-  diff = Inf
   iteration = 2
 
   while ((diff > tol) & (iteration <= maxiter)) {
