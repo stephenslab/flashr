@@ -73,8 +73,11 @@
 #' @param ebnm_param A named list containing parameters to be passed to
 #'   \code{ebnm_fn} when optimizing. A list with fields \code{l} and
 #'   \code{f} (each of which is a named list) will separately supply
-#'   parameters for loadings and factors. Set to \code{NULL} to use
-#'   defaults.
+#'   parameters for loadings and factors. If parameter \code{warmstart}
+#'   is used, the current value of \code{g} (if available) will be
+#'   passed to \code{ebnm_fn}. (So, \code{ebnm_fn} should accept a
+#'   parameter named \code{g}, not one named \code{warmstart}.) Set
+#'   \code{ebnm_param} to \code{NULL} to use defaults.
 #'
 #' @param verbose If \code{TRUE}, various progress updates will be
 #'   printed.
