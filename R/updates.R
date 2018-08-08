@@ -42,7 +42,6 @@ flash_update_single_fl = function(data,
   if (is.null(Rk)) {
     Rk = flash_get_Rk(data, f, k)
   }
-
   f = flash_update_single_loading(data,
                                   f,
                                   k,
@@ -50,7 +49,6 @@ flash_update_single_fl = function(data,
                                   ebnm_param_l,
                                   Rk,
                                   calc_obj = TRUE)
-
   f = flash_update_single_factor(data,
                                  f,
                                  k,

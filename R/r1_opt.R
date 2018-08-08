@@ -51,9 +51,9 @@ flash_optimize_single_fl = function(data,
 
   if (verbose) {
     if (calc_obj) {
-      message("  Iteration          Objective")
+      verbose_obj_table_header()
     } else {
-      message("  Iteration         Difference")
+      verbose_diff_table_header()
     }
   }
 
@@ -95,10 +95,10 @@ flash_optimize_single_fl = function(data,
       old_obj = obj
 
       if (diff < 0) {
-        display_obj_decr_warning()
+        verbose_obj_decrease_warning()
       }
       if (verbose) {
-        message(sprintf("%11d", iter), sprintf("%19.3f", obj))
+        verbose_obj_table_entry(iter, obj)
       }
     } else {
       # Check convergence by percentage changes in EL and EF.
@@ -122,8 +122,7 @@ flash_optimize_single_fl = function(data,
       }
 
       if (verbose) {
-        message(sprintf("%11d", iter),
-                sprintf("%19.3f", diff))
+       verbose_diff_table_entry(iter, diff)
       }
     }
   }
@@ -136,15 +135,4 @@ flash_optimize_single_fl = function(data,
 #   on expected squared residuals and tau.
 e_loglik_from_R2_and_tau = function(R2, tau, missing) {
   -0.5 * sum(log((2 * pi)/tau[!missing]) + tau[!missing] * R2[!missing])
-}
-
-
-# Warning to be displayed whenever the objective decreases.
-display_obj_decrease_warning = function() {
-  warning(paste("An iteration decreased the objective.",
-                "This happens occasionally, perhaps due to",
-                "numeric reasons. You could ignore this",
-                "warning, but you might like to check out",
-                "https://github.com/stephenslab/flashr/issues/26",
-                "for more details."))
 }
