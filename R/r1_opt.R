@@ -39,7 +39,6 @@ flash_optimize_single_fl = function(data,
                                     f,
                                     k,
                                     var_type,
-                                    nullcheck,
                                     tol,
                                     ebnm_fn_l,
                                     ebnm_param_l,
@@ -48,19 +47,17 @@ flash_optimize_single_fl = function(data,
                                     verbose,
                                     maxiter,
                                     calc_obj = TRUE) {
-  if (calc_obj) {
-    old_obj = -Inf
-    # Sum of KL differences excluding factor k:
-    KLk = (sum(unlist(f$KL_l)) + sum(unlist(f$KL_f))
-           - f$KL_l[[k]] - f$KL_f[[k]])
-    if (verbose) {
+
+  if (verbose) {
+    if (calc_obj) {
       message("  Iteration          Objective")
+    } else {
+      message("  Iteration         Difference")
     }
-  } else if (verbose) {
-    message("  Iteration         Difference")
   }
 
   diff = Inf
+  old_obj = -Inf
 
   R2 = flash_get_R2(data, f)
 
@@ -73,9 +70,7 @@ flash_optimize_single_fl = function(data,
   while ((diff > tol) & (iter < maxiter)) {
     iter = iter + 1
 
-    if (!calc_obj) {
-      old_vals = c(f$EL[, k], f$EF[, k])
-    }
+    old_vals = c(f$EL[, k], f$EF[, k])
 
     f = flash_update_single_fl(data,
                                f,
@@ -92,28 +87,22 @@ flash_optimize_single_fl = function(data,
           + outer(f$EL2[, k], f$EF2[, k]))
 
     if (calc_obj) {
-      obj = (KLk + f$KL_l[[k]] + f$KL_f[[k]] +
+      # Check convergence by increase in objective function.
+      obj = (sum(unlist(f$KL_l)) + sum(unlist(f$KL_f)) +
                e_loglik_from_R2_and_tau(R2, f$tau, data$missing))
-      if (verbose) {
-        message(sprintf("%11d", iter),
-                sprintf("%19.3f", obj))
-      }
-
       diff = obj - old_obj
       old_obj = obj
 
       if (diff < 0) {
-        warning(paste("An iteration decreased the objective.",
-                      "This happens occasionally, perhaps due to",
-                      "numeric reasons. You could ignore this",
-                      "warning, but you might like to check out",
-                      "https://github.com/stephenslab/flashr/issues/26",
-                      "for more details."))
+        display_obj_decr_warning()
+      }
+      if (verbose) {
+        message(sprintf("%11d", iter), sprintf("%19.3f", obj))
       }
     } else {
       # Check convergence by percentage changes in EL and EF.
-      # Normalize EL and EF so that EF has unit norm. Note that this
-      # messes up stored log-likelihoods etc... so not recommended.
+      #   Normalize EL and EF so that EF has unit norm. Note that this
+      #   messes up stored log-likelihoods etc... so not recommended.
       warning("Renormalization step not fully tested; be careful!")
 
       norm = sqrt(sum(f$EF[, k]^2))
@@ -130,6 +119,7 @@ flash_optimize_single_fl = function(data,
         # Ignore entries where both old and new values are zero.
         diff = max(all_diff[!is.nan(all_diff)])
       }
+
       if (verbose) {
         message(sprintf("%11d", iter),
                 sprintf("%19.3f", diff))
@@ -137,16 +127,23 @@ flash_optimize_single_fl = function(data,
     }
   }
 
-  if (nullcheck) {
-    f = perform_nullcheck(data, f, k, var_type, verbose)
-  }
-
   return(f)
 }
 
 
 # Compute the expected log-likelihood (at non-missing locations) based
-# on expected squared residuals and tau.
+#   on expected squared residuals and tau.
 e_loglik_from_R2_and_tau = function(R2, tau, missing) {
   -0.5 * sum(log((2 * pi)/tau[!missing]) + tau[!missing] * R2[!missing])
+}
+
+
+# Warning to be displayed whenever the objective decreases.
+display_obj_decrease_warning = function() {
+  warning(paste("An iteration decreased the objective.",
+                "This happens occasionally, perhaps due to",
+                "numeric reasons. You could ignore this",
+                "warning, but you might like to check out",
+                "https://github.com/stephenslab/flashr/issues/26",
+                "for more details."))
 }

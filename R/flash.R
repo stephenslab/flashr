@@ -259,6 +259,7 @@ flash_add_greedy = function(data,
 
   for (k in 1:Kmax) {
     message("Fitting factor/loading ", k, "...")
+
     old_f = f
     f = flash_r1(data,
                  f,
@@ -314,7 +315,6 @@ flash_r1 = function(data,
                                f,
                                flash_get_k(f),
                                var_type,
-                               nullcheck,
                                tol,
                                ebnm_fn_l,
                                ebnm_param_l,
@@ -322,6 +322,10 @@ flash_r1 = function(data,
                                ebnm_param_f,
                                verbose,
                                maxiter)
+
+  if (nullcheck) {
+    f = perform_nullcheck(data, f, flash_get_k(f), var_type, verbose)
+  }
 
   return(f)
 }
