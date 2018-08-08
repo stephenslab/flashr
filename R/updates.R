@@ -26,12 +26,15 @@ flash_update_single_fl = function(data,
                                   ebnm_param_l,
                                   ebnm_fn_f,
                                   ebnm_param_f,
-                                  Rk = NULL,
+                                  R = NULL,
                                   R2 = NULL) {
+  # Update precision:
   if (is.null(R2)) {
     R2 = flash_get_R2(data, f)
   }
   f$tau = compute_precision(R2, data$missing, var_type, data$S)
+
+  Rk = flash_get_Rk(data, f, k, R)
 
   f = flash_update_single_loading(data,
                                   f,
@@ -64,7 +67,7 @@ flash_update_single_loading = function(data,
                                        k,
                                        ebnm_fn,
                                        ebnm_param,
-                                       Rk = NULL,
+                                       Rk,
                                        calc_obj = TRUE) {
   subset = which(!f$fixl[, k])
   res = calc_update_vals(data,
@@ -141,8 +144,8 @@ flash_update_single_factor = function(data,
 # @param loadings Should be TRUE for loadings updates and FALSE for
 #   factor updates
 #
-# @param R Optionally, a matrix of residuals can be passed in. This
-#   should speed up calculations when updates are done in parallel.
+# @param Rk Optionally, a matrix of residuals (excluding factor k) can
+#   be passed in.
 #
 # @return A list with elements EX, EX2, g, and KL (these are updated
 #   values of either EL, EL2, gl, and KL_l or EF, EF2, gf, and KL_f).
@@ -192,17 +195,24 @@ calc_update_vals = function(data,
 # @return A list with elements x and s (vectors of observations and
 #   standard errors to be passed into ebnm_fn).
 #
-calc_ebnm_l_args = function(data, f, k, subset, Rk) {
-  if (is.null(Rk)) {
-    Rk = flash_get_Rk(data, f, k)
-  }
-  return(calc_ebnm_args(subset,
-                        Rk,
-                        data$missing,
-                        f$tau,
-                        f$EF,
-                        f$EF2,
-                        k))
+
+calc_ebnm_l_args = function(data, f, k, subset, Rk = NULL) {
+  tau = f$tau[subset, , drop = FALSE]
+  missing = data$missing[subset, , drop = FALSE]
+  tau[missing] = 0
+  Rk = Rk[subset, , drop = FALSE]
+
+  s2 = 1/(tau %*% f$EF2[, k])
+  if (sum(is.finite(s2)) == 0) {
+    return(NULL)
+  } # Return NULL if there are no finite values.
+
+  x = ((Rk * tau) %*% f$EF[, k]) * s2
+  # If a value of s2 becomes numerically negative, set it to a
+  #   small positive number.
+  s = sqrt(pmax(s2, .Machine$double.eps))
+
+  return(list(x = x, s = s))
 }
 
 
@@ -210,52 +220,18 @@ calc_ebnm_l_args = function(data, f, k, subset, Rk) {
 #
 # @inherit calc_ebnm_l_args
 #
-calc_ebnm_f_args = function(data, f, k, subset, Rk) {
-  if (is.null(Rk)) {
-    Rk = flash_get_Rk(data, f, k)
-  }
-  return(calc_ebnm_args(subset,
-                        t(Rk),
-                        t(data$missing),
-                        t(f$tau),
-                        f$EL,
-                        f$EL2,
-                        k))
-}
-
-
-# @title Calculates arguments to be passed into ebnm_fn
-#
-# @inheritParams calc_update_vals
-#
-# @param Rk The matrix of residuals excluding factor/loading pair k.
-#
-# @param missing A matrix indicating which observations are missing.
-#
-# @param tau Either f$tau or t(f$tau), depending on whether loadings
-#   or factors are being updated.
-#
-# @param EX Either f$EL or f$EF.
-#
-# @param EX2 Either f$EL2 or f$EF2.
-#
-# @return A list with elements x and s (vectors of observations and
-#   standard errors to be passed into ebnm_fn).
-#
-calc_ebnm_args = function(subset, Rk, missing, tau, EX, EX2, k) {
-  tau = tau[subset, , drop = FALSE]
-  missing = missing[subset, , drop = FALSE]
+calc_ebnm_f_args = function(data, f, k, subset, Rk = NULL) {
+  tau = f$tau[, subset, drop = FALSE]
+  missing = data$missing[, subset, drop = FALSE]
   tau[missing] = 0
-  Rk = Rk[subset, , drop = FALSE]
+  Rk = Rk[, subset, drop = FALSE]
 
-  s2 = 1/(tau %*% EX2[, k])
+  s2 = 1/(t(f$EL2[, k]) %*% tau)
   if (sum(is.finite(s2)) == 0) {
     return(NULL)
-  } # return NULL if there are no finite values
+  }
 
-  x = ((Rk * tau) %*% EX[, k]) * s2
-  # if a value of s2 becomes numerically negative, set it to a
-  # small positive number
+  x = (t(f$EL[, k]) %*% (Rk * tau)) * s2
   s = sqrt(pmax(s2, .Machine$double.eps))
 
   return(list(x = x, s = s))
