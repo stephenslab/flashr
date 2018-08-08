@@ -175,6 +175,18 @@ calc_update_vals = function(data,
   if (is.null(ebnm_args)) {
     return(NULL)
   }
+
+  if (!is.null(ebnm_param$warmstart)) {
+    if (ebnm_param$warmstart) {
+      if (loadings && length(f$gl) >= k) {
+        ebnm_param$g = f$gl[[k]]
+      } else if (!loadings && length(f$gf) >= k) {
+        ebnm_param$g = f$gf[[k]]
+      }
+    }
+    ebnm_param$warmstart = NULL
+  }
+
   a = do.call(ebnm_fn, list(ebnm_args$x, ebnm_args$s, ebnm_param))
 
   res = list(EX = a$postmean,

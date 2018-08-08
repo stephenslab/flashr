@@ -282,7 +282,7 @@ add_ebnm_fn_defaults = function(ebnm_param, ebnm_fn) {
   if (ebnm_fn == "ebnm_ash") {
     return(add_ebnm_ash_defaults(ebnm_param))
   } else if (ebnm_fn == "ebnm_pn") {
-    return(ebnm_param)
+    return(add_ebnm_pn_defaults(ebnm_param))
   }
 
   return(ebnm_param)
@@ -305,6 +305,24 @@ add_ebnm_ash_defaults = function(ebnm_param) {
   }
   if (is.null(ebnm_param$method)) {
     ebnm_param$method = "shrink"
+  }
+  return(ebnm_param)
+}
+
+
+# @title Add ebnm_pn defaults to ebnm_param
+#
+# @description Adds default ebnm_pn parameters to ebnm_param.
+#
+# @param ebnm_param The parameters to be passed into ebnm_fn, given as
+#   a single list.
+#
+# @return ebnm_param, with point-normal defaults added (when not
+#   specified by the user).
+#
+add_ebnm_pn_defaults = function(ebnm_param) {
+  if (is.null(ebnm_param$warmstart)) {
+    ebnm_param$warmstart = TRUE
   }
   return(ebnm_param)
 }
