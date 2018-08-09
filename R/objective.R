@@ -41,5 +41,11 @@ e_loglik = function(data, f) {
 # @param Et2 Posterior second moment of theta.
 #
 NM_posterior_e_loglik = function(x, s, Et, Et2) {
+  # Deal with infinite SEs:
+  idx = is.finite(s)
+  x = x[idx]
+  s = s[idx]
+  Et = Et[idx]
+  Et2 = Et2[idx]
   return(-0.5 * sum(log(2*pi*s^2) + (1/s^2) * (Et2 - 2*x*Et + x^2)))
 }

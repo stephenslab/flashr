@@ -139,6 +139,38 @@ flash_update_single_factor = function(data,
 }
 
 
+calc_ebnm_l_args = function(data, f, k, subset) {
+  calc_ebnm_args(subset, flash_get_Rk(data, f, k),
+                 data$missing, f$tau, f$EF, f$EF2, k)
+}
+
+calc_ebnm_f_args = function(data, f, k, subset) {
+  calc_ebnm_args(subset, t(flash_get_Rk(data, f, k)),
+                 t(data$missing), t(f$tau), f$EL, f$EL2, k)
+}
+
+calc_ebnm_args = function(subset, Rk, missing, tau, EX, EX2, k) {
+  tau = tau[subset, , drop = FALSE]
+  missing = missing[subset, , drop = FALSE]
+  tau[missing] = 0
+  Rk = Rk[subset, , drop = FALSE]
+
+  s2 = 1/(tau %*% EX2[, k])
+  if (sum(is.finite(s2)) == 0) {
+    return(NULL)
+  } # return NULL if there are no finite values
+
+  x = ((Rk * tau) %*% EX[, k]) * s2
+  x[is.nan(x)] = 0 # x can be NaN when s2 is infinite
+
+  # if a value of s2 becomes numerically negative, set it to a
+  # small positive number
+  s = sqrt(pmax(s2, .Machine$double.eps))
+
+  return(list(x = x, s = s))
+}
+
+
 # @title Calculate updated values for factor/loading updates
 #
 # @inheritParams flash_update_single_loading

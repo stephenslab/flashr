@@ -106,9 +106,6 @@ flash_l_sampler = function(data, f, kset) {
   for (k in kset) {
     # Use ebnm function and parameters from flash object
     ebnm_fn = f$ebnm_fn_l[[k]]
-    if (is.null(ebnm_fn)) {
-      stop(paste("Factor/loading", k, "has not yet been fit."))
-    }
     ebnm_param = f$ebnm_param_l[[k]]
     ebnm_param = add_l_sampler_params(ebnm_param, ebnm_fn, f, k)
     sampler_list[[k]] = flash_single_l_sampler(data, f, k, ebnm_fn,
@@ -131,6 +128,9 @@ flash_l_sampler = function(data, f, kset) {
 }
 
 add_l_sampler_params = function(ebnm_param, ebnm_fn, f, k) {
+  if (is.null(ebnm_fn)) {
+    return(NULL)
+  }
   # Does not work for early versions of ebnm_pn
   if (ebnm_fn == "ebnm_ash" || (ebnm_fn == "ebnm_pn" &&
                                 packageVersion("ebnm") > "0.1.11")) {
@@ -156,6 +156,10 @@ flash_single_l_sampler = function(data, f, k, ebnm_fn, ebnm_param) {
   if (length(subset) == 0 || all(f$EL2[subset, k] == 0)) {
     # All values are fixed or all non-fixed values are zero:
     return(sampler(rep(TRUE, length(f$EL[, k])), NULL, f$EL[, k]))
+  }
+
+  if (is.null(ebnm_fn)) {
+    stop(paste("Factor/loading", k, "has not yet been fit."))
   }
 
   ebnm_args = calc_ebnm_l_args(data, f, k, subset)
