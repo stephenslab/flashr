@@ -79,10 +79,11 @@ flash_add_factors_from_data = function(data, K, f_init = NULL,
 #'
 #' @export
 #'
-flash_add_fixed_l = function(data, LL, f_init = NULL, fixl = NULL,
-                             init_fn = "udv_si") {
+flash_add_fixed_loadings = function(data, LL, f_init = NULL, fixl = NULL,
+                                    init_fn = "udv_si") {
   data = handle_data(data)
   f_init = handle_f(f_init, init_null_f = TRUE)
+  LL = handle_LL(LL, f_init)
 
   if (is.null(fixl)) {
     fixl = !is.na(LL)
@@ -179,14 +180,14 @@ find_col_blocks = function(X) {
 #'
 #' @export
 #'
-flash_add_fixed_f = function(data, FF, f_init=NULL, fixf=NULL) {
+flash_add_fixed_factors = function(data, FF, f_init=NULL, fixf=NULL) {
   data = handle_data(data)
-  # f_init is handled by flash_add_fixed_l
+  # f_init and FF are handled by flash_add_fixed_l
 
-  tf = flash_add_fixed_l(flash_transpose_data(data),
-                         FF,
-                         flash_transpose(f_init),
-                         fixf)
+  tf = flash_add_fixed_loadings(flash_transpose_data(data),
+                                FF,
+                                flash_transpose(f_init),
+                                fixf)
 
   return(flash_transpose(tf))
 }

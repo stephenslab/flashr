@@ -119,6 +119,31 @@ handle_init_fn = function(init_fn) {
 }
 
 
+# @title Handle LL parameter
+#
+# @description Checks that LL has the correct dimensions and converts
+#   it from a vector to a matrix if necessary.
+#
+# @param LL A matrix of fixed loadings. A vector can also be passed in
+#   (and is treated as a single fixed loading).
+#
+# @return LL
+#
+handle_LL = function(LL, f) {
+  if (is.vector(LL)) {
+    LL = matrix(LL, ncol = 1)
+  }
+
+  expected_nrow = flash_get_n(f)
+  if (!is.null(expected_nrow) && nrow(LL) != expected_nrow) {
+    stop(paste("The matrix of fixed loadings/factors does not have",
+               "correct dimensions"))
+  }
+
+  return(LL)
+}
+
+
 # @title Handle ebnm_fn parameter
 #
 # @description Checks that the argument to ebnm_fn refers to a valid

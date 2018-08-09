@@ -4,8 +4,8 @@ verbose_greedy_next_fl = function(k) {
   message("Fitting factor/loading ", k, "...")
 }
 
-verbose_backfit_announce = function() {
-  message("Backfitting flash object...")
+verbose_backfit_announce = function(n) {
+  message("Backfitting ", n, " factor/loading(s)...")
 }
 
 verbose_obj_table_header = function() {

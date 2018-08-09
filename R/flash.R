@@ -408,7 +408,7 @@ flash_backfit = function(data,
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, length(kset))
 
   if (verbose) {
-    verbose_backfit_announce()
+    verbose_backfit_announce(length(kset))
   }
 
   for (i in 1:length(kset)) {
