@@ -21,15 +21,16 @@
 #'
 flash_init_lf = function(LL, FF, fixl = NULL, fixf = NULL) {
   assert_that(ncol(LL) == ncol(FF))
-  if (is.null(fixl)) {
-    fixl = matrix(FALSE, ncol = ncol(LL), nrow = nrow(LL))
-  }
-  if (is.null(fixf)) {
-    fixf = matrix(FALSE, ncol = ncol(FF), nrow = nrow(FF))
-  }
 
-  f = list(EL = LL, EF = FF, EL2 = LL^2, EF2 = FF^2,
-           fixl = fixl, fixf = fixf)
+  fixl = handle_fix(fixl, LL, default_val = FALSE)
+  fixf = handle_fix(fixf, FF, default_val = FALSE)
+
+  f = list(EL = LL,
+           EF = FF,
+           EL2 = LL^2,
+           EF2 = FF^2,
+           fixl = fixl,
+           fixf = fixf)
 
   f$gl = list()
   f$gf = list()
@@ -51,11 +52,21 @@ flash_init_lf = function(LL, FF, fixl = NULL, fixf = NULL) {
 # @return An empty flash fit object.
 #
 flash_init_null = function() {
-  f = list(EL = NULL, EF = NULL, EL2 = NULL, EF2 = NULL,
-           fixl = NULL, fixf = NULL, gl = NULL, gf = NULL,
-           ebnm_fn_l = NULL, ebnm_fn_f = NULL,
-           ebnm_param_l = NULL, ebnm_param_f = NULL,
-           KL_l = NULL, KL_f = NULL, tau = NULL)
+  f = list(EL = NULL,
+           EF = NULL,
+           EL2 = NULL,
+           EF2 = NULL,
+           fixl = NULL,
+           fixf = NULL,
+           gl = NULL,
+           gf = NULL,
+           ebnm_fn_l = NULL,
+           ebnm_fn_f = NULL,
+           ebnm_param_l = NULL,
+           ebnm_param_f = NULL,
+           KL_l = NULL,
+           KL_f = NULL,
+           tau = NULL)
   class(f) = "flash"
 
   return(f)

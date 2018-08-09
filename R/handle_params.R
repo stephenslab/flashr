@@ -119,28 +119,65 @@ handle_init_fn = function(init_fn) {
 }
 
 
-# @title Handle LL parameter
+# @title Handle LL parameter (and FF)
 #
 # @description Checks that LL has the correct dimensions and converts
 #   it from a vector to a matrix if necessary.
 #
-# @param LL A matrix of fixed loadings. A vector can also be passed in
-#   (and is treated as a single fixed loading).
+# @param LL A matrix of loadings. A vector can also be passed in (and is
+#   treated as a single loading).
+#
+# @param expected_nrow The expected number of rows (can be NULL if no
+#   flash object has yet been initialized).
 #
 # @return LL
 #
-handle_LL = function(LL, f) {
+handle_LL = function(LL, expected_nrow) {
   if (is.vector(LL)) {
     LL = matrix(LL, ncol = 1)
   }
 
-  expected_nrow = flash_get_n(f)
   if (!is.null(expected_nrow) && nrow(LL) != expected_nrow) {
-    stop(paste("The matrix of fixed loadings/factors does not have",
-               "correct dimensions"))
+    stop(paste("The matrix of loadings/factors does not have the",
+               "correct dimensions."))
   }
 
   return(LL)
+}
+
+
+# @title Handle parameter fixl (and fixf)
+#
+# @description Checks that fixl has the correct dimensions and converts
+#   it from a vector to a matrix if necessary.
+#
+# @param fixl A matrix of TRUE/FALSE values indicating which entries of
+#   LL are to be considered fixed.
+#
+# @param LL A matrix of loadings.
+#
+# @param default_val Indicates whether fixl should default to TRUE or
+#   FALSE. If TRUE, then only NA values will not be considered fixed.
+#
+# @return fixl
+#
+handle_fix = function(fixl, LL, default_val) {
+  if (default_val == FALSE && is.null(fixl)) {
+    fixl = matrix(FALSE, ncol = ncol(LL), nrow = nrow(LL))
+  }
+  if (default_val == TRUE && is.null(fixl)) {
+    fixl = !is.na(LL)
+  }
+
+  if (is.vector(fixl)) {
+    fixl = matrix(fixl, ncol = 1)
+  }
+
+  if (!identical(dim(fixl), dim(LL))) {
+    stop("The dimensions of LL/FF and fixl/fixf do not match.")
+  }
+
+  return(fixl)
 }
 
 

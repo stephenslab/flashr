@@ -54,5 +54,9 @@ test_that("adding sparse factors/loadings works", {
   fl = flash_add_fixed_loadings(Y, LL)
   # Try to add vector of wrong dimension:
   LL = rep(1, n + 1)
-  expect_error(fl = flash_add_loadings(Y, LL))
+  expect_error(fl = flash_add_fixed_loadings(Y, LL, fl))
+  # Try to add fixl that doesn't match LL:
+  LL = matrix(1, nrow=n, ncol=2)
+  fixl = rep(1, n)
+  expect_error(fl = flash_add_fixed_loadings(Y, LL, fl, fixl))
 })
