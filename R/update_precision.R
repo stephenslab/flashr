@@ -13,8 +13,10 @@
 #'
 flash_update_precision = function(data,
                                   f,
-                                  var_type = c("by_column", "by_row",
-                                               "constant", "zero",
+                                  var_type = c("by_column",
+                                               "by_row",
+                                               "constant",
+                                               "zero",
                                                "kroneker")) {
   data = handle_data(data)
   f = handle_f(f)
@@ -56,33 +58,31 @@ compute_precision = function(R2, missing, var_type, S) {
 }
 
 
-# @title MLE or precision (separate parameter for each column).
+# @title MLE for precision (separate parameter for each column)
 #
-# @param R2 n by p matrix of squared residuals (with NAs for missing).
+# @param R2 An n by p matrix of squared residuals (with NAs for missing).
 #
-# @return n by p matrix of precisions (separate value for each column).
+# @return An n by p matrix of precisions (separate value for each column).
 #
 mle_precision_by_column = function (R2) {
-  sigma2 = colMeans(R2, na.rm = TRUE)  # A p vector.
+  sigma2 = colMeans(R2, na.rm = TRUE)  # a p vector
 
   # If a value of tau becomes numerically negative, set it to a
   # small positive number.
   tau = pmax(1/sigma2, .Machine$double.eps)
-  return(outer(rep(1, nrow(R2)), tau)) # An n by p matrix.
+  return(outer(rep(1, nrow(R2)), tau))
 }
 
 
-# @title mle for precision (separate parameter for each column).
+# @title MLE for precision (single value)
 #
-# @param R2 n by p matrix of squared residuals (with NAs for missing).
+# @param R2 An n by p matrix of squared residuals (with NAs for missing).
 #
-# @return n by p matrix of precisions (separate value for each column).
+# @return An n by p matrix of precisions (a single value).
 #
 mle_precision_constant = function(R2) {
   sigma2 = mean(R2, na.rm = TRUE)  # a scalar
 
-  # If a value of tau becomes numerically negative, set it to a
-  # small positive number.
   tau = pmax(1/sigma2, .Machine$double.eps)
-  return(matrix(tau, nrow = nrow(R2), ncol = ncol(R2))) # An n by p matrix.
+  return(matrix(tau, nrow = nrow(R2), ncol = ncol(R2)))
 }

@@ -202,7 +202,7 @@ calc_update_vals = function(data,
 }
 
 
-# @title Call calc_ebnm_args for loadings updates
+# @title Calculate EBNM arguments for loadings updates
 #
 # @inheritParams calc_update_vals
 #
@@ -218,7 +218,7 @@ calc_ebnm_l_args = function(data, f, k, subset, Rk = NULL) {
   s2 = 1/(tau %*% f$EF2[, k])
   if (sum(is.finite(s2)) == 0) {
     return(NULL)
-  } # Return NULL if there are no finite values.
+  }
 
   x = ((Rk * tau) %*% f$EF[, k]) * s2
   # If a value of s2 becomes numerically negative, set it to a
@@ -229,7 +229,7 @@ calc_ebnm_l_args = function(data, f, k, subset, Rk = NULL) {
 }
 
 
-# @title Call calc_ebnm_args for factor updates
+# @title Calculate EBNM arguments for factor updates
 #
 # @inherit calc_ebnm_l_args
 #

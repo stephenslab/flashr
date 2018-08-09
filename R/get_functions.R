@@ -114,8 +114,9 @@ flash_get_pve = function(f, drop_zero_factors = TRUE) {
 #   excluding factor k.
 flash_get_Rk = function(data, f, k, R = NULL) {
   if (is.null(R)) {
-    return(data$Y -
-             f$EL[, -k, drop = FALSE] %*% t(f$EF[, -k, drop = FALSE]))
+    return(
+      data$Y - f$EL[, -k, drop = FALSE] %*% t(f$EF[, -k, drop = FALSE])
+    )
   } else {
     return(R + outer(f$EL[, k], f$EF[, k]))
   }
@@ -163,10 +164,12 @@ flash_get_R2k = function(data, f, k) {
   if (is.null(f$EL)) {
     return(data$Y^2)
   } else {
-    return(flash_get_Rk(data, f, k)^2 +
-             f$EL2[, -k, drop = FALSE] %*% t(f$EF2[, -k, drop = FALSE]) -
-             f$EL[, -k, drop = FALSE]^2 %*%
-             t(f$EF[, -k, drop = FALSE]^2))
+    return(
+      flash_get_Rk(data, f, k)^2 +
+        f$EL2[, -k, drop = FALSE] %*% t(f$EF2[, -k, drop = FALSE]) -
+        f$EL[, -k, drop = FALSE]^2 %*%
+        t(f$EF[, -k, drop = FALSE]^2)
+    )
   }
 }
 

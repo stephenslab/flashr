@@ -45,6 +45,7 @@ flash_init_lf = function(LL, FF, fixl = NULL, fixf = NULL) {
   return(f)
 }
 
+
 # @title Initialize an empty flash fit object.
 #
 # @return An empty flash fit object.
@@ -109,6 +110,7 @@ flash_init_udv = function(s, K = 1) {
   }
 
   f = flash_init_lf(t(s$d * t(s$u)), s$v)
+
   return(f)
 }
 
@@ -127,8 +129,9 @@ flash_init_udv = function(s, K = 1) {
 #' @importFrom softImpute softImpute
 #'
 udv_si = function(Y, K = 1) {
-  suppressWarnings(res <- softImpute(Y, rank.max = K,
-                                     type = "als", lambda = 0))
+  suppressWarnings(
+    res <- softImpute(Y, rank.max = K, type = "als", lambda = 0)
+  )
   return(res)
 }
 
@@ -143,7 +146,9 @@ udv_si = function(Y, K = 1) {
 #' @importFrom softImpute softImpute
 #'
 udv_si_svd = function(Y, K = 1) {
-  suppressWarnings(res <- softImpute(Y,rank.max = K,type = "svd",lambda = 0))
+  suppressWarnings(
+    res <- softImpute(Y, rank.max = K, type = "svd", lambda = 0)
+  )
   return(res)
 }
 
@@ -173,6 +178,7 @@ udv_svd = function (Y, K = 1) {
 udv_random = function (Y, K = 1) {
   n = nrow(Y)
   p = ncol(Y)
-  return(list(u = matrix(rnorm(n * K), ncol = K), d = 1,
+  return(list(u = matrix(rnorm(n * K), ncol = K),
+              d = 1,
               v = matrix(rnorm(p * K), ncol = K)))
 }

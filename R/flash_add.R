@@ -32,6 +32,7 @@ flash_add_lf = function(data, LL, FF, f_init = NULL,
   return(f)
 }
 
+
 #' @title Add factors to a flash object based on data
 #'
 #' @description Computes the current residuals from \code{data} and
@@ -57,6 +58,7 @@ flash_add_factors_from_data = function(data, K, f_init = NULL,
 
   return(f)
 }
+
 
 #' @title Add a set of fixed loadings to a flash fit object.
 #'
@@ -125,6 +127,7 @@ flash_add_fixed_l = function(data, LL, f_init = NULL, fixl = NULL,
   return(f)
 }
 
+
 # @title Partition a matrix into blocks of identical columns.
 #
 # @param X the matrix to be partitioned (note that X should not have NAs).
@@ -155,6 +158,7 @@ find_col_blocks = function(X) {
 
   return(blocks)
 }
+
 
 #' @title Add a set of fixed factors to a flash fit object.
 #'

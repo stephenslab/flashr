@@ -100,7 +100,6 @@ flash_lf_sampler_fixedl = function(data, f, kset) {
 #
 #' @importFrom utils packageVersion
 #'
-
 flash_l_sampler = function(data, f, kset) {
   sampler_list = vector("list", flash_get_k(f))
 

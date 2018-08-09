@@ -11,8 +11,10 @@
 #'
 flash_get_objective = function(data, f) {
   data = handle_data(data)
+
   return(sum(unlist(f$KL_l)) + sum(unlist(f$KL_f)) + e_loglik(data, f))
 }
+
 
 # @title Get expected log likelihood under current fit.
 #
@@ -24,6 +26,7 @@ e_loglik = function(data, f) {
                      flash_get_R2(data, f)[!data$missing])))
 }
 
+
 # @title Expected log likelihood for normal means model.
 #
 # @description The likelihood is for x | theta ~ N(theta, s^2);
@@ -33,9 +36,9 @@ e_loglik = function(data, f) {
 #
 # @param s Standard errors of x.
 #
-# @param Em Posterior mean of theta.
+# @param Et Posterior mean of theta.
 #
-# @param Em2 Posterior second moment of theta.
+# @param Et2 Posterior second moment of theta.
 #
 NM_posterior_e_loglik = function(x, s, Et, Et2) {
   return(-0.5 * sum(log(2*pi*s^2) + (1/s^2) * (Et2 - 2*x*Et + x^2)))

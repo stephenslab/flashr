@@ -60,5 +60,5 @@ verbose_nullcheck_keep_fl = function(k, diff) {
 
 verbose_nullcheck_complete = function(obj) {
   message("  Nullcheck complete. Objective: ",
-          round(obj, digits=3))
+          round(obj, digits=2))
 }

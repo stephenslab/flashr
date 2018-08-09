@@ -200,6 +200,7 @@ flash = function(data,
                       verbose,
                       nullcheck)
   }
+
   return(f)
 }
 
@@ -467,7 +468,6 @@ flash_backfit = function(data,
       obj = new_obj
       iteration = 1
     }
-
   }
 
   return(f)
