@@ -32,8 +32,8 @@ test_that("argument checking works", {
   expect_error(handle_ebnm_fn("sfdskjfhskdjhfk"))
 
   # ebnm_param:
-  ash_defaults=list(mixcompdist="normal",
-                    method="shrink")
+  ash_defaults=list(mixcompdist="normal", method="shrink")
+  pn_defaults=list(warmstart=TRUE)
   # defaults:
   expect_identical(handle_ebnm_param(NULL,
                                      handle_ebnm_fn("ebnm_ash"),
@@ -42,7 +42,8 @@ test_that("argument checking works", {
   expect_identical(handle_ebnm_param(NULL,
                                      handle_ebnm_fn("ebnm_pn"),
                                      2),
-                   list(l=list(list(), list()), f=list(list(), list())))
+                   list(l=list(pn_defaults, pn_defaults),
+                        f=list(pn_defaults, pn_defaults)))
   new_ash=list(mixcompdist="uniform", method="shrink")
   # different ebnm_param for l and f:
   expect_identical(handle_ebnm_param(list(l=list(mixcompdist="uniform"),

@@ -136,6 +136,7 @@ add_l_sampler_params = function(ebnm_param, ebnm_fn, f, k) {
                                 packageVersion("ebnm") > "0.1.11")) {
     ebnm_param$g = f$gl[[k]]
     ebnm_param$fixg = TRUE
+    ebnm_param$warmstart = NULL
   }
 
   return(ebnm_param)
@@ -162,7 +163,8 @@ flash_single_l_sampler = function(data, f, k, ebnm_fn, ebnm_param) {
     stop(paste("Factor/loading", k, "has not yet been fit."))
   }
 
-  ebnm_args = calc_ebnm_l_args(data, f, k, subset)
+  ebnm_args = calc_ebnm_l_args(data, f, k, subset,
+                               flash_get_Rk(data, f, k))
   if (is.null(ebnm_args)) {
     stop(paste("All standard errors for either factor or loading", k,
                "are infinite. Impossible to create sampler."))
