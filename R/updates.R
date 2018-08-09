@@ -175,7 +175,6 @@ calc_ebnm_args = function(subset, Rk, missing, tau, EX, EX2, k) {
 #
 # @inheritParams flash_update_single_loading
 #
-<<<<<<< Updated upstream
 # @param subset The subset of factor or loadings entries that are not
 #   considered fixed (and can thus be updated).
 #
@@ -198,27 +197,6 @@ calc_update_vals = function(data,
   # Do not update if all elements are fixed:
   if (length(subset) == 0) {
     return(NULL)
-=======
-flash_update_single_fl = function(data,
-                                  f,
-                                  k,
-                                  var_type,
-                                  ebnm_fn_l,
-                                  ebnm_param_l,
-                                  ebnm_fn_f,
-                                  ebnm_param_f) {
-  f = flash_update_precision(data, f, var_type)
-  if (is.nan(flash_get_objective(data, f))) {
-    message(paste("wtf prec", k))
-  }
-  f = flash_update_single_loading(data, f, k, ebnm_fn_l, ebnm_param_l)
-  if (is.nan(flash_get_objective(data, f))) {
-    message(paste("wtf l", k))
-  }
-  f = flash_update_single_factor(data, f, k, ebnm_fn_f, ebnm_param_f)
-  if (is.nan(flash_get_objective(data, f))) {
-    message(paste("wtf f", k))
->>>>>>> Stashed changes
   }
 
   if (loadings) {
