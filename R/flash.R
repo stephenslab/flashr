@@ -261,8 +261,9 @@ flash_add_greedy = function(data,
   ebnm_fn = handle_ebnm_fn(ebnm_fn)
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, Kmax)
 
+  prev_K = flash_get_k(f_init)
   for (k in 1:Kmax) {
-    verbose_greedy_next_fl(k)
+    verbose_greedy_next_fl(prev_K + k)
 
     old_f = f
     f = flash_r1(data,
