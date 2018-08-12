@@ -32,7 +32,7 @@ test_that("various additions work", {
 
   fixed_l = matrix(1, nrow=5, ncol=1)
   rownames(fixed_l) = l_names
-  f1 = flash_add_fixed_l(data, fixed_l)
+  f1 = flash_add_fixed_loadings(data, fixed_l)
   expect_identical(rownames(f1$EL), l_names)
   f1 = flash_backfit(data,f1)
   expect_s3_class(f1, "flash")
@@ -54,7 +54,7 @@ test_that("various additions work", {
 
   fixed_f = matrix(1, nrow=20, ncol=1)
   rownames(fixed_f) = f_names
-  f1 = flash_add_fixed_f(data, fixed_f)
+  f1 = flash_add_fixed_factors(data, fixed_f)
   f1 = flash_backfit(data, f1, verbose=TRUE)
   expect_equal(f1$EF, fixed_f)
   expect_s3_class(f1, "flash")

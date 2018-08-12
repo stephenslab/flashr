@@ -21,15 +21,16 @@
 #'
 flash_init_lf = function(LL, FF, fixl = NULL, fixf = NULL) {
   assert_that(ncol(LL) == ncol(FF))
-  if (is.null(fixl)) {
-    fixl = matrix(FALSE, ncol = ncol(LL), nrow = nrow(LL))
-  }
-  if (is.null(fixf)) {
-    fixf = matrix(FALSE, ncol = ncol(FF), nrow = nrow(FF))
-  }
 
-  f = list(EL = LL, EF = FF, EL2 = LL^2, EF2 = FF^2,
-           fixl = fixl, fixf = fixf)
+  fixl = handle_fix(fixl, LL, default_val = FALSE)
+  fixf = handle_fix(fixf, FF, default_val = FALSE)
+
+  f = list(EL = LL,
+           EF = FF,
+           EL2 = LL^2,
+           EF2 = FF^2,
+           fixl = fixl,
+           fixf = fixf)
 
   f$gl = list()
   f$gf = list()
@@ -45,16 +46,27 @@ flash_init_lf = function(LL, FF, fixl = NULL, fixf = NULL) {
   return(f)
 }
 
+
 # @title Initialize an empty flash fit object.
 #
 # @return An empty flash fit object.
 #
 flash_init_null = function() {
-  f = list(EL = NULL, EF = NULL, EL2 = NULL, EF2 = NULL,
-           fixl = NULL, fixf = NULL, gl = NULL, gf = NULL,
-           ebnm_fn_l = NULL, ebnm_fn_f = NULL,
-           ebnm_param_l = NULL, ebnm_param_f = NULL,
-           KL_l = NULL, KL_f = NULL, tau = NULL)
+  f = list(EL = NULL,
+           EF = NULL,
+           EL2 = NULL,
+           EF2 = NULL,
+           fixl = NULL,
+           fixf = NULL,
+           gl = NULL,
+           gf = NULL,
+           ebnm_fn_l = NULL,
+           ebnm_fn_f = NULL,
+           ebnm_param_l = NULL,
+           ebnm_param_f = NULL,
+           KL_l = NULL,
+           KL_f = NULL,
+           tau = NULL)
   class(f) = "flash"
 
   return(f)
@@ -109,6 +121,7 @@ flash_init_udv = function(s, K = 1) {
   }
 
   f = flash_init_lf(t(s$d * t(s$u)), s$v)
+
   return(f)
 }
 
@@ -127,8 +140,9 @@ flash_init_udv = function(s, K = 1) {
 #' @importFrom softImpute softImpute
 #'
 udv_si = function(Y, K = 1) {
-  suppressWarnings(res <- softImpute(Y, rank.max = K,
-                                     type = "als", lambda = 0))
+  suppressWarnings(
+    res <- softImpute(Y, rank.max = K, type = "als", lambda = 0)
+  )
   return(res)
 }
 
@@ -143,7 +157,9 @@ udv_si = function(Y, K = 1) {
 #' @importFrom softImpute softImpute
 #'
 udv_si_svd = function(Y, K = 1) {
-  suppressWarnings(res <- softImpute(Y,rank.max = K,type = "svd",lambda = 0))
+  suppressWarnings(
+    res <- softImpute(Y, rank.max = K, type = "svd", lambda = 0)
+  )
   return(res)
 }
 
@@ -173,6 +189,7 @@ udv_svd = function (Y, K = 1) {
 udv_random = function (Y, K = 1) {
   n = nrow(Y)
   p = ncol(Y)
-  return(list(u = matrix(rnorm(n * K), ncol = K), d = 1,
+  return(list(u = matrix(rnorm(n * K), ncol = K),
+              d = 1,
               v = matrix(rnorm(p * K), ncol = K)))
 }

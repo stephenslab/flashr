@@ -176,8 +176,8 @@ flash_get_objective(data,f_greedy_ash)
 Sometimes you might want to include a "fixed" factor or loading in the
 analysis.  For example, maybe you have a covariate you are interested
 in the effect of.  Or you want to include a mean term in the rows or
-columns. You can add such "fixed" factors using `flash_add_fixed_l` or
-`flash_add_fixed_f`.  Fixed loadings will not be updated during a
+columns. You can add such "fixed" factors using `flash_add_fixed_loadings` or
+`flash_add_fixed_factors`.  Fixed loadings will not be updated during a
 subsequent fit, but their corresponding factors *will* be
 updated. Similarly, fixed factors will not be updated, but their
 loadings will be. (Missing values, NA, in a fixed loading or factor
@@ -192,7 +192,7 @@ the fit. (Notice also that the corresponding factor is 0---correct
 since we did not add a non-zero mean to the simulation.)
 
 ```{r}
-f = flash_add_fixed_l(data,LL = cbind(rep(1,n)))
+f = flash_add_fixed_loadings(data,LL = cbind(rep(1,n)))
 f = flash_add_factors_from_data(data,K=10,f_init=f)
 f = flash_backfit(data,f)
 flash_get_nfactors(f) # tells you how many nonzero factors f has

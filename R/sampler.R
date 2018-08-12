@@ -58,7 +58,7 @@ flash_lf_sampler_fixedf = function(data, f, kset) {
     lsamp = l_sampler(nsamp)
     return(mapply(function(L) {L %*% t(f$EF[, kset])},
                   lsamp,
-                  SIMPLIFY=FALSE))
+                  SIMPLIFY = FALSE))
   })
 }
 
@@ -81,7 +81,7 @@ flash_lf_sampler_fixedl = function(data, f, kset) {
     fsamp = f_sampler(nsamp)
     return(mapply(function(F) {f$EL[, kset] %*% t(F)},
                   fsamp,
-                  SIMPLIFY=FALSE))
+                  SIMPLIFY = FALSE))
   })
 }
 
@@ -100,19 +100,18 @@ flash_lf_sampler_fixedl = function(data, f, kset) {
 #
 #' @importFrom utils packageVersion
 #'
-
 flash_l_sampler = function(data, f, kset) {
   sampler_list = vector("list", flash_get_k(f))
 
   for (k in kset) {
     # Use ebnm function and parameters from flash object
     ebnm_fn = f$ebnm_fn_l[[k]]
-    if (is.null(ebnm_fn)) {
-      stop(paste("Factor/loading", k, "has not yet been fit."))
-    }
     ebnm_param = f$ebnm_param_l[[k]]
     ebnm_param = add_l_sampler_params(ebnm_param, ebnm_fn, f, k)
-    sampler_list[[k]] = flash_single_l_sampler(data, f, k, ebnm_fn,
+    sampler_list[[k]] = flash_single_l_sampler(data,
+                                               f,
+                                               k,
+                                               ebnm_fn,
                                                ebnm_param)
   }
 
@@ -132,11 +131,15 @@ flash_l_sampler = function(data, f, kset) {
 }
 
 add_l_sampler_params = function(ebnm_param, ebnm_fn, f, k) {
+  if (is.null(ebnm_fn)) {
+    return(NULL)
+  }
   # Does not work for early versions of ebnm_pn
   if (ebnm_fn == "ebnm_ash" || (ebnm_fn == "ebnm_pn" &&
                                 packageVersion("ebnm") > "0.1.11")) {
     ebnm_param$g = f$gl[[k]]
     ebnm_param$fixg = TRUE
+    ebnm_param$warmstart = NULL
   }
 
   return(ebnm_param)
@@ -159,13 +162,22 @@ flash_single_l_sampler = function(data, f, k, ebnm_fn, ebnm_param) {
     return(sampler(rep(TRUE, length(f$EL[, k])), NULL, f$EL[, k]))
   }
 
-  ebnm_args = calc_ebnm_l_args(data, f, k, subset)
+  if (is.null(ebnm_fn)) {
+    stop(paste("Factor/loading", k, "has not yet been fit."))
+  }
+
+  ebnm_args = calc_ebnm_l_args(data,
+                               f,
+                               k,
+                               subset,
+                               flash_get_Rk(data, f, k))
   if (is.null(ebnm_args)) {
     stop(paste("All standard errors for either factor or loading", k,
                "are infinite. Impossible to create sampler."))
   }
 
-  post_sampler = do.call(ebnm_fn, list(ebnm_args$x, ebnm_args$s,
+  post_sampler = do.call(ebnm_fn, list(ebnm_args$x,
+                                       ebnm_args$s,
                                        ebnm_param,
                                        output = "post_sampler"))
 

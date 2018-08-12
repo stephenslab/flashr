@@ -21,16 +21,24 @@
 #'
 #' @export
 #'
-flash_add_lf = function(data, LL, FF, f_init = NULL,
-                        fixl = NULL, fixf = NULL) {
+flash_add_lf = function(data,
+                        LL,
+                        FF,
+                        f_init = NULL,
+                        fixl = NULL,
+                        fixf = NULL) {
   data = handle_data(data)
   f_init = handle_f(f_init, init_null_f = TRUE)
+  LL = handle_LL(LL, expected_nrow = flash_get_n(f_init))
+  FF = handle_LL(FF, expected_nrow = flash_get_p(f_init))
+  # fixl and fixf are handled by flash_init_lf
 
   f2 = flash_init_lf(LL, FF, fixl, fixf)
   f = flash_combine(f_init, f2)
 
   return(f)
 }
+
 
 #' @title Add factors to a flash object based on data
 #'
@@ -45,7 +53,9 @@ flash_add_lf = function(data, LL, FF, f_init = NULL,
 #'
 #' @export
 #'
-flash_add_factors_from_data = function(data, K, f_init = NULL,
+flash_add_factors_from_data = function(data,
+                                       K,
+                                       f_init = NULL,
                                        init_fn = "udv_si") {
   data = handle_data(data)
   f_init = handle_f(f_init, init_null_f = TRUE)
@@ -57,6 +67,7 @@ flash_add_factors_from_data = function(data, K, f_init = NULL,
 
   return(f)
 }
+
 
 #' @title Add a set of fixed loadings to a flash fit object.
 #'
@@ -77,20 +88,24 @@ flash_add_factors_from_data = function(data, K, f_init = NULL,
 #'
 #' @export
 #'
-flash_add_fixed_l = function(data, LL, f_init = NULL, fixl = NULL,
-                             init_fn = "udv_si") {
+flash_add_fixed_loadings = function(data,
+                                    LL,
+                                    f_init = NULL,
+                                    fixl = NULL,
+                                    init_fn = "udv_si") {
   data = handle_data(data)
   f_init = handle_f(f_init, init_null_f = TRUE)
-
-  if (is.null(fixl)) {
-    fixl = !is.na(LL)
-  }
+  LL = handle_LL(LL, expected_nrow = flash_get_n(f_init))
+  fixl = handle_fix(fixl, LL, default_val = TRUE)
+  init_fn = handle_init_fn(init_fn)
 
   LL_init = LL
   FF_init = matrix(0, nrow=ncol(data$Y), ncol=ncol(LL))
 
   k_offset = ncol(f_init$EL)
-  if (is.null(k_offset)) {k_offset = 0}
+  if (is.null(k_offset)) {
+    k_offset = 0
+  }
 
   # Group columns of LL into blocks, each of which has the same
   # missing data.
@@ -106,24 +121,65 @@ flash_add_fixed_l = function(data, LL, f_init = NULL, fixl = NULL,
     if (sum(missing_rows) == 1) {
       LL_init[missing_rows, block_cols] =
         colMeans(LL[!missing_rows, block_cols, drop=F])
-  } else if (sum(missing_rows) > 1) {
-
-      # If we're missing more, initialize via a subsetted flash object.
+    } else if (sum(missing_rows) > 1) {
+    # If we're missing more, initialize via a subsetted flash object.
       subf = flash_subset_l(f, missing_rows)
       subdata = flash_subset_data(data, row_subset=missing_rows)
-      subf = flash_add_factors_from_data(subdata, length(block_cols), subf,
+      subf = flash_add_factors_from_data(subdata,
+                                         length(block_cols),
+                                         subf,
                                          init_fn)
       LL_init[missing_rows, block_cols] = subf$EL[,k_offset + block_cols]
       FF_init[, block_cols] = subf$EF[,k_offset + block_cols]
     }
 
-    f = flash_add_lf(data, LL_init[,block_cols, drop=F],
+    f = flash_add_lf(data,
+                     LL_init[,block_cols, drop=F],
                      FF_init[,block_cols, drop=F],
-                     f, fixl=fixl[,block_cols, drop=F])
+                     f,
+                     fixl=fixl[,block_cols, drop=F])
   }
 
   return(f)
 }
+
+
+#' @title Add a set of fixed factors to a flash fit object.
+#'
+#' @inheritParams flash
+#'
+#' @param FF The factors, a p vector or p by K matrix. Missing values
+#'   will be initialized by the mean of the relevant column (but will
+#'   generally be re-estimated when refitting the model).
+#'
+#' @param fixf A p by K matrix of of \code{TRUE}/\code{FALSE} values
+#'   indicating which elements of \code{FF} should be considered fixed
+#'   and not changed during updates.  The default is to fix all
+#'   non-missing values, so missing values will be updated when the
+#'   flash object is updated.
+#'
+#' @return A flash fit object, with factors initialized from \code{FF},
+#'   and corresponding loadings initialized to zero.
+#'
+#' @export
+#'
+flash_add_fixed_factors = function(data,
+                                   FF,
+                                   f_init = NULL,
+                                   fixf = NULL,
+                                   init_fn = "udv_si") {
+  data = handle_data(data)
+  # f_init, FF, fixf, and init_fn are handled by flash_add_fixed_l
+
+  tf = flash_add_fixed_loadings(flash_transpose_data(data),
+                                FF,
+                                flash_transpose(f_init),
+                                fixf,
+                                init_fn)
+
+  return(flash_transpose(tf))
+}
+
 
 # @title Partition a matrix into blocks of identical columns.
 #
@@ -154,35 +210,4 @@ find_col_blocks = function(X) {
   }
 
   return(blocks)
-}
-
-#' @title Add a set of fixed factors to a flash fit object.
-#'
-#' @inheritParams flash
-#'
-#' @param FF The factors, a p by K matrix. Missing values will be
-#'   initialized by the mean of the relevant column (but will generally
-#'   be re-estimated when refitting the model).
-#'
-#' @param fixf A p by K matrix of of \code{TRUE}/\code{FALSE} values
-#'   indicating which elements of \code{FF} should be considered fixed
-#'   and not changed during updates.  The default is to fix all
-#'   non-missing values, so missing values will be updated when the
-#'   flash object is updated.
-#'
-#' @return A flash fit object, with factors initialized from \code{FF},
-#'   and corresponding loadings initialized to zero.
-#'
-#' @export
-#'
-flash_add_fixed_f = function(data, FF, f_init=NULL, fixf=NULL) {
-  data = handle_data(data)
-  # f_init is handled by flash_add_fixed_l
-
-  tf = flash_add_fixed_l(flash_transpose_data(data),
-                         FF,
-                         flash_transpose(f_init),
-                         fixf)
-
-  return(flash_transpose(tf))
 }

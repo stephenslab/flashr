@@ -112,22 +112,24 @@ flash_get_pve = function(f, drop_zero_factors = TRUE) {
 
 # @title Get the residuals from a flash data and fit object,
 #   excluding factor k.
-flash_get_Rk = function(data, f, k) {
-  if (flash_get_k(f) < k) {
-    stop("Factor k does not exist.")
+flash_get_Rk = function(data, f, k, R = NULL) {
+  if (is.null(R)) {
+    return(
+      data$Y - f$EL[, -k, drop = FALSE] %*% t(f$EF[, -k, drop = FALSE])
+    )
+  } else {
+    return(R + outer(f$EL[, k], f$EF[, k]))
   }
-  return(data$Y - f$EL[, -k, drop = FALSE] %*% t(f$EF[, -k, drop = FALSE]))
 }
 
 
 # @title Get the residuals from data and a flash fit object.
 flash_get_R = function(data, f) {
-
   # If f is null, return Y.
   if (is.null(f$EL)) {
     return(data$Y)
   } else {
-    return(data$Y - flash_get_fitted_values(f))
+    return(data$Y - f$EL %*% t(f$EF))
   }
 }
 
@@ -135,12 +137,11 @@ flash_get_R = function(data, f) {
 # @title Get the residuals from data and a flash fit object, with
 #   missing data as in original.
 flash_get_R_withmissing = function(data, f) {
-
   # If f is null, return Y.
   if (is.null(f$EL)) {
     return(get_Yorig(data))
   } else {
-    return(get_Yorig(data) - flash_get_fitted_values(f))
+    return(get_Yorig(data) - f$EL %*% t(f$EF))
   }
 }
 
@@ -163,10 +164,12 @@ flash_get_R2k = function(data, f, k) {
   if (is.null(f$EL)) {
     return(data$Y^2)
   } else {
-    return(flash_get_Rk(data, f, k)^2 +
-             f$EL2[, -k, drop = FALSE] %*% t(f$EF2[, -k, drop = FALSE]) -
-             f$EL[, -k, drop = FALSE]^2 %*%
-             t(f$EF[, -k, drop = FALSE]^2))
+    return(
+      flash_get_Rk(data, f, k)^2 +
+        f$EL2[, -k, drop = FALSE] %*% t(f$EF2[, -k, drop = FALSE]) -
+        f$EL[, -k, drop = FALSE]^2 %*%
+        t(f$EF[, -k, drop = FALSE]^2)
+    )
   }
 }
 

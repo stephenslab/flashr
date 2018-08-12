@@ -119,6 +119,68 @@ handle_init_fn = function(init_fn) {
 }
 
 
+# @title Handle LL parameter (and FF)
+#
+# @description Checks that LL has the correct dimensions and converts
+#   it from a vector to a matrix if necessary.
+#
+# @param LL A matrix of loadings. A vector can also be passed in (and is
+#   treated as a single loading).
+#
+# @param expected_nrow The expected number of rows (can be NULL if no
+#   flash object has yet been initialized).
+#
+# @return LL
+#
+handle_LL = function(LL, expected_nrow) {
+  if (is.vector(LL)) {
+    LL = matrix(LL, ncol = 1)
+  }
+
+  if (!is.null(expected_nrow) && nrow(LL) != expected_nrow) {
+    stop(paste("The matrix of loadings/factors does not have the",
+               "correct dimensions."))
+  }
+
+  return(LL)
+}
+
+
+# @title Handle parameter fixl (and fixf)
+#
+# @description Checks that fixl has the correct dimensions and converts
+#   it from a vector to a matrix if necessary.
+#
+# @param fixl A matrix of TRUE/FALSE values indicating which entries of
+#   LL are to be considered fixed.
+#
+# @param LL A matrix of loadings.
+#
+# @param default_val Indicates whether fixl should default to TRUE or
+#   FALSE. If TRUE, then only NA values will not be considered fixed.
+#
+# @return fixl
+#
+handle_fix = function(fixl, LL, default_val) {
+  if (default_val == FALSE && is.null(fixl)) {
+    fixl = matrix(FALSE, ncol = ncol(LL), nrow = nrow(LL))
+  }
+  if (default_val == TRUE && is.null(fixl)) {
+    fixl = !is.na(LL)
+  }
+
+  if (is.vector(fixl)) {
+    fixl = matrix(fixl, ncol = 1)
+  }
+
+  if (!identical(dim(fixl), dim(LL))) {
+    stop("The dimensions of LL/FF and fixl/fixf do not match.")
+  }
+
+  return(fixl)
+}
+
+
 # @title Handle ebnm_fn parameter
 #
 # @description Checks that the argument to ebnm_fn refers to a valid
@@ -282,7 +344,7 @@ add_ebnm_fn_defaults = function(ebnm_param, ebnm_fn) {
   if (ebnm_fn == "ebnm_ash") {
     return(add_ebnm_ash_defaults(ebnm_param))
   } else if (ebnm_fn == "ebnm_pn") {
-    return(ebnm_param)
+    return(add_ebnm_pn_defaults(ebnm_param))
   }
 
   return(ebnm_param)
@@ -305,6 +367,24 @@ add_ebnm_ash_defaults = function(ebnm_param) {
   }
   if (is.null(ebnm_param$method)) {
     ebnm_param$method = "shrink"
+  }
+  return(ebnm_param)
+}
+
+
+# @title Add ebnm_pn defaults to ebnm_param
+#
+# @description Adds default ebnm_pn parameters to ebnm_param.
+#
+# @param ebnm_param The parameters to be passed into ebnm_fn, given as
+#   a single list.
+#
+# @return ebnm_param, with point-normal defaults added (when not
+#   specified by the user).
+#
+add_ebnm_pn_defaults = function(ebnm_param) {
+  if (is.null(ebnm_param$warmstart)) {
+    ebnm_param$warmstart = TRUE
   }
   return(ebnm_param)
 }

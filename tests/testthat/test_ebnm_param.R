@@ -16,5 +16,5 @@ test_that("passing in and saving ebnm parameters works", {
   expect_equal(f$ebnm_fn_l[[1]], "ebnm_ash")
   expect_equal(f$ebnm_fn_f[[1]], "ebnm_pn")
   expect_equal(f$ebnm_param_l[[1]], ebnm_param_l)
-  expect_equal(f$ebnm_param_f[[1]], list())
+  expect_equal(f$ebnm_param_f[[1]], list(warmstart = TRUE))
 })

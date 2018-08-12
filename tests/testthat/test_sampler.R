@@ -37,7 +37,7 @@ test_that(paste("sampling functions produce objects of correct",
     suppressWarnings(expect_equal(lf_means, LF, tolerance=0.1, scale=LF))
 
     # Fix some elements.
-    fit = flash_add_fixed_f(data, matrix(1, nrow=30, ncol=1),
+    fit = flash_add_fixed_factors(data, matrix(1, nrow=30, ncol=1),
             fixf = matrix(c(rep(TRUE,10),rep(FALSE,20)),ncol=1))
     fit = suppressWarnings(flash_backfit(data, fit))
 

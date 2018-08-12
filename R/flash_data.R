@@ -43,12 +43,15 @@ flash_set_data = function(Y, S = NULL) {
     }
 
     class(data) = "flash_data"
+
     return(data)
 }
+
 
 get_Yorig = function(data) {
     if (data$anyNA) {
         return(data$Yorig)
     }
+
     return(data$Y)
 }
