@@ -256,7 +256,7 @@ flash_add_greedy = function(data,
 
   f = handle_f(f_init)
   data = handle_data(data, f)
-  var_type = match.arg(var_type)
+  var_type = handle_var_type(match.arg(var_type), data)
   init_fn = handle_init_fn(init_fn)
   ebnm_fn = handle_ebnm_fn(ebnm_fn)
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, Kmax)
@@ -404,7 +404,7 @@ flash_backfit = function(data,
   f = handle_f(f_init)
   data = handle_data(data, f)
   kset = handle_kset(kset, f)
-  var_type = match.arg(var_type)
+  var_type = handle_var_type(match.arg(var_type), data)
   ebnm_fn = handle_ebnm_fn(ebnm_fn)
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, length(kset))
 

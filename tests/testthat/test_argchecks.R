@@ -25,6 +25,12 @@ test_that("argument checking works", {
   nullf = flash_init_null()
   expect_error(handle_kset(NULL, nullf))
 
+  # var_type:
+  expect_error(flash_add_greedy(Y, 1, var_type="zero"))
+  expect_error(flash_add_greedy(Y, 1, var_type="kroneker"))
+  expect_error(flash_add_greedy(flash_set_data(Y, S = 1), 1,
+                                var_type="constant"))
+
   # init_fn:
   expect_identical(handle_init_fn("udv_si"), "udv_si")
   expect_identical(handle_init_fn(udv_si), udv_si)
