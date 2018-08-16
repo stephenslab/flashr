@@ -13,12 +13,9 @@
 #'
 #' @export
 #'
-flash_fill = function(data, f){
-  data = handle_data(data, output = "matrix")
-
-  if (dim(data)[1] != flash_get_n(f) || dim(data)[2] != flash_get_p(f)) {
-    stop("Dimensions of data must match flash fit.")
-  }
+flash_fill = function(data, f) {
+  f = handle_f(f)
+  data = handle_data(data, f, output = "matrix")
 
   data[is.na(data)] = flash_get_fitted_values(f)[is.na(data)]
 

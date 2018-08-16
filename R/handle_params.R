@@ -33,12 +33,14 @@ handle_f = function(f, allow_null = TRUE, init_null_f = FALSE) {
 #
 # @param data An n by p matrix or a flash data object.
 #
+# @param f A flash fit object.
+#
 # @param output If "flash_data", returns a flash data object. If
 #   "matrix", returns a matrix.
 #
 # @return A matrix or flash data object.
 #
-handle_data = function(data, output = "flash_data") {
+handle_data = function(data, f, output = "flash_data") {
   if (!is.matrix(data) && class(data) != "flash_data") {
     stop("Data must be a matrix or a flash data object.")
   }
@@ -47,6 +49,17 @@ handle_data = function(data, output = "flash_data") {
   }
   if (class(data) == "flash_data" && output == "matrix") {
     data = get_Yorig(data)
+  }
+
+  if (!is.null(f)) {
+    n = ifelse(is.matrix(data), nrow(data), nrow(data$Y))
+    p = ifelse(is.matrix(data), ncol(data), ncol(data$Y))
+
+    if ((!is.null(f$EL) && nrow(f$EL) != n) ||
+        (!is.null(f$EF) && nrow(f$EF) != p) ||
+        (!is.null(f$tau) && !identical(dim(f$tau), c(n, p)))) {
+      stop("Dimensions of data and f do not agree.")
+    }
   }
 
   return(data)

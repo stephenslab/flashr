@@ -8,6 +8,15 @@ test_that("argument checking works", {
   Y = LF + rnorm(5*20)
   f = flash(Y, 2, nullcheck=F)
 
+  # data:
+  good_data = flash_set_data(matrix(rnorm(5 * 20), nrow=5, ncol=20))
+  bad_data = matrix(rnorm(5 * 10), nrow=5, ncol=10)
+  expect_error(handle_data(bad_data, f))
+  nullf = flash_init_null()
+  nullf = flash_update_precision(good_data, nullf)
+  expect_error(handle_data(bad_data, nullf))
+  expect_identical(handle_data(good_data, nullf), good_data)
+
   # kset:
   expect_identical(handle_kset(NULL, f), 1:2)
   expect_identical(handle_kset(1:2, f), 1:2)

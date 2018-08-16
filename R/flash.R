@@ -254,14 +254,14 @@ flash_add_greedy = function(data,
     set.seed(seed)
   }
 
-  data = handle_data(data)
   f = handle_f(f_init)
+  data = handle_data(data, f)
   var_type = match.arg(var_type)
   init_fn = handle_init_fn(init_fn)
   ebnm_fn = handle_ebnm_fn(ebnm_fn)
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, Kmax)
 
-  prev_K = flash_get_k(f_init)
+  prev_K = flash_get_k(f)
   for (k in 1:Kmax) {
     verbose_greedy_next_fl(prev_K + k)
 
@@ -401,9 +401,9 @@ flash_backfit = function(data,
                          verbose = TRUE,
                          nullcheck = TRUE,
                          maxiter = 1000) {
-  data = handle_data(data)
   f = handle_f(f_init)
-  kset = handle_kset(kset, f_init)
+  data = handle_data(data, f)
+  kset = handle_kset(kset, f)
   var_type = match.arg(var_type)
   ebnm_fn = handle_ebnm_fn(ebnm_fn)
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, length(kset))
