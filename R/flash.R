@@ -263,7 +263,7 @@ flash_add_greedy = function(data,
 
   prev_K = flash_get_k(f)
   for (k in 1:Kmax) {
-    verbose_greedy_next_fl(prev_K + k)
+    verbose_greedy_next_fl(prev_K + k, tol)
 
     old_f = f
     f = flash_r1(data,
@@ -409,7 +409,7 @@ flash_backfit = function(data,
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, length(kset))
 
   if (verbose) {
-    verbose_backfit_announce(length(kset))
+    verbose_backfit_announce(length(kset), tol)
   }
 
   for (i in 1:length(kset)) {

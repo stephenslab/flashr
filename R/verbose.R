@@ -1,11 +1,18 @@
 # Messages displayed when verbose = TRUE.
 
-verbose_greedy_next_fl = function(k) {
-  message("Fitting factor/loading ", k, "...")
+verbose_greedy_next_fl = function(k, tol) {
+  message("Fitting factor/loading ", k, " (",
+          stopping_criterion_string(tol), "):")
 }
 
-verbose_backfit_announce = function(n) {
-  message("Backfitting ", n, " factor/loading(s)...")
+verbose_backfit_announce = function(n, tol) {
+  message("Backfitting ", n, " factor/loading(s) (",
+          stopping_criterion_string(tol), "):")
+}
+
+stopping_criterion_string = function(tol) {
+  return(paste0("stop when difference < ",
+                formatC(tol, format = "e", digits = 2)))
 }
 
 verbose_obj_table_header = function() {
