@@ -8,6 +8,15 @@ test_that("argument checking works", {
   Y = LF + rnorm(5*20)
   f = flash(Y, 2, nullcheck=F)
 
+  # data:
+  good_data = flash_set_data(matrix(rnorm(5 * 20), nrow=5, ncol=20))
+  bad_data = matrix(rnorm(5 * 10), nrow=5, ncol=10)
+  expect_error(handle_data(bad_data, f))
+  nullf = flash_init_null()
+  nullf = flash_update_precision(good_data, nullf)
+  expect_error(handle_data(bad_data, nullf))
+  expect_identical(handle_data(good_data, nullf), good_data)
+
   # kset:
   expect_identical(handle_kset(NULL, f), 1:2)
   expect_identical(handle_kset(1:2, f), 1:2)
@@ -15,6 +24,12 @@ test_that("argument checking works", {
   expect_error(handle_kset(list(1, 2), f))
   nullf = flash_init_null()
   expect_error(handle_kset(NULL, nullf))
+
+  # var_type:
+  expect_error(flash_add_greedy(Y, 1, var_type="zero"))
+  expect_error(flash_add_greedy(Y, 1, var_type="kroneker"))
+  expect_error(flash_add_greedy(flash_set_data(Y, S = 1), 1,
+                                var_type="constant"))
 
   # init_fn:
   expect_identical(handle_init_fn("udv_si"), "udv_si")

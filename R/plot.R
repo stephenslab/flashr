@@ -28,8 +28,8 @@ flash_plot_factors = function(data,
                               kset = NULL,
                               loading_label = FALSE,
                               factor_label = FALSE) {
-  data = handle_data(data, output = "matrix")
-  # f is handled by flash_get_pve
+  f = handle_f(f)
+  data = handle_data(data, f, output = "matrix")
   # think about how to handle possible indexing problems caused by
   # dropping zero factors
   kset = handle_kset(kset, f)

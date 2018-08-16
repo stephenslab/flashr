@@ -27,8 +27,8 @@ flash_add_lf = function(data,
                         f_init = NULL,
                         fixl = NULL,
                         fixf = NULL) {
-  data = handle_data(data)
   f_init = handle_f(f_init, init_null_f = TRUE)
+  data = handle_data(data, f_init)
   LL = handle_LL(LL, expected_nrow = flash_get_n(f_init))
   FF = handle_LL(FF, expected_nrow = flash_get_p(f_init))
   # fixl and fixf are handled by flash_init_lf
@@ -57,8 +57,8 @@ flash_add_factors_from_data = function(data,
                                        K,
                                        f_init = NULL,
                                        init_fn = "udv_si") {
-  data = handle_data(data)
   f_init = handle_f(f_init, init_null_f = TRUE)
+  data = handle_data(data, f_init)
   init_fn = handle_init_fn(init_fn)
 
   R  = flash_get_R_withmissing(data, f_init)
@@ -93,8 +93,8 @@ flash_add_fixed_loadings = function(data,
                                     f_init = NULL,
                                     fixl = NULL,
                                     init_fn = "udv_si") {
-  data = handle_data(data)
   f_init = handle_f(f_init, init_null_f = TRUE)
+  data = handle_data(data, f_init)
   LL = handle_LL(LL, expected_nrow = flash_get_n(f_init))
   fixl = handle_fix(fixl, LL, default_val = TRUE)
   init_fn = handle_init_fn(init_fn)
@@ -168,8 +168,9 @@ flash_add_fixed_factors = function(data,
                                    f_init = NULL,
                                    fixf = NULL,
                                    init_fn = "udv_si") {
-  data = handle_data(data)
-  # f_init, FF, fixf, and init_fn are handled by flash_add_fixed_l
+  f_init = handle_f(f_init)
+  data = handle_data(data, f_init)
+  # FF, fixf, and init_fn are handled by flash_add_fixed_loadings
 
   tf = flash_add_fixed_loadings(flash_transpose_data(data),
                                 FF,
