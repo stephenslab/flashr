@@ -64,6 +64,12 @@ flash_backfit = function(data,
                          nullcheck = TRUE,
                          maxiter = 1000) {
 
+  if (verbose) {
+    verbose_output = "odn" # objective, obj diff, nullcheck
+  } else {
+    verbose_output = ""
+  }
+
   f = flash_backfit_workhorse(data,
                               f_init,
                               kset,
@@ -71,7 +77,7 @@ flash_backfit = function(data,
                               tol,
                               ebnm_fn,
                               ebnm_param,
-                              verbose,
+                              verbose_output,
                               nullcheck,
                               maxiter)
 
@@ -92,16 +98,13 @@ flash_backfit_workhorse = function(data,
                                    tol = 1e-2,
                                    ebnm_fn = "ebnm_pn",
                                    ebnm_param = NULL,
-                                   verbose = TRUE,
+                                   verbose_output = "odn",
                                    nullcheck = TRUE,
                                    maxiter = 1000,
                                    stopping_rule = c("objective",
-                                                     "param_chg"),
-                                   track_obj = TRUE,
-                                   track_param_chg = c("none",
-                                                       "loadings",
-                                                       "factors",
-                                                       "both")) {
+                                                     "loadings",
+                                                     "factors",
+                                                     "all_params")) {
 
   f = handle_f(f_init)
   data = handle_data(data, f)
@@ -110,30 +113,24 @@ flash_backfit_workhorse = function(data,
   ebnm_fn = handle_ebnm_fn(ebnm_fn)
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, length(kset))
   stopping_rule = match.arg(stopping_rule)
-  track_param_chg = match.arg(track_param_chg)
 
-  if (verbose) {
+  if (!identical(verbose_output, "")) {
+    verbose_output = unlist(strsplit(verbose_output, split=NULL))
     verbose_backfit_announce(length(kset), stopping_rule, tol)
-    verbose_obj_table_header(stopping_rule, track_obj, track_param_chg)
+    verbose_obj_table_header(verbose_output)
   }
 
   obj = NULL
   obj_diff = Inf
-  if (track_obj) {
-    old_obj = -Inf
-  }
+  old_obj = -Inf
+  max_chg_l = max_chg_f = Inf
 
-  max_chg = NULL
-  if (track_param_chg != "none") {
-    max_chg = Inf
-
+  if (stopping_rule != "objective"
+      || "L" %in% verbose_output || "F" %in% verbose_output) {
     norms = sqrt(colSums(f$EL[, kset, drop = FALSE]^2))
     old_EL = as.vector(sweep(f$EL[, kset, drop = FALSE], 2, norms, `/`))
     old_EF = as.vector(sweep(f$EF[, kset, drop = FALSE], 2, norms, `*`))
   }
-
-  l_sparsity = NULL
-  f_sparsity = NULL
 
   # There are two steps: first backfit (inner loop), then nullcheck
   #   (outer loop). If nullcheck removes any factors then the whole
@@ -143,7 +140,7 @@ flash_backfit_workhorse = function(data,
 
     iter = 0
     while ((iter < maxiter) &&
-           !is_converged(stopping_rule, tol, obj_diff, max_chg)) {
+           !is_converged(stopping_rule, tol, obj_diff, max_chg_l, max_chg_f)) {
 
       iter = iter + 1
       for (i in 1:length(kset)) {
@@ -157,24 +154,28 @@ flash_backfit_workhorse = function(data,
                                    ebnm_param$f[[i]])
       }
 
-      if (track_obj) {
+      if (stopping_rule == "objective"
+          || "o" %in% verbose_output || "d" %in% verbose_output) {
         obj = flash_get_objective(data, f)
         obj_diff = obj - old_obj
         old_obj = obj
       }
 
-      if (track_param_chg != "none") {
+      if (stopping_rule != "objective"
+          || "L" %in% verbose_output || "F" %in% verbose_output) {
         norms = sqrt(colSums(f$EL[, kset, drop = FALSE]^2))
         EL = as.vector(sweep(f$EL[, kset, drop = FALSE], 2, norms, `/`))
         EF = as.vector(sweep(f$EF[, kset, drop = FALSE], 2, norms, `*`))
-        max_chg = calc_max_chg(EL, EF, old_EL, old_EF, track_param_chg)
+        max_chg_l = calc_max_chg(EL, old_EL)
+        max_chg_f = calc_max_chg(EF, old_EF)
 
         old_EL = EL
         old_EF = EF
       }
 
-      if (verbose) {
-        verbose_obj_table_entry(iter, obj, obj_diff, max_chg, stopping_rule)
+      if (!identical(verbose_output, "")) {
+        verbose_obj_table_entry(verbose_output, iter, obj, obj_diff,
+                                max_chg_l, max_chg_f, f$gl[kset], f$gf[kset])
       }
     }
 
@@ -183,7 +184,8 @@ flash_backfit_workhorse = function(data,
       # Remove factors that hurt the objective.
       kset = 1:flash_get_k(f)
       old_f = f
-      f = perform_nullcheck(data, f, kset, var_type, verbose)
+      f = perform_nullcheck(data, f, kset, var_type,
+                            verbose = ("n" %in% verbose_output))
 
       # If nullcheck removes anything, start over.
       continue_outer_loop = !identical(old_f, f)

@@ -44,6 +44,12 @@ flash_add_greedy = function(data,
                             nullcheck = TRUE,
                             seed = 123) {
 
+  if (verbose) {
+    verbose_output = "odn" # objective, obj diff, nullcheck
+  } else {
+    verbose_output = ""
+  }
+
   f = flash_greedy_workhorse(data,
                              Kmax,
                              f_init,
@@ -52,7 +58,7 @@ flash_add_greedy = function(data,
                              tol,
                              ebnm_fn,
                              ebnm_param,
-                             verbose,
+                             verbose_output,
                              nullcheck,
                              seed)
 
@@ -71,17 +77,14 @@ flash_greedy_workhorse = function(data,
                                   tol = 1e-2,
                                   ebnm_fn = "ebnm_pn",
                                   ebnm_param = NULL,
-                                  verbose = TRUE,
+                                  verbose_output = "odn",
                                   nullcheck = TRUE,
                                   seed = 123,
                                   maxiter = 5000,
                                   stopping_rule = c("objective",
-                                                    "param_chg"),
-                                  track_obj = TRUE,
-                                  track_param_chg = c("none",
-                                                      "loadings",
-                                                      "factors",
-                                                      "both")) {
+                                                    "loadings",
+                                                    "factors",
+                                                    "all_params")) {
 
   if (!is.null(seed)) {
     set.seed(seed)
@@ -94,7 +97,9 @@ flash_greedy_workhorse = function(data,
   ebnm_fn = handle_ebnm_fn(ebnm_fn)
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, Kmax)
   stopping_rule = match.arg(stopping_rule)
-  track_param_chg = match.arg(track_param_chg)
+  if (!identical(verbose_output, "")) {
+    verbose_output = unlist(strsplit(verbose_output, split=NULL))
+  }
 
   prev_K = flash_get_k(f)
   for (k in 1:Kmax) {
@@ -110,12 +115,10 @@ flash_greedy_workhorse = function(data,
                  ebnm_param$l[[k]],
                  ebnm_fn$f,
                  ebnm_param$f[[k]],
-                 verbose,
+                 verbose_output,
                  nullcheck,
                  maxiter,
-                 stopping_rule,
-                 track_obj,
-                 track_param_chg)
+                 stopping_rule)
 
     # Test whether the factor/loading combination is effectively zero.
     if (is_tiny_fl(f, flash_get_k(f))) {
@@ -144,12 +147,10 @@ flash_r1 = function(data,
                     ebnm_param_l,
                     ebnm_fn_f,
                     ebnm_param_f,
-                    verbose,
+                    verbose_output,
                     nullcheck,
                     maxiter,
-                    stopping_rule,
-                    track_obj,
-                    track_param_chg) {
+                    stopping_rule) {
 
   f = flash_add_factors_from_data(data,
                                   K = 1,
@@ -165,18 +166,16 @@ flash_r1 = function(data,
                                ebnm_param_l,
                                ebnm_fn_f,
                                ebnm_param_f,
-                               verbose,
+                               verbose_output,
                                maxiter,
-                               stopping_rule,
-                               track_obj,
-                               track_param_chg)
+                               stopping_rule)
 
   if (nullcheck) {
     f = perform_nullcheck(data,
                           f,
                           flash_get_k(f),
                           var_type,
-                          verbose)
+                          verbose = ("n" %in% verbose_output))
   }
 
   return(f)

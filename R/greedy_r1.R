@@ -45,26 +45,21 @@ flash_optimize_single_fl = function(data,
                                     ebnm_param_l,
                                     ebnm_fn_f,
                                     ebnm_param_f,
-                                    verbose,
+                                    verbose_output,
                                     maxiter,
-                                    stopping_rule,
-                                    track_obj,
-                                    track_param_chg) {
+                                    stopping_rule) {
 
-  if (verbose) {
-    verbose_obj_table_header(stopping_rule, track_obj, track_param_chg)
+  if (!identical(verbose_output, "")) {
+    verbose_obj_table_header(verbose_output)
   }
 
   obj = NULL
   obj_diff = Inf
-  if (track_obj) {
-    old_obj = -Inf
-  }
+  old_obj = -Inf
+  max_chg_l = max_chg_f = Inf
 
-  max_chg = NULL
-  if (track_param_chg != "none") {
-    max_chg = Inf
-
+  if (stopping_rule != "objective"
+      || "L" %in% verbose_output || "F" %in% verbose_output) {
     norm = sqrt(sum(f$EL[, k]^2))
     old_EL = f$EL[, k] / norm
     old_EF = f$EF[, k] * norm
@@ -79,7 +74,7 @@ flash_optimize_single_fl = function(data,
 
   iter = 0
   while ((iter < maxiter) &&
-         !is_converged(stopping_rule, tol, obj_diff, max_chg)) {
+         !is_converged(stopping_rule, tol, obj_diff, max_chg_l, max_chg_f)) {
 
     iter = iter + 1
     f = flash_update_single_fl(data,
@@ -96,25 +91,29 @@ flash_optimize_single_fl = function(data,
     R2 = (R2k - 2 * outer(f$EL[, k], f$EF[, k]) * Rk
           + outer(f$EL2[, k], f$EF2[, k]))
 
-    if (track_obj) {
+    if (stopping_rule == "objective"
+        || "o" %in% verbose_output || "d" %in% verbose_output) {
       obj = (sum(unlist(f$KL_l)) + sum(unlist(f$KL_f)) +
                e_loglik_from_R2_and_tau(R2, f$tau, data$missing))
       obj_diff = obj - old_obj
       old_obj = obj
     }
 
-    if (track_param_chg != "none") {
+    if (stopping_rule != "objective"
+        || "L" %in% verbose_output || "F" %in% verbose_output) {
       norm = sqrt(sum(f$EL[, k]^2))
       EL = f$EL[, k] / norm
       EF = f$EF[, k] * norm
-      max_chg = calc_max_chg(EL, EF, old_EL, old_EF, track_param_chg)
+      max_chg_l = calc_max_chg(EL, old_EL)
+      max_chg_f = calc_max_chg(EF, old_EF)
 
       old_EL = EL
       old_EF = EF
     }
 
-    if (verbose) {
-      verbose_obj_table_entry(iter, obj, obj_diff, max_chg, stopping_rule)
+    if (!identical(verbose_output, "")) {
+      verbose_obj_table_entry(verbose_output, iter, obj, obj_diff,
+                              max_chg_l, max_chg_f, f$gl[k], f$gf[k])
     }
   }
 

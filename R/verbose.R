@@ -20,30 +20,32 @@ stopping_criterion_string = function(stopping_rule, tol) {
   return(paste("stop when", rule_string, "is <", tol_string))
 }
 
-verbose_obj_table_header = function(stopping_rule,
-                                    track_obj,
-                                    track_param_chg) {
+verbose_obj_table_header = function(verbose_output) {
   header_string = "  Iteration"
 
-  # if (ebnm_fn_l == "ebnm_pn") {
-  #   header_string = paste0(header_string,
-  #                          sprintf("%10s", "pi0 (l)"))
-  # }
-  # if (ebnm_fn_f == "ebnm_pn") {
-  #   header_string = paste0(header_string,
-  #                          sprintf("%10s", "pi0 (f)"))
-  # }
-
-  if (track_param_chg != "none") {
+  if ("l" %in% verbose_output) {
     header_string = paste0(header_string,
-                           sprintf("%16s", "Max Param Chg"))
+                           sprintf("%9s", "pi0 (l)"))
+  }
+  if ("f" %in% verbose_output) {
+    header_string = paste0(header_string,
+                           sprintf("%9s", "pi0 (f)"))
   }
 
-  if (track_obj) {
+  if ("L" %in% verbose_output) {
     header_string = paste0(header_string,
-                           sprintf("%16s", "Objective"))
+                           sprintf("%13s", "Max Chg (l)"))
   }
-  if (stopping_rule == "objective") {
+  if ("F" %in% verbose_output) {
+    header_string = paste0(header_string,
+                           sprintf("%13s", "Max Chg (f)"))
+  }
+
+  if ("o" %in% verbose_output) {
+    header_string = paste0(header_string,
+                           sprintf("%15s", "Objective"))
+  }
+  if ("d" %in% verbose_output) {
     header_string = paste0(header_string,
                            sprintf("%11s", "Obj Diff"))
   }
@@ -51,33 +53,34 @@ verbose_obj_table_header = function(stopping_rule,
   message(header_string)
 }
 
-verbose_obj_table_entry = function(iteration,
-                                   obj,
-                                   obj_diff,
-                                   max_chg,
-                                   stopping_rule) {
-  entry_string = sprintf("%11d", iteration)
+verbose_obj_table_entry = function(verbose_output, iter, obj, obj_diff,
+                                   max_chg_l, max_chg_f, gl, gf) {
+  entry_string = sprintf("%11d", iter)
 
-  # l_sparsity = verbose_sparsity(gl)
-  # f_sparsity = verbose_sparsity(gf)
-  # if (!is.null(l_sparsity)) {
-  #   entry_string = paste0(entry_string, sprintf("%10.3f", l_sparsity))
-  # }
-  # if (!is.null(f_sparsity)) {
-  #   entry_string = paste0(entry_string, sprintf("%10.3f", f_sparsity))
-  # }
-
-  if (!is.null(max_chg)) {
-    entry_string = paste0(entry_string,
-                          sprintf("%15.2f", 100 * max_chg), "%")
+  if ("l" %in% verbose_output) {
+    l_sparsity = verbose_sparsity(gl)
+    entry_string = paste0(entry_string, sprintf("%9.3f", l_sparsity))
+  }
+  if ("f" %in% verbose_output) {
+    f_sparsity = verbose_sparsity(gf)
+    entry_string = paste0(entry_string, sprintf("%9.3f", f_sparsity))
   }
 
-  if (!is.null(obj)) {
+  if ("L" %in% verbose_output) {
     entry_string = paste0(entry_string,
-                          sprintf("%16.2f", obj))
+                          sprintf("%12.2f", 100 * max_chg_l), "%")
+  }
+  if ("F" %in% verbose_output) {
+    entry_string = paste0(entry_string,
+                          sprintf("%12.2f", 100 * max_chg_f), "%")
   }
 
-  if (stopping_rule == "objective") {
+  if ("o" %in% verbose_output) {
+    entry_string = paste0(entry_string,
+                          sprintf("%15.2f", obj))
+  }
+
+  if ("d" %in% verbose_output) {
     diff_string = formatC(obj_diff, format="e", digits=2)
     entry_string = paste0(entry_string,
                           sprintf("%11s", diff_string))
@@ -118,11 +121,11 @@ verbose_nullcheck_complete = function(obj) {
           round(obj, digits=2))
 }
 
-# # At present, only returns nonnull for ebnm_pn.
-# verbose_sparsity = function(g) {
-#   if (is.null(g[[1]]$pi0)) {
-#     return(NULL)
-#   } else {
-#     return(mean(sapply(g, function(k) {k$pi0})))
-#   }
-# }
+# At present, only returns nonnull for ebnm_pn.
+verbose_sparsity = function(g) {
+  if (is.null(g[[1]]$pi0)) {
+    return(NULL)
+  } else {
+    return(mean(sapply(g, function(k) {k$pi0})))
+  }
+}
