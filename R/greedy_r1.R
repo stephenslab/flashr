@@ -114,8 +114,7 @@ flash_optimize_single_fl = function(data,
     }
 
     if (verbose) {
-      verbose_obj_table_entry(iter, obj, obj_diff, max_chg,
-                              stopping_rule)
+      verbose_obj_table_entry(iter, obj, obj_diff, max_chg, stopping_rule)
     }
   }
 

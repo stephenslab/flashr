@@ -132,6 +132,9 @@ flash_backfit_workhorse = function(data,
     old_EF = as.vector(sweep(f$EF[, kset, drop = FALSE], 2, norms, `*`))
   }
 
+  l_sparsity = NULL
+  f_sparsity = NULL
+
   # There are two steps: first backfit (inner loop), then nullcheck
   #   (outer loop). If nullcheck removes any factors then the whole
   #   process is repeated.
@@ -171,8 +174,7 @@ flash_backfit_workhorse = function(data,
       }
 
       if (verbose) {
-        verbose_obj_table_entry(iter, obj, obj_diff, max_chg,
-                                stopping_rule)
+        verbose_obj_table_entry(iter, obj, obj_diff, max_chg, stopping_rule)
       }
     }
 
