@@ -11,13 +11,20 @@ verbose_backfit_announce = function(n, stopping_rule, tol) {
 }
 
 stopping_criterion_string = function(stopping_rule, tol) {
-  rule_string = ifelse(stopping_rule == "objective",
-                       "difference in obj.",
-                       "max. parameter change")
-  tol_string = ifelse(stopping_rule == "objective",
-                      formatC(tol, format = "e", digits = 2),
-                      paste0(100 * tol, "%"))
-  return(paste("stop when", rule_string, "is <", tol_string))
+  if (stopping_rule == "objective") {
+    rule_string = "difference in obj. is"
+    tol_string = formatC(tol, format = "e", digits = 2)
+  } else {
+    tol_string = paste0(100 * tol, "%")
+    if (stopping_rule == "loadings") {
+      rule_string = "max loading change is"
+    } else if (stopping_rule == "factors") {
+      rule_string = "max factor change is"
+    } else { # stopping_rule == "any_param"
+      rule_string = "max parameter change is"
+    }
+  }
+  return(paste("stop when", rule_string, "<", tol_string))
 }
 
 verbose_obj_table_header = function(verbose_output) {
