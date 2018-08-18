@@ -45,20 +45,25 @@ flash_optimize_single_fl = function(data,
                                     ebnm_param_l,
                                     ebnm_fn_f,
                                     ebnm_param_f,
-                                    verbose,
+                                    verbose_output,
                                     maxiter,
-                                    calc_obj = TRUE) {
+                                    stopping_rule) {
 
-  if (verbose) {
-    if (calc_obj) {
-      verbose_obj_table_header()
-    } else {
-      verbose_diff_table_header()
-    }
+  if (!identical(verbose_output, "")) {
+    verbose_obj_table_header(verbose_output)
   }
 
-  diff = Inf
+  obj = NULL
+  obj_diff = Inf
   old_obj = -Inf
+  max_chg_l = max_chg_f = Inf
+
+  if (stopping_rule != "objective"
+      || "L" %in% verbose_output || "F" %in% verbose_output) {
+    norm = sqrt(sum(f$EL[, k]^2))
+    old_EL = f$EL[, k] / norm
+    old_EF = f$EF[, k] * norm
+  }
 
   R2 = flash_get_R2(data, f)
 
@@ -68,11 +73,10 @@ flash_optimize_single_fl = function(data,
          - outer(f$EL2[, k], f$EF2[, k]))
 
   iter = 0
-  while ((diff > tol) & (iter < maxiter)) {
+  while ((iter < maxiter) &&
+         !is_converged(stopping_rule, tol, obj_diff, max_chg_l, max_chg_f)) {
+
     iter = iter + 1
-
-    old_vals = c(f$EL[, k], f$EF[, k])
-
     f = flash_update_single_fl(data,
                                f,
                                k,
@@ -87,43 +91,29 @@ flash_optimize_single_fl = function(data,
     R2 = (R2k - 2 * outer(f$EL[, k], f$EF[, k]) * Rk
           + outer(f$EL2[, k], f$EF2[, k]))
 
-    if (calc_obj) {
-      # Check convergence by increase in objective function.
+    if (stopping_rule == "objective"
+        || "o" %in% verbose_output || "d" %in% verbose_output) {
       obj = (sum(unlist(f$KL_l)) + sum(unlist(f$KL_f)) +
                e_loglik_from_R2_and_tau(R2, f$tau, data$missing))
-      diff = obj - old_obj
+      obj_diff = obj - old_obj
       old_obj = obj
+    }
 
-      if (diff < 0) {
-        verbose_obj_decrease_warning()
-      }
-      if (verbose) {
-        verbose_obj_table_entry(iter, obj, diff)
-      }
-    } else {
-      # Check convergence by percentage changes in EL and EF.
-      #   Normalize EL and EF so that EF has unit norm. Note that this
-      #   messes up stored log-likelihoods etc... so not recommended.
-      warning("Renormalization step not fully tested; be careful!")
+    if (stopping_rule != "objective"
+        || "L" %in% verbose_output || "F" %in% verbose_output) {
+      norm = sqrt(sum(f$EL[, k]^2))
+      EL = f$EL[, k] / norm
+      EF = f$EF[, k] * norm
+      max_chg_l = calc_max_chg(EL, old_EL)
+      max_chg_f = calc_max_chg(EF, old_EF)
 
-      norm = sqrt(sum(f$EF[, k]^2))
-      f$EF[, k] = f$EF[, k] / norm
-      f$EF2[, k] = f$EF2[, k] / (norm^2)
-      f$EL[, k] = f$EL[, k] * norm
-      f$EL2[, k] = f$EL2[, k] * (norm^2)
+      old_EL = EL
+      old_EF = EF
+    }
 
-      all_diff = abs(c(f$EL[, k], f$EF[, k])/old_vals - 1)
-      if (all(is.nan(all_diff))) {
-        # All old and new entries of EL and EF are zero.
-        diff = 0
-      } else {
-        # Ignore entries where both old and new values are zero.
-        diff = max(all_diff[!is.nan(all_diff)])
-      }
-
-      if (verbose) {
-       verbose_diff_table_entry(iter, diff)
-      }
+    if (!identical(verbose_output, "")) {
+      verbose_obj_table_entry(verbose_output, iter, obj, obj_diff,
+                              max_chg_l, max_chg_f, f$gl[k], f$gf[k])
     }
   }
 

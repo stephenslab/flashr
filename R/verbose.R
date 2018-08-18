@@ -1,41 +1,92 @@
 # Messages displayed when verbose = TRUE.
 
-verbose_greedy_next_fl = function(k, tol) {
+verbose_greedy_next_fl = function(k, stopping_rule, tol) {
   message("Fitting factor/loading ", k, " (",
-          stopping_criterion_string(tol), "):")
+          stopping_criterion_string(stopping_rule, tol), "):")
 }
 
-verbose_backfit_announce = function(n, tol) {
+verbose_backfit_announce = function(n, stopping_rule, tol) {
   message("Backfitting ", n, " factor/loading(s) (",
-          stopping_criterion_string(tol), "):")
+          stopping_criterion_string(stopping_rule, tol), "):")
 }
 
-stopping_criterion_string = function(tol) {
-  return(paste0("stop when difference < ",
-                formatC(tol, format = "e", digits = 2)))
+stopping_criterion_string = function(stopping_rule, tol) {
+  rule_string = ifelse(stopping_rule == "objective",
+                       "difference in obj.",
+                       "max. parameter change")
+  tol_string = ifelse(stopping_rule == "objective",
+                      formatC(tol, format = "e", digits = 2),
+                      paste0(100 * tol, "%"))
+  return(paste("stop when", rule_string, "is <", tol_string))
 }
 
-verbose_obj_table_header = function() {
-  message("  Iteration         Objective     Difference")
-}
+verbose_obj_table_header = function(verbose_output) {
+  header_string = "  Iteration"
 
-verbose_diff_table_header = function() {
-  message("  Iteration        Difference")
-}
-
-verbose_obj_table_entry = function(iteration, obj, diff = NULL) {
-  if (is.null(diff)) {
-    diff_string = "NA"
-  } else {
-    diff_string = formatC(diff, format="e", digits=2)
+  if ("l" %in% verbose_output) {
+    header_string = paste0(header_string,
+                           sprintf("%9s", "pi0 (l)"))
   }
-  message(sprintf("%11d", iteration),
-          sprintf("%18.2f", obj),
-          sprintf("%15s", diff_string))
+  if ("f" %in% verbose_output) {
+    header_string = paste0(header_string,
+                           sprintf("%9s", "pi0 (f)"))
+  }
+
+  if ("L" %in% verbose_output) {
+    header_string = paste0(header_string,
+                           sprintf("%13s", "Max Chg (l)"))
+  }
+  if ("F" %in% verbose_output) {
+    header_string = paste0(header_string,
+                           sprintf("%13s", "Max Chg (f)"))
+  }
+
+  if ("o" %in% verbose_output) {
+    header_string = paste0(header_string,
+                           sprintf("%15s", "Objective"))
+  }
+  if ("d" %in% verbose_output) {
+    header_string = paste0(header_string,
+                           sprintf("%11s", "Obj Diff"))
+  }
+
+  message(header_string)
 }
 
-verbose_diff_table_entry = function(iteration, diff) {
-  message(sprintf("%11d", iteration), sprintf("%18.2f", diff))
+verbose_obj_table_entry = function(verbose_output, iter, obj, obj_diff,
+                                   max_chg_l, max_chg_f, gl, gf) {
+  entry_string = sprintf("%11d", iter)
+
+  if ("l" %in% verbose_output) {
+    l_sparsity = verbose_sparsity(gl)
+    entry_string = paste0(entry_string, sprintf("%9.3f", l_sparsity))
+  }
+  if ("f" %in% verbose_output) {
+    f_sparsity = verbose_sparsity(gf)
+    entry_string = paste0(entry_string, sprintf("%9.3f", f_sparsity))
+  }
+
+  if ("L" %in% verbose_output) {
+    entry_string = paste0(entry_string,
+                          sprintf("%12.2f", 100 * max_chg_l), "%")
+  }
+  if ("F" %in% verbose_output) {
+    entry_string = paste0(entry_string,
+                          sprintf("%12.2f", 100 * max_chg_f), "%")
+  }
+
+  if ("o" %in% verbose_output) {
+    entry_string = paste0(entry_string,
+                          sprintf("%15.2f", obj))
+  }
+
+  if ("d" %in% verbose_output) {
+    diff_string = formatC(obj_diff, format="e", digits=2)
+    entry_string = paste0(entry_string,
+                          sprintf("%11s", diff_string))
+  }
+
+  message(entry_string)
 }
 
 verbose_obj_decrease_warning = function() {
@@ -68,4 +119,13 @@ verbose_nullcheck_keep_fl = function(k, diff) {
 verbose_nullcheck_complete = function(obj) {
   message("  Nullcheck complete. Objective: ",
           round(obj, digits=2))
+}
+
+# At present, only returns nonnull for ebnm_pn.
+verbose_sparsity = function(g) {
+  if (is.null(g[[1]]$pi0)) {
+    return(NULL)
+  } else {
+    return(mean(sapply(g, function(k) {k$pi0})))
+  }
 }
