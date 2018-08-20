@@ -60,9 +60,9 @@ flash_optimize_single_fl = function(data,
 
   if (stopping_rule != "objective"
       || "L" %in% verbose_output || "F" %in% verbose_output) {
-    norm = sqrt(sum(f$EL[, k]^2))
-    old_EL = f$EL[, k] / norm
-    old_EF = f$EF[, k] * norm
+    res = normalize_lf(f$EL[, k], f$EF[, k])
+    old_EL = res$EL
+    old_EF = res$EF
   }
 
   R2 = flash_get_R2(data, f)
@@ -101,14 +101,12 @@ flash_optimize_single_fl = function(data,
 
     if (stopping_rule != "objective"
         || "L" %in% verbose_output || "F" %in% verbose_output) {
-      norm = sqrt(sum(f$EL[, k]^2))
-      EL = f$EL[, k] / norm
-      EF = f$EF[, k] * norm
-      max_chg_l = calc_max_chg(EL, old_EL)
-      max_chg_f = calc_max_chg(EF, old_EF)
+      res = normalize_lf(f$EL[, k], f$EF[, k])
+      max_chg_l = calc_max_chg(res$EL, old_EL)
+      max_chg_f = calc_max_chg(res$EF, old_EF)
 
-      old_EL = EL
-      old_EF = EF
+      old_EL = res$EL
+      old_EF = res$EF
     }
 
     if (!identical(verbose_output, "")) {

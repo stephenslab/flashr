@@ -69,11 +69,13 @@ verbose_obj_table_entry = function(verbose_output, iter, obj, obj_diff,
   }
   if ("L" %in% verbose_output) {
     entry_string = paste0(entry_string,
-                          sprintf("%12.2f", 100 * max_chg_l), "%")
+                          sprintf("%13s", formatC(max_chg_l, format="e", digits=2)))
+                          # sprintf("%12.2f", 100 * max_chg_l), "%")
   }
   if ("F" %in% verbose_output) {
     entry_string = paste0(entry_string,
-                          sprintf("%12.2f", 100 * max_chg_f), "%")
+                          sprintf("%13s", formatC(max_chg_f, format="e", digits=2)))
+                          # sprintf("%12.2f", 100 * max_chg_f), "%")
   }
   if ("o" %in% verbose_output) {
     entry_string = paste0(entry_string,

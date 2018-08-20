@@ -115,21 +115,17 @@ flash_backfit_workhorse = function(data,
   stopping_rule = match.arg(stopping_rule)
 
   if (!identical(verbose_output, "")) {
-    verbose_output = unlist(strsplit(verbose_output, split=NULL))
     verbose_backfit_announce(length(kset), stopping_rule, tol)
+
+    verbose_output = unlist(strsplit(verbose_output, split=NULL))
     verbose_obj_table_header(verbose_output)
   }
 
-  obj = NULL
-  obj_diff = Inf
-  old_obj = -Inf
-  max_chg_l = max_chg_f = Inf
-
   if (stopping_rule != "objective"
       || "L" %in% verbose_output || "F" %in% verbose_output) {
-    norms = sqrt(colSums(f$EL[, kset, drop = FALSE]^2))
-    old_EL = as.vector(sweep(f$EL[, kset, drop = FALSE], 2, norms, `/`))
-    old_EF = as.vector(sweep(f$EF[, kset, drop = FALSE], 2, norms, `*`))
+    res = normalize_lf(f$EL[, kset], f$EF[, kset])
+    old_EL = res$EL
+    old_EF = res$EF
   }
 
   # There are two steps: first backfit (inner loop), then nullcheck
@@ -137,6 +133,10 @@ flash_backfit_workhorse = function(data,
   #   process is repeated.
   continue_outer_loop = TRUE
   while (continue_outer_loop) {
+    obj = NULL
+    obj_diff = Inf
+    old_obj = -Inf
+    max_chg_l = max_chg_f = Inf
 
     iter = 0
     while ((iter < maxiter) &&
@@ -163,14 +163,12 @@ flash_backfit_workhorse = function(data,
 
       if (stopping_rule != "objective"
           || "L" %in% verbose_output || "F" %in% verbose_output) {
-        norms = sqrt(colSums(f$EL[, kset, drop = FALSE]^2))
-        EL = as.vector(sweep(f$EL[, kset, drop = FALSE], 2, norms, `/`))
-        EF = as.vector(sweep(f$EF[, kset, drop = FALSE], 2, norms, `*`))
-        max_chg_l = calc_max_chg(EL, old_EL)
-        max_chg_f = calc_max_chg(EF, old_EF)
+        res = normalize_lf(f$EL, f$EF)
+        max_chg_l = calc_max_chg(res$EL, old_EL)
+        max_chg_f = calc_max_chg(res$EF, old_EF)
 
-        old_EL = EL
-        old_EF = EF
+        old_EL = res$EL
+        old_EF = res$EF
       }
 
       if (!identical(verbose_output, "")) {
