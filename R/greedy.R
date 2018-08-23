@@ -34,8 +34,11 @@
 flash_add_greedy = function(data,
                             Kmax = 1,
                             f_init = NULL,
-                            var_type = c("by_column", "by_row", "constant",
-                                         "zero", "kroneker"),
+                            var_type = c("by_column",
+                                         "by_row",
+                                         "constant",
+                                         "zero",
+                                         "kroneker"),
                             init_fn = "udv_si",
                             tol = 1e-2,
                             ebnm_fn = "ebnm_pn",
@@ -65,14 +68,17 @@ flash_add_greedy = function(data,
   return(f)
 }
 
-# This function has some additional parameters that are normally
+# The "workhorse" function has some additional parameters that are normally
 #   hidden to the user.
 #
 flash_greedy_workhorse = function(data,
                                   Kmax = 1,
                                   f_init = NULL,
-                                  var_type = c("by_column", "by_row", "constant",
-                                               "zero", "kroneker"),
+                                  var_type = c("by_column",
+                                               "by_row",
+                                               "constant",
+                                               "zero",
+                                               "kroneker"),
                                   init_fn = "udv_si",
                                   tol = 1e-2,
                                   ebnm_fn = "ebnm_pn",

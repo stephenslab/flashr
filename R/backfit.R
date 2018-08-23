@@ -84,7 +84,7 @@ flash_backfit = function(data,
   return(f)
 }
 
-# This function has some additional parameters that are normally
+# The "workhorse" function has some additional parameters that are normally
 #   hidden to the user.
 #
 flash_backfit_workhorse = function(data,

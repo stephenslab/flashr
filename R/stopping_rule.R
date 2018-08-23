@@ -1,3 +1,6 @@
+# Determines whether convergence has occurred when greedily adding a factor/
+#   loading or when backfitting.
+#
 is_converged = function(stopping_rule, tol, obj_diff, max_chg_l, max_chg_f) {
   if (stopping_rule == "objective") {
     if (obj_diff < 0) {
@@ -13,6 +16,8 @@ is_converged = function(stopping_rule, tol, obj_diff, max_chg_l, max_chg_f) {
   }
 }
 
+# Normalizes EL and EF before changes in parameter values are calculated.
+#
 normalize_lf = function(EL, EF) {
   # normalize both factors and loadings to have l_1 norm equal to 1:
   if (is.matrix(EL)) {
