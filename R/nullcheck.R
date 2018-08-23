@@ -32,19 +32,21 @@ perform_nullcheck = function(data, f, kset, var_type, verbose) {
     f_changed = FALSE
     for (k in kset) {
       f0 = flash_zero_out_factor(f, k)
-      f0 = flash_update_precision(data, f0, var_type)
-      obj0 = flash_get_objective(data, f0)
-      obj1 = flash_get_objective(data, f)
+      if (!identical(f, f0)) {
+        f0 = flash_update_precision(data, f0, var_type)
+        obj0 = flash_get_objective(data, f0)
+        obj1 = flash_get_objective(data, f)
 
-      if (obj0 > obj1) {
-        if (verbose) {
-          verbose_nullcheck_delete_fl(k, obj0 - obj1)
-        }
-        f = f0
-        f_changed = TRUE
-      } else if (obj1 > obj0) {
-        if (verbose) {
-          verbose_nullcheck_keep_fl(k, obj1 - obj0)
+        if (obj0 >= obj1) {
+          if (verbose) {
+            verbose_nullcheck_delete_fl(k, obj0 - obj1)
+          }
+          f = f0
+          f_changed = TRUE
+        } else if (obj1 > obj0) {
+          if (verbose) {
+            verbose_nullcheck_keep_fl(k, obj1 - obj0)
+          }
         }
       }
     }

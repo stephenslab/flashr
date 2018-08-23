@@ -49,7 +49,7 @@ flash_optimize_single_fl = function(data,
                                     maxiter,
                                     stopping_rule) {
 
-  if (!identical(verbose_output, "")) {
+  if (length(verbose_output) > 0) {
     verbose_obj_table_header(verbose_output)
   }
 
@@ -109,7 +109,7 @@ flash_optimize_single_fl = function(data,
       old_EF = res$EF
     }
 
-    if (!identical(verbose_output, "")) {
+    if (length(verbose_output) > 0) {
       verbose_obj_table_entry(verbose_output, iter, obj, obj_diff,
                               max_chg_l, max_chg_f, f$gl[k], f$gf[k])
     }

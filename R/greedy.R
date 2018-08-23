@@ -96,14 +96,14 @@ flash_greedy_workhorse = function(data,
   init_fn = handle_init_fn(init_fn)
   ebnm_fn = handle_ebnm_fn(ebnm_fn)
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, Kmax)
+  verbose_output = unlist(strsplit(verbose_output, split=NULL))
   stopping_rule = match.arg(stopping_rule)
-  if (!identical(verbose_output, "")) {
-    verbose_output = unlist(strsplit(verbose_output, split=NULL))
-  }
 
   prev_K = flash_get_k(f)
   for (k in 1:Kmax) {
-    verbose_greedy_next_fl(prev_K + k, stopping_rule, tol)
+    if (length(verbose_output) > 0) {
+      verbose_greedy_next_fl(prev_K + k, stopping_rule, tol)
+    }
 
     old_f = f
     f = flash_r1(data,

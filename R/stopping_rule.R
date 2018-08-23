@@ -42,7 +42,7 @@ normalize_lf = function(EL, EF) {
 calc_max_chg = function(new_vals, old_vals) {
   # Absolute difference:
   chgs = abs(new_vals - old_vals)
-  max_chg = max(chgs[!is.nan(chgs)])
+  max_chg = max(chgs[!is.nan(chgs)], 0)
 
   # # Relative difference:
   # pct_chgs = abs(new_vals/old_vals - 1)

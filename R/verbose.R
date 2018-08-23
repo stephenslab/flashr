@@ -113,10 +113,16 @@ verbose_nullcheck_announce = function() {
 }
 
 verbose_nullcheck_delete_fl = function(k, diff) {
-  message("  Deleting factor ", k,
-          " increases objective by ",
-          formatC(diff, format="e", digits=2),
-          ". Factor zeroed out.")
+  if (diff == 0) {
+    message("  Deleting factor ", k,
+            " does not change objective. ",
+            "Factor zeroed out.")
+  } else {
+    message("  Deleting factor ", k,
+            " increases objective by ",
+            formatC(diff, format="e", digits=2),
+            ". Factor zeroed out.")
+  }
 }
 
 verbose_nullcheck_keep_fl = function(k, diff) {

@@ -112,13 +112,11 @@ flash_backfit_workhorse = function(data,
   var_type = handle_var_type(match.arg(var_type), data)
   ebnm_fn = handle_ebnm_fn(ebnm_fn)
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, length(kset))
+  verbose_output = unlist(strsplit(verbose_output, split=NULL))
   stopping_rule = match.arg(stopping_rule)
 
-  if (!identical(verbose_output, "")) {
+  if (length(verbose_output) > 0) {
     verbose_backfit_announce(length(kset), stopping_rule, tol)
-
-    verbose_output = unlist(strsplit(verbose_output, split=NULL))
-    verbose_obj_table_header(verbose_output)
   }
 
   if (stopping_rule != "objective"
@@ -133,6 +131,10 @@ flash_backfit_workhorse = function(data,
   #   process is repeated.
   continue_outer_loop = TRUE
   while (continue_outer_loop) {
+    if (length(verbose_output) > 0) {
+      verbose_obj_table_header(verbose_output)
+    }
+
     obj = NULL
     obj_diff = Inf
     old_obj = -Inf
@@ -171,7 +173,7 @@ flash_backfit_workhorse = function(data,
         old_EF = res$EF
       }
 
-      if (!identical(verbose_output, "")) {
+      if (length(verbose_output) > 0) {
         verbose_obj_table_entry(verbose_output, iter, obj, obj_diff,
                                 max_chg_l, max_chg_f, f$gl[kset], f$gf[kset])
       }
