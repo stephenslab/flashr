@@ -13,17 +13,16 @@ verbose_backfit_announce = function(n, stopping_rule, tol) {
 stopping_criterion_string = function(stopping_rule, tol) {
   if (stopping_rule == "objective") {
     rule_string = "difference in obj. is"
-    tol_string = formatC(tol, format = "e", digits = 2)
-  } else {
-    tol_string = paste0(100 * tol, "%")
-    if (stopping_rule == "loadings") {
-      rule_string = "max loading change is"
-    } else if (stopping_rule == "factors") {
-      rule_string = "max factor change is"
-    } else { # stopping_rule == "any_param"
-      rule_string = "max parameter change is"
-    }
+  } else if (stopping_rule == "loadings") {
+    rule_string = "max loading change is"
+  } else if (stopping_rule == "factors") {
+    rule_string = "max factor change is"
+  } else { # stopping_rule == "any_param"
+    rule_string = "max parameter change is"
   }
+
+  tol_string = formatC(tol, format = "e", digits = 2)
+
   return(paste("stop when", rule_string, "<", tol_string))
 }
 
@@ -70,12 +69,10 @@ verbose_obj_table_entry = function(verbose_output, iter, obj, obj_diff,
   if ("L" %in% verbose_output) {
     entry_string = paste0(entry_string,
                           sprintf("%13s", formatC(max_chg_l, format="e", digits=2)))
-                          # sprintf("%12.2f", 100 * max_chg_l), "%")
   }
   if ("F" %in% verbose_output) {
     entry_string = paste0(entry_string,
                           sprintf("%13s", formatC(max_chg_f, format="e", digits=2)))
-                          # sprintf("%12.2f", 100 * max_chg_f), "%")
   }
   if ("o" %in% verbose_output) {
     entry_string = paste0(entry_string,

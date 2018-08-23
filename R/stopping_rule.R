@@ -16,21 +16,17 @@ is_converged = function(stopping_rule, tol, obj_diff, max_chg_l, max_chg_f) {
   }
 }
 
-# Normalizes EL and EF before changes in parameter values are calculated. In
-#   order for `tol` to have a similar meaning regardless of the size of the
-#   data set, we normalize each loading (i.e., each column of EL) so that the
-#   mean absolute value of the elements of the loading is equal to one (and
-#   similarly for the factors).
+# Normalizes EL and EF before changes in parameter values are calculated.
 #
 normalize_lf = function(EL, EF) {
   if (is.matrix(EL)) {
-    lnorms = apply(abs(EL), 2, mean)
+    lnorms = sqrt(apply(EL^2, 2, sum))
+    fnorms = sqrt(apply(EF^2, 2, sum))
     EL = as.vector(sweep(EL, 2, lnorms, `/`))
-    fnorms = apply(abs(EF), 2, mean)
     EF = as.vector(sweep(EF, 2, fnorms, `/`))
   } else {
-    EL = EL / mean(abs(EL))
-    EF = EF / mean(abs(EF))
+    EL = EL / sqrt(sum(EL^2))
+    EF = EF / sqrt(sum(EF^2))
   }
 
   return(list(EL = EL, EF = EF))
