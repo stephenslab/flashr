@@ -195,14 +195,14 @@ handle_LL = function(LL, expected_nrow) {
 #
 handle_fix = function(fixl, LL, default_val) {
   if (default_val == FALSE && is.null(fixl)) {
-    fixl = matrix(FALSE, ncol = ncol(LL), nrow = nrow(LL))
+    fixl = matrix(FALSE, nrow = nrow(LL), ncol = ncol(LL))
   }
   if (default_val == TRUE && is.null(fixl)) {
     fixl = !is.na(LL)
   }
 
   if (is.vector(fixl)) {
-    fixl = matrix(fixl, ncol = 1)
+    fixl = matrix(fixl, nrow = nrow(LL), ncol = ncol(LL))
   }
 
   if (!identical(dim(fixl), dim(LL))) {
