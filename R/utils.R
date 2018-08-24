@@ -54,6 +54,8 @@ flash_zero_out_factor = function(data, f_init, k) {
   return(flash_object)
 }
 
+# "Private" function that returns flash fit object rather than full
+#   flash object.
 zero_out_factor = function(f, k) {
   f$EL[!f$fixl[, k], k] = 0
   f$EL2[!f$fixl[, k], k] = 0
