@@ -1,11 +1,19 @@
-construct_flash_object = function(data, fit, history, f_init) {
+construct_flash_object = function(data,
+                                  fit,
+                                  history,
+                                  f_init,
+                                  compute_obj = TRUE) {
   flash_object = list()
 
   flash_object$nfactors = flash_get_nfactors(fit)
   flash_object$pve = flash_get_pve(fit)
   flash_object$fitted_values = flash_get_fitted_values(fit)
   flash_object$ldf = flash_get_ldf(fit)
-  flash_object$objective = flash_get_objective(data, fit)
+  if (compute_obj) {
+    flash_object$objective = flash_get_objective(data, fit)
+  } else {
+    flash_object$objective = NA
+  }
   if (class(f_init) == "flash") {
     flash_object$history = c(f_init$history, history)
   } else {
