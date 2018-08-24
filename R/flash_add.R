@@ -44,29 +44,27 @@ flash_add_factors_from_data = function(data,
 }
 
 
-#' @title Add factor/loading pairs to a flash object
-#'
-#' @description Adds specified factor/loading pairs to a flash object.
-#'
-#' @inheritParams flash
-#'
-#' @param LL The loadings, an n by K matrix.
-#'
-#' @param FF The factors, a p by K matrix.
-#'
-#' @param fixl An n by K matrix of \code{TRUE}/\code{FALSE} values
-#'   indicating which elements of \code{LL} should be considered fixed
-#'   and not changed during updates. Useful for including a mean factor
-#'   for example.
-#'
-#' @param fixf A p by K matrix of \code{TRUE}/\code{FALSE} values; same
-#'   as \code{fixl} but for factors \code{FF}.
-#'
-#' @return A flash fit object, with additional factors initialized
-#'   using \code{LL} and \code{FF}.
-#'
-#' @export
-#'
+# @title Add factor/loading pairs to a flash object
+#
+# @description Adds specified factor/loading pairs to a flash object.
+#
+# @inheritParams flash
+#
+# @param LL The loadings, an n by K matrix.
+#
+# @param FF The factors, a p by K matrix.
+#
+# @param fixl An n by K matrix of \code{TRUE}/\code{FALSE} values
+#   indicating which elements of \code{LL} should be considered fixed
+#   and not changed during updates. Useful for including a mean factor
+#   for example.
+#
+# @param fixf A p by K matrix of \code{TRUE}/\code{FALSE} values; same
+#   as \code{fixl} but for factors \code{FF}.
+#
+# @return A flash fit object, with additional factors initialized
+#   using \code{LL} and \code{FF}.
+#
 flash_add_lf = function(data,
                         LL,
                         FF,
