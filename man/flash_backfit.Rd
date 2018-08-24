@@ -12,7 +12,7 @@ flash_backfit(data, f_init, kset = NULL, var_type = c("by_column", "by_row",
 \item{data}{An n by p matrix or a flash data object created using
 \code{flash_set_data}.}
 
-\item{f_init}{A fitted flash object to be refined.}
+\item{f_init}{A flash object or flash fit object to be refined.}
 
 \item{kset}{The indices of factors to be optimized (\code{NULL}
 indicates all factors).}
@@ -76,10 +76,10 @@ just one iteration we suggest setting \code{maxiter = 1} and
 \code{nullcheck = FALSE}.}
 }
 \value{
-A fitted flash object.
+A flash object.
 }
 \description{
-Iterates through the factors of a flash object,
+Iterates through the factors of a flash fit object,
   updating each until convergence.
 }
 \examples{

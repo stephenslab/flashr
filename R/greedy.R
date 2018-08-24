@@ -12,7 +12,7 @@
 #'
 #' @inheritParams flash
 #'
-#' @return A fitted flash object.
+#' @return A flash object.
 #'
 #' @examples
 #' l = rnorm(100)

@@ -14,8 +14,9 @@ flash_add_lf(data, LL, FF, f_init = NULL, fixl = NULL, fixf = NULL)
 
 \item{FF}{The factors, a p by K matrix.}
 
-\item{f_init}{The flash object to which new factors are to be added.
-If \code{f_init = NULL}, then a new flash fit object is created.}
+\item{f_init}{The flash object or flash fit object to which new
+factors are to be added. If \code{f_init = NULL}, then a new flash
+object is created.}
 
 \item{fixl}{An n by K matrix of \code{TRUE}/\code{FALSE} values
 indicating which elements of \code{LL} should be considered fixed

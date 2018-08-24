@@ -11,8 +11,9 @@
 #' @param Kmax The maximum number of factors to be added to the flash
 #'   object.
 #'
-#' @param f_init The flash object to which new factors are to be added.
-#'   If \code{f_init = NULL}, then a new flash fit object is created.
+#' @param f_init The flash object or flash fit object to which new
+#'   factors are to be added. If \code{f_init = NULL}, then a new flash
+#'   object is created.
 #'
 #' @param var_type The type of variance structure to assume for
 #'   residuals. Options include:
@@ -100,7 +101,7 @@
 #'
 #' @seealso \code{\link{flash_add_greedy}}, \code{\link{flash_backfit}}
 #'
-#' @return A fitted flash object. Use \code{flash_get_ldf} to access
+#' @return A flash object. Use \code{flash_get_ldf} to access
 #'   standardized loadings and factors; use
 #'   \code{flash_get_fitted_values} to access fitted LF'.
 #'

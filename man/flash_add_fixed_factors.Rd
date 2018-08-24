@@ -15,8 +15,9 @@ flash_add_fixed_factors(data, FF, f_init = NULL, fixf = NULL,
 will be initialized by the mean of the relevant column (but will
 generally be re-estimated when refitting the model).}
 
-\item{f_init}{The flash object to which new factors are to be added.
-If \code{f_init = NULL}, then a new flash fit object is created.}
+\item{f_init}{The flash object or flash fit object to which new
+factors are to be added. If \code{f_init = NULL}, then a new flash
+object is created.}
 
 \item{fixf}{A p by K matrix of of \code{TRUE}/\code{FALSE} values
 indicating which elements of \code{FF} should be considered fixed

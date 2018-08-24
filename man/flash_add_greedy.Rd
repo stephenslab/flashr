@@ -16,8 +16,9 @@ flash_add_greedy(data, Kmax = 100, f_init = NULL,
 \item{Kmax}{The maximum number of factors to be added to the flash
 object.}
 
-\item{f_init}{The flash object to which new factors are to be added.
-If \code{f_init = NULL}, then a new flash fit object is created.}
+\item{f_init}{The flash object or flash fit object to which new
+factors are to be added. If \code{f_init = NULL}, then a new flash
+object is created.}
 
 \item{var_type}{The type of variance structure to assume for
 residuals. Options include:
@@ -98,7 +99,7 @@ seed set. (The seed can affect initialization when there are
 missing data; otherwise the algorithm is deterministic.)}
 }
 \value{
-A fitted flash object.
+A flash object.
 }
 \description{
 This implements the greedy algorithm from Wang and

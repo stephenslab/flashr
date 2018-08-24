@@ -1,11 +1,11 @@
 #' @title Refines a fit of the flash model to data by "backfitting".
 #'
-#' @description Iterates through the factors of a flash object,
+#' @description Iterates through the factors of a flash fit object,
 #'   updating each until convergence.
 #'
 #' @inheritParams flash
 #'
-#' @param f_init A fitted flash object to be refined.
+#' @param f_init A flash object or flash fit object to be refined.
 #'
 #' @param kset The indices of factors to be optimized (\code{NULL}
 #'   indicates all factors).
@@ -26,7 +26,7 @@
 #'   for each distinct loading and each distinct factor. Set to
 #'   \code{NULL} to use defaults.
 #'
-#' @return A fitted flash object.
+#' @return A flash object.
 #'
 #' @examples
 #'

@@ -13,8 +13,9 @@ flash_add_factors_from_data(data, K, f_init = NULL, init_fn = "udv_si",
 
 \item{K}{The number of factors to add.}
 
-\item{f_init}{The flash object to which new factors are to be added.
-If \code{f_init = NULL}, then a new flash fit object is created.}
+\item{f_init}{The flash object or flash fit object to which new
+factors are to be added. If \code{f_init = NULL}, then a new flash
+object is created.}
 
 \item{init_fn}{The function used to initialize factors. Options
 include:

@@ -16,8 +16,9 @@ flash(data, Kmax = 100, f_init = NULL, var_type = c("by_column", "by_row",
 \item{Kmax}{The maximum number of factors to be added to the flash
 object.}
 
-\item{f_init}{The flash object to which new factors are to be added.
-If \code{f_init = NULL}, then a new flash fit object is created.}
+\item{f_init}{The flash object or flash fit object to which new
+factors are to be added. If \code{f_init = NULL}, then a new flash
+object is created.}
 
 \item{var_type}{The type of variance structure to assume for
 residuals. Options include:
@@ -104,7 +105,7 @@ algorithm. If \code{FALSE}, then \code{f_init} must be supplied.}
 algorithm.}
 }
 \value{
-A fitted flash object. Use \code{flash_get_ldf} to access
+A flash object. Use \code{flash_get_ldf} to access
   standardized loadings and factors; use
   \code{flash_get_fitted_values} to access fitted LF'.
 }
