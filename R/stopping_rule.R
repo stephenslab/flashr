@@ -31,6 +31,14 @@ calc_diff = function(stopping_rule, obj_diff, max_chg_l, max_chg_f) {
   }
 }
 
+calc_obj_diff = function(obj_track, iter) {
+  if (iter > 1) {
+    return(obj_track[iter] - obj_track[iter - 1])
+  } else {
+    return(Inf)
+  }
+}
+
 is_obj_needed = function(stopping_rule, verbose_output) {
   return(stopping_rule == "objective"
          || "o" %in% verbose_output || "d" %in% verbose_output)

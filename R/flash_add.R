@@ -57,7 +57,7 @@ flash_add_factors_from_data = function(data,
                                        K,
                                        f_init = NULL,
                                        init_fn = "udv_si") {
-  f_init = handle_f(f_init, init_null_f = TRUE)
+  # f_init = handle_f(f_init, init_null_f = TRUE)
   data = handle_data(data, f_init)
   init_fn = handle_init_fn(init_fn)
 

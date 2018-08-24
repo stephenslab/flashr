@@ -37,7 +37,7 @@
 # @return An updated flash object.
 #
 flash_optimize_single_fl = function(data,
-                                    flash,
+                                    f,
                                     k,
                                     var_type,
                                     tol,
@@ -48,8 +48,6 @@ flash_optimize_single_fl = function(data,
                                     verbose_output,
                                     maxiter,
                                     stopping_rule) {
-  f = get_flash_fit(flash)
-
   if (length(verbose_output) > 0) {
     verbose_obj_table_header(verbose_output)
   }
@@ -68,9 +66,13 @@ flash_optimize_single_fl = function(data,
          - outer(f$EL2[, k], f$EF2[, k]))
 
   iter = 0
+  diff = Inf
+  diff_track = rep(NA, maxiter)
+  obj_track = rep(NA, maxiter)
 
-  while ((iter == 0) || ((iter < maxiter) && (diff > tol))) {
+  while ((iter < maxiter) && (diff > tol)) {
     iter = iter + 1
+
     f = flash_update_single_fl(data,
                                f,
                                k,
@@ -88,11 +90,7 @@ flash_optimize_single_fl = function(data,
     if (is_obj_needed(stopping_rule, verbose_output)) {
       obj_track[iter] = (sum(unlist(f$KL_l)) + sum(unlist(f$KL_f)) +
                e_loglik_from_R2_and_tau(R2, f$tau, data$missing))
-      if (iter > 1) {
-        obj_diff = obj_track[iter] - obj_track[iter - 1]
-      } else {
-        obj_diff = Inf
-      }
+      obj_diff = calc_obj_diff(obj_track, iter)
     }
 
     if (is_max_chg_needed(stopping_rule, verbose_output)) {
@@ -108,22 +106,29 @@ flash_optimize_single_fl = function(data,
     diff_track[iter] = diff
 
     if (length(verbose_output) > 0) {
-      verbose_obj_table_entry(verbose_output, iter, obj, obj_diff,
-                              max_chg_l, max_chg_f, f$gl[k], f$gf[k])
+      verbose_obj_table_entry(verbose_output,
+                              iter,
+                              obj_track[iter],
+                              obj_diff,
+                              max_chg_l,
+                              max_chg_f,
+                              f$gl[k], f
+                              $gf[k])
     }
   }
 
-  history = list(niter = iter,
+
+  history = list(type = "greedy",
+                 kset = k,
+                 niter = iter,
                  obj_track = obj_track[1:iter],
                  diff_track = diff_track[1:iter])
+
   if (!is_obj_needed(stopping_rule, verbose_output)) {
     history$obj_track = NULL
   }
 
-  flash = add_flash_history(flash, history)
-  flash = set_flash_fit(flash, f)
-
-  return(flash)
+  return(list(f = f, history = history))
 }
 
 

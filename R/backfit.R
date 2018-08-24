@@ -70,28 +70,25 @@ flash_backfit = function(data,
     verbose_output = ""
   }
 
-  this_call = match.call()
+  flash_object = flash_backfit_workhorse(data,
+                                         f_init,
+                                         kset,
+                                         var_type,
+                                         tol,
+                                         ebnm_fn,
+                                         ebnm_param,
+                                         verbose_output,
+                                         nullcheck,
+                                         maxiter)
 
-  f = flash_backfit_workhorse(data,
-                              f_init,
-                              kset,
-                              var_type,
-                              tol,
-                              ebnm_fn,
-                              ebnm_param,
-                              verbose_output,
-                              nullcheck,
-                              maxiter,
-                              this_call)
-
-  return(f)
+  return(flash_object)
 }
 
 # The "workhorse" function has some additional parameters that are
 #   normally hidden to the user.
 #
 flash_backfit_workhorse = function(data,
-                                   f,
+                                   f_init,
                                    kset = NULL,
                                    var_type = c("by_column",
                                                 "by_row",
@@ -104,13 +101,12 @@ flash_backfit_workhorse = function(data,
                                    verbose_output = "odn",
                                    nullcheck = TRUE,
                                    maxiter = 1000,
-                                   this_call = match.call(),
                                    stopping_rule = c("objective",
                                                      "loadings",
                                                      "factors",
                                                      "all_params")) {
 
-  flash_object = handle_f(f)
+  flash_object = handle_f(f_init)
   f = get_flash_fit(flash_object)
 
   data = handle_data(data, f)
@@ -118,11 +114,10 @@ flash_backfit_workhorse = function(data,
   var_type = handle_var_type(match.arg(var_type), data)
   ebnm_fn = handle_ebnm_fn(ebnm_fn)
   ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, length(kset))
-  verbose_output = unlist(strsplit(verbose_output, split=NULL))
+  verbose_output = unlist(strsplit(verbose_output, split = NULL))
   stopping_rule = match.arg(stopping_rule)
-  # if (is.null(this_call)) {
-  #   this_call = match.call()
-  # }
+
+  history = list()
 
   if (length(verbose_output) > 0) {
     verbose_backfit_announce(length(kset), stopping_rule, tol)
@@ -134,103 +129,95 @@ flash_backfit_workhorse = function(data,
     old_EF = res$EF
   }
 
-  history = list()
-
   # There are two steps: first backfit (inner loop), then nullcheck
   #   (outer loop). If nullcheck removes any factors then the whole
   #   process is repeated.
   continue_outer_loop = TRUE
   while (continue_outer_loop) {
-    timing <- system.time({
+    if (length(verbose_output) > 0) {
+      verbose_obj_table_header(verbose_output)
+    }
+
+    iter = 0
+    diff = Inf
+    diff_track = rep(NA, maxiter)
+    obj_track = rep(NA, maxiter)
+
+    while ((iter < maxiter) && (diff > tol)) {
+      iter = iter + 1
+
+      for (i in 1:length(kset)) {
+        f = flash_update_single_fl(data,
+                                   f,
+                                   kset[i],
+                                   var_type,
+                                   ebnm_fn$l,
+                                   ebnm_param$l[[i]],
+                                   ebnm_fn$f,
+                                   ebnm_param$f[[i]])
+      }
+
+      if (is_obj_needed(stopping_rule, verbose_output)) {
+        obj_track[iter] = flash_get_objective(data, f)
+        obj_diff = calc_obj_diff(obj_track, iter)
+      }
+
+      if (is_max_chg_needed(stopping_rule, verbose_output)) {
+        res = normalize_lf(f$EL, f$EF)
+        max_chg_l = calc_max_chg(res$EL, old_EL)
+        max_chg_f = calc_max_chg(res$EF, old_EF)
+
+        old_EL = res$EL
+        old_EF = res$EF
+      }
+
+      diff = calc_diff(stopping_rule, obj_diff, max_chg_l, max_chg_f)
+      diff_track[iter] = diff
 
       if (length(verbose_output) > 0) {
-        verbose_obj_table_header(verbose_output)
+        verbose_obj_table_entry(verbose_output,
+                                iter,
+                                obj_track[iter],
+                                obj_diff,
+                                max_chg_l,
+                                max_chg_f,
+                                f$gl[kset],
+                                f$gf[kset])
       }
+    }
 
-      iter = 0
-      diff = Inf
-      diff_track = rep(NA, maxiter)
-      obj_track = rep(NA, maxiter)
+    next_history = list(type = "backfit",
+                        kset = kset,
+                        niter = iter,
+                        obj_track = obj_track[1:iter],
+                        diff_track = diff_track[1:iter])
 
-      while ((iter < maxiter) && (diff > tol)) {
-        iter = iter + 1
+    if (!is_obj_needed(stopping_rule, verbose_output)) {
+      next_history$obj_track = NULL
+    }
 
-        for (i in 1:length(kset)) {
-          f = flash_update_single_fl(data,
-                                     f,
-                                     kset[i],
-                                     var_type,
-                                     ebnm_fn$l,
-                                     ebnm_param$l[[i]],
-                                     ebnm_fn$f,
-                                     ebnm_param$f[[i]])
-        }
+    continue_outer_loop = FALSE
+    if (nullcheck) {
+      # Remove factors that hurt the objective.
+      kset = 1:flash_get_k(f)
+      old_f = f
+      res = perform_nullcheck(data, f, kset, var_type,
+                              verbose = ("n" %in% verbose_output))
 
-        if (is_obj_needed(stopping_rule, verbose_output)) {
-          obj_track[iter] = flash_get_objective(data, f)
-          if (iter > 1) {
-            obj_diff = obj_track[iter] - obj_track[iter - 1]
-          } else {
-            obj_diff = Inf
-          }
-        }
-
-        if (is_max_chg_needed(stopping_rule, verbose_output)) {
-          res = normalize_lf(f$EL, f$EF)
-          max_chg_l = calc_max_chg(res$EL, old_EL)
-          max_chg_f = calc_max_chg(res$EF, old_EF)
-
-          old_EL = res$EL
-          old_EF = res$EF
-        }
-
-        diff = calc_diff(stopping_rule, obj_diff, max_chg_l, max_chg_f)
-        diff_track[iter] = diff
-
-        if (length(verbose_output) > 0) {
-          verbose_obj_table_entry(verbose_output,
-                                  iter,
-                                  obj_track[iter],
-                                  obj_diff,
-                                  max_chg_l,
-                                  max_chg_f,
-                                  f$gl[kset],
-                                  f$gf[kset])
-        }
-
-        next_history = list(call = this_call,
-                            niter = iter,
-                            obj.track = obj_track[1:iter],
-                            diff.track = diff_track[1:iter])
-        if (!is_obj_needed(stopping_rule, verbose_output)) {
-          next_history$obj_track = NULL
-        }
+      # If nullcheck removes anything, start over.
+      if (length(res$zeroed_out) > 0) {
+        continue_outer_loop = TRUE
+        f = res$f
+        next_history$zeroed.out = res$zeroed_out
       }
+    }
 
-      continue_outer_loop = FALSE
-      if (nullcheck) {
-        # Remove factors that hurt the objective.
-        kset = 1:flash_get_k(f)
-        old_f = f
-        res = perform_nullcheck(data, f, kset, var_type,
-                                verbose = ("n" %in% verbose_output))
-
-        # If nullcheck removes anything, start over.
-        if (length(res$zeroed_out) > 0) {
-          continue_outer_loop = TRUE
-          f = res$f
-          next_history$zeroed.out = res$zeroed_out
-        }
-      }
-    })
-
-    next_history$elapsed.time = timing[["elapsed"]]
     history = c(history, list(next_history))
   }
 
   flash_object = update_flash_object(flash_object,
+                                     data = data,
                                      fit = f,
-                                     obj = flash_get_objective(data, f),
                                      history = history)
 
   return(flash_object)
