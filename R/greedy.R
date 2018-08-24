@@ -32,7 +32,7 @@
 #' @export
 #'
 flash_add_greedy = function(data,
-                            Kmax = 1,
+                            Kmax = 100,
                             f_init = NULL,
                             var_type = c("by_column",
                                          "by_row",
@@ -72,7 +72,7 @@ flash_add_greedy = function(data,
 #   hidden to the user.
 #
 flash_greedy_workhorse = function(data,
-                                  Kmax = 1,
+                                  Kmax = 100,
                                   f_init = NULL,
                                   var_type = c("by_column",
                                                "by_row",
