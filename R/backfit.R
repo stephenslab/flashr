@@ -106,9 +106,7 @@ flash_backfit_workhorse = function(data,
                                                      "factors",
                                                      "all_params")) {
 
-  flash_object = handle_f(f_init)
-  f = get_flash_fit(flash_object)
-
+  f = handle_f(f_init)
   data = handle_data(data, f)
   kset = handle_kset(kset, f)
   var_type = handle_var_type(match.arg(var_type), data)
@@ -215,10 +213,10 @@ flash_backfit_workhorse = function(data,
     history = c(history, list(next_history))
   }
 
-  flash_object = update_flash_object(flash_object,
-                                     data = data,
-                                     fit = f,
-                                     history = history)
+  flash_object = construct_flash_object(data = data,
+                                        fit = f,
+                                        history = history,
+                                        f_init = f_init)
 
   return(flash_object)
 }

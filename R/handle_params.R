@@ -14,13 +14,13 @@
 #
 handle_f = function(f, allow_null = TRUE, init_null_f = FALSE) {
   if (!is.null(f) && class(f) == "flash") {
-    return(init_flash_object_from_fit(f))
+    return(get_flash_fit(f))
   }
-  if (!allow_null && class(f) != "flash") {
-    stop("f must be a flash fit object.")
+  if (!allow_null && class(f) != "flash_fit") {
+    stop("f must be a flash object or a flash fit object.")
   }
-  if (!is.null(f) && class(f) != "flash") {
-    stop("f must be NULL or a flash fit object.")
+  if (!is.null(f) && class(f) != "flash_fit") {
+    stop("f must be NULL, a flash object, or a flash fit object.")
   }
   if (init_null_f && is.null(f)) {
     f = flash_init_null()

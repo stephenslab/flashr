@@ -148,7 +148,7 @@ flash_combine = function(f1, f2) {
            KL_l = c(f1$KL_l, f2$KL_l),
            KL_f = c(f1$KL_f, f2$KL_f),
            tau = tau)
-  class(f) = "flash"
+  class(f) = "flash_fit"
 
   return(f)
 }

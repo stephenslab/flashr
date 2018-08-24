@@ -96,9 +96,7 @@ flash_greedy_workhorse = function(data,
     set.seed(seed)
   }
 
-  flash_object = handle_f(f_init)
-  f = get_flash_fit(flash_object)
-
+  f = handle_f(f_init)
   data = handle_data(data, f)
   var_type = handle_var_type(match.arg(var_type), data)
   init_fn = handle_init_fn(init_fn)
@@ -146,10 +144,10 @@ flash_greedy_workhorse = function(data,
     history = c(history, list(next_history))
   }
 
-  flash_object = update_flash_object(flash_object,
-                                     data = data,
-                                     fit = f,
-                                     history = history)
+  flash_object = construct_flash_object(data = data,
+                                        fit = f,
+                                        history = history,
+                                        f_init = f_init)
 
   return(flash_object)
 }
