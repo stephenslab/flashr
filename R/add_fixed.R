@@ -1,4 +1,4 @@
-#' @title Add a set of fixed loadings to a flash fit object.
+#' @title Add a set of fixed loadings to a flash fit object
 #'
 #' @inheritParams flash
 #'
@@ -12,7 +12,10 @@
 #'   non-missing values, so missing values will be updated when the
 #'   flash object is updated.
 #'
-#' @return A flash fit object, with loadings initialized from \code{LL},
+#' @param ... Additional parameters to be passed to \code{flash_backfit}.
+#'   Note that \code{nullcheck} defaults to \code{FALSE} here.
+#'
+#' @return A flash object, with loadings initialized from \code{LL},
 #'   and corresponding factors initialized to zero.
 #'
 #' @export
@@ -94,9 +97,9 @@ flash_add_fixed_loadings = function(data,
 }
 
 
-#' @title Add a set of fixed factors to a flash fit object.
+#' @title Add a set of fixed factors to a flash fit object
 #'
-#' @inheritParams flash
+#' @inheritParams flash_add_fixed_loadings
 #'
 #' @param FF The factors, a p vector or p by K matrix. Missing values
 #'   will be initialized by the mean of the relevant column (but will
@@ -108,7 +111,7 @@ flash_add_fixed_loadings = function(data,
 #'   non-missing values, so missing values will be updated when the
 #'   flash object is updated.
 #'
-#' @return A flash fit object, with factors initialized from \code{FF},
+#' @return A flash object, with factors initialized from \code{FF},
 #'   and corresponding loadings initialized to zero.
 #'
 #' @export
