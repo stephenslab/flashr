@@ -58,11 +58,12 @@ flash_add_fixed_loadings = function(data,
       # If we're missing more, initialize via a subsetted flash object.
       subf = flash_subset_l(f, missing_rows)
       subdata = flash_subset_data(data, row_subset=missing_rows)
-      subf = flash_add_factors_from_data(subdata,
-                                         length(block_cols),
-                                         subf,
-                                         init_fn,
-                                         backfit = FALSE)
+      res = flash_add_factors_from_data(subdata,
+                                        length(block_cols),
+                                        subf,
+                                        init_fn,
+                                        backfit = FALSE)
+      subf = res$fit
       LL_init[missing_rows, block_cols] = subf$EL[,k_offset + block_cols]
       FF_init[, block_cols] = subf$EF[,k_offset + block_cols]
     }

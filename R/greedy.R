@@ -176,9 +176,10 @@ flash_r1 = function(data,
                                         f_init,
                                         init_fn,
                                         backfit = FALSE)
+  f = add_res$fit
 
   opt_res = flash_optimize_single_fl(data,
-                                     add_res$f,
+                                     f,
                                      flash_get_k(f),
                                      var_type,
                                      tol,
@@ -198,7 +199,8 @@ flash_r1 = function(data,
                                  flash_get_k(f),
                                  var_type,
                                  verbose = ("n" %in% verbose_output))
+    f = null_res$f
   }
 
-  return(list(f = null_res$f, history = opt_res$history))
+  return(list(f = f, history = opt_res$history))
 }

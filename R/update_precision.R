@@ -11,11 +11,7 @@
 #
 flash_update_precision = function(data,
                                   f,
-                                  var_type = c("by_column",
-                                               "by_row",
-                                               "constant",
-                                               "zero",
-                                               "kroneker")) {
+                                  var_type) {
   R2 = flash_get_R2(data, f)
   f$tau = compute_precision(R2, data$missing, var_type, data$S)
   return(f)

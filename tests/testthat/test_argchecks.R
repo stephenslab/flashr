@@ -6,14 +6,14 @@ test_that("argument checking works", {
   f2 = c(rep(0, 10), rnorm(10))
   LF = outer(l1,f1) + outer(l2,f2)
   Y = LF + rnorm(5*20)
-  f = flash(Y, 2, nullcheck=F)
+  f = flash(Y, 2, nullcheck=F)$fit
 
   # data:
   good_data = flash_set_data(matrix(rnorm(5 * 20), nrow=5, ncol=20))
   bad_data = matrix(rnorm(5 * 10), nrow=5, ncol=10)
   expect_error(handle_data(bad_data, f))
   nullf = flash_init_null()
-  nullf = flash_update_precision(good_data, nullf)
+  nullf = flash_update_precision(good_data, nullf, "by_column")
   expect_error(handle_data(bad_data, nullf))
   expect_identical(handle_data(good_data, nullf), good_data)
 

@@ -12,7 +12,7 @@ test_that("adding sparse factors/loadings works", {
   # Test adding sparse loadings:
   LL = ll1
   LL[LL != 0] = NA
-  fl = flash_add_fixed_loadings(Y, LL)
+  fl = flash_add_fixed_loadings(Y, LL = LL, backfit = FALSE)$fit
   # Check that sparsity pattern is maintained and fixl is set correctly:
   expect_equal(sum(fl$EL[ll1 == 0] != 0), 0)
   expect_equal(sum(fl$EL[ll1 != 0] == 0), 0)
@@ -29,29 +29,32 @@ test_that("adding sparse factors/loadings works", {
   # Test sparse factors (add to existing matrix):
   FF = ff2
   FF[FF != 0] = NA
-  fl = flash_add_fixed_factors(Y, FF, f_init=fl)
+  fl = flash_add_fixed_factors(Y, FF, f_init=fl, backfit=FALSE)$fit
   # Check that sparsity pattern is maintained and fixf is set correctly:
-  expect_equal(sum(fl$EF[,(n_ll+1):ncol(fl$EF)][ff2 == 0] != 0), 0)
-  expect_equal(sum(fl$EF[,(n_ll+1):ncol(fl$EF)][ff2 != 0] == 0), 0)
-  expect_equal(sum(fl$fixf[,(n_ll+1):ncol(fl$fixf)][ff2 == 0] == FALSE), 0)
-  expect_equal(sum(fl$fixf[,(n_ll+1):ncol(fl$fixf)][ff2 != 0] == TRUE), 0)
+  EF = fl$EF
+  expect_equal(sum(EF[,(n_ll+1):ncol(EF)][ff2 == 0] != 0), 0)
+  expect_equal(sum(EF[,(n_ll+1):ncol(EF)][ff2 != 0] == 0), 0)
+  fixf = fl$fixf
+  expect_equal(sum(fixf[,(n_ll+1):ncol(fixf)][ff2 == 0] == FALSE), 0)
+  expect_equal(sum(fixf[,(n_ll+1):ncol(fixf)][ff2 != 0] == TRUE), 0)
 
   # Add a factor with only one missing element:
   FF = matrix(c(NA, rep(1, p-1)), ncol=1)
-  fl = flash_add_fixed_factors(Y, FF, f_init=fl)
-  expect_equal(sum(fl$fixf[,(n_ll+n_ff+1):ncol(fl$fixf)][!is.na(FF)] == FALSE), 0)
-  expect_equal(sum(fl$fixf[,(n_ll+n_ff+1):ncol(fl$fixf)][is.na(FF)] == TRUE), 0)
+  fl = flash_add_fixed_factors(Y, FF, f_init=fl, backfit = FALSE)$fit
+  fixf = fl$fixf
+  expect_equal(sum(fixf[,(n_ll+n_ff+1):ncol(fixf)][!is.na(FF)] == FALSE), 0)
+  expect_equal(sum(fixf[,(n_ll+n_ff+1):ncol(fixf)][is.na(FF)] == TRUE), 0)
 
   # Add a bunch of loadings with all fixed elements:
   LL = diag(1, nrow=n, ncol=n)
-  fl = flash_add_fixed_loadings(Y, LL, f_init=fl)
+  fl = flash_add_fixed_loadings(Y, LL, f_init=fl, backfit=FALSE)$fit
   expect_equal(sum(fl$fixl[,(n_ll+n_ff+2):ncol(fl$fixl)] == FALSE), 0)
   # factors not fixed:
   expect_equal(sum(fl$fixf[,(n_ll+n_ff+2):ncol(fl$fixf)] == TRUE), 0)
 
   # Add vector:
   LL = rep(1, n)
-  fl = flash_add_fixed_loadings(Y, LL)
+  fl = flash_add_fixed_loadings(Y, LL, backfit=FALSE)$fit
   # Try to add vector of wrong dimension:
   LL = rep(1, n + 1)
   expect_error(fl = flash_add_fixed_loadings(Y, LL, fl))
