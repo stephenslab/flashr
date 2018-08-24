@@ -18,9 +18,9 @@ flash_update_precision = function(data,
                                                "constant",
                                                "zero",
                                                "kroneker")) {
-  f = handle_f(f)
-  data = handle_data(data, f)
-  var_type = handle_var_type(match.arg(var_type), data)
+  # f = handle_f(f)
+  # data = handle_data(data, f)
+  # var_type = handle_var_type(match.arg(var_type), data)
 
   R2 = flash_get_R2(data, f)
   f$tau = compute_precision(R2, data$missing, var_type, data$S)

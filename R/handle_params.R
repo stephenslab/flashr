@@ -13,6 +13,9 @@
 # @return f The flash object.
 #
 handle_f = function(f, allow_null = TRUE, init_null_f = FALSE) {
+  if (!is.null(f) && class(f) == "flash") {
+    return(init_flash_object_from_fit(f))
+  }
   if (!allow_null && class(f) != "flash") {
     stop("f must be a flash fit object.")
   }

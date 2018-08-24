@@ -10,8 +10,8 @@
 #' @export
 #'
 flash_get_objective = function(data, f) {
-  f = handle_f(f)
-  data = handle_data(data, f)
+  #f = handle_f(f)
+  #data = handle_data(data, f)
 
   return(sum(unlist(f$KL_l)) + sum(unlist(f$KL_f)) + e_loglik(data, f))
 }

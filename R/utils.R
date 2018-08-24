@@ -41,7 +41,7 @@ flash_fill = function(data, f) {
 #' @export
 #'
 flash_zero_out_factor = function(f, k) {
-  f = handle_f(f, allow_null = FALSE)
+  # f = handle_f(f, allow_null = FALSE)
   k = handle_k(k, f)
 
   f$EL[!f$fixl[, k], k] = 0
