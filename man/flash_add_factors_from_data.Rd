@@ -4,7 +4,8 @@
 \alias{flash_add_factors_from_data}
 \title{Add factors to a flash object based on data}
 \usage{
-flash_add_factors_from_data(data, K, f_init = NULL, init_fn = "udv_si")
+flash_add_factors_from_data(data, K, f_init = NULL, init_fn = "udv_si",
+  backfit = TRUE, ...)
 }
 \arguments{
 \item{data}{An n by p matrix or a flash data object created using
@@ -36,6 +37,11 @@ It should output a list with elements \code{(u, d, v)}, where
 \code{d} is a K vector. (If the input data includes missing values,
 then the function must be able to deal with missing values in its
 input matrix.)}
+
+\item{backfit}{If \code{TRUE}, factors are refined via the backfitting
+algorithm.}
+
+\item{...}{Additional parameters to be passed to \code{flash_backfit}.}
 }
 \description{
 Computes the current residuals from \code{data} and

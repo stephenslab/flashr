@@ -171,13 +171,14 @@ flash_r1 = function(data,
                     maxiter,
                     stopping_rule) {
 
-  f = flash_add_factors_from_data(data,
-                                  K = 1,
-                                  f_init,
-                                  init_fn)
+  add_res = flash_add_factors_from_data(data,
+                                        K = 1,
+                                        f_init,
+                                        init_fn,
+                                        backfit = FALSE)
 
   opt_res = flash_optimize_single_fl(data,
-                                     f,
+                                     add_res$f,
                                      flash_get_k(f),
                                      var_type,
                                      tol,
