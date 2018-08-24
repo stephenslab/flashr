@@ -33,7 +33,7 @@ perform_nullcheck = function(data, f, kset, var_type, verbose) {
 
     f_changed = FALSE
     for (k in kset) {
-      f0 = flash_zero_out_factor(f, k)
+      f0 = zero_out_factor(f, k)
       if (!identical(f, f0)) {
         f0 = flash_update_precision(data, f0, var_type)
         obj0 = flash_get_objective(data, f0)

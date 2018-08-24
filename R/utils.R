@@ -32,7 +32,7 @@ flash_fill = function(data, f) {
 #'   the number and indexing of factor/loading matrices in \code{f}
 #'   remain the same.
 #'
-#' @param f A flash fit object.
+#' @inheritParams flash
 #'
 #' @param k The index of the factor/loading pair to zero out.
 #'
@@ -40,10 +40,21 @@ flash_fill = function(data, f) {
 #'
 #' @export
 #'
-flash_zero_out_factor = function(f, k) {
-  # f = handle_f(f, allow_null = FALSE)
+flash_zero_out_factor = function(data, f_init, k) {
+  f = handle_f(f_init, allow_null = FALSE)
   k = handle_k(k, f)
 
+  f = zero_out_factor(f, k)
+
+  flash_object = construct_flash_object(data = data,
+                                        fit = f,
+                                        history = NULL,
+                                        f_init = f_init)
+
+  return(flash_object)
+}
+
+zero_out_factor = function(f, k) {
   f$EL[!f$fixl[, k], k] = 0
   f$EL2[!f$fixl[, k], k] = 0
   f$EF[!f$fixf[, k], k] = 0
