@@ -21,7 +21,9 @@ flash_add_fixed_loadings = function(data,
                                     LL,
                                     f_init = NULL,
                                     fixl = NULL,
-                                    init_fn = "udv_si") {
+                                    init_fn = "udv_si",
+                                    backfit = TRUE,
+                                    ...) {
   f = handle_f(f_init, init_null_f = TRUE)
   data = handle_data(data, f)
   LL = handle_LL(LL, expected_nrow = flash_get_n(f))
@@ -68,11 +70,25 @@ flash_add_fixed_loadings = function(data,
                      fixl=fixl[,block_cols, drop=F])
   }
 
+  history = NULL
+  if (backfit) {
+    # the default is to not do a nullcheck here:
+    dot_params = list(...)
+    if (is.null(dot_params$n)) {
+      dot_params = c(dot_params, list(nullcheck = FALSE))
+    }
+
+    flash_object = do.call(flash_backfit,
+                           c(list(data = data, f = f), dot_params))
+    f = flash_object$fit
+    history = flash_object$history
+  }
+
   flash_object = construct_flash_object(data = data,
                                         fit = f,
-                                        history = NULL,
+                                        history = history,
                                         f_init = f_init,
-                                        compute_obj = FALSE)
+                                        compute_obj = backfit)
 
   return(flash_object)
 }
@@ -101,7 +117,9 @@ flash_add_fixed_factors = function(data,
                                    FF,
                                    f_init = NULL,
                                    fixf = NULL,
-                                   init_fn = "udv_si") {
+                                   init_fn = "udv_si",
+                                   backfit = TRUE,
+                                   ...) {
   f = handle_f(f_init)
   data = handle_data(data, f)
   # FF, fixf, and init_fn are handled by flash_add_fixed_loadings
@@ -110,14 +128,16 @@ flash_add_fixed_factors = function(data,
                                           FF,
                                           flash_transpose(f),
                                           fixf,
-                                          init_fn)
+                                          init_fn,
+                                          backfit,
+                                          ...)
   f = flash_transpose(flash_object$fit)
 
   flash_object = construct_flash_object(data = data,
                                         fit = f,
-                                        history = NULL,
+                                        history = flash_object$history,
                                         f_init = f_init,
-                                        compute_obj = FALSE)
+                                        compute_obj = backfit)
 
   return(flash_object)
 }
