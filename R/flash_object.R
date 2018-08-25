@@ -5,20 +5,24 @@ construct_flash_object = function(data,
                                   compute_obj = TRUE) {
   flash_object = list()
 
-  flash_object$nfactors = flash_get_nfactors(fit)
-  flash_object$pve = flash_get_pve(fit)
-  flash_object$fitted_values = flash_get_fitted_values(fit)
-  flash_object$ldf = flash_get_ldf(fit)
+  summary_stats = compute_summary_statistics(fit)
+  flash_object$nfactors = summary_stats$nfactors
+  flash_object$pve = summary_stats$pve
+  flash_object$fitted_values = summary_stats$fitted_values
+  flash_object$ldf = summary_stats$ldf
+
   if (compute_obj) {
     flash_object$objective = flash_get_objective(data, fit)
   } else {
     flash_object$objective = NA
   }
+
   if (class(f_init) == "flash") {
     flash_object$fit_history = c(f_init$fit_history, history)
   } else {
     flash_object$fit_history = history
   }
+
   flash_object$fit = fit
 
   class(flash_object) = "flash"
@@ -32,4 +36,20 @@ get_flash_fit = function(flash) {
 
 get_flash_fit_history = function(flash) {
   return(flash$fit_history)
+}
+
+compute_summary_statistics = function(f) {
+  ldf = flash_get_ldf(f)
+
+  d = ldf$d
+  nfactors = length(d)
+
+  s = d^2
+  tau = f$tau[f$tau != 0]
+  pve = s/(sum(s) + sum(1/tau))
+
+  fitted_values = flash_get_fitted_values(f)
+
+  return(list(ldf = ldf, nfactors = nfactors, pve = pve,
+              fitted_values = fitted_values))
 }
