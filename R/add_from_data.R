@@ -23,9 +23,7 @@ flash_add_factors_from_data = function(data,
   data = handle_data(data, f)
   init_fn = handle_init_fn(init_fn)
 
-  R = flash_get_R_withmissing(data, f)
-  f2 = flash_init_fn(flash_set_data(R), init_fn, K)
-  f = flash_combine(f, f2)
+  f = add_factors_from_data(data, K, f, init_fn)
 
   history = NULL
   if (backfit) {
@@ -41,4 +39,17 @@ flash_add_factors_from_data = function(data,
                                         compute_obj = backfit)
 
   return(flash_object)
+}
+
+# More efficient "private" function used by flash_add_greedy
+#
+add_factors_from_data = function(data,
+                                 K,
+                                 f,
+                                 init_fn) {
+  R = flash_get_R_withmissing(data, f)
+  f2 = flash_init_fn(flash_set_data(R), init_fn, K)
+  f = flash_combine(f, f2)
+
+  return(f)
 }

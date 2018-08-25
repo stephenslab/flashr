@@ -96,7 +96,7 @@ flash_greedy_workhorse = function(data,
     set.seed(seed)
   }
 
-  f = handle_f(f_init)
+  f = handle_f(f_init, init_null_f = TRUE)
   data = handle_data(data, f)
   var_type = handle_var_type(match.arg(var_type), data)
   init_fn = handle_init_fn(init_fn)
@@ -172,12 +172,7 @@ flash_r1 = function(data,
                     maxiter,
                     stopping_rule) {
 
-  add_res = flash_add_factors_from_data(data,
-                                        K = 1,
-                                        f_init,
-                                        init_fn,
-                                        backfit = FALSE)
-  f = get_flash_fit(add_res)
+  f = add_factors_from_data(data, K = 1, f_init, init_fn)
 
   opt_res = flash_optimize_single_fl(data,
                                      f,
@@ -201,6 +196,7 @@ flash_r1 = function(data,
                                  var_type,
                                  verbose = ("n" %in% verbose_output))
     f = null_res$f
+    # zeroed_out field is handled in flash_greedy_workhorse
   }
 
   return(list(f = f, history = opt_res$history))
