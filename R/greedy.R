@@ -136,8 +136,9 @@ flash_greedy_workhorse = function(data,
       # Remove zero factor as long as it doesn't create an empty object.
       if (flash_get_k(f) > 1) {
         f = old_f
-        next_history$zeroed_out = k
+        next_history$zeroed_out = prev_K + k
       }
+      history = c(history, list(next_history))
       break
     }
 
