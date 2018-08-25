@@ -30,8 +30,8 @@ flash_add_factors_from_data = function(data,
   history = NULL
   if (backfit) {
     flash_object = flash_backfit(data, f, ...)
-    f = flash_object$fit
-    history = flash_object$history
+    f = get_flash_fit(flash_object)
+    history = get_flash_fit_history(flash_object)
   }
 
   flash_object = construct_flash_object(data = data,

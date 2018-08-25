@@ -58,12 +58,12 @@ flash_add_fixed_loadings = function(data,
       # If we're missing more, initialize via a subsetted flash object.
       subf = flash_subset_l(f, missing_rows)
       subdata = flash_subset_data(data, row_subset=missing_rows)
-      res = flash_add_factors_from_data(subdata,
-                                        length(block_cols),
-                                        subf,
-                                        init_fn,
-                                        backfit = FALSE)
-      subf = res$fit
+      flash_object = flash_add_factors_from_data(subdata,
+                                                 length(block_cols),
+                                                 subf,
+                                                 init_fn,
+                                                 backfit = FALSE)
+      subf = get_flash_fit(flash_object)
       LL_init[missing_rows, block_cols] = subf$EL[,k_offset + block_cols]
       FF_init[, block_cols] = subf$EF[,k_offset + block_cols]
     }
@@ -85,8 +85,8 @@ flash_add_fixed_loadings = function(data,
 
     flash_object = do.call(flash_backfit,
                            c(list(data = data, f = f), dot_params))
-    f = flash_object$fit
-    history = flash_object$history
+    f = get_flash_fit(flash_object)
+    history = get_flash_fit_history(flash_object)
   }
 
   flash_object = construct_flash_object(data = data,
@@ -136,11 +136,12 @@ flash_add_fixed_factors = function(data,
                                           init_fn,
                                           backfit,
                                           ...)
-  f = flash_transpose(flash_object$fit)
+  f = flash_transpose(get_flash_fit(flash_object))
+  history = get_flash_fit_history(flash_object)
 
   flash_object = construct_flash_object(data = data,
                                         fit = f,
-                                        history = flash_object$history,
+                                        history = history,
                                         f_init = f_init,
                                         compute_obj = backfit)
 

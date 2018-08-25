@@ -15,9 +15,9 @@ construct_flash_object = function(data,
     flash_object$objective = NA
   }
   if (class(f_init) == "flash") {
-    flash_object$history = c(f_init$history, history)
+    flash_object$fit_history = c(f_init$fit_history, history)
   } else {
-    flash_object$history = history
+    flash_object$fit_history = history
   }
   flash_object$fit = fit
 
@@ -28,4 +28,8 @@ construct_flash_object = function(data,
 
 get_flash_fit = function(flash) {
   return(flash$fit)
+}
+
+get_flash_fit_history = function(flash) {
+  return(flash$fit_history)
 }

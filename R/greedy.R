@@ -177,7 +177,7 @@ flash_r1 = function(data,
                                         f_init,
                                         init_fn,
                                         backfit = FALSE)
-  f = add_res$fit
+  f = get_flash_fit(add_res)
 
   opt_res = flash_optimize_single_fl(data,
                                      f,
