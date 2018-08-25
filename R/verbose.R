@@ -1,4 +1,17 @@
 # Messages displayed when verbose = TRUE.
+#
+# The verbose_output parameter in the "workhorse" functions allow for
+#   more control over verbose output. Options are:
+#     "o": objective
+#     "d": difference in objective
+#     "L": maximum change* in loadings
+#     "F": maximum change in factors
+#     "l": sparsity* of loadings
+#     "f": sparsity of factors
+# *Calculated as the maximum absolute difference in entries after
+#   each loading is normalized to have l_2 norm equal to 1.
+# **Currently only works with point-normal priors. Calculated as pi0_l
+#   (that is, the mixture proportion of the "point" component.)
 
 verbose_greedy_next_fl = function(k, stopping_rule, tol) {
   message("Fitting factor/loading ", k, " (",
