@@ -39,6 +39,15 @@
 #' @param plots_per_screen The maximum number of factor/loading plots to
 #'   be shown per screen.
 #'
+#' @param facet_wrap_ncol The number of columns to use when displaying
+#'   multiple factor/loading plots on a single screen.
+#'
+#' @param ask Should the user be prompted before displaying each
+#'   successive plot?
+#'
+#' @importFrom grDevices dev.interactive devAskNewPage
+#' @importFrom graphics plot
+#'
 #' @export
 #'
 plot.flash = function(x,
@@ -96,7 +105,7 @@ plot.flash = function(x,
 #
 #' @importFrom ggplot2 ggplot aes geom_bar scale_fill_manual
 #' @importFrom ggplot2 scale_x_discrete ylim theme_grey theme labs
-#' @importFrom ggplot2 facet_wrap guides
+#' @importFrom ggplot2 element_text element_blank facet_wrap guides
 #' @importFrom reshape2 melt
 #'
 plot_kset = function(f,

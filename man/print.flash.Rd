@@ -4,7 +4,7 @@
 \alias{print.flash}
 \title{Print summary of flash object}
 \usage{
-\method{print}{flash}(x, digits = 3, ...)
+\method{print}{flash}(x, ...)
 }
 \arguments{
 \item{x}{A flash object.}

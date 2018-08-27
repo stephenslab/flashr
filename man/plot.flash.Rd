@@ -47,6 +47,12 @@ show alongside the loading plots.}
 
 \item{plots_per_screen}{The maximum number of factor/loading plots to
 be shown per screen.}
+
+\item{facet_wrap_ncol}{The number of columns to use when displaying
+multiple factor/loading plots on a single screen.}
+
+\item{ask}{Should the user be prompted before displaying each
+successive plot?}
 }
 \description{
 \code{plot} method for class \code{'flash'}.
