@@ -45,6 +45,8 @@
 #' @param ask Should the user be prompted before displaying each
 #'   successive plot?
 #'
+#' @param ... Additional arguments (not used by this method).
+#'
 #' @importFrom grDevices dev.interactive devAskNewPage
 #' @importFrom graphics plot
 #'

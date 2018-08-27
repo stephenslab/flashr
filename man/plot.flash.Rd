@@ -53,6 +53,8 @@ multiple factor/loading plots on a single screen.}
 
 \item{ask}{Should the user be prompted before displaying each
 successive plot?}
+
+\item{...}{Additional arguments (not used by this method).}
 }
 \description{
 \code{plot} method for class \code{'flash'}.
