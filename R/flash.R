@@ -114,7 +114,7 @@
 #' ltrue[11:20, 2] = 0
 #' Y = ltrue %*% t(ftrue)+rnorm(2000) # set up a simulated matrix
 #' f = flash(Y)
-#' ldf = flash_get_ldf(f)
+#' ldf = f$ldf
 #'
 #' # Show the weights, analogous to singular values showing importance
 #' # of each factor.
@@ -129,7 +129,7 @@
 #'
 #' # Plot true lf' against estimated lf'; the scale of the estimate
 #' # matches the data.
-#' plot(ltrue %*% t(ftrue), flash_get_fitted_values(f))
+#' plot(ltrue %*% t(ftrue), f$fitted_values)
 #'
 #' # Example to use the more flexible ebnm function in ashr.
 #' f2 = flash(Y, ebnm_fn="ebnm_ash")

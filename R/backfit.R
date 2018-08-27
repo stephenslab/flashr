@@ -35,7 +35,7 @@
 #' Y = LL %*% FF + matrix(rnorm(1000), nrow=100)
 #' fg = flash_add_greedy(Y, 10)
 #' fb = flash_backfit(Y, fg) # refines fit from greedy by backfitting
-#' flash_get_ldf(fb)$d
+#' fb$ldf$d
 #'
 #' # Example to illustrate different types of arguments to ebnm_param.
 #' # 1. Fix a N(0, 1) prior on the loadings.
