@@ -8,7 +8,7 @@
   factor_colors = NULL, factor_legend_size = 5, plot_loadings = FALSE,
   loading_kset = 1:x$nfactors, loading_colors = NULL,
   loading_legend_size = 5, plots_per_screen = 4, facet_wrap_ncol = 2,
-  ask = (plot_factors || plot_loadings) && dev.interactive())
+  ask = (plot_factors || plot_loadings) && dev.interactive(), ...)
 }
 \arguments{
 \item{x}{Flash object to plot.}
