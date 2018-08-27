@@ -8,7 +8,7 @@
 #'
 #' @export
 #'
-print.flash <- function (x, digits = 3, ...) {
+print.flash = function(x, digits = 3, ...) {
   cat("Summary of flash object:\n")
   cat(sprintf("  Number of factor/loading pairs: %d\n", x$nfactors))
 
