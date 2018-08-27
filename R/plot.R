@@ -62,7 +62,8 @@ plot.flash = function(x,
                       plots_per_screen = 4,
                       facet_wrap_ncol = 2,
                       ask = (plot_factors || plot_loadings)
-                              && dev.interactive()) {
+                              && dev.interactive(),
+                      ...) {
   if (ask) {
     old_ask <- devAskNewPage(TRUE)
     on.exit(devAskNewPage(old_ask))
