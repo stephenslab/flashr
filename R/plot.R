@@ -103,7 +103,7 @@ plot.flash = function(x,
 # @param factors If TRUE, factors will be plotted. If FALSE, loadings
 #   will be plotted.
 #
-#' @importFrom ggplot2 ggplot aes geom_bar scale_fill_manual
+#' @importFrom ggplot2 ggplot aes_string geom_bar scale_fill_manual
 #' @importFrom ggplot2 scale_x_discrete ylim theme_grey theme labs
 #' @importFrom ggplot2 element_text element_blank facet_wrap guides
 #' @importFrom ggplot2 guide_legend
@@ -145,7 +145,7 @@ plot_kset = function(f,
   data$k = factor(data$k, levels = 1:length(kset), labels = plot_titles)
 
   if (is.null(bar_colors)) {
-    plot_object = ggplot(data, aes(x = variable, y = value)) +
+    plot_object = ggplot(data, aes_string(x = "variable", y = "value")) +
       geom_bar(stat = "identity", width = 0.6) +
       scale_x_discrete(labels = NULL) +
       ylim(min_val, max_val) +
@@ -154,7 +154,8 @@ plot_kset = function(f,
       labs(y = "", x = "") +
       facet_wrap(~k, ncol = facet_wrap_ncol)
   } else {
-    plot_object = ggplot(data, aes(x = variable, y = value, fill = factor(variable))) +
+    plot_object = ggplot(data, aes_string(x = "variable", y = "value",
+                                          fill = "variable")) +
       geom_bar(stat = "identity", width = 0.6) +
       scale_fill_manual(values = bar_colors) +
       scale_x_discrete(labels = NULL) +
@@ -183,13 +184,13 @@ plot_kset = function(f,
 #
 # @return A \pkg{ggplot} plot object.
 #
-#' @importFrom ggplot2 ggplot aes geom_point geom_line ylim labs
+#' @importFrom ggplot2 ggplot aes_string geom_point geom_line ylim labs
 #'
 plot_pve = function(f) {
   pve_dat = data.frame(factor_index = seq(1, length(f$pve)), PVE = f$pve)
 
   plot_object = ggplot(pve_dat,
-         aes(x = factor_index, y = PVE),
+         aes_string(x = "factor_index", y = "PVE"),
          environment = environment()) +
     geom_point(size = 2) +
     geom_line(linetype = "dotdash") +
