@@ -111,8 +111,8 @@ plot.flash = function(x,
 plot_kset = function(f,
                      kset,
                      bar_colors = NULL,
-                     legend_size,
-                     facet_wrap_ncol,
+                     legend_size = 5,
+                     facet_wrap_ncol = 2,
                      factors = TRUE) {
   if (factors) {
     vals = f$ldf$f
