@@ -106,6 +106,7 @@ plot.flash = function(x,
 #' @importFrom ggplot2 ggplot aes geom_bar scale_fill_manual
 #' @importFrom ggplot2 scale_x_discrete ylim theme_grey theme labs
 #' @importFrom ggplot2 element_text element_blank facet_wrap guides
+#' @importFrom ggplot2 guide_legend
 #' @importFrom reshape2 melt
 #'
 plot_kset = function(f,

@@ -119,7 +119,7 @@ Y = outer(l, f) + matrix(rnorm(1000), nrow=100)
 f = flash_add_greedy(Y,10)
 
 # Gives the weights for each factor (analogue of singular values).
-flash_get_ldf(f)$d
+f$ldf$d
 
 # Example to show how to use a different initialization function.
 library(softImpute)

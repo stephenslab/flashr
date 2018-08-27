@@ -112,7 +112,7 @@
 #' ltrue = matrix(rnorm(40), ncol=2)
 #' ltrue[1:10, 1] = 0 # set up some sparsity
 #' ltrue[11:20, 2] = 0
-#' Y = ltrue %*% t(ftrue)+rnorm(2000) # set up a simulated matrix
+#' Y = ltrue %*% t(ftrue) + rnorm(2000) # set up a simulated matrix
 #' f = flash(Y)
 #' ldf = f$ldf
 #'
