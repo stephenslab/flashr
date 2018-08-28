@@ -7,7 +7,7 @@
 \method{plot}{flash}(x, plot_factors = FALSE, factor_kset = 1:x$nfactors,
   factor_colors = NULL, factor_legend_size = 5, plot_loadings = FALSE,
   loading_kset = 1:x$nfactors, loading_colors = NULL,
-  loading_legend_size = 5, plots_per_screen = 4, facet_wrap_ncol = 2,
+  loading_legend_size = 5, plot_grid_nrow = 2, plot_grid_ncol = 2,
   ask = (plot_factors || plot_loadings) && dev.interactive(), ...)
 }
 \arguments{
@@ -45,10 +45,10 @@ alongside the loading plots.}
 then \code{loading_legend_size} specifies the size of the legend
 show alongside the loading plots.}
 
-\item{plots_per_screen}{The maximum number of factor/loading plots to
-be shown per screen.}
+\item{plot_grid_nrow}{The number of rows to use when displaying
+multiple factor/loading plots on a single screen.}
 
-\item{facet_wrap_ncol}{The number of columns to use when displaying
+\item{plot_grid_ncol}{The number of columns to use when displaying
 multiple factor/loading plots on a single screen.}
 
 \item{ask}{Should the user be prompted before displaying each

@@ -36,10 +36,10 @@
 #'   then \code{loading_legend_size} specifies the size of the legend
 #'   show alongside the loading plots.
 #'
-#' @param plots_per_screen The maximum number of factor/loading plots to
-#'   be shown per screen.
+#' @param plot_grid_nrow The number of rows to use when displaying
+#'   multiple factor/loading plots on a single screen.
 #'
-#' @param facet_wrap_ncol The number of columns to use when displaying
+#' @param plot_grid_ncol The number of columns to use when displaying
 #'   multiple factor/loading plots on a single screen.
 #'
 #' @param ask Should the user be prompted before displaying each
@@ -61,8 +61,8 @@ plot.flash = function(x,
                       loading_kset = 1:x$nfactors,
                       loading_colors = NULL,
                       loading_legend_size = 5,
-                      plots_per_screen = 4,
-                      facet_wrap_ncol = 2,
+                      plot_grid_nrow = 2,
+                      plot_grid_ncol = 2,
                       ask = (plot_factors || plot_loadings)
                               && dev.interactive(),
                       ...) {
@@ -73,6 +73,8 @@ plot.flash = function(x,
 
   plot(plot_pve(x))
 
+  plots_per_screen = plot_grid_nrow * plot_grid_ncol
+
   if (plot_factors) {
     idx = 1
     while (idx <= length(factor_kset)) {
@@ -80,7 +82,7 @@ plot.flash = function(x,
                                       length(factor_kset))]
       idx = idx + plots_per_screen
       plot(plot_kset(x, next_kset, factor_colors, factor_legend_size,
-                     facet_wrap_ncol, factors = TRUE))
+                     plot_grid_ncol, factors = TRUE))
     }
   }
 
@@ -91,7 +93,7 @@ plot.flash = function(x,
                                        length(loading_kset))]
       idx = idx + plots_per_screen
       plot(plot_kset(x, next_kset, loading_colors, loading_legend_size,
-                     facet_wrap_ncol, factors = FALSE))
+                     plot_grid_ncol, factors = FALSE))
     }
   }
 }
@@ -116,7 +118,7 @@ plot_kset = function(f,
                      kset,
                      bar_colors = NULL,
                      legend_size = 5,
-                     facet_wrap_ncol = 2,
+                     plot_grid_ncol = 2,
                      factors = TRUE) {
   if (factors) {
     vals = f$ldf$f
@@ -155,7 +157,7 @@ plot_kset = function(f,
       theme_grey() +
       theme(legend.text = element_text(size = legend_size)) +
       labs(y = "", x = "") +
-      facet_wrap(~k, ncol = facet_wrap_ncol)
+      facet_wrap(~k, ncol = plot_grid_ncol)
   } else {
     plot_object = ggplot(data, aes_string(x = "variable", y = "value",
                                           fill = "variable")) +
@@ -168,7 +170,7 @@ plot_kset = function(f,
             legend.text = element_text(size = legend_size),
             legend.title = element_blank()) +
       labs(y = "", x = "") +
-      facet_wrap(~k, ncol = facet_wrap_ncol) +
+      facet_wrap(~k, ncol = plot_grid_ncol) +
       guides(fill = guide_legend(ncol = 1,
                                  keyheight = legend_size / 6,
                                  keywidth = legend_size / 15))

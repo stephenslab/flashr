@@ -16,6 +16,6 @@ test_that("plotting functions work", {
   factorplot = plot_kset(fl, 1, factors=FALSE,
                          bar_colors=rep("blue", 5),
                          legend_size = 10,
-                         facet_wrap_ncol = 1)
+                         plot_grid_ncol = 1)
   expect_s3_class(factorplot, "ggplot")
 })
