@@ -414,8 +414,16 @@ add_ebnm_ash_defaults = function(ebnm_param) {
 # @return ebnm_param, with point-normal defaults added (when not
 #   specified by the user).
 #
+#' @importFrom utils packageVersion
+#'
 add_ebnm_pn_defaults = function(ebnm_param) {
-  if (is.null(ebnm_param$warmstart)) {
+  if (packageVersion("ebnm") < "0.1.13"
+      && (is.null(ebnm_param$warmstart)
+          || ebnm_param$warmstart == TRUE)) {
+    ebnm_param$warmstart = FALSE
+    warning(paste("Setting warmstart = FALSE. Please update ebnm to the",
+                  "latest version to use warmstarts."))
+  } else if (is.null(ebnm_param$warmstart)) {
     ebnm_param$warmstart = TRUE
   }
   return(ebnm_param)

@@ -18,7 +18,6 @@ Depends: R (>= 3.3)
 Imports: 
     ashr (>= 2.2-4),
     assertthat,
-    ebnm (>= 0.1-11),
     ggplot2,
     graphics,
     grDevices,
@@ -28,6 +27,7 @@ Imports:
     stats,
     utils
 Suggests: 
+    ebnm (>= 0.1-13),
     testthat,
     knitr,
     REBayes,
