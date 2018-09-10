@@ -17,7 +17,6 @@ Description: Methods for matrix factorization based on "Empirical
 Depends: R (>= 3.3)
 Imports: 
     ashr (>= 2.2-4),
-    assertthat,
     ggplot2,
     graphics,
     grDevices,
