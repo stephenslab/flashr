@@ -1,27 +1,17 @@
-#' @title Update precision parameter
-#'
-#' @description Updates the estimated precision to increase the value of
-#'   the objective function.
-#'
-#' @inheritParams flash
-#'
-#' @param f A flash object.
-#'
-#' @return An updated flash object.
-#'
-#' @export
-#'
+# @title Update precision parameter
+#
+# @description Updates the estimated precision to increase the value of
+#   the objective function.
+#
+# @inheritParams flash
+#
+# @param f A flash object.
+#
+# @return An updated flash object.
+#
 flash_update_precision = function(data,
                                   f,
-                                  var_type = c("by_column",
-                                               "by_row",
-                                               "constant",
-                                               "zero",
-                                               "kroneker")) {
-  f = handle_f(f)
-  data = handle_data(data, f)
-  var_type = handle_var_type(match.arg(var_type), data)
-
+                                  var_type) {
   R2 = flash_get_R2(data, f)
   f$tau = compute_precision(R2, data$missing, var_type, data$S)
   return(f)

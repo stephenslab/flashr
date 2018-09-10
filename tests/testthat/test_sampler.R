@@ -13,7 +13,7 @@ test_that(paste("sampling functions produce objects of correct",
     Y = Y + outer(l, f)
     Y = Y + rnorm(20*30)
     data = flash_set_data(Y)
-    fit = flash_add_greedy(data, 2, ebnm_fn=ebnm_fn)
+    fit = flash_add_greedy(data, 2, ebnm_fn=ebnm_fn)$fit
 
     # Check flash_l_sampler.
     lsampler = flash_l_sampler(data, fit, 1:flash_get_k(fit))
@@ -38,8 +38,8 @@ test_that(paste("sampling functions produce objects of correct",
 
     # Fix some elements.
     fit = flash_add_fixed_factors(data, matrix(1, nrow=30, ncol=1),
-            fixf = matrix(c(rep(TRUE,10),rep(FALSE,20)),ncol=1))
-    fit = suppressWarnings(flash_backfit(data, fit))
+            fixf = matrix(c(rep(TRUE,10),rep(FALSE,20)),ncol=1))$fit
+    fit = suppressWarnings(flash_backfit(data, fit)$fit)
 
     # Check flash_f_sampler.
     fsampler = flash_f_sampler(data, fit, 1:flash_get_k(fit))

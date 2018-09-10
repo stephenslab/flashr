@@ -6,8 +6,8 @@ test_that("greedy works a simple example as expected", {
   Y = LF + rnorm(5*20)
 
   data = flash_set_data(Y)  # note that some of these expectations might fail for some seeds
-  f = flash_add_greedy(data,2)  # they are just expected based on the true model
+  f = flash_add_greedy(data,2)$fit  # they are just expected based on the true model
   expect_equal(flash_get_k(f),1)  # (the zero factor gets removed here)
-  f2 = flash_add_greedy(data,3,f_init=f)
+  f2 = flash_add_greedy(data,3,f_init=f)$fit
   expect_equal(flash_get_objective(data,f),flash_get_objective(data,f2))
 })
