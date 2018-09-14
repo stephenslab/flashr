@@ -55,3 +55,57 @@ get_Yorig = function(data) {
 
     return(data$Y)
 }
+
+
+# @title Transpose a flash data object
+#
+# @param f The flash data object.
+#
+# @return A new flash data object, with the matrices of the original
+#   flash data object transposed.
+#
+flash_transpose_data = function(data) {
+  if (is.matrix(data$Yorig)) {
+    data$Yorig = t(data$Yorig)
+  }
+  if (is.matrix(data$missing)) {
+    data$missing = t(data$missing)
+  }
+  if (is.matrix(data$Y)) {
+    data$Y = t(data$Y)
+  }
+  if (is.matrix(data$S)) {
+    data$S = t(data$S)
+  }
+
+  return(data)
+}
+
+
+# @title Subset a flash data object
+#
+# @param f A flash fit object.
+#
+# @param row_subset The subset of rows to be retained.
+#
+# @param col_subset The subset of columns to be retained.
+#
+# @return A subsetted flash data object.
+#
+flash_subset_data = function(data, row_subset = NULL, col_subset = NULL) {
+  if (is.null(row_subset)) {
+    row_subset = 1:nrow(data$Y)
+  }
+  if (is.null(col_subset)) {
+    col_subset = 1:ncol(data$Y)
+  }
+
+  subdata = data
+  subdata$Yorig = subdata$Yorig[row_subset, col_subset, drop = F]
+  subdata$anyNA = anyNA(subdata$Yorig)
+  subdata$missing = subdata$missing[row_subset, col_subset, drop = F]
+  subdata$Y = subdata$Y[row_subset, col_subset, drop = F]
+  class(subdata) = "flash_data"
+
+  return(subdata)
+}

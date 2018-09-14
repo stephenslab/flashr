@@ -12,7 +12,7 @@
 #'
 #' @inheritParams flash
 #'
-#' @return A fitted flash object.
+#' @return A flash object.
 #'
 #' @examples
 #' l = rnorm(100)
@@ -21,7 +21,7 @@
 #' f = flash_add_greedy(Y,10)
 #'
 #' # Gives the weights for each factor (analogue of singular values).
-#' flash_get_ldf(f)$d
+#' f$ldf$d
 #'
 #' # Example to show how to use a different initialization function.
 #' library(softImpute)
@@ -53,19 +53,19 @@ flash_add_greedy = function(data,
     verbose_output = ""
   }
 
-  f = flash_greedy_workhorse(data,
-                             Kmax,
-                             f_init,
-                             var_type,
-                             init_fn,
-                             tol,
-                             ebnm_fn,
-                             ebnm_param,
-                             verbose_output,
-                             nullcheck,
-                             seed)
+  flash_object = flash_greedy_workhorse(data,
+                                        Kmax,
+                                        f_init,
+                                        var_type,
+                                        init_fn,
+                                        tol,
+                                        ebnm_fn,
+                                        ebnm_param,
+                                        verbose_output,
+                                        nullcheck,
+                                        seed)
 
-  return(f)
+  return(flash_object)
 }
 
 # The "workhorse" function has some additional parameters that are normally
@@ -96,7 +96,7 @@ flash_greedy_workhorse = function(data,
     set.seed(seed)
   }
 
-  f = handle_f(f_init)
+  f = handle_f(f_init, init_null_f = TRUE)
   data = handle_data(data, f)
   var_type = handle_var_type(match.arg(var_type), data)
   init_fn = handle_init_fn(init_fn)
@@ -105,6 +105,8 @@ flash_greedy_workhorse = function(data,
   verbose_output = unlist(strsplit(verbose_output, split=NULL))
   stopping_rule = match.arg(stopping_rule)
 
+  history = list()
+
   prev_K = flash_get_k(f)
   for (k in 1:Kmax) {
     if (length(verbose_output) > 0) {
@@ -112,31 +114,43 @@ flash_greedy_workhorse = function(data,
     }
 
     old_f = f
-    f = flash_r1(data,
-                 f,
-                 var_type,
-                 init_fn,
-                 tol,
-                 ebnm_fn$l,
-                 ebnm_param$l[[k]],
-                 ebnm_fn$f,
-                 ebnm_param$f[[k]],
-                 verbose_output,
-                 nullcheck,
-                 maxiter,
-                 stopping_rule)
+    res = flash_r1(data,
+                   f,
+                   var_type,
+                   init_fn,
+                   tol,
+                   ebnm_fn$l,
+                   ebnm_param$l[[k]],
+                   ebnm_fn$f,
+                   ebnm_param$f[[k]],
+                   verbose_output,
+                   nullcheck,
+                   maxiter,
+                   stopping_rule)
+
+    f = res$f
+    next_history = res$history
 
     # Test whether the factor/loading combination is effectively zero.
     if (is_tiny_fl(f, flash_get_k(f))) {
       # Remove zero factor as long as it doesn't create an empty object.
       if (flash_get_k(f) > 1) {
         f = old_f
+        next_history$zeroed_out = prev_K + k
       }
+      history = c(history, list(next_history))
       break
     }
+
+    history = c(history, list(next_history))
   }
 
-  return(f)
+  flash_object = construct_flash_object(data = data,
+                                        fit = f,
+                                        history = history,
+                                        f_init = f_init)
+
+  return(flash_object)
 }
 
 
@@ -158,31 +172,32 @@ flash_r1 = function(data,
                     maxiter,
                     stopping_rule) {
 
-  f = flash_add_factors_from_data(data,
-                                  K = 1,
-                                  f_init,
-                                  init_fn)
+  f = add_factors_from_data(data, K = 1, f_init, init_fn)
 
-  f = flash_optimize_single_fl(data,
-                               f,
-                               flash_get_k(f),
-                               var_type,
-                               tol,
-                               ebnm_fn_l,
-                               ebnm_param_l,
-                               ebnm_fn_f,
-                               ebnm_param_f,
-                               verbose_output,
-                               maxiter,
-                               stopping_rule)
+  opt_res = flash_optimize_single_fl(data,
+                                     f,
+                                     flash_get_k(f),
+                                     var_type,
+                                     tol,
+                                     ebnm_fn_l,
+                                     ebnm_param_l,
+                                     ebnm_fn_f,
+                                     ebnm_param_f,
+                                     verbose_output,
+                                     maxiter,
+                                     stopping_rule)
+
+  f = opt_res$f
 
   if (nullcheck) {
-    f = perform_nullcheck(data,
-                          f,
-                          flash_get_k(f),
-                          var_type,
-                          verbose = ("n" %in% verbose_output))
+    null_res = perform_nullcheck(data,
+                                 f,
+                                 flash_get_k(f),
+                                 var_type,
+                                 verbose = ("n" %in% verbose_output))
+    f = null_res$f
+    # zeroed_out field is handled in flash_greedy_workhorse
   }
 
-  return(f)
+  return(list(f = f, history = opt_res$history))
 }

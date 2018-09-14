@@ -59,6 +59,8 @@ ebnm_ash = function(x, s, ash_param, output = NULL) {
 # @param ebnm_param A list of parameters to be passed to
 #   \code{ebnm_point_normal}.
 #
+# Do not include an @importFrom field here until ebnm is on CRAN.
+#
 ebnm_pn = function(x, s, ebnm_param, output = NULL) {
   if (identical(output, "post_sampler")) {
     ebnm_param$output = "post_sampler"
@@ -93,6 +95,8 @@ ebnm_pn = function(x, s, ebnm_param, output = NULL) {
 #
 # @param output Sampling from the posterior has not yet been implemented
 #   for point-laplace priors.
+#
+# Do not include an @importFrom field here until ebnm is on CRAN.
 #
 ebnm_pl = function(x, s, ebnm_param, output = NULL) {
   if (identical(output, "post_sampler")) {

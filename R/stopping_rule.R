@@ -1,19 +1,47 @@
-# Determines whether convergence has occurred when greedily adding a factor/
-#   loading or when backfitting.
+# Calculates difference in objective or maximum parameter change
+#   (depending on which stopping criterion is in use) when greedily
+#   adding a factor/loading or when backfitting. Used to determine
+#   whether convergence has occurred.
 #
-is_converged = function(stopping_rule, tol, obj_diff, max_chg_l, max_chg_f) {
+calc_diff = function(stopping_rule, obj_diff, max_chg_l, max_chg_f) {
   if (stopping_rule == "objective") {
     if (obj_diff < 0) {
       verbose_obj_decrease_warning()
     }
-    return(obj_diff < tol)
+    return(obj_diff)
   } else if (stopping_rule == "loadings") {
-    return(max_chg_l < tol)
+    return(max_chg_l)
   } else if (stopping_rule == "factors") {
-    return(max_chg_f < tol)
+    return(max_chg_f)
   } else { # stopping_rule == "all_params"
-    return(max(max_chg_l, max_chg_f) < tol)
+    return(max(max_chg_l, max_chg_f))
   }
+}
+
+# Calculates difference in objective.
+#
+calc_obj_diff = function(obj_track, iter) {
+  if (iter > 1) {
+    return(obj_track[iter] - obj_track[iter - 1])
+  } else {
+    return(Inf)
+  }
+}
+
+# Rule to determine whether the objective function needs to be
+#   calculated.
+#
+is_obj_needed = function(stopping_rule, verbose_output) {
+  return(stopping_rule == "objective"
+         || "o" %in% verbose_output || "d" %in% verbose_output)
+}
+
+# Rule to determine whether maximum parameter changes need to be
+#   calculated.
+#
+is_max_chg_needed = function(stopping_rule, verbose_output) {
+  return(stopping_rule != "objective"
+         || "L" %in% verbose_output || "F" %in% verbose_output)
 }
 
 # Normalizes EL and EF before changes in parameter values are calculated.

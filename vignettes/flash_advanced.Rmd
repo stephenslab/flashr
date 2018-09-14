@@ -74,33 +74,30 @@ a moderate number, and then try increasing later if the data seem to
 warrant it.)
 
 ```{r}
-f = flash_add_factors_from_data(data,K=10)
+f = flash_add_factors_from_data(data, K=10, backfit=FALSE)
 ```
 
 # Refining/fitting a factor model
 
 Once you have initialized a flash fit object, you can improve the fit
-using `flash_backfit`. (If you want to see how the fit is progressing,
+using `flash_backfit`. (This can also be done in one step by setting `backfit=TRUE` above. If you want to see how the fit is progressing,
 set `verbose=TRUE` here.)
 
 ```{r}
-f = flash_backfit(data,f,verbose=FALSE)
+f = flash_backfit(data, f, verbose=FALSE)
 ```
 
 # Extracting information
 
-Having fit the model we might want to extract the fitted factors and
-loadings.  You can do that using functions like `flash_get_ldf` to get
-the standardized loadings, factors and weights. Also `flash_get_fitted_values`
-gets the product (LDF').  And `flash_get_objective` will return the
+The `flash` functions return objects that store useful summary information. The `ldf` field stores standardized loadings, factors and weights; `fitted_values` stores the product (LDF');  and `objective` stores the
 measure of goodness-of-fit achieved (the variational lower bound,
 F). This can be helpful for comparing multiple fits to the same data.
 
 ```{r, fig.width = 5, fig.height = 5}
-plot(flash_get_fitted_values(f), LL %*% t(FF),
+plot(f$fitted_values, LL %*% t(FF),
      main="compare fitted values with true LF'")
-flash_get_ldf(f)$d
-flash_get_objective(data,f)
+f$ldf$d
+f$objective
 ```
 
 # Greedy addition of factors
@@ -110,9 +107,9 @@ An alternative is to add one at a time, and optimize each in turn. This is accom
 using `flash_add_greedy`. This will keep adding factors until they no longer improve
 the fit, so you need to specify a maximum number to consider.
 ```{r}
-f_greedy = flash_add_greedy(data,Kmax=10)
-flash_get_ldf(f_greedy)$d
-flash_get_objective(data,f_greedy)
+f_greedy = flash_add_greedy(data, Kmax=10, verbose=FALSE)
+f_greedy$ldf$d
+f_greedy$objective
 ```
 
 After adding factors in this way you can use backfitting to try to
@@ -121,35 +118,34 @@ sometimes this provides a better fit than initializing all at once (as
 in `f` above), sometimes worse.
 
 ```{r}
-f_greedy_bf = flash_backfit(data,f_greedy)
-flash_get_ldf(f_greedy_bf)$d
-flash_get_objective(data,f_greedy_bf)
-flash_get_objective(data,f)
+f_greedy_bf = flash_backfit(data, f_greedy, verbose=FALSE)
+f_greedy_bf$ldf$d
+f_greedy_bf$objective
+f$objective
 ```
 
 # Setting loadings and factors directly
 
 In simulation experiments it might be useful to initialize the
-loadings and factors to the "truth" to see how it affects the
+loadings or factors to the "truth" to see how it affects the
 convergence.
 
 ```{r}
-f_true = flash_add_lf(data, LL=LL, FF=FF)
-f_cheat = flash_backfit(data,f_true)
-flash_get_ldf(f_cheat)$d
-flash_get_objective(data,f_cheat)
+f_true = flash_add_factors_from_data(LL %*% t(FF), K=ncol(LL), 
+                                      backfit=FALSE)
+f_cheat = flash_backfit(data, f_init=f_true, verbose=FALSE)
+f_cheat$ldf$d
+f_cheat$objective
 ```
 
-Unexpectedly (to me) the objective achieved from this initialization
-is lower than those from the greedy initialization. However, the
-results are pretty similar in terms of mean squared error
-(MSE). Notice that backfitting improved MSE vs greedy.
+Results are pretty similar both in terms of objective achieved and in terms of mean squared error
+(MSE). Notice that backfitting improves MSE vs greedy.
 
 ```{r}
-mean((flash_get_fitted_values(f_cheat) - LL %*% t(FF))^2)
-mean((flash_get_fitted_values(f_greedy_bf) - LL %*% t(FF))^2)
-mean((flash_get_fitted_values(f) - LL %*% t(FF))^2)
-mean((flash_get_fitted_values(f_greedy) - LL %*% t(FF))^2)
+mean((f_cheat$fitted_values - LL %*% t(FF))^2)
+mean((f_greedy_bf$fitted_values - LL %*% t(FF))^2)
+mean((f$fitted_values - LL %*% t(FF))^2)
+mean((f_greedy$fitted_values - LL %*% t(FF))^2)
 ```
 
 # Setting the function used to solve the EBNM problem
@@ -167,8 +163,9 @@ methods give similar average performance, and `ebnm_pn` is (currently)
 faster, and so this is the default.
 
 ```{r}
-f_greedy_ash = flash_add_greedy(data,Kmax=10,ebnm_fn="ebnm_ash")
-flash_get_objective(data,f_greedy_ash)
+f_greedy_ash = flash_add_greedy(data, Kmax=10, ebnm_fn="ebnm_ash",
+                                verbose=FALSE)
+f_greedy_ash$objective
 ```
 
 # Fixed factors or loadings
@@ -192,11 +189,12 @@ the fit. (Notice also that the corresponding factor is 0---correct
 since we did not add a non-zero mean to the simulation.)
 
 ```{r}
-f = flash_add_fixed_loadings(data,LL = cbind(rep(1,n)))
-f = flash_add_factors_from_data(data,K=10,f_init=f)
-f = flash_backfit(data,f)
-flash_get_nfactors(f) # tells you how many nonzero factors f has
-head(flash_get_ldf(f,1,drop_zero_factors = FALSE)$l)
-# Note this is 0 as the factor has no weight
-flash_get_ldf(f,1,drop_zero_factors = FALSE)$d
+f = flash_add_fixed_loadings(data, LL = cbind(rep(1,n)), backfit=TRUE,
+                             verbose=FALSE)
+f = flash_add_factors_from_data(data, K=10, f_init=f, backfit=TRUE,
+                                verbose=FALSE)
+f$nfactors # tells you how many nonzero factors f has
+head(f$fit$EL[, 1])
+# Note that factor is 0
+head(f$fit$EF[, 1])
 ```

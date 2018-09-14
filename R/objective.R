@@ -1,14 +1,12 @@
-#' @title Get value of objective function
-#'
-#' @description Get value of objective function from data and flash fit
-#'   object.
-#'
-#' @inheritParams flash
-#'
-#' @param f A flash fit object.
-#'
-#' @export
-#'
+# @title Get value of objective function
+#
+# @description Get value of objective function from data and flash fit
+#   object.
+#
+# @inheritParams flash
+#
+# @param f A flash fit object.
+#
 flash_get_objective = function(data, f) {
   f = handle_f(f)
   data = handle_data(data, f)

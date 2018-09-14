@@ -26,12 +26,14 @@ perform_nullcheck = function(data, f, kset, var_type, verbose) {
     verbose_nullcheck_announce()
   }
 
+  zeroed_out = integer(0)
+
   f_changed = TRUE  # We are going to iterate until f does not change.
   while (f_changed) {
 
     f_changed = FALSE
     for (k in kset) {
-      f0 = flash_zero_out_factor(f, k)
+      f0 = zero_out_factor(f, k)
       if (!identical(f, f0)) {
         f0 = flash_update_precision(data, f0, var_type)
         obj0 = flash_get_objective(data, f0)
@@ -42,6 +44,7 @@ perform_nullcheck = function(data, f, kset, var_type, verbose) {
             verbose_nullcheck_delete_fl(k, obj0 - obj1)
           }
           f = f0
+          zeroed_out = c(zeroed_out, k)
           f_changed = TRUE
         } else if (obj1 > obj0) {
           if (verbose) {
@@ -56,5 +59,5 @@ perform_nullcheck = function(data, f, kset, var_type, verbose) {
     verbose_nullcheck_complete(flash_get_objective(data, f))
   }
 
-  return(f)
+  return(list(f=f, zeroed_out=zeroed_out))
 }

@@ -13,11 +13,14 @@
 # @return f The flash object.
 #
 handle_f = function(f, allow_null = TRUE, init_null_f = FALSE) {
-  if (!allow_null && class(f) != "flash") {
-    stop("f must be a flash fit object.")
+  if (!is.null(f) && class(f) == "flash") {
+    return(get_flash_fit(f))
   }
-  if (!is.null(f) && class(f) != "flash") {
-    stop("f must be NULL or a flash fit object.")
+  if (!allow_null && class(f) != "flash_fit") {
+    stop("f must be a flash object or a flash fit object.")
+  }
+  if (!is.null(f) && class(f) != "flash_fit") {
+    stop("f must be NULL, a flash object, or a flash fit object.")
   }
   if (init_null_f && is.null(f)) {
     f = flash_init_null()
@@ -192,14 +195,14 @@ handle_LL = function(LL, expected_nrow) {
 #
 handle_fix = function(fixl, LL, default_val) {
   if (default_val == FALSE && is.null(fixl)) {
-    fixl = matrix(FALSE, ncol = ncol(LL), nrow = nrow(LL))
+    fixl = matrix(FALSE, nrow = nrow(LL), ncol = ncol(LL))
   }
   if (default_val == TRUE && is.null(fixl)) {
     fixl = !is.na(LL)
   }
 
   if (is.vector(fixl)) {
-    fixl = matrix(fixl, ncol = 1)
+    fixl = matrix(fixl, nrow = nrow(LL), ncol = ncol(LL))
   }
 
   if (!identical(dim(fixl), dim(LL))) {
@@ -411,8 +414,16 @@ add_ebnm_ash_defaults = function(ebnm_param) {
 # @return ebnm_param, with point-normal defaults added (when not
 #   specified by the user).
 #
+#' @importFrom utils packageVersion
+#'
 add_ebnm_pn_defaults = function(ebnm_param) {
-  if (is.null(ebnm_param$warmstart)) {
+  if (packageVersion("ebnm") < "0.1.13"
+      && (is.null(ebnm_param$warmstart)
+          || ebnm_param$warmstart == TRUE)) {
+    ebnm_param$warmstart = FALSE
+    warning(paste("Setting warmstart = FALSE. Please update ebnm to the",
+                  "latest version to use warmstarts."))
+  } else if (is.null(ebnm_param$warmstart)) {
     ebnm_param$warmstart = TRUE
   }
   return(ebnm_param)
