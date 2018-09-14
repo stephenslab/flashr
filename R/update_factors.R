@@ -221,6 +221,11 @@ calc_ebnm_l_args = function(data, f, k, subset, Rk) {
   }
 
   x = ((Rk * tau) %*% f$EF[, k]) * s2
+
+  # Avoid NaNs when s2 is infinite (in which case the value of x
+  #   doesn't matter).
+  x[is.infinite(s2)] = 0
+
   # If a value of s2 becomes numerically negative, set it to a
   #   small positive number.
   s = sqrt(pmax(s2, .Machine$double.eps))
@@ -245,6 +250,7 @@ calc_ebnm_f_args = function(data, f, k, subset, Rk) {
   }
 
   x = (t(f$EL[, k]) %*% (Rk * tau)) * s2
+  x[is.infinite(s2)] = 0
   s = sqrt(pmax(s2, .Machine$double.eps))
 
   return(list(x = x, s = s))
