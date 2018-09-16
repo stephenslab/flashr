@@ -27,11 +27,11 @@ e_loglik = function(data, f) {
 #   on expected squared residuals and tau.
 e_loglik_from_R2_and_tau = function(R2, tau, data) {
   # tau can be either a scalar or a matrix:
-  tmp = 2 * pi / tau + tau * R2
+  tmp = log(2 * pi / tau) + tau * R2
   if (data$anyNA) {
     tmp = tmp[!data$missing]
   }
-  return(-0.5 * sum(log(tmp)))
+  return(-0.5 * sum(tmp))
 }
 
 

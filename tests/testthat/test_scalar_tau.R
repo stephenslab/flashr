@@ -1,7 +1,7 @@
 test_that("storing tau as a scalar works", {
   set.seed(1)
-  l = rnorm(5)*3
-  f = rnorm(20)*3
+  l = rnorm(5)
+  f = rnorm(20)
   LF = outer(l,f)
   Y = LF + rnorm(5*20)
 
