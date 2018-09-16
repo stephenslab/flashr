@@ -4,8 +4,9 @@
 \alias{plot.flash}
 \title{Plot flash object}
 \usage{
-\method{plot}{flash}(x, plot_factors = FALSE, factor_kset = 1:x$nfactors,
-  factor_colors = NULL, factor_legend_size = 5, plot_loadings = FALSE,
+\method{plot}{flash}(x, plot_pve = TRUE, plot_factors = FALSE,
+  factor_kset = 1:x$nfactors, factor_colors = NULL,
+  factor_legend_size = 5, plot_loadings = FALSE,
   loading_kset = 1:x$nfactors, loading_colors = NULL,
   loading_legend_size = 5, plot_grid_nrow = 2, plot_grid_ncol = 2,
   ask = (plot_factors || plot_loadings) && dev.interactive(), ...)
@@ -13,8 +14,11 @@
 \arguments{
 \item{x}{Flash object to plot.}
 
+\item{plot_pve}{Whether to include a scree plot of the proportion of
+variance explained by each factor/loading pair.}
+
 \item{plot_factors}{Whether to plot the factors indexed by
-\code{kset}.}
+\code{factor_kset}.}
 
 \item{factor_kset}{If \code{plot_factors} is \code{TRUE}, then
 \code{factor_kset} specifies which factors will be plotted.
@@ -30,7 +34,7 @@ then \code{factor_legend_size} specifies the size of the legend
 show alongside the factor plots.}
 
 \item{plot_loadings}{Whether to plot the loadings indexed by
-\code{kset}.}
+\code{loading_kset}.}
 
 \item{loading_kset}{If \code{plot_loadings} is \code{TRUE}, then
 \code{loading_kset} specifies which loadings will be plotted.

@@ -4,8 +4,11 @@
 #'
 #' @param x Flash object to plot.
 #'
+#' @param plot_pve Whether to include a scree plot of the proportion of
+#'   variance explained by each factor/loading pair.
+#'
 #' @param plot_factors Whether to plot the factors indexed by
-#'   \code{kset}.
+#'   \code{factor_kset}.
 #'
 #' @param factor_kset If \code{plot_factors} is \code{TRUE}, then
 #'   \code{factor_kset} specifies which factors will be plotted.
@@ -21,7 +24,7 @@
 #'   show alongside the factor plots.
 #'
 #' @param plot_loadings Whether to plot the loadings indexed by
-#'   \code{kset}.
+#'   \code{loading_kset}.
 #'
 #' @param loading_kset If \code{plot_loadings} is \code{TRUE}, then
 #'   \code{loading_kset} specifies which loadings will be plotted.
