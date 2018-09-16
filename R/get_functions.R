@@ -97,7 +97,7 @@ flash_get_pve = function(data, f, drop_zero_factors = TRUE) {
     tau = f$tau[f$tau != 0]
     var_from_tau = sum(1/tau)
   } else { # tau is a scalar
-    var_from_tau = sum(!data$missing) * f$tau
+    var_from_tau = sum(!data$missing) / f$tau
   }
 
   return(s/(sum(s) + var_from_tau))

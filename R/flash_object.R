@@ -49,7 +49,7 @@ compute_summary_statistics = function(data, f) {
     tau = f$tau[f$tau != 0]
     var_from_tau = sum(1/tau)
   } else { # tau is a scalar
-    var_from_tau = sum(!data$missing) * f$tau
+    var_from_tau = sum(!data$missing) / f$tau
   }
   pve = s/(sum(s) + var_from_tau)
 

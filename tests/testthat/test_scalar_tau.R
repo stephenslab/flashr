@@ -10,6 +10,7 @@ test_that("storing tau as a scalar works", {
   fl_scalar = flash(data_scalar, var_type="zero")
   data_matrix = flash_set_data(Y, S = matrix(1, nrow=5, ncol=20))
   fl_matrix = flash(data_matrix, var_type="zero")
+  expect_identical(fl_scalar$objective, fl_matrix$objective)
 
   fl1 = flash(Y, var_type="constant")
   expect_length(fl1$fit$tau, 1)
@@ -39,6 +40,12 @@ test_that("storing tau as a scalar works", {
 
   # Repeat with missing data:
   Y[sample(1:100, 10, replace=FALSE)] = NA
+  data_scalar = flash_set_data(Y, S = 1)
+  fl_scalar = flash(data_scalar, var_type="zero")
+  data_matrix = flash_set_data(Y, S = matrix(1, nrow=5, ncol=20))
+  fl_matrix = flash(data_matrix, var_type="zero")
+  expect_identical(fl_scalar$objective, fl_matrix$objective)
+
   data = flash_set_data(Y)
 
   largs1 = calc_ebnm_l_args(data, fl1$fit, 1, 1:5,
