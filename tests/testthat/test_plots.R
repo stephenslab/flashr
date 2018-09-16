@@ -18,4 +18,6 @@ test_that("plotting functions work", {
                          legend_size = 10,
                          plot_grid_ncol = 1)
   expect_s3_class(factorplot, "ggplot")
+
+  expect_error(plot(fl, plot_pve=FALSE))
 })
