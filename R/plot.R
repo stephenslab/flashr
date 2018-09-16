@@ -53,6 +53,7 @@
 #' @export
 #'
 plot.flash = function(x,
+                      plot_pve = TRUE,
                       plot_factors = FALSE,
                       factor_kset = 1:x$nfactors,
                       factor_colors = NULL,
@@ -66,12 +67,19 @@ plot.flash = function(x,
                       ask = (plot_factors || plot_loadings)
                               && dev.interactive(),
                       ...) {
+  if (!plot_pve && !plot_factors && !plot_loadings) {
+    stop(paste("Nothing to plot. Set plot_pve, plot_factors, or",
+               "plot_loadings to TRUE."))
+  }
+
   if (ask) {
     old_ask <- devAskNewPage(TRUE)
     on.exit(devAskNewPage(old_ask))
   }
 
-  plot(plot_pve(x))
+  if (plot_pve) {
+    plot(plot_pve(x))
+  }
 
   plots_per_screen = plot_grid_nrow * plot_grid_ncol
 
