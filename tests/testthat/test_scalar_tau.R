@@ -1,10 +1,15 @@
 test_that("storing tau as a scalar works", {
   set.seed(1)
-  l = rnorm(5)
-  f = rnorm(20)
+  l = rnorm(5)*3
+  f = rnorm(20)*3
   LF = outer(l,f)
   Y = LF + rnorm(5*20)
-  data = flash_set_data(Y)
+
+  # test that objective is same whether S is matrix or scalar:
+  data_scalar = flash_set_data(Y, S = 1)
+  fl_scalar = flash(data_scalar, var_type="zero")
+  data_matrix = flash_set_data(Y, S = matrix(1, nrow=5, ncol=20))
+  fl_matrix = flash(data_matrix, var_type="zero")
 
   fl1 = flash(Y, var_type="constant")
   expect_length(fl1$fit$tau, 1)
