@@ -5,7 +5,7 @@ construct_flash_object = function(data,
                                   compute_obj = TRUE) {
   flash_object = list()
 
-  summary_stats = compute_summary_statistics(fit)
+  summary_stats = compute_summary_statistics(data, fit)
   flash_object$nfactors = summary_stats$nfactors
   flash_object$pve = summary_stats$pve
   flash_object$fitted_values = summary_stats$fitted_values
@@ -38,15 +38,20 @@ get_flash_fit_history = function(flash) {
   return(flash$fit_history)
 }
 
-compute_summary_statistics = function(f) {
+compute_summary_statistics = function(data, f) {
   ldf = flash_get_ldf(f)
 
   d = ldf$d
   nfactors = length(d)
 
   s = d^2
-  tau = f$tau[f$tau != 0]
-  pve = s/(sum(s) + sum(1/tau))
+  if (is.matrix(f$tau)) {
+    tau = f$tau[f$tau != 0]
+    var_from_tau = sum(1/tau)
+  } else { # tau is a scalar
+    var_from_tau = sum(!data$missing) * f$tau
+  }
+  pve = s/(sum(s) + var_from_tau)
 
   fitted_values = flash_get_fitted_values(f)
 

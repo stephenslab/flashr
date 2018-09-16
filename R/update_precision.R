@@ -34,7 +34,10 @@ compute_precision = function(R2, missing, var_type, S) {
     tau = 1 / S^2
   }
 
-  tau[missing] = 0
+  if (is.matrix(tau)) {
+    tau[missing] = 0
+  }
+
   return(tau)
 }
 
@@ -65,5 +68,5 @@ mle_precision_constant = function(R2) {
   sigma2 = mean(R2, na.rm = TRUE)  # a scalar
 
   tau = pmax(1/sigma2, .Machine$double.eps)
-  return(matrix(tau, nrow = nrow(R2), ncol = ncol(R2)))
+  return(tau)
 }

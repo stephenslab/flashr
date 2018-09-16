@@ -210,12 +210,25 @@ calc_update_vals = function(data,
 #   standard errors to be passed into ebnm_fn).
 #
 calc_ebnm_l_args = function(data, f, k, subset, Rk) {
-  tau = f$tau[subset, , drop = FALSE]
-  missing = data$missing[subset, , drop = FALSE]
-  tau[missing] = 0
   Rk = Rk[subset, , drop = FALSE]
 
-  s2 = 1/(tau %*% f$EF2[, k])
+  if (is.matrix(f$tau)) {
+    tau = f$tau[subset, , drop = FALSE]
+    if (data$anyNA) {
+      missing = data$missing[subset, , drop = FALSE]
+      tau[missing] = 0
+    }
+    s2 = 1/(tau %*% f$EF2[, k])
+  } else { # tau is a scalar
+    tau = f$tau
+    if (data$anyNA) {
+      non_missing = !data$missing[subset, , drop = FALSE]
+      s2 = 1/(tau * non_missing %*% f$EF2[, k])
+    } else {
+      s2 = 1/(tau * sum(f$EF2[, k]))
+    }
+  }
+
   if (sum(is.finite(s2)) == 0) {
     return(NULL)
   }
@@ -239,12 +252,25 @@ calc_ebnm_l_args = function(data, f, k, subset, Rk) {
 # @inherit calc_ebnm_l_args
 #
 calc_ebnm_f_args = function(data, f, k, subset, Rk) {
-  tau = f$tau[, subset, drop = FALSE]
-  missing = data$missing[, subset, drop = FALSE]
-  tau[missing] = 0
   Rk = Rk[, subset, drop = FALSE]
 
-  s2 = 1/(t(f$EL2[, k]) %*% tau)
+  if (is.matrix(f$tau)) {
+    tau = f$tau[, subset, drop = FALSE]
+    if (data$anyNA) {
+      missing = data$missing[, subset, drop = FALSE]
+      tau[missing] = 0
+    }
+    s2 = 1/(t(f$EL2[, k]) %*% tau)
+  } else { # tau is a scalar
+    tau = f$tau
+    if (data$anyNA) {
+      non_missing = !data$missing[, subset, drop = FALSE]
+      s2 = 1/(tau * f$EL2[, k] %*% non_missing)
+    } else {
+      s2 = 1/(tau * sum(f$EL2[, k]))
+    }
+  }
+
   if (sum(is.finite(s2)) == 0) {
     return(NULL)
   }

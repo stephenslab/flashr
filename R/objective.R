@@ -20,9 +20,18 @@ flash_get_objective = function(data, f) {
 # @inheritParams flash_get_objective
 #
 e_loglik = function(data, f) {
-  return(-0.5 * sum((log((2*pi)/f$tau[!data$missing]) +
-                     f$tau[!data$missing] *
-                     flash_get_R2(data, f)[!data$missing])))
+  return(e_loglik_from_R2_and_tau(flash_get_R2(data, f), f$tau, data))
+}
+
+# Compute the expected log-likelihood (at non-missing locations) based
+#   on expected squared residuals and tau.
+e_loglik_from_R2_and_tau = function(R2, tau, data) {
+  # tau can be either a scalar or a matrix:
+  tmp = 2 * pi / tau + tau * R2
+  if (data$anyNA) {
+    tmp = tmp[!data$missing]
+  }
+  return(-0.5 * sum(log(tmp)))
 }
 
 
