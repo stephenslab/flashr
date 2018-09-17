@@ -77,10 +77,13 @@ flash_update_single_loading = function(data,
                                        Rk,
                                        calc_obj = TRUE) {
   subset = which(!f$fixl[, k])
+  any_fixed = any(f$fixl[, k])
+
   res = calc_update_vals(data,
                          f,
                          k,
                          subset,
+                         any_fixed,
                          ebnm_fn,
                          ebnm_param,
                          loadings = TRUE,
@@ -160,6 +163,7 @@ calc_update_vals = function(data,
                             f,
                             k,
                             subset,
+                            any_fixed,
                             ebnm_fn,
                             ebnm_param,
                             loadings,
