@@ -234,14 +234,18 @@ calc_ebnm_l_args = function(data, f, k, subset, any_fixed, Rk) {
     missing = data$missing
   }
 
-  if (is.matrix(tau)) {
-    if (data$anyNA) {
+  if (data$anyNA) {
+    if (is.matrix(tau)) {
       tau[missing] = 0
+    } else { # tau is a scalar
+      tau = tau * !missing
     }
+  }
+
+  if (is.matrix(tau)) {
     s2 = 1/(tau %*% f$EF2[, k])
   } else { # tau is a scalar
     if (data$anyNA) {
-      tau = tau * !missing
       s2 = 1/(tau %*% f$EF2[, k])
     } else {
       s2 = 1/(tau * sum(f$EF2[, k]))
@@ -287,15 +291,19 @@ calc_ebnm_f_args = function(data, f, k, subset, any_fixed, Rk) {
     missing = data$missing
   }
 
-  if (is.matrix(f$tau)) {
-    if (data$anyNA) {
+  if (data$anyNA) {
+    if (is.matrix(f$tau)) {
       tau[missing] = 0
+    } else {
+      tau = tau * !missing
     }
+  }
+
+  if (is.matrix(f$tau)) {
     s2 = 1/(t(f$EL2[, k]) %*% tau)
   } else { # tau is a scalar
-    tau = f$tau
     if (data$anyNA) {
-      s2 = 1/(f$EL2[, k] %*% (tau * !missing))
+      s2 = 1/(f$EL2[, k] %*% tau)
     } else {
       s2 = 1/(tau * sum(f$EL2[, k]))
     }
