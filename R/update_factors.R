@@ -241,7 +241,7 @@ calc_ebnm_l_args = function(data, f, k, subset, any_fixed, Rk) {
     s2 = 1/(tau %*% f$EF2[, k])
   } else { # tau is a scalar
     if (data$anyNA) {
-      s2 = 1/(tau * !missing %*% f$EF2[, k])
+      s2 = 1/((tau * !missing) %*% f$EF2[, k])
     } else {
       s2 = 1/(tau * sum(f$EF2[, k]))
     }
@@ -294,7 +294,7 @@ calc_ebnm_f_args = function(data, f, k, subset, any_fixed, Rk) {
   } else { # tau is a scalar
     tau = f$tau
     if (data$anyNA) {
-      s2 = 1/(tau * f$EL2[, k] %*% !missing)
+      s2 = 1/(f$EL2[, k] %*% (tau * !missing))
     } else {
       s2 = 1/(tau * sum(f$EL2[, k]))
     }
