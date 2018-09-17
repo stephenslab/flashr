@@ -241,7 +241,8 @@ calc_ebnm_l_args = function(data, f, k, subset, any_fixed, Rk) {
     s2 = 1/(tau %*% f$EF2[, k])
   } else { # tau is a scalar
     if (data$anyNA) {
-      s2 = 1/((tau * !missing) %*% f$EF2[, k])
+      tau = tau * !missing
+      s2 = 1/(tau %*% f$EF2[, k])
     } else {
       s2 = 1/(tau * sum(f$EF2[, k]))
     }
