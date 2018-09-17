@@ -13,13 +13,15 @@ flash_update_precision = function(data,
                                   f,
                                   var_type) {
   R2 = flash_get_R2(data, f)
-  f$tau = compute_precision(R2, data$missing, var_type, data$S)
+  f$tau = compute_precision(R2, data, var_type)
   return(f)
 }
 
 
-compute_precision = function(R2, missing, var_type, S) {
-  R2[missing] = NA
+compute_precision = function(R2, data, var_type) {
+  if (data$anyNA) {
+    R2[data$missing] = NA
+  }
 
   if (var_type == "by_column") {
     tau = mle_precision_by_column(R2)
@@ -31,11 +33,11 @@ compute_precision = function(R2, missing, var_type, S) {
     tau = mle_precision_constant(R2)
   }
   else if (var_type == "zero") {
-    tau = 1 / S^2
+    tau = 1 / data$S^2
   }
 
-  if (is.matrix(tau)) {
-    tau[missing] = 0
+  if (is.matrix(tau) && data$anyNA) {
+    tau[data$missing] = 0
   }
 
   return(tau)
