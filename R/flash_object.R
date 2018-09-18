@@ -45,7 +45,9 @@ compute_summary_statistics = function(data, f) {
   nfactors = length(d)
 
   s = d^2
-  if (is.matrix(f$tau)) {
+  if (is.null(f$tau)) {
+    var_from_tau = 0
+  } else if (is.matrix(f$tau)) {
     tau = f$tau[f$tau != 0]
     var_from_tau = sum(1/tau)
   } else { # tau is a scalar

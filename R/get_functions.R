@@ -93,7 +93,9 @@ flash_get_pve = function(data, f, drop_zero_factors = TRUE) {
   f = handle_f(f, allow_null = FALSE)
 
   s = (flash_get_ldf(f, drop_zero_factors=drop_zero_factors)$d)^2
-  if (is.matrix(f$tau)) {
+  if (is.null(f$tau)) {
+    var_from_tau = 0
+  } else if (is.matrix(f$tau)) {
     tau = f$tau[f$tau != 0]
     var_from_tau = sum(1/tau)
   } else { # tau is a scalar
