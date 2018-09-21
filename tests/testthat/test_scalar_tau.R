@@ -4,6 +4,7 @@ test_that("storing tau as a scalar works", {
   f = rnorm(20)
   LF = outer(l,f)
   Y = LF + rnorm(5*20)
+  data = flash_set_data(Y)
 
   # test that objective is same whether S is matrix or scalar:
   data_scalar = flash_set_data(Y, S = 1)
