@@ -62,4 +62,17 @@ test_that("adding sparse factors/loadings works", {
   LL = matrix(1, nrow=n, ncol=2)
   fixl = rep(1, n)
   expect_error(fl = flash_add_fixed_loadings(Y, LL, fl, fixl))
+
+  # Test with missing data:
+  Y.na = Y
+  Y.na[sample(n*p, floor(0.1*n*p), replace = FALSE)] = NA
+  LL = diag(1, nrow=n, ncol=n)
+  fl = flash_add_fixed_loadings(Y.na, LL, backfit=FALSE)
+  fl = flash(Y.na, f_init=fl, backfit=TRUE, greedy=FALSE, nullcheck=FALSE, tol=1)
+  expect_equal(fl$fit$fixl, matrix(TRUE, nrow=n, ncol=n))
+
+  FF = c(rep(1, 5), rep(NA, p - 5))
+  fl = flash_add_fixed_factors(Y.na, FF, backfit=FALSE)
+  fl = flash(Y.na, f_init=fl, backfit=TRUE, greedy=FALSE, nullcheck=FALSE, tol=1)
+  expect_equal(fl$fit$fixf, matrix(c(rep(TRUE, 5), rep(FALSE, p - 5)), ncol=1))
 })
