@@ -4,14 +4,18 @@
 \alias{plot.flash}
 \title{Plot flash object}
 \usage{
-\method{plot}{flash}(x, plot_factors = FALSE, factor_kset = 1:x$nfactors,
-  factor_colors = NULL, factor_legend_size = 5, plot_loadings = FALSE,
+\method{plot}{flash}(x, plot_scree = TRUE, plot_factors = FALSE,
+  factor_kset = 1:x$nfactors, factor_colors = NULL,
+  factor_legend_size = 5, plot_loadings = FALSE,
   loading_kset = 1:x$nfactors, loading_colors = NULL,
   loading_legend_size = 5, plot_grid_nrow = 2, plot_grid_ncol = 2,
   ask = (plot_factors || plot_loadings) && dev.interactive(), ...)
 }
 \arguments{
 \item{x}{Flash object to plot.}
+
+\item{plot_scree}{Whether to include a scree plot of the proportion
+of variance explained per factor/loading pair.}
 
 \item{plot_factors}{Whether to plot the factors indexed by
 \code{kset}.}

@@ -38,8 +38,19 @@ flash_set_data = function(Y, S = NULL) {
 
     data$Y = Y
 
-    if (!is.null(S)) {
-      data$S = matrix(S, nrow=nrow(Y), ncol=ncol(Y))
+    if (!is.null(S) && is.matrix(S)) {
+      if (nrow(S) != nrow(Y) || ncol(S) != ncol(Y)) {
+        stop(paste("If S is a matrix, dimensions of S must match",
+                   "dimensions of Y."))
+      }
+    } else if (!is.null(S) && length(S) != 1) {
+      stop("S must be a matrix or a scalar.")
+    } else {
+      if (requireNamespace("ebnm", quietly = TRUE) &&
+          packageVersion("ebnm") < "0.1.13") {
+        # Earlier versions of ebnm do not support scalar arguments for S
+        data$S = matrix(S, nrow = nrow(Y), ncol = ncol(Y))
+      }
     }
 
     class(data) = "flash_data"
