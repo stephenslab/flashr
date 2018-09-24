@@ -27,6 +27,7 @@ Imports:
 Suggests: 
     testthat,
     knitr,
+    rmarkdown,
     REBayes,
     Rmosek
 License: BSD_3_clause + file LICENSE
