@@ -45,20 +45,18 @@ flash_optimize_single_fl = function(data,
                                     ebnm_param_l,
                                     ebnm_fn_f,
                                     ebnm_param_f,
-                                    verbose,
+                                    verbose_output,
                                     maxiter,
-                                    calc_obj = TRUE) {
-
-  if (verbose) {
-    if (calc_obj) {
-      verbose_obj_table_header()
-    } else {
-      verbose_diff_table_header()
-    }
+                                    stopping_rule) {
+  if (length(verbose_output) > 0) {
+    verbose_obj_table_header(verbose_output)
   }
 
-  diff = Inf
-  old_obj = -Inf
+  if (is_max_chg_needed(stopping_rule, verbose_output)) {
+    res = normalize_lf(f$EL[, k], f$EF[, k])
+    old_EL = res$EL
+    old_EF = res$EF
+  }
 
   R2 = flash_get_R2(data, f)
 
@@ -68,10 +66,12 @@ flash_optimize_single_fl = function(data,
          - outer(f$EL2[, k], f$EF2[, k]))
 
   iter = 0
-  while ((diff > tol) & (iter < maxiter)) {
-    iter = iter + 1
+  diff = Inf
+  diff_track = rep(NA, maxiter)
+  obj_track = rep(NA, maxiter)
 
-    old_vals = c(f$EL[, k], f$EF[, k])
+  while ((iter < maxiter) && (diff > tol)) {
+    iter = iter + 1
 
     f = flash_update_single_fl(data,
                                f,
@@ -87,52 +87,46 @@ flash_optimize_single_fl = function(data,
     R2 = (R2k - 2 * outer(f$EL[, k], f$EF[, k]) * Rk
           + outer(f$EL2[, k], f$EF2[, k]))
 
-    if (calc_obj) {
-      # Check convergence by increase in objective function.
-      obj = (sum(unlist(f$KL_l)) + sum(unlist(f$KL_f)) +
-               e_loglik_from_R2_and_tau(R2, f$tau, data$missing))
-      diff = obj - old_obj
-      old_obj = obj
+    if (is_obj_needed(stopping_rule, verbose_output)) {
+      obj_track[iter] = (sum(unlist(f$KL_l)) + sum(unlist(f$KL_f)) +
+                           e_loglik_from_R2_and_tau(R2, f$tau, data))
+      obj_diff = calc_obj_diff(obj_track, iter)
+    }
 
-      if (diff < 0) {
-        verbose_obj_decrease_warning()
-      }
-      if (verbose) {
-        verbose_obj_table_entry(iter, obj, diff)
-      }
-    } else {
-      # Check convergence by percentage changes in EL and EF.
-      #   Normalize EL and EF so that EF has unit norm. Note that this
-      #   messes up stored log-likelihoods etc... so not recommended.
-      warning("Renormalization step not fully tested; be careful!")
+    if (is_max_chg_needed(stopping_rule, verbose_output)) {
+      res = normalize_lf(f$EL[, k], f$EF[, k])
+      max_chg_l = calc_max_chg(res$EL, old_EL)
+      max_chg_f = calc_max_chg(res$EF, old_EF)
 
-      norm = sqrt(sum(f$EF[, k]^2))
-      f$EF[, k] = f$EF[, k] / norm
-      f$EF2[, k] = f$EF2[, k] / (norm^2)
-      f$EL[, k] = f$EL[, k] * norm
-      f$EL2[, k] = f$EL2[, k] * (norm^2)
+      old_EL = res$EL
+      old_EF = res$EF
+    }
 
-      all_diff = abs(c(f$EL[, k], f$EF[, k])/old_vals - 1)
-      if (all(is.nan(all_diff))) {
-        # All old and new entries of EL and EF are zero.
-        diff = 0
-      } else {
-        # Ignore entries where both old and new values are zero.
-        diff = max(all_diff[!is.nan(all_diff)])
-      }
+    diff = calc_diff(stopping_rule, obj_diff, max_chg_l, max_chg_f)
+    diff_track[iter] = diff
 
-      if (verbose) {
-       verbose_diff_table_entry(iter, diff)
-      }
+    if (length(verbose_output) > 0) {
+      verbose_obj_table_entry(verbose_output,
+                              iter,
+                              obj_track[iter],
+                              obj_diff,
+                              max_chg_l,
+                              max_chg_f,
+                              f$gl[k], f
+                              $gf[k])
     }
   }
 
-  return(f)
-}
 
+  history = list(type = "greedy",
+                 kset = k,
+                 niter = iter,
+                 obj_track = obj_track[1:iter],
+                 diff_track = diff_track[1:iter])
 
-# Compute the expected log-likelihood (at non-missing locations) based
-#   on expected squared residuals and tau.
-e_loglik_from_R2_and_tau = function(R2, tau, missing) {
-  -0.5 * sum(log((2 * pi)/tau[!missing]) + tau[!missing] * R2[!missing])
+  if (!is_obj_needed(stopping_rule, verbose_output)) {
+    history$obj_track = NULL
+  }
+
+  return(list(f = f, history = history))
 }

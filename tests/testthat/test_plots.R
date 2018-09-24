@@ -6,10 +6,16 @@ test_that("plotting functions work", {
   Y = LF + rnorm(5*20)
   fl = flash(Y)
 
-  pveplot = flash_plot_pve(fl)
+  pveplot = plot_pve(fl)
   expect_s3_class(pveplot, "ggplot")
 
-  factorplots = flash_plot_factors(Y, fl)
-  expect_named(factorplots, c("plot_f", "plot_l"))
-  expect_s3_class(factorplots$plot_f[[1]], "ggplot")
+  factorplot = plot_kset(fl, 1, factors=TRUE)
+  expect_s3_class(factorplot, "ggplot")
+
+  # test options:
+  factorplot = plot_kset(fl, 1, factors=FALSE,
+                         bar_colors=rep("blue", 5),
+                         legend_size = 10,
+                         plot_grid_ncol = 1)
+  expect_s3_class(factorplot, "ggplot")
 })

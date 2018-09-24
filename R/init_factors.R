@@ -17,11 +17,7 @@
 #
 # @return A flash fit object, with factors initialized using L and F.
 #
-#' @importFrom assertthat assert_that
-#'
 flash_init_lf = function(LL, FF, fixl = NULL, fixf = NULL) {
-  assert_that(ncol(LL) == ncol(FF))
-
   fixl = handle_fix(fixl, LL, default_val = FALSE)
   fixf = handle_fix(fixf, FF, default_val = FALSE)
 
@@ -41,7 +37,7 @@ flash_init_lf = function(LL, FF, fixl = NULL, fixf = NULL) {
   f$KL_l = as.list(rep(0, flash_get_k(f)))
   f$KL_f = as.list(rep(0, flash_get_k(f)))
   f = c(f, list(tau = NULL))
-  class(f) = "flash"
+  class(f) = "flash_fit"
 
   return(f)
 }
@@ -67,7 +63,7 @@ flash_init_null = function() {
            KL_l = NULL,
            KL_f = NULL,
            tau = NULL)
-  class(f) = "flash"
+  class(f) = "flash_fit"
 
   return(f)
 }

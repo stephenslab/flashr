@@ -8,7 +8,7 @@ test_that("flash update improves mean squared error in simple situation", {
   data = flash_set_data(Y)
   f = flash_init_fn(data,udv_random,1)
   e1 = mean((LF - flash_get_fitted_values(f))^2) # compute mean squared error
-  f = flash_update_precision(data,f)
+  f = flash_update_precision(data,f,"by_column")
   Rk = flash_get_Rk(data, f, 1)
   f = flash_update_single_factor(data,f,1,"ebnm_pn",NULL,Rk)
   f = flash_update_single_loading(data,f,1,"ebnm_pn",NULL,Rk)

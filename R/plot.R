@@ -1,175 +1,221 @@
-#' @title Plot the factor/loading pairs from flash results.
+#' @title Plot flash object
 #'
-#' @description Plots each factor and loading as a barplot.
+#' @description \code{plot} method for class \code{'flash'}.
 #'
-#' @return List containing:
+#' @param x Flash object to plot.
 #'
-#'   \item{\code{plot_f}}{A ggplot object for the factors.}
+#' @param plot_scree Whether to include a scree plot of the proportion
+#'  of variance explained per factor/loading pair.
 #'
-#'   \item{\code{plot_l}}{A ggplot object for the loadings.}
+#' @param plot_factors Whether to plot the factors indexed by
+#'   \code{kset}.
 #'
-#' @param data An n by p matrix or a flash data object created using
-#'   \code{flash_set_data}.
+#' @param factor_kset If \code{plot_factors} is \code{TRUE}, then
+#'   \code{factor_kset} specifies which factors will be plotted.
+#'   Defaults to all factors.
 #'
-#' @param f A flash fit object.
+#' @param factor_colors If \code{plot_factors} is \code{TRUE}, then
+#'   \code{factor_colors} specifies the colors to be used for the factor
+#'   variables. If colors are used, then a legend will be shown
+#'   alongside the factor plots.
 #'
-#' @param kset The indices of the factor/loading pairs to be plotted.
+#' @param factor_legend_size If \code{factor_colors} is not \code{NULL},
+#'   then \code{factor_legend_size} specifies the size of the legend
+#'   show alongside the factor plots.
 #'
-#' @param loading_label If \code{TRUE}, then the row names of the data
-#'   matrix will be used to label the loading plots.
+#' @param plot_loadings Whether to plot the loadings indexed by
+#'   \code{kset}.
 #'
-#' @param factor_label If \code{TRUE}, then the column names of the data
-#'   matrix will be used to label the factor plots.
+#' @param loading_kset If \code{plot_loadings} is \code{TRUE}, then
+#'   \code{loading_kset} specifies which loadings will be plotted.
+#'   Defaults to all loadings.
+#'
+#' @param loading_colors If \code{plot_loadings} is \code{TRUE}, then
+#'   \code{loading_colors} specifies the colors to be used for the
+#'   loading variables. If colors are used, then a legend will be shown
+#'   alongside the loading plots.
+#'
+#' @param loading_legend_size If \code{loading_colors} is not \code{NULL},
+#'   then \code{loading_legend_size} specifies the size of the legend
+#'   show alongside the loading plots.
+#'
+#' @param plot_grid_nrow The number of rows to use when displaying
+#'   multiple factor/loading plots on a single screen.
+#'
+#' @param plot_grid_ncol The number of columns to use when displaying
+#'   multiple factor/loading plots on a single screen.
+#'
+#' @param ask Should the user be prompted before displaying each
+#'   successive plot?
+#'
+#' @param ... Additional arguments (not used by this method).
+#'
+#' @importFrom grDevices dev.interactive devAskNewPage
+#' @importFrom graphics plot
 #'
 #' @export
 #'
-flash_plot_factors = function(data,
-                              f,
-                              kset = NULL,
-                              loading_label = FALSE,
-                              factor_label = FALSE) {
-  f = handle_f(f)
-  data = handle_data(data, f, output = "matrix")
-  # think about how to handle possible indexing problems caused by
-  # dropping zero factors
-  kset = handle_kset(kset, f)
-
-  # Plot the expectation of PVE.
-  pve = flash_get_pve(f, drop_zero_factors = FALSE)
-
-  plot_f = list()
-  plot_l = list()
-
-  for (k in kset) {
-    # Plot the factors.
-    if (factor_label == TRUE) {
-      f_labels = colnames(data)
-    } else {
-      f_labels = NA
-    }
-    plot_f[[k]] = plot_one_factor(flash_get_f(f)[, k],
-                                  pve[k],
-                                  k,
-                                  f_labels = f_labels,
-                                  y_lab = "factor values")
-
-    # Plot the loadings.
-    if (loading_label == TRUE) {
-      f_labels = row.names(data)
-    } else {
-      f_labels = NA
-    }
-    plot_l[[k]] = plot_one_factor(flash_get_l(f)[, k],
-                                  pve[k],
-                                  k,
-                                  f_labels = f_labels,
-                                  y_lab = "loading values")
+plot.flash = function(x,
+                      plot_scree = TRUE,
+                      plot_factors = FALSE,
+                      factor_kset = 1:x$nfactors,
+                      factor_colors = NULL,
+                      factor_legend_size = 5,
+                      plot_loadings = FALSE,
+                      loading_kset = 1:x$nfactors,
+                      loading_colors = NULL,
+                      loading_legend_size = 5,
+                      plot_grid_nrow = 2,
+                      plot_grid_ncol = 2,
+                      ask = (plot_factors || plot_loadings)
+                              && dev.interactive(),
+                      ...) {
+  if (ask) {
+    old_ask <- devAskNewPage(TRUE)
+    on.exit(devAskNewPage(old_ask))
   }
-  return(list(plot_f = plot_f, plot_l = plot_l))
+
+  if(!plot_scree && !plot_factors && !plot_loadings) {
+    stop(paste("Nothing to do if plot_scree, plot_factors, and",
+               "plot_loadings are all FALSE."))
+  }
+
+  if (plot_scree && x$nfactors < 2) {
+    warning("Not enough factors to create a scree plot.")
+  } else if (plot_scree) {
+    plot(plot_pve(x))
+  }
+
+  plots_per_screen = plot_grid_nrow * plot_grid_ncol
+
+  if (plot_factors) {
+    idx = 1
+    while (idx <= length(factor_kset)) {
+      next_kset = factor_kset[idx:min(idx + plots_per_screen - 1,
+                                      length(factor_kset))]
+      idx = idx + plots_per_screen
+      plot(plot_kset(x, next_kset, factor_colors, factor_legend_size,
+                     plot_grid_ncol, factors = TRUE))
+    }
+  }
+
+  if (plot_loadings) {
+    idx = 1
+    while (idx <= length(loading_kset)) {
+      next_kset = loading_kset[idx:min(idx + plots_per_screen - 1,
+                                       length(loading_kset))]
+      idx = idx + plots_per_screen
+      plot(plot_kset(x, next_kset, loading_colors, loading_legend_size,
+                     plot_grid_ncol, factors = FALSE))
+    }
+  }
 }
 
 
-# @title Factor plot.
+# @title Plot factors or loadings
 #
-# @return A ggplot object for the factors.
+# @return A ggplot object for the factors/loadings.
 #
-# @param f Factor to plot.
+# @inheritParams plot.flash
 #
-# @param pve PVE for this factor.
+# @param factors If TRUE, factors will be plotted. If FALSE, loadings
+#   will be plotted.
 #
-# @param k The order of the factor.
-#
-# @param f_labels The labels for the factor.
-#
-# @param y_lab The name of the Y axis.
-#
-# @details Plots the factors in a barplot.
-#
-#' @importFrom ggplot2 ggplot aes_string scale_fill_manual labs geom_bar
-#' @importFrom ggplot2 geom_text theme_minimal ylim
+#' @importFrom ggplot2 ggplot aes_string geom_bar scale_fill_manual
+#' @importFrom ggplot2 scale_x_discrete ylim theme_grey theme labs
+#' @importFrom ggplot2 element_text element_blank facet_wrap guides
+#' @importFrom ggplot2 guide_legend
+#' @importFrom reshape2 melt
 #'
-plot_one_factor = function(f,
-                           pve,
-                           k,
-                           f_labels = NA,
-                           x_lab = "variable",
-                           y_lab = "factor values",
-                           show_sign.f_legend = FALSE) {
-  P = length(f)
-  if (any(is.na(f_labels))) {
-    f_dat <- data.frame(variable = 1:P, Factor = f,
-                        sign.f = factor(sign(f)),
-                        hjust = factor(sign(f)))
-
-    plot_f = ggplot(f_dat, aes_string(x = "variable", y = "Factor",
-                                      fill = "sign.f"),
-                    environment = environment()) +
-      geom_bar(stat = "identity", width = 0.5,
-               show.legend = show_sign.f_legend) +
-      scale_fill_manual(values = c("blue", "red")) +
-      theme_minimal() +
-      labs(title = paste("Factor", k, "with PVE =", round(pve, 3)),
-           x = x_lab, y = y_lab)
+plot_kset = function(f,
+                     kset,
+                     bar_colors = NULL,
+                     legend_size = 5,
+                     plot_grid_ncol = 2,
+                     factors = TRUE) {
+  if (factors) {
+    vals = f$ldf$f
   } else {
-    f_dat <- data.frame(variable = 1:P, Factor = f,
-                        sign.f = factor(sign(f)),
-                        variablenames = f_labels,
-                        hjust = factor(sign(f)))
+    vals = f$ldf$l
+  }
+  vals = vals[, kset, drop = FALSE]
+  min_val = min(0, min(vals))
+  max_val = max(0, max(vals))
 
-    # 120% limit.
-    range_f = max(f) - min(f)
-    upper_f = max(f, 0) + 0.15 * range_f
-    lower_f = min(f, 0) - 0.15 * range_f
+  pve = pmax(round(f$pve, 3), 0.001)[kset]
+  data = melt(vals)
+  colnames(data) = c("variable", "k", "value")
 
-    plot_f = ggplot(f_dat,
-                    aes_string(x = "variable", y = "Factor",
-                               label = "variablenames", fill = "sign.f"),
-                    environment = environment()) +
-      geom_bar(stat = "identity", width = 0.5,
-               show.legend = show_sign.f_legend) +
-      geom_text(size = 2.75, angle = 90,
-                hjust = as.character(f_dat$hjust),
-                nudge_y = sign(f_dat$Factor)*0.1*mean(abs(f_dat$Factor))) +
-      scale_fill_manual(values = c("blue", "red")) +
-      ylim(lower_f, upper_f) +
-      theme_minimal() +
-      labs(title = paste("Factor", k, "with PVE =", round(pve, 3)),
-           x = x_lab, y = y_lab)
+  var_labels = rownames(vals)
+  if (is.null(var_labels)) {
+    var_labels = as.character(1:nrow(vals))
+  }
+  data$variable = factor(data$variable,
+                         levels = var_labels,
+                         labels = var_labels)
+
+  if (factors) {
+    title = "Factor"
+  } else {
+    title = "Loading"
+  }
+  plot_titles = paste0(title, " ", kset, "; pve: ", pve)
+  data$k = factor(data$k, levels = 1:length(kset), labels = plot_titles)
+
+  if (is.null(bar_colors)) {
+    plot_object = ggplot(data, aes_string(x = "variable", y = "value")) +
+      geom_bar(stat = "identity", width = 0.6) +
+      scale_x_discrete(labels = NULL) +
+      ylim(min_val, max_val) +
+      theme_grey() +
+      theme(legend.text = element_text(size = legend_size)) +
+      labs(y = "", x = "") +
+      facet_wrap(~k, ncol = plot_grid_ncol)
+  } else {
+    plot_object = ggplot(data, aes_string(x = "variable", y = "value",
+                                          fill = "variable")) +
+      geom_bar(stat = "identity", width = 0.6) +
+      scale_fill_manual(values = bar_colors) +
+      scale_x_discrete(labels = NULL) +
+      ylim(min_val, max_val) +
+      theme_grey() +
+      theme(legend.position="right",
+            legend.text = element_text(size = legend_size),
+            legend.title = element_blank()) +
+      labs(y = "", x = "") +
+      facet_wrap(~k, ncol = plot_grid_ncol) +
+      guides(fill = guide_legend(ncol = 1,
+                                 keyheight = legend_size / 6,
+                                 keywidth = legend_size / 15))
   }
 
-  return(plot_f)
+  return(plot_object)
 }
 
 
-#' @title Scree plot
+# @title Plot PVE
+#
+# @description Create a scree plot giving the proportion of variance
+#   explained by each factor.
+#
+# @param f A flash object.
+#
+# @return A \pkg{ggplot} plot object.
+#
+#' @importFrom ggplot2 ggplot aes_string geom_point geom_line ylim labs
 #'
-#' @description Create a scree plot giving the proportion of variance
-#' explained by each factor.
-#'
-#' @param f A flash fit object.
-#'
-#' @param main The main caption to use for the plot.
-#'
-#' @param drop_zero_factors If \code{TRUE}, then any factor/loadings
-#'   that are zero will be removed.
-#'
-#' @return A \pkg{ggplot} plot object.
-#'
-#' @importFrom ggplot2 ggplot geom_point geom_line labs aes_string
-#'
-#' @export
-#'
-flash_plot_pve = function(f,
-                          main = "Scree plot of PVE for each factor",
-                          drop_zero_factors = TRUE) {
-  # handling is done by flash_get_pve
+plot_pve = function(f) {
+  pve_dat = data.frame(factor_index = seq(1, length(f$pve)), PVE = f$pve)
 
-  pve = flash_get_pve(f, drop_zero_factors)
-  pve_dat = data.frame(factor_index = seq(1, length(pve)), PVE = pve)
-  p <- ggplot(pve_dat, aes_string("factor_index", "PVE"),
-              environment = environment()) +
-       geom_point(size = 4) + geom_line(linetype = "dotdash") +
-       labs(title = main, x = "factor index")
+  plot_object = ggplot(pve_dat,
+         aes_string(x = "factor_index", y = "PVE"),
+         environment = environment()) +
+    geom_point(size = 2) +
+    geom_line(linetype = "dotdash") +
+    ylim(0, NA) +
+    labs(title = "Proportion of variance explained per factor/loading",
+         x = "factor/loading index",
+         y = "")
 
-  return(p)
+  return(plot_object)
 }

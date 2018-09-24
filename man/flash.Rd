@@ -16,8 +16,9 @@ flash(data, Kmax = 100, f_init = NULL, var_type = c("by_column", "by_row",
 \item{Kmax}{The maximum number of factors to be added to the flash
 object.}
 
-\item{f_init}{The flash object to which new factors are to be added.
-If \code{f_init = NULL}, then a new flash fit object is created.}
+\item{f_init}{The flash object or flash fit object to which new
+factors are to be added. If \code{f_init = NULL}, then a new flash
+object is created.}
 
 \item{var_type}{The type of variance structure to assume for
 residuals. Options include:
@@ -104,7 +105,7 @@ algorithm. If \code{FALSE}, then \code{f_init} must be supplied.}
 algorithm.}
 }
 \value{
-A fitted flash object. Use \code{flash_get_ldf} to access
+A flash object. Use \code{flash_get_ldf} to access
   standardized loadings and factors; use
   \code{flash_get_fitted_values} to access fitted LF'.
 }
@@ -121,9 +122,9 @@ ftrue = matrix(rnorm(200), ncol=2)
 ltrue = matrix(rnorm(40), ncol=2)
 ltrue[1:10, 1] = 0 # set up some sparsity
 ltrue[11:20, 2] = 0
-Y = ltrue \%*\% t(ftrue)+rnorm(2000) # set up a simulated matrix
+Y = ltrue \%*\% t(ftrue) + rnorm(2000) # set up a simulated matrix
 f = flash(Y)
-ldf = flash_get_ldf(f)
+ldf = f$ldf
 
 # Show the weights, analogous to singular values showing importance
 # of each factor.
@@ -138,7 +139,7 @@ plot(ftrue[,1], ldf$f[,2])
 
 # Plot true lf' against estimated lf'; the scale of the estimate
 # matches the data.
-plot(ltrue \%*\% t(ftrue), flash_get_fitted_values(f))
+plot(ltrue \%*\% t(ftrue), f$fitted_values)
 
 # Example to use the more flexible ebnm function in ashr.
 f2 = flash(Y, ebnm_fn="ebnm_ash")

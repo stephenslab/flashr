@@ -32,7 +32,7 @@ flash_fill = function(data, f) {
 #'   the number and indexing of factor/loading matrices in \code{f}
 #'   remain the same.
 #'
-#' @param f A flash fit object.
+#' @inheritParams flash
 #'
 #' @param k The index of the factor/loading pair to zero out.
 #'
@@ -40,18 +40,76 @@ flash_fill = function(data, f) {
 #'
 #' @export
 #'
-flash_zero_out_factor = function(f, k) {
-  f = handle_f(f, allow_null = FALSE)
+flash_zero_out_factor = function(data, f_init, k) {
+  f = handle_f(f_init, allow_null = FALSE)
   k = handle_k(k, f)
 
+  f = zero_out_factor(f, k)
+
+  # The objective will be valid afterwards if and only if it was
+  #   valid beforehand:
+  compute_obj = !is.na(f_init$objective)
+
+  flash_object = construct_flash_object(data = data,
+                                        fit = f,
+                                        history = NULL,
+                                        f_init = f_init,
+                                        compute_obj = compute_obj)
+
+  return(flash_object)
+}
+
+# "Private" function that returns flash fit object rather than full
+#   flash object.
+zero_out_factor = function(f, k) {
   f$EL[!f$fixl[, k], k] = 0
   f$EL2[!f$fixl[, k], k] = 0
   f$EF[!f$fixf[, k], k] = 0
   f$EF2[!f$fixf[, k], k] = 0
+  f$fixf[, k] = TRUE
+  f$fixl[, k] = TRUE
   f$gl[[k]] = list(NULL)
   f$gf[[k]] = list(NULL)
   f$KL_l[[k]] = 0
   f$KL_f[[k]] = 0
+
+  return(f)
+}
+
+
+# @title Combine two flash fit objects
+#
+# @param f1 The first flash fit object.
+#
+# @param f2 The second flash fit object.
+#
+# @return A flash fit object whose factors are concatenations of f1
+#   and f2. If both precision matrices (tau) are nonnull, then the
+#   combined fit inherits tau from f2.
+#
+flash_combine = function(f1, f2) {
+  if (is.null(f2$tau)) {
+    tau = f1$tau
+  } else {
+    tau = f2$tau
+  }
+
+  f = list(EL = cbind(f1$EL, f2$EL),
+           EF = cbind(f1$EF, f2$EF),
+           EL2 = cbind(f1$EL2, f2$EL2),
+           EF2 = cbind(f1$EF2, f2$EF2),
+           fixl = cbind(f1$fixl, f2$fixl),
+           fixf = cbind(f1$fixf, f2$fixf),
+           gl = c(f1$gl, f2$gl),
+           gf = c(f1$gf, f2$gf),
+           ebnm_fn_l = c(f1$ebnm_fn_l, f2$ebnm_fn_l),
+           ebnm_fn_f = c(f1$ebnm_fn_f, f2$ebnm_fn_f),
+           ebnm_param_l = c(f1$ebnm_param_l, f2$ebnm_param_l),
+           ebnm_param_f = c(f1$ebnm_param_f, f2$ebnm_param_f),
+           KL_l = c(f1$KL_l, f2$KL_l),
+           KL_f = c(f1$KL_f, f2$KL_f),
+           tau = tau)
+  class(f) = "flash_fit"
 
   return(f)
 }
@@ -89,69 +147,6 @@ flash_transpose = function(f) {
 }
 
 
-# @title Transpose a flash data object
-#
-# @param f The flash data object.
-#
-# @return A new flash data object, with the matrices of the original
-#   flash data object transposed.
-#
-flash_transpose_data = function(data) {
-  if (is.matrix(data$Yorig)) {
-    data$Yorig = t(data$Yorig)
-  }
-  if (is.matrix(data$missing)) {
-    data$missing = t(data$missing)
-  }
-  if (is.matrix(data$Y)) {
-    data$Y = t(data$Y)
-  }
-  if (is.matrix(data$S)) {
-    data$S = t(data$S)
-  }
-
-  return(data)
-}
-
-
-# @title Combine two flash fit objects
-#
-# @param f1 The first flash fit object.
-#
-# @param f2 The second flash fit object.
-#
-# @return A flash fit object whose factors are concatenations of f1
-#   and f2. If both precision matrices (tau) are nonnull, then the
-#   combined fit inherits tau from f2.
-#
-flash_combine = function(f1, f2) {
-  if (is.null(f2$tau)) {
-    tau = f1$tau
-  } else {
-    tau = f2$tau
-  }
-
-  f = list(EL = cbind(f1$EL, f2$EL),
-           EF = cbind(f1$EF, f2$EF),
-           EL2 = cbind(f1$EL2, f2$EL2),
-           EF2 = cbind(f1$EF2, f2$EF2),
-           fixl = cbind(f1$fixl, f2$fixl),
-           fixf = cbind(f1$fixf, f2$fixf),
-           gl = c(f1$gl, f2$gl),
-           gf = c(f1$gf, f2$gf),
-           ebnm_fn_l = c(f1$ebnm_fn_l, f2$ebnm_fn_l),
-           ebnm_fn_f = c(f1$ebnm_fn_f, f2$ebnm_fn_f),
-           ebnm_param_l = c(f1$ebnm_param_l, f2$ebnm_param_l),
-           ebnm_param_f = c(f1$ebnm_param_f, f2$ebnm_param_f),
-           KL_l = c(f1$KL_l, f2$KL_l),
-           KL_f = c(f1$KL_f, f2$KL_f),
-           tau = tau)
-  class(f) = "flash"
-
-  return(f)
-}
-
-
 # @title Subset a flash object with respect to its loadings
 #
 # @param f A flash fit object.
@@ -165,7 +160,9 @@ flash_subset_l = function(f, subset) {
   subf$EL = subf$EL[subset, , drop = F]
   subf$EL2 = subf$EL2[subset, , drop = F]
   subf$fixl = subf$fixl[subset, , drop = F]
-  subf$tau = subf$tau[subset, , drop = F]
+  if (is.matrix(subf$tau)) {
+    subf$tau = subf$tau[subset, , drop = F]
+  }
   subf$KL_l = list(NULL)
   subf$KL_f = list(NULL)
 
@@ -186,38 +183,11 @@ flash_subset_f = function(f, subset) {
   subf$EF = subf$EF[subset, , drop = F]
   subf$EF2 = subf$EF2[subset, , drop = F]
   subf$fixf = subf$fixf[subset, , drop = F]
-  subf$tau = subf$tau[, subset, drop = F]
+  if (is.matrix(subf$tau)) {
+    subf$tau = subf$tau[, subset, drop = F]
+  }
   subf$KL_l = list(NULL)
   subf$KL_f = list(NULL)
 
   return(subf)
-}
-
-
-# @title Subset a flash data object
-#
-# @param f A flash fit object.
-#
-# @param row_subset The subset of rows to be retained.
-#
-# @param col_subset The subset of columns to be retained.
-#
-# @return A subsetted flash data object.
-#
-flash_subset_data = function(data, row_subset = NULL, col_subset = NULL) {
-  if (is.null(row_subset)) {
-    row_subset = 1:nrow(data$Y)
-  }
-  if (is.null(col_subset)) {
-    col_subset = 1:ncol(data$Y)
-  }
-
-  subdata = data
-  subdata$Yorig = subdata$Yorig[row_subset, col_subset, drop = F]
-  subdata$anyNA = anyNA(subdata$Yorig)
-  subdata$missing = subdata$missing[row_subset, col_subset, drop = F]
-  subdata$Y = subdata$Y[row_subset, col_subset, drop = F]
-  class(subdata) = "flash_data"
-
-  return(subdata)
 }
