@@ -66,6 +66,7 @@ test_that("adding sparse factors/loadings works", {
   # Test with missing data:
   Y.na = Y
   Y.na[sample(n*p, floor(0.1*n*p), replace = FALSE)] = NA
+
   LL = diag(1, nrow=n, ncol=n)
   fl = flash_add_fixed_loadings(Y.na, LL, backfit=FALSE)
   fl = flash(Y.na, f_init=fl, backfit=TRUE, greedy=FALSE, nullcheck=FALSE, tol=1)
