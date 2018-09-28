@@ -14,7 +14,8 @@
 #'   all factors).
 #'
 #' @param fixed Indicates whether to fix factors or loadings at their
-#'   posterior mean.
+#'   posterior mean. If "none", then both factors and loadings are
+#'   sampled from their respective posterior means.
 #'
 #' @return A function that takes a single parameter \code{nsamp}, the
 #'   number of samples of LF to be produced by the sampler. Care should
