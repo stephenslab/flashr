@@ -82,6 +82,7 @@ test_that(paste("sampling functions produce objects of correct",
   flsamp_n = flsampler_n(1000)
   samp_n = sapply(flsamp_n, function(x) x[1,1])
   var_n = var(samp_n)
+  expect_equal(mean(samp_n), pmean_l * pmean_f, tolerance = .01)
   expect_equal(var_n,
                pmean_l^2 * pvar_f + pmean_f^2 * pvar_l + pvar_l * pvar_f,
                tolerance = .01)
