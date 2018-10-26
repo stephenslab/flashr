@@ -4,8 +4,13 @@
 #'
 #' @param x Flash object to plot.
 #'
+<<<<<<< HEAD
 #' @param plot_pve Whether to include a scree plot of the proportion of
 #'   variance explained by each factor/loading pair.
+=======
+#' @param plot_scree Whether to include a scree plot of the proportion
+#'  of variance explained per factor/loading pair.
+>>>>>>> master
 #'
 #' @param plot_factors Whether to plot the factors indexed by
 #'   \code{factor_kset}.
@@ -56,7 +61,11 @@
 #' @export
 #'
 plot.flash = function(x,
+<<<<<<< HEAD
                       plot_pve = TRUE,
+=======
+                      plot_scree = TRUE,
+>>>>>>> master
                       plot_factors = FALSE,
                       factor_kset = 1:x$nfactors,
                       factor_colors = NULL,
@@ -80,7 +89,18 @@ plot.flash = function(x,
     on.exit(devAskNewPage(old_ask))
   }
 
+<<<<<<< HEAD
   if (plot_pve) {
+=======
+  if(!plot_scree && !plot_factors && !plot_loadings) {
+    stop(paste("Nothing to do if plot_scree, plot_factors, and",
+               "plot_loadings are all FALSE."))
+  }
+
+  if (plot_scree && x$nfactors < 2) {
+    warning("Not enough factors to create a scree plot.")
+  } else if (plot_scree) {
+>>>>>>> master
     plot(plot_pve(x))
   }
 

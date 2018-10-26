@@ -4,7 +4,11 @@
 \alias{plot.flash}
 \title{Plot flash object}
 \usage{
+<<<<<<< HEAD
 \method{plot}{flash}(x, plot_pve = TRUE, plot_factors = FALSE,
+=======
+\method{plot}{flash}(x, plot_scree = TRUE, plot_factors = FALSE,
+>>>>>>> master
   factor_kset = 1:x$nfactors, factor_colors = NULL,
   factor_legend_size = 5, plot_loadings = FALSE,
   loading_kset = 1:x$nfactors, loading_colors = NULL,
@@ -14,8 +18,13 @@
 \arguments{
 \item{x}{Flash object to plot.}
 
+<<<<<<< HEAD
 \item{plot_pve}{Whether to include a scree plot of the proportion of
 variance explained by each factor/loading pair.}
+=======
+\item{plot_scree}{Whether to include a scree plot of the proportion
+of variance explained per factor/loading pair.}
+>>>>>>> master
 
 \item{plot_factors}{Whether to plot the factors indexed by
 \code{factor_kset}.}

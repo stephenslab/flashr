@@ -60,7 +60,8 @@ handle_data = function(data, f, output = "flash_data") {
 
     if ((!is.null(f$EL) && nrow(f$EL) != n) ||
         (!is.null(f$EF) && nrow(f$EF) != p) ||
-        (!is.null(f$tau) && !identical(dim(f$tau), c(n, p)))) {
+        (!is.null(f$tau) && is.matrix(f$tau) &&
+         !identical(dim(f$tau), c(n, p)))) {
       stop("Dimensions of data and f do not agree.")
     }
   }

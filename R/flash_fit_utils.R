@@ -160,7 +160,9 @@ flash_subset_l = function(f, subset) {
   subf$EL = subf$EL[subset, , drop = F]
   subf$EL2 = subf$EL2[subset, , drop = F]
   subf$fixl = subf$fixl[subset, , drop = F]
-  subf$tau = subf$tau[subset, , drop = F]
+  if (is.matrix(subf$tau)) {
+    subf$tau = subf$tau[subset, , drop = F]
+  }
   subf$KL_l = list(NULL)
   subf$KL_f = list(NULL)
 
@@ -181,7 +183,9 @@ flash_subset_f = function(f, subset) {
   subf$EF = subf$EF[subset, , drop = F]
   subf$EF2 = subf$EF2[subset, , drop = F]
   subf$fixf = subf$fixf[subset, , drop = F]
-  subf$tau = subf$tau[, subset, drop = F]
+  if (is.matrix(subf$tau)) {
+    subf$tau = subf$tau[, subset, drop = F]
+  }
   subf$KL_l = list(NULL)
   subf$KL_f = list(NULL)
 

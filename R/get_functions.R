@@ -89,13 +89,20 @@ flash_get_nfactors = function(f) {
 #
 # @inheritParams flash_get_ldf
 #
-flash_get_pve = function(f, drop_zero_factors = TRUE) {
+flash_get_pve = function(data, f, drop_zero_factors = TRUE) {
   f = handle_f(f, allow_null = FALSE)
 
   s = (flash_get_ldf(f, drop_zero_factors=drop_zero_factors)$d)^2
-  tau = f$tau[f$tau != 0]
+  if (is.null(f$tau)) {
+    var_from_tau = 0
+  } else if (is.matrix(f$tau)) {
+    tau = f$tau[f$tau != 0]
+    var_from_tau = sum(1/tau)
+  } else { # tau is a scalar
+    var_from_tau = sum(!data$missing) / f$tau
+  }
 
-  return(s/(sum(s) + sum(1/tau)))
+  return(s/(sum(s) + var_from_tau))
 }
 
 

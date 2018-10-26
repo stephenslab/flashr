@@ -89,7 +89,7 @@ flash_optimize_single_fl = function(data,
 
     if (is_obj_needed(stopping_rule, verbose_output)) {
       obj_track[iter] = (sum(unlist(f$KL_l)) + sum(unlist(f$KL_f)) +
-               e_loglik_from_R2_and_tau(R2, f$tau, data$missing))
+                           e_loglik_from_R2_and_tau(R2, f$tau, data))
       obj_diff = calc_obj_diff(obj_track, iter)
     }
 
@@ -129,11 +129,4 @@ flash_optimize_single_fl = function(data,
   }
 
   return(list(f = f, history = history))
-}
-
-
-# Compute the expected log-likelihood (at non-missing locations) based
-#   on expected squared residuals and tau.
-e_loglik_from_R2_and_tau = function(R2, tau, missing) {
-  -0.5 * sum(log((2 * pi)/tau[!missing]) + tau[!missing] * R2[!missing])
 }
