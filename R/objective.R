@@ -8,32 +8,28 @@
 # @param f A flash fit object.
 #
 flash_get_objective = function(data, f) {
-  f = handle_f(f)
-  data = handle_data(data, f)
-
-  return(sum(unlist(f$KL_l)) + sum(unlist(f$KL_f)) + e_loglik(data, f))
-}
-
-
-# @title Get expected log likelihood under current fit.
-#
-# @inheritParams flash_get_objective
-#
-e_loglik = function(data, f) {
-  return(e_loglik_from_R2_and_tau(flash_get_R2(data, f), f$tau, data))
+  return(sum(unlist(f$KL_l)) + sum(unlist(f$KL_f)) +
+           e_loglik_from_R2_and_tau(flash_get_R2(data, f), f$tau))
 }
 
 # Compute the expected log-likelihood (at non-missing locations) based
 #   on expected squared residuals and tau.
-e_loglik_from_R2_and_tau = function(R2, tau, data) {
-  # tau can be either a scalar or a matrix:
-  if (data$anyNA) {
-    R2 = R2[!data$missing]
-    if (is.matrix(tau)) {
-      tau = tau[!data$missing]
-    }
+#
+e_loglik_from_R2_and_tau = function(R2, tau) {
+  # We assume that R2 already has NAs where data is missing.
+
+  # If tau is stored as a scalar or as a n x 1 or 1 x p matrix (i.e., when
+  #   var_type is constant, by_row, or by_column), we will rely on
+  #   broadcasting. This requires conversion to a vector. Further, with a
+  #   1 x p matrix, we need to transpose R2 to broadcast correctly:
+  if (is.matrix(tau) && nrow(tau) == 1) {
+    R2 = t(R2)
   }
-  return(-0.5 * sum(log(2 * pi / tau) + tau * R2))
+  if (is.matrix(tau) && (nrow(tau) == 1 || ncol(tau) == 1)) {
+    tau = as.vector(tau)
+  }
+
+  return(-0.5 * sum(log(2 * pi) - log(tau) + tau * R2, na.rm = TRUE))
 }
 
 

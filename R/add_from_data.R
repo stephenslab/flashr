@@ -47,7 +47,7 @@ add_factors_from_data = function(data,
                                  K,
                                  f,
                                  init_fn) {
-  R = flash_get_R_withmissing(data, f)
+  R = flash_get_R(data, f)
   f2 = flash_init_fn(flash_set_data(R), init_fn, K)
   f = flash_combine(f, f2)
 
