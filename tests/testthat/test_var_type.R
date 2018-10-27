@@ -2,33 +2,59 @@ context("var_type")
 
 set.seed(1)
 
-n = 50
+n = 100
 p = 5
+
 sd = 2
-l = rep(20, n)
-f = rep(1, p)
-LF = outer(l, f)
-E = rnorm(n * p)
-Y = LF + sd * E
+Y_r0 = matrix(rnorm(n * p, sd = sd), nrow = n, ncol = p)
 
-test_that("zero var_type works as expected", {
-  data = flash_set_data(Y, S = sd)
-  fl = flash_add_greedy(data, 1, var_type = "zero")
-  expect_equal(fl$fit$tau, 1 / sd^2)
+test_that("zero and constant var_types work with no missing data", {
+  fl_zero = flash(flash_set_data(Y_r0, S = sd), Kmax = 1, var_type = "zero")
+  expect_equal(fl_zero$fit$tau, 1 / sd^2)
+
+  fl_const = flash(Y_r0, Kmax = 1, var_type = "constant")
+  expect_equal(fl_const$fit$tau, 1 / sd(Y_r0)^2, tol = 0.01)
 })
 
-test_that("constant var_type works as expected", {
-  fl = flash_add_greedy(Y, 1, var_type = "constant")
-  expect_equivalent(fl$fit$tau, 1 / sd^2, tol = 0.05)
+missing = matrix(FALSE, nrow = n, ncol = p)
+missing[1, 1] = TRUE
+Y_r0[missing] = NA
+
+test_that("zero and constant var_types work with missing data", {
+  fl_zero = flash(flash_set_data(Y_r0, S = sd), Kmax = 1, var_type = "zero")
+  expect_setequal(fl_zero$fit$tau[missing], 0)
+  expect_setequal(fl_zero$fit$tau[!missing], 1 / sd^2)
+
+  fl_const = flash(Y_r0, Kmax = 1, var_type = "constant")
+  expect_setequal(fl_const$fit$tau[missing], 0)
+  expect_setequal(fl_const$fit$tau[!missing], fl_const$fit$tau[!missing][1])
+  expect_equal(fl_const$fit$tau[!missing][1], 1 / sd(Y_r0, na.rm = TRUE)^2,
+               tol = 0.01)
 })
 
-test_that("by_column and by_row var_types works as expected", {
-  Y = LF + rep(1:p, each = n) * E
-  fl_col = flash_add_greedy(Y, 1, var_type = "by_column")
-  fl_row = flash_add_greedy(t(Y), 1, var_type = "by_row")
-  expect_equivalent(fl_col$fit$tau, fl_row$fit$tau, tol = 0.01)
+sd = matrix(rep(1:p, n), nrow = n, ncol = p, byrow = TRUE)
+Y_r0 = matrix(rnorm(n * p, sd = sd), nrow = n, ncol = p)
+
+test_that("by_column and by_row var_types work with no missing data", {
+  fl_col = flash(Y_r0, Kmax = 1, var_type = "by_column")
+  expect_equivalent(fl_col$fit$tau, 1 / apply(Y_r0, 2, sd)^2, tol = 0.01)
+
+  fl_row = flash(t(Y_r0), Kmax = 1, var_type = "by_row")
+  expect_equal(fl_row$fit$tau, t(fl_col$fit$tau), tol = 0.01)
 })
 
+Y_r0[missing] = NA
+
+test_that("by_column and by_row var_types work with missing data", {
+  fl_col = flash(Y_r0, Kmax = 1, var_type = "by_column")
+  expected_tau = matrix(1 / apply(Y_r0, 2, function(x) sd(x, na.rm = TRUE))^2,
+                        nrow = n, ncol = p, byrow = TRUE)
+  expected_tau[missing] = 0
+  expect_equal(fl_col$fit$tau, expected_tau, tol = 0.01)
+
+  fl_row = flash(t(Y_r0), Kmax = 1, var_type = "by_row")
+  expect_equal(fl_row$fit$tau, t(fl_col$fit$tau), tol = 0.01)
+})
 
 # TODO: move this to set_data tests
 # check for error when trying to pass bad arguments to S

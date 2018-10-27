@@ -21,7 +21,7 @@ compute_precision = function(R2, data, var_type) {
                by_column = mle_precision_by_column(R2, data),
                by_row = mle_precision_by_row(R2, data),
                constant = mle_precision_constant(R2, data),
-               zero = 1 / data$S^2)
+               zero = set_precision_zero(data))
 
   return(tau)
 }
@@ -71,6 +71,19 @@ mle_precision_constant = function(R2, data) {
 
   if (data$anyNA) {
     tau = matrix(tau, nrow = nrow(R2), ncol = ncol(R2))
+    tau[data$missing] = 0
+  }
+
+  return(tau)
+}
+
+set_precision_zero = function(data) {
+  tau = 1 / data$S^2
+
+  if (data$anyNA) {
+    if (!is.matrix(tau)) {
+      tau = matrix(tau, nrow = nrow(data$missing), ncol = ncol(data$missing))
+    }
     tau[data$missing] = 0
   }
 

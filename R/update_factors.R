@@ -40,7 +40,7 @@ flash_update_single_fl = function(data,
   f$tau = compute_precision(R2, data, var_type)
 
   if (is.null(Rk)) {
-    Rk = flash_get_Rk(data, f, k)
+    Rk = flash_get_Rk(data, f, k, set_missing_to_zero = TRUE)
   }
   f = flash_update_single_loading(data,
                                   f,
