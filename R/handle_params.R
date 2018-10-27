@@ -55,8 +55,8 @@ handle_data = function(data, f, output = "flash_data") {
   }
 
   if (!is.null(f)) {
-    n = ifelse(is.matrix(data), nrow(data), nrow(data$Y))
-    p = ifelse(is.matrix(data), ncol(data), ncol(data$Y))
+    n = ifelse(is.matrix(data), nrow(data), nrow(get_Yorig(data)))
+    p = ifelse(is.matrix(data), ncol(data), ncol(get_Yorig(data)))
 
     if ((!is.null(f$EL) && nrow(f$EL) != n) ||
         (!is.null(f$EF) && nrow(f$EF) != p) ||

@@ -228,12 +228,6 @@ calc_ebnm_l_args = function(data, f, k, subset, any_fixed, Rk) {
     tau = f$tau
   }
 
-  if (any_fixed && data$anyNA) {
-    missing = data$missing[subset, , drop = FALSE]
-  } else {
-    missing = data$missing
-  }
-
   if (!is.matrix(tau) || ncol(tau) == 1) { # scalar or n x 1 matrix
     s2 = 1 / (as.vector(tau) * sum(f$EF2[, k]))
   } else { # 1 x p or n x p matrix
@@ -277,12 +271,6 @@ calc_ebnm_f_args = function(data, f, k, subset, any_fixed, Rk) {
     tau = f$tau[, subset, drop = FALSE]
   } else {
     tau = f$tau
-  }
-
-  if (any_fixed && data$anyNA) {
-    missing = data$missing[, subset, drop = FALSE]
-  } else {
-    missing = data$missing
   }
 
   if (!is.matrix(tau) || nrow(tau) == 1) { # scalar or 1 x p matrix
