@@ -5,8 +5,8 @@ set.seed(1)
 n = 50
 p = 5
 sd = 2
-l = rep(5, n)
-f = rnorm(p)
+l = rep(20, n)
+f = rep(1, p)
 LF = outer(l, f)
 E = rnorm(n * p)
 Y = LF + sd * E
@@ -22,17 +22,13 @@ test_that("constant var_type works as expected", {
   expect_equivalent(fl$fit$tau, 1 / sd^2, tol = 0.05)
 })
 
-test_that("by_column var_type works as expected", {
+test_that("by_column and by_row var_types works as expected", {
   Y = LF + rep(1:p, each = n) * E
-  fl = flash_add_greedy(Y, 1, var_type = "by_column")
-  expect_equivalent(fl$fit$tau, 1 / (1:p)^2, tol = 0.1)
+  fl_col = flash_add_greedy(Y, 1, var_type = "by_column")
+  fl_row = flash_add_greedy(t(Y), 1, var_type = "by_row")
+  expect_equivalent(fl_col$fit$tau, fl_row$fit$tau, tol = 0.01)
 })
 
-test_that("by_row var_type works as expected", {
-  Y = LF + rep(1:n) * E
-  fl = flash_add_greedy(Y, 1, var_type = "by_row")
-  expect_equivalent(fl$fit$tau, 1 / (1:n)^2, tol = 0.1)
-})
 
 # TODO: move this to set_data tests
 # check for error when trying to pass bad arguments to S
