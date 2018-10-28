@@ -22,35 +22,49 @@
 #'
 flash_set_data = function(Y, S = NULL) {
 
-  data = list(Y = Y, S = S, anyNA = anyNA(Y))
+    # Initialize data.
+    data = list(Yorig = Y, S = S, anyNA = anyNA(Y), missing = is.na(Y))
 
-  if (data$anyNA) {
-    data$missing = is.na(Y)
-  }
-
-  # TODO: move this to other parameter checks
-  if (!is.null(S) && is.matrix(S)) {
-    if (nrow(S) != nrow(Y) || ncol(S) != ncol(Y)) {
-      stop(paste("If S is a matrix, dimensions of S must match",
-                 "dimensions of Y."))
+    if (anyNA(Y)) {
+        # Replace missing data with 0s.
+        if (any(rowSums(!data$missing) == 0)) {
+            stop("Data must not have all missing rows.")
+        }
+        if (any(colSums(!data$missing) == 0)) {
+            stop("Data must not have all missing columns.")
+        }
+        Y[data$missing] = 0
     }
-  } else if (!is.null(S) && length(S) != 1) {
-    stop("S must be a matrix or a scalar.")
-  } else {
-    if (requireNamespace("ebnm", quietly = TRUE) &&
-        packageVersion("ebnm") < "0.1.13") {
-      # Earlier versions of ebnm do not support scalar arguments for S
-      data$S = matrix(S, nrow = nrow(Y), ncol = ncol(Y))
+
+    data$Y = Y
+
+    if (!is.null(S) && is.matrix(S)) {
+      if (nrow(S) != nrow(Y) || ncol(S) != ncol(Y)) {
+        stop(paste("If S is a matrix, dimensions of S must match",
+                   "dimensions of Y."))
+      }
+    } else if (!is.null(S) && length(S) != 1) {
+      stop("S must be a matrix or a scalar.")
+    } else {
+      if (requireNamespace("ebnm", quietly = TRUE) &&
+          packageVersion("ebnm") < "0.1.13") {
+        # Earlier versions of ebnm do not support scalar arguments for S
+        data$S = matrix(S, nrow = nrow(Y), ncol = ncol(Y))
+      }
     }
-  }
 
-  class(data) = "flash_data"
+    class(data) = "flash_data"
 
-  return(data)
+    return(data)
 }
 
+
 get_Yorig = function(data) {
-  return(data$Y)
+    if (data$anyNA) {
+        return(data$Yorig)
+    }
+
+    return(data$Y)
 }
 
 
@@ -62,11 +76,14 @@ get_Yorig = function(data) {
 #   flash data object transposed.
 #
 flash_transpose_data = function(data) {
-  if (is.matrix(data$Y)) {
-    data$Y = t(data$Y)
+  if (is.matrix(data$Yorig)) {
+    data$Yorig = t(data$Yorig)
   }
   if (is.matrix(data$missing)) {
     data$missing = t(data$missing)
+  }
+  if (is.matrix(data$Y)) {
+    data$Y = t(data$Y)
   }
   if (is.matrix(data$S)) {
     data$S = t(data$S)
@@ -95,15 +112,10 @@ flash_subset_data = function(data, row_subset = NULL, col_subset = NULL) {
   }
 
   subdata = data
+  subdata$Yorig = subdata$Yorig[row_subset, col_subset, drop = F]
+  subdata$anyNA = anyNA(subdata$Yorig)
+  subdata$missing = subdata$missing[row_subset, col_subset, drop = F]
   subdata$Y = subdata$Y[row_subset, col_subset, drop = F]
-  subdata$anyNA = anyNA(subdata$Y)
-
-  if (subdata$anyNA) {
-    subdata$missing = subdata$missing[row_subset, col_subset, drop = F]
-  } else {
-    subdata$missing = NULL
-  }
-
   class(subdata) = "flash_data"
 
   return(subdata)

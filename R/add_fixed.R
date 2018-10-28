@@ -34,7 +34,7 @@ flash_add_fixed_loadings = function(data,
   init_fn = handle_init_fn(init_fn)
 
   LL_init = LL
-  FF_init = matrix(0, nrow=ncol(get_Yorig(data)), ncol=ncol(LL))
+  FF_init = matrix(0, nrow=ncol(data$Y), ncol=ncol(LL))
 
   k_offset = ncol(f$EL)
   if (is.null(k_offset)) {
