@@ -153,58 +153,70 @@
 #'
 #' @export
 #'
-flash = function(data,
-                 Kmax = 100,
-                 f_init = NULL,
+flash = function(Y,
+                 S = NULL,
                  var_type = c("by_column",
                               "by_row",
                               "constant",
                               "zero",
                               "kroneker"),
-                 init_fn = "udv_si",
-                 tol = 1e-2,
-                 ebnm_fn = "ebnm_pn",
-                 ebnm_param = NULL,
-                 verbose = TRUE,
+                 method = c("fastest",
+                            "nonnegative",
+                            "nnfactors",
+                            "nnloadings",
+                            "custom"),
+                 f_init = NULL,
+                 LL_init = NULL,
+                 FF_init = NULL,
+                 greedy_Kmax = 100,
+                 greedy_maxiter = 500,
+                 backfit_maxiter = 0,
                  nullcheck = TRUE,
-                 seed = 123,
-                 greedy = TRUE,
-                 backfit = FALSE) {
+                 verbose = TRUE,
+                 custom_params = list()) {
+  data = flash_set_data(Y, S)
+  var_type = match.arg(var_type)
+  method = match.arg(method)
 
-  if (!greedy & is.null(f_init)) {
-    stop("If greedy is false then must provide f_init")
-  }
-  if (!greedy & !backfit) {
-    warning("If both greedy and backfit are false then nothing to do!")
+  params = get_method_defaults(method)
+  params = modifyList(params, custom_params, keep.null = TRUE)
+
+  if (!verbose) {
+    params$verbose_output = ""
   }
 
-  if (greedy) {
-    f = flash_add_greedy(data,
-                         Kmax,
-                         f_init,
-                         var_type,
-                         init_fn,
-                         tol,
-                         ebnm_fn,
-                         ebnm_param,
-                         verbose,
-                         nullcheck,
-                         seed)
+  # TODO: implement fixed factors/loadings
+
+  if (greedy_Kmax > 0) {
+    fl = flash_greedy_workhorse(data = data,
+                                Kmax = greedy_Kmax,
+                                f_init = f_init,
+                                var_type = var_type,
+                                init_fn = params$init_fn,
+                                ebnm_fn = params$ebnm_fn,
+                                ebnm_param = params$ebnm_param,
+                                stopping_rule = params$stopping_rule,
+                                tol = params$tol,
+                                verbose_output = params$verbose_output,
+                                nullcheck = nullcheck,
+                                maxiter = greedy_maxiter,
+                                seed = 1)
   } else {
-    f = f_init
+    fl = f_init
   }
 
-  if (backfit) {
-    f = flash_backfit(data,
-                      f,
-                      kset = NULL,
-                      var_type,
-                      tol,
-                      ebnm_fn,
-                      ebnm_param,
-                      verbose,
-                      nullcheck)
+  if (backfit_maxiter > 0) {
+    fl = flash_backfit_workhorse(data = data,
+                                 f_init = fl,
+                                 var_type = var_type,
+                                 ebnm_fn = params$ebnm_fn,
+                                 ebnm_param = params$ebnm_param,
+                                 stopping_rule = params$stopping_rule,
+                                 tol = params$tol,
+                                 verbose_output = params$verbose_output,
+                                 nullcheck = nullcheck,
+                                 maxiter = backfit_maxiter)
   }
 
-  return(f)
+  return(fl)
 }
