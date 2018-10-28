@@ -105,75 +105,53 @@ flash_get_pve = function(data, f, drop_zero_factors = TRUE) {
   return(s/(sum(s) + var_from_tau))
 }
 
-# Get the expected residuals from data and a flash fit object.
+# Get the expected residuals from data and a flash fit object, with missing
+#   data as in original.
 #
-flash_get_R = function(data, f, set_missing_to_zero = FALSE) {
+flash_get_R = function(data, f) {
   # If f is null, return Y.
   if (is.null(f$EL)) {
-    R = get_Yorig(data)
+    return(get_Yorig(data))
   } else {
-    R = get_Yorig(data) - f$EL %*% t(f$EF)
+    return(get_Yorig(data) - f$EL %*% t(f$EF))
   }
-
-  if (set_missing_to_zero && data$anyNA) {
-    R[data$missing] = 0
-  }
-
-  return(R)
 }
 
 # Get the expected residuals from a flash data and fit object, with factor k
-#   excluded.
+#   excluded and with missing data as in original.
 #
-flash_get_Rk = function(data, f, k, R = NULL, set_missing_to_zero = FALSE) {
+flash_get_Rk = function(data, f, k, R = NULL) {
   if (is.null(R)) {
-    Rk = get_Yorig(data) -
-             f$EL[, -k, drop = FALSE] %*% t(f$EF[, -k, drop = FALSE])
+    return(get_Yorig(data) -
+             f$EL[, -k, drop = FALSE] %*% t(f$EF[, -k, drop = FALSE]))
   } else {
-    Rk = R + outer(f$EL[, k], f$EF[, k])
+    return(R + outer(f$EL[, k], f$EF[, k]))
   }
-
-  if (set_missing_to_zero && data$anyNA) {
-    Rk[data$missing] = 0
-  }
-
-  return(Rk)
-}
-
-# Get the expected squared residuals from a flash data and fit object.
-#
-flash_get_R2 = function(data, f, set_missing_to_zero = FALSE) {
-  if (is.null(f$EL)) {
-    R2 = get_Yorig(data)^2
-  } else {
-    R2 = (get_Yorig(data) - f$EL %*% t(f$EF))^2 +
-      f$EL2 %*% t(f$EF2) - f$EL^2 %*% t(f$EF^2)
-  }
-
-  if (set_missing_to_zero && data$anyNA) {
-    R2[data$missing] = 0
-  }
-
-  return(R2)
 }
 
 # Get the expected squared residuals from a flash data and fit object, with
-#   factor k excluded.
+#   missing data as in original.
 #
-flash_get_R2k = function(data, f, k, set_missing_to_zero = FALSE) {
+flash_get_R2 = function(data, f) {
   if (is.null(f$EL)) {
-    R2k = get_Yorig(data)^2
+    return(get_Yorig(data)^2)
   } else {
-    R2k = flash_get_Rk(data, f, k)^2 +
-      f$EL2[, -k, drop = FALSE] %*% t(f$EF2[, -k, drop = FALSE]) -
-      f$EL[, -k, drop = FALSE]^2 %*% t(f$EF[, -k, drop = FALSE]^2)
+    return((get_Yorig(data) - f$EL %*% t(f$EF))^2 +
+             f$EL2 %*% t(f$EF2) - f$EL^2 %*% t(f$EF^2))
   }
+}
 
-  if (set_missing_to_zero && data$anyNA) {
-    R2k[data$missing] = 0
+# Get the expected squared residuals from a flash data and fit object, with
+#   factor k excluded and with missing data as in original.
+#
+flash_get_R2k = function(data, f, k) {
+  if (is.null(f$EL)) {
+    return(get_Yorig(data)^2)
+  } else {
+    return(flash_get_Rk(data, f, k)^2 +
+             f$EL2[, -k, drop = FALSE] %*% t(f$EF2[, -k, drop = FALSE]) -
+             f$EL[, -k, drop = FALSE]^2 %*% t(f$EF[, -k, drop = FALSE]^2))
   }
-
-  return(R2k)
 }
 
 # @title is_tiny_fl

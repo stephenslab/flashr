@@ -61,7 +61,7 @@ flash_optimize_single_fl = function(data,
   R2 = flash_get_R2(data, f)
 
   # Expected residuals and squared residuals with factor k excluded:
-  Rk = flash_get_Rk(data, f, k, set_missing_to_zero = TRUE)
+  Rk = flash_get_Rk(data, f, k)
   R2k = (R2 + 2 * outer(f$EL[, k], f$EF[, k]) * Rk
          - outer(f$EL2[, k], f$EF2[, k]))
 
@@ -116,6 +116,7 @@ flash_optimize_single_fl = function(data,
                               $gf[k])
     }
   }
+
 
   history = list(type = "greedy",
                  kset = k,
