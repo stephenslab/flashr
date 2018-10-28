@@ -89,7 +89,7 @@ flash_optimize_single_fl = function(data,
 
     if (is_obj_needed(stopping_rule, verbose_output)) {
       obj_track[iter] = (sum(unlist(f$KL_l)) + sum(unlist(f$KL_f)) +
-                           e_loglik_from_R2_and_tau(R2, f$tau))
+                           e_loglik_from_R2_and_tau(R2, f$tau, data))
       obj_diff = calc_obj_diff(obj_track, iter)
     }
 

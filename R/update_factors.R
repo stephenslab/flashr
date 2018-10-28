@@ -217,12 +217,12 @@ calc_update_vals = function(data,
 #   standard errors to be passed into ebnm_fn).
 #
 calc_ebnm_l_args = function(data, f, k, subset, any_fixed, Rk) {
-  # Subsetting is expensive, so only do it when necessary:
+  # Subsetting can be expensive, so only do it when necessary:
   if (any_fixed) {
     Rk = Rk[subset, , drop = FALSE]
   }
 
-  if (any_fixed && is.matrix(f$tau) && nrow(f$tau) > 1) {
+  if (any_fixed && is.matrix(f$tau)) {
     tau = f$tau[subset, , drop = FALSE]
   } else {
     tau = f$tau
@@ -234,23 +234,29 @@ calc_ebnm_l_args = function(data, f, k, subset, any_fixed, Rk) {
     missing = data$missing
   }
 
-  if (!is.matrix(tau) || ncol(tau) == 1) { # scalar or n x 1 matrix
-    s2 = 1 / (as.vector(tau) * sum(f$EF2[, k]))
-  } else { # 1 x p or n x p matrix
-    s2 = as.vector(1 / (tau %*% f$EF2[, k]))
+  if (data$anyNA) {
+    if (is.matrix(tau)) {
+      tau[missing] = 0
+    } else { # tau is a scalar
+      tau = tau * !missing
+    }
+  }
+
+  if (is.matrix(tau)) {
+    s2 = 1/(tau %*% f$EF2[, k])
+  } else { # tau is a scalar
+    if (data$anyNA) {
+      s2 = 1/(tau %*% f$EF2[, k])
+    } else {
+      s2 = 1/(tau * sum(f$EF2[, k]))
+    }
   }
 
   if (sum(is.finite(s2)) == 0) {
     return(NULL)
   }
 
-  if (is.matrix(tau) && ncol(tau) == 1) { # n x 1 matrix
-    x = (Rk %*% f$EF[, k]) * tau * s2
-  } else if (is.matrix(tau) && nrow(tau) == 1) { # 1 x p matrix
-    x = (Rk %*% (t(tau) * f$EF[, k])) * s2
-  } else { # scalar or n x p matrix
-    x = ((Rk * tau) %*% f$EF[, k]) * s2
-  }
+  x = ((Rk * tau) %*% f$EF[, k]) * s2
 
   # Avoid NaNs when s2 is infinite (in which case the value of x
   #   doesn't matter).
@@ -273,7 +279,7 @@ calc_ebnm_f_args = function(data, f, k, subset, any_fixed, Rk) {
     Rk = Rk[, subset, drop = FALSE]
   }
 
-  if (any_fixed && is.matrix(f$tau) && ncol(f$tau) > 1) {
+  if (any_fixed && is.matrix(f$tau)) {
     tau = f$tau[, subset, drop = FALSE]
   } else {
     tau = f$tau
@@ -285,24 +291,29 @@ calc_ebnm_f_args = function(data, f, k, subset, any_fixed, Rk) {
     missing = data$missing
   }
 
-  if (!is.matrix(tau) || nrow(tau) == 1) { # scalar or 1 x p matrix
-    s2 = 1 / (as.vector(tau) * sum(f$EL2[, k]))
-  } else { # n x 1 or n x p matrix
-    s2 = as.vector(1 / (t(f$EL2[, k]) %*% tau))
+  if (data$anyNA) {
+    if (is.matrix(f$tau)) {
+      tau[missing] = 0
+    } else {
+      tau = tau * !missing
+    }
+  }
+
+  if (is.matrix(f$tau)) {
+    s2 = 1/(t(f$EL2[, k]) %*% tau)
+  } else { # tau is a scalar
+    if (data$anyNA) {
+      s2 = 1/(f$EL2[, k] %*% tau)
+    } else {
+      s2 = 1/(tau * sum(f$EL2[, k]))
+    }
   }
 
   if (sum(is.finite(s2)) == 0) {
     return(NULL)
   }
 
-  if (is.matrix(tau) && ncol(tau) == 1) { # n x 1 matrix
-    x = (t(tau * f$EL[, k]) %*% Rk) * s2
-  } else if (is.matrix(tau) && nrow(tau) == 1) { # 1 x p matrix
-    x = (t(f$EL[, k]) %*% Rk) * tau * s2
-  } else { # scalar or n x p matrix
-    x = (t(f$EL[, k]) %*% (Rk * tau)) * s2
-  }
-
+  x = (t(f$EL[, k]) %*% (Rk * tau)) * s2
   x[is.infinite(s2)] = 0
   s = sqrt(pmax(s2, .Machine$double.eps))
 
