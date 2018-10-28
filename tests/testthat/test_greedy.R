@@ -1,13 +1,18 @@
-test_that("greedy works a simple example as expected", {
-  set.seed(1)
-  l = rnorm(5)
-  f = rnorm(20)
-  LF = outer(l,f)
-  Y = LF + rnorm(5*20)
+context("greedy")
 
-  data = flash_set_data(Y)  # note that some of these expectations might fail for some seeds
-  f = flash_add_greedy(data,2)$fit  # they are just expected based on the true model
-  expect_equal(flash_get_k(f),1)  # (the zero factor gets removed here)
-  f2 = flash_add_greedy(data,3,f_init=f)$fit
-  expect_equal(flash_get_objective(data,f),flash_get_objective(data,f2))
+set.seed(1)
+l = rnorm(5)
+f = rnorm(20)
+LF = outer(l, f)
+Y = LF + rnorm(5 * 20)
+
+# Only one factor should be added here:
+fl = flash(Y, greedy_Kmax = 2)
+# An additional call to flash_add_greedy should not add any more factors:
+fl2 = flash(Y, greedy_Kmax = 1, f_init = fl)
+
+test_that("greedy works a simple rank-1 example as expected", {
+  expect_equal(fl$nfactors, 1)
+  expect_equal(fl2$nfactors, 1)
+  expect_equal(fl$objective, fl2$objective)
 })
