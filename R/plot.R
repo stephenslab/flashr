@@ -70,11 +70,6 @@ plot.flash = function(x,
                       ask = (plot_factors || plot_loadings)
                               && dev.interactive(),
                       ...) {
-  if (!plot_pve && !plot_factors && !plot_loadings) {
-    stop(paste("Nothing to plot. Set plot_pve, plot_factors, or",
-               "plot_loadings to TRUE."))
-  }
-
   if (ask) {
     old_ask <- devAskNewPage(TRUE)
     on.exit(devAskNewPage(old_ask))
