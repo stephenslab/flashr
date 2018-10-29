@@ -159,7 +159,7 @@ handle_fixed = function(fixed, expected_nrow) {
 
   if (is.null(fixed)) {
     return(NULL)
-  } else if (is.matrix(fixed)) {
+  } else if (is.numeric(fixed)) {
     fixed = list(vals = fixed)
   } else if (!is.list(fixed)) {
     stop(paste("If nonnull, then fixed_ parameters must be matrices",
@@ -201,7 +201,9 @@ handle_fixed = function(fixed, expected_nrow) {
 #
 handle_LL = function(LL, expected_nrow) {
   if (is.vector(LL)) {
+    LL_names = names(LL)
     LL = matrix(LL, ncol = 1)
+    rownames(LL) = LL_names
   }
 
   if (!is.null(expected_nrow) && nrow(LL) != expected_nrow) {

@@ -1,53 +1,59 @@
-test_that("flash object interface works as expected", {
-  set.seed(666)
-  n = 10
-  p = 50
-  k = 5
+context("Flash object")
 
-  LL = matrix(rnorm(n*k), nrow=n, ncol=k)
-  FF = matrix(0, nrow=p, ncol=k)
-  for (k in 1:5) {
-    FF[(1 + 5*(k - 1)):(5*(k + 1)), k] = 1
-  }
-  Y = LL %*% t(FF) + rnorm(n * p)
+set.seed(666)
+n = 10
+p = 50
+k = 5
 
-  fo = flash_add_greedy(Y, Kmax = 2)
+LL = matrix(rnorm(n * k), nrow=n, ncol=k)
+FF = matrix(0, nrow=p, ncol=k)
+for (k in 1:5) {
+  FF[(1 + 5 * (k - 1)):(5 * (k + 1)), k] = 1
+}
+Y = LL %*% t(FF) + rnorm(n * p)
+
+fo = flash(Y, greedy_Kmax = 2)
+
+test_that("flash object classes are set correctly", {
   expect_s3_class(fo, "flash")
+  expect_s3_class(fo$fit, "flash_fit")
+})
+
+test_that("flash object fields are set as expected", {
   expect_equal(length(fo$fit_history), 2)
 
-  fo = flash_backfit(Y, fo)
-  expect_s3_class(fo, "flash")
-  expect_equal(length(fo$fit_history), 3)
+  # Backfit the two factors:
+  fo2 = flash(Y, f_init = fo, greedy_Kmax = 0, backfit_maxiter = 20)
+  expect_equal(length(fo2$fit_history), 3)
 
-  fo = flash_add_fixed_loadings(Y, rep(1, 10), fo, backfit = FALSE)
-  expect_identical(fo$objective, NA)
+  # Add a single fixed loading:
+  fo3 = flash(Y, f_init = fo2, fixed_loadings = rep(1, n), greedy_Kmax = 0)
+  expect_equal(fo3$nfactors, 3)
+  expect_equal(length(fo3$fit_history), 4)
 
-  fo = flash_zero_out_factor(Y, fo, 2)
-  expect_identical(fo$objective, NA)
-
-  fo = flash_add_fixed_factors(Y, c(rep(1, 10), rep(0, 40)), fo,
-                               nullcheck = FALSE)
-  expect_equal(fo$nfactors, 3)
-  expect_equal(length(fo$fit_history), 4)
-
-  fo = flash_zero_out_factor(Y, fo, 1)
-  expect_s3_class(fo, "flash")
+  # Zero out the first factor:
+  fo4 = flashr:::flash_zero_out_factor(Y, f_init = fo3, k = 1)
   expect_equal(fo$nfactors, 2)
   expect_false(is.na(fo$objective))
 
-  fo = flash_add_factors_from_data(Y, 2, fo)
-  expect_s3_class(fo, "flash")
-  expect_equal(length(fo$fit_history), 6) # nullcheck causes repeated backfit
+  # Add two factors without optimizing and backfit together:
+  fo5 = flash(Y, f_init = fo4, greedy_Kmax = 2, greedy_maxiter = 0,
+              backfit_maxiter = 20)
+  expect_equal(length(fo5$fit_history), 8) # nullcheck causes second backfit
 
-  fo = flash_add_greedy(Y, 1, fo)
-  expect_s3_class(fo, "flash")
-  expect_equal(length(fo$fit_history), 7)
-  expect_equal(fo$fit_history[[7]]$zeroed_out, 7)
+  # Attempt to add another factor (it will be zeroed out):
+  fo6 = flash(Y, f_init = fo5, greedy_Kmax = 1)
+  expect_equal(length(fo6$fit_history), 9)
+  expect_equal(fo6$fit_history[[9]]$zeroed_out, fo6$fit_history[[9]]$kset)
+})
 
-  Ymiss_idx = sample(1:(n * p), floor(n * p / 4), replace = FALSE)
-  Y[Ymiss_idx] = NA
-  data = flash_set_data(Y)
-  fo2 = flash_add_factors_from_data(data, 3)
-  Yfill = flash_fill(data, fo2)
-  expect_equal(dim(Yfill), c(n, p))
+test_that("flash object objective is set to NA when appropriate", {
+  fo2 = flashr:::flash_add_fixed_loadings(Y,
+                                          LL = rep(1, 10),
+                                          f_init = fo,
+                                          backfit = FALSE)
+  expect_true(is.na(fo2$objective))
+
+  fo3 = flashr:::flash_zero_out_factor(Y, f_init = fo2, k = 3)
+  expect_true(is.na(fo3$objective))
 })

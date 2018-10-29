@@ -13,3 +13,10 @@ test_that("flash_fill works", {
   # no missing entries in Yhat
   expect_equal(sum(is.null(Yhat)), 0)
 })
+
+# Ymiss_idx = sample(1:(n * p), floor(n * p / 4), replace = FALSE)
+# Y[Ymiss_idx] = NA
+# data = flash_set_data(Y)
+# fo2 = flash_add_factors_from_data(data, 3)
+# Yfill = flash_fill(data, fo2)
+# expect_equal(dim(Yfill), c(n, p))

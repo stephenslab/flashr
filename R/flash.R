@@ -177,7 +177,6 @@ flash = function(Y,
   data = flash_set_data(Y, S)
   var_type = match.arg(var_type)
   method = match.arg(method)
-  fl = handle_f(f_init, init_null_f = TRUE)
   LL_init = handle_fixed(fixed_loadings, flash_get_n(f_init))
   FF_init = handle_fixed(fixed_factors, flash_get_p(f_init))
 
@@ -187,6 +186,8 @@ flash = function(Y,
   if (!verbose) {
     params$verbose_output = ""
   }
+
+  fl = f_init
 
   if (!is.null(LL_init)) {
     fl = flash_add_fixed_loadings(data = data,
