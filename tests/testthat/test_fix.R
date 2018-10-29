@@ -1,4 +1,4 @@
-context("fixed factors and loadings")
+context("fixing factors and loadings")
 
 set.seed(1)
 
@@ -20,4 +20,14 @@ fl = flash(Y, f_init = fl, fixed_factors = list(vals = FF, is_fixed = fixf),
 
 test_that("a fixed factor does not change during fitting", {
   expect_equal(fl$fit$EF[2:5, 2], 2:5)
+})
+
+LF = outer(rep(5, 5), c(rep(1, 5), rep(0, 15)))
+Y = LF + rnorm(5 * 20)
+FF = c(rep(NA, 5), rep(0, 15))
+fl = flash(Y, fixed_factors = list(vals = FF), greedy_Kmax = 0)
+
+test_that("adding sparse factors works as expected", {
+  expect_setequal(fl$ldf$f[6:20, 1], 0)
+  expect_false(any(fl$ldf$f[1:5, 1] == 0))
 })
