@@ -166,8 +166,8 @@ flash = function(Y,
                             "nnloadings",
                             "custom"),
                  f_init = NULL,
-                 LL_init = NULL,
-                 FF_init = NULL,
+                 fixed_loadings = NULL,
+                 fixed_factors = NULL,
                  greedy_Kmax = 100,
                  greedy_maxiter = 500,
                  backfit_maxiter = 0,
@@ -177,6 +177,9 @@ flash = function(Y,
   data = flash_set_data(Y, S)
   var_type = match.arg(var_type)
   method = match.arg(method)
+  fl = handle_f(f_init, init_null_f = TRUE)
+  LL_init = handle_fixed(fixed_loadings, flash_get_n(f_init))
+  FF_init = handle_fixed(fixed_factors, flash_get_p(f_init))
 
   params = get_method_defaults(method)
   params = modifyList(params, custom_params, keep.null = TRUE)
@@ -185,12 +188,44 @@ flash = function(Y,
     params$verbose_output = ""
   }
 
-  # TODO: implement fixed factors/loadings
+  if (!is.null(LL_init)) {
+    fl = flash_add_fixed_loadings(data = data,
+                                  f_init = fl,
+                                  LL = LL_init$vals,
+                                  fixl = LL_init$is_fixed,
+                                  init_fn = params$init_fn,
+                                  backfit = TRUE,
+                                  var_type = var_type,
+                                  ebnm_fn = params$ebnm_fn,
+                                  ebnm_param = params$ebnm_param,
+                                  stopping_rule = params$stopping_rule,
+                                  tol = params$tol,
+                                  verbose_output = params$verbose_output,
+                                  nullcheck = LL_init$nullcheck,
+                                  maxiter = LL_init$maxiter)
+  }
+
+  if (!is.null(FF_init)) {
+    fl = flash_add_fixed_factors(data = data,
+                                 f_init = fl,
+                                 FF = FF_init$vals,
+                                 fixf = FF_init$is_fixed,
+                                 init_fn = params$init_fn,
+                                 backfit = TRUE,
+                                 var_type = var_type,
+                                 ebnm_fn = params$ebnm_fn,
+                                 ebnm_param = params$ebnm_param,
+                                 stopping_rule = params$stopping_rule,
+                                 tol = params$tol,
+                                 verbose_output = params$verbose_output,
+                                 nullcheck = FALSE,
+                                 maxiter = FF_init$maxiter)
+  }
 
   if (greedy_Kmax > 0) {
     fl = flash_greedy_workhorse(data = data,
                                 Kmax = greedy_Kmax,
-                                f_init = f_init,
+                                f_init = fl,
                                 var_type = var_type,
                                 init_fn = params$init_fn,
                                 ebnm_fn = params$ebnm_fn,
@@ -201,8 +236,6 @@ flash = function(Y,
                                 nullcheck = nullcheck,
                                 maxiter = greedy_maxiter,
                                 seed = 1)
-  } else {
-    fl = f_init
   }
 
   if (backfit_maxiter > 0) {

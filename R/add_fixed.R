@@ -83,7 +83,7 @@ flash_add_fixed_loadings = function(data,
       dot_params = c(dot_params, list(nullcheck = FALSE))
     }
 
-    flash_object = do.call(flash_backfit,
+    flash_object = do.call(flash_backfit_workhorse,
                            c(list(data = data, f = f), dot_params))
     f = get_flash_fit(flash_object)
     history = get_flash_fit_history(flash_object)

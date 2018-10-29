@@ -151,6 +151,40 @@ handle_init_fn = function(init_fn) {
   return(init_fn)
 }
 
+# Handle fixed_loadings and fixed_factors
+#
+handle_fixed = function(fixed, expected_nrow) {
+  default_maxiter = 100
+  default_nullcheck = FALSE
+
+  if (is.null(fixed)) {
+    return(NULL)
+  } else if (is.matrix(fixed)) {
+    fixed = list(vals = fixed)
+  } else if (!is.list(fixed)) {
+    stop(paste("If nonnull, then fixed_ parameters must be matrices",
+               "or lists. See flash documentation for details."))
+  }
+
+  if (is.null(fixed$vals)) {
+    stop(paste("If fixed_ parameter is a list, then it must include list",
+               "element vals."))
+  }
+
+  fixed$vals = handle_LL(fixed$vals, expected_nrow)
+  fixed$is_fixed = handle_fix(fixed$is_fixed, fixed$vals,
+                                default_val = TRUE)
+
+  if (is.null(fixed$maxiter)) {
+    fixed$maxiter = default_maxiter
+  }
+
+  if (is.null(fixed$nullcheck)) {
+    fixed$nullcheck = default_nullcheck
+  }
+
+  return(fixed)
+}
 
 # @title Handle LL parameter (and FF)
 #
