@@ -10,7 +10,7 @@ rownames(Y) = l_names
 f_names = as.character(1:20)
 colnames(Y) = f_names
 
-fl = flash(Y)
+fl = flash(Y, greedy_Kmax = 1)
 
 test_that("row and column names are correctly propagated from data", {
   expect_identical(rownames(fl$ldf$l), l_names)
@@ -25,7 +25,7 @@ names(l) = l_names
 f = matrix(1:20, nrow = 20, ncol = 1)
 rownames(f) = f_names
 
-fl = flash(Y, fixed_loadings = l, fixed_factors = f, greedy_Kmax = 0)
+fl = flash(Y, fixed_loadings = l, fixed_factors = f)
 
 test_that("names are correctly propagated from fixed factors and loadings", {
   expect_identical(rownames(fl$ldf$l), l_names)

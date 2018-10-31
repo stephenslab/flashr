@@ -14,8 +14,8 @@ test_that("zero and constant var_types work as expected", {
 
 test_that("by_column and by_row var_types work as expected", {
   # rank-zero data: first column has sd = 1; second has sd = 2
-  Y = matrix(rnorm(50 * 2, sd = rep(c(1, 2), each = 50)),
-             nrow = 50, ncol = 2)
+  Y = matrix(rnorm(100 * 2, sd = rep(c(1, 2), each = 100)),
+             nrow = 100, ncol = 2)
 
   flcol = flash(Y, var_type = "by_column", greedy_Kmax = 1)
   expect_setequal(flcol$fit$tau[, 1], flcol$fit$tau[1, 1])
