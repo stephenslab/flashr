@@ -1,3 +1,15 @@
+# Argument checks for main flash function.
+
+# @title Handles parameter Y and S
+#
+# @description Checks that inputs to Y and S are valid.
+#
+# @param Y A data matrix or a flash data object.
+#
+# @param S A scalar or matrix containing standard errors for Y. Can be NULL.
+#
+# @return A valid flash data object.
+#
 handle_Y_and_S = function(Y, S) {
   if(is(Y, "flash_data")) {
     return(Y)
@@ -55,13 +67,13 @@ handle_Y_and_S = function(Y, S) {
 # @return f The flash object.
 #
 handle_f = function(f, allow_null = TRUE, init_null_f = FALSE) {
-  if (!is.null(f) && class(f) == "flash") {
+  if (!is.null(f) && is(f, "flash")) {
     return(get_flash_fit(f))
   }
-  if (!allow_null && class(f) != "flash_fit") {
+  if (!allow_null && is(f, "flash_fit")) {
     stop("f must be a flash object or a flash fit object.")
   }
-  if (!is.null(f) && class(f) != "flash_fit") {
+  if (!is.null(f) && !is(f, "flash_fit")) {
     stop("f must be NULL, a flash object, or a flash fit object.")
   }
   if (init_null_f && is.null(f)) {
