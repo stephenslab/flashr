@@ -84,11 +84,7 @@ add_fixed_loadings = function(data,
                               init_tol = 1e-3) {
   f = f_init
 
-  k_offset = ncol(f$EL)
-  if (is.null(k_offset)) {
-    k_offset = 0
-  }
-
+  prev_K = flash_get_k(f_init)
   history = list()
 
   for (k in 1:ncol(LL)) {
@@ -127,13 +123,13 @@ add_fixed_loadings = function(data,
     if (maxiter > 0) {
       opt_res = flash_optimize_single_fl(data,
                                          f,
-                                         k_offset + k,
+                                         prev_K + k,
                                          var_type,
                                          tol,
                                          ebnm_fn$l,
-                                         ebnm_param$l[[k_offset + k]],
+                                         ebnm_param$l[[prev_K + k]],
                                          ebnm_fn$f,
-                                         ebnm_param$f[[k_offset + k]],
+                                         ebnm_param$f[[prev_K + k]],
                                          verbose_output,
                                          maxiter,
                                          stopping_rule)

@@ -187,7 +187,7 @@ flash = function(Y,
   data = flash_set_data(Y, S)
   var_type = match.arg(var_type)
   method = match.arg(method)
-  f = handle_f(f_init, init_null_f = TRUE)
+  fl = handle_f(f_init, init_null_f = TRUE)
   LL_init = handle_fixed(fixed_loadings, flash_get_n(f_init))
   FF_init = handle_fixed(fixed_factors, flash_get_p(f_init))
   Kmax = LL_init$K + FF_init$K + greedy_Kmax
@@ -195,6 +195,7 @@ flash = function(Y,
   params = get_method_defaults(method)
   params = modifyList(params, custom_params, keep.null = TRUE)
 
+  init_fn = handle_init_fn(params$init_fn)
   ebnm_fn = handle_ebnm_fn(params$ebnm_fn)
   ebnm_param = handle_ebnm_param(params$ebnm_param, ebnm_fn, Kmax)
   # TODO: handle stopping rule, verbose_output, tol, Kmax, maxiter, custom_params
@@ -206,7 +207,6 @@ flash = function(Y,
     verbose_output = ""
   }
 
-  fl = f_init
   history = list()
 
   if (LL_init$K > 0) {
@@ -244,19 +244,21 @@ flash = function(Y,
   }
 
   if (greedy_Kmax > 0) {
-    fl = flash_greedy_workhorse(data = data,
-                                Kmax = greedy_Kmax,
-                                f_init = fl,
-                                var_type = var_type,
-                                init_fn = params$init_fn,
-                                ebnm_fn = params$ebnm_fn,
-                                ebnm_param = params$ebnm_param,
-                                stopping_rule = params$stopping_rule,
-                                tol = params$tol,
-                                verbose_output = params$verbose_output,
-                                nullcheck = nullcheck,
-                                maxiter = greedy_maxiter,
-                                seed = 1)
+    res = add_greedy(data = data,
+                     Kmax = greedy_Kmax,
+                     f_init = fl,
+                     var_type = var_type,
+                     init_fn = init_fn,
+                     ebnm_fn = ebnm_fn,
+                     ebnm_param = ebnm_param,
+                     stopping_rule = stopping_rule,
+                     tol = tol,
+                     verbose_output = verbose_output,
+                     nullcheck = nullcheck,
+                     maxiter = r1_maxiter,
+                     seed = 1)
+    fl = res$f
+    history = c(history, res$history)
   }
 
   if (backfit_maxiter > 0) {
@@ -272,11 +274,14 @@ flash = function(Y,
                                  maxiter = backfit_maxiter)
   }
 
+  # If a factor is added without doing any optimization, then the
+  #   objective will be not valid.
   if (Kmax > 0 && r1_maxiter < 1 && backfit_maxiter < 1) {
     compute_obj = FALSE
   } else {
     compute_obj = TRUE
   }
+
   flash_object = construct_flash_object(data = data,
                                         fit = fl,
                                         history = history,

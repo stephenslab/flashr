@@ -105,9 +105,49 @@ flash_greedy_workhorse = function(data,
   verbose_output = unlist(strsplit(verbose_output, split=NULL))
   stopping_rule = match.arg(stopping_rule)
 
+  res = add_greedy(data,
+                   Kmax,
+                   f,
+                   var_type,
+                   init_fn,
+                   tol,
+                   ebnm_fn,
+                   ebnm_param,
+                   verbose_output,
+                   nullcheck,
+                   seed,
+                   maxiter,
+                   stopping_rule)
+
+  flash_object = construct_flash_object(data = data,
+                                        fit = res$f,
+                                        history = res$history,
+                                        f_init = f_init)
+
+  return(flash_object)
+}
+
+# Private function without parameter checks. Returns fit and history rather
+#   than full flash object.
+#
+add_greedy = function(data,
+                      Kmax,
+                      f_init,
+                      var_type,
+                      init_fn,
+                      tol,
+                      ebnm_fn,
+                      ebnm_param,
+                      verbose_output,
+                      nullcheck,
+                      seed,
+                      maxiter,
+                      stopping_rule) {
+  f = f_init
+
+  prev_K = flash_get_k(f_init)
   history = list()
 
-  prev_K = flash_get_k(f)
   for (k in 1:Kmax) {
     if (length(verbose_output) > 0) {
       verbose_greedy_next_fl(prev_K + k, stopping_rule, tol)
@@ -145,12 +185,7 @@ flash_greedy_workhorse = function(data,
     history = c(history, list(next_history))
   }
 
-  flash_object = construct_flash_object(data = data,
-                                        fit = f,
-                                        history = history,
-                                        f_init = f_init)
-
-  return(flash_object)
+  return(list(f = f, history = history))
 }
 
 
@@ -173,6 +208,8 @@ flash_r1 = function(data,
                     stopping_rule) {
 
   f = add_factors_from_data(data, K = 1, f_init, init_fn)
+
+  # TODO: deal with case maxiter = 0
 
   opt_res = flash_optimize_single_fl(data,
                                      f,
@@ -201,3 +238,4 @@ flash_r1 = function(data,
 
   return(list(f = f, history = opt_res$history))
 }
+
