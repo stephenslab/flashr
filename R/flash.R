@@ -227,20 +227,20 @@ flash = function(Y,
   }
 
   if (FF_init$K > 0) {
-    fl = flash_add_fixed_factors(data = data,
-                                 f_init = fl,
-                                 FF = FF_init$vals,
-                                 fixf = FF_init$is_fixed,
-                                 init_fn = params$init_fn,
-                                 backfit = TRUE,
-                                 var_type = var_type,
-                                 ebnm_fn = params$ebnm_fn,
-                                 ebnm_param = params$ebnm_param,
-                                 stopping_rule = params$stopping_rule,
-                                 tol = params$tol,
-                                 verbose_output = params$verbose_output,
-                                 nullcheck = FALSE,
-                                 maxiter = FF_init$maxiter)
+    res = add_fixed_factors(data = data,
+                            f_init = fl,
+                            FF = FF_init$vals,
+                            fixf = FF_init$is_fixed,
+                            var_type = var_type,
+                            ebnm_fn = ebnm_fn,
+                            ebnm_param = ebnm_param,
+                            stopping_rule = stopping_rule,
+                            tol = tol,
+                            verbose_output = verbose_output,
+                            nullcheck = nullcheck,
+                            maxiter = r1_maxiter)
+    fl = res$f
+    history = c(history, res$history)
   }
 
   if (greedy_Kmax > 0) {

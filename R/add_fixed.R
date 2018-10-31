@@ -66,7 +66,8 @@ flash_add_fixed_loadings = function(data,
   return(flash_object)
 }
 
-# Private function without parameter checks. Returns fit only.
+# Private functions without parameter checks. Return fit and history rather
+#   than full flash object.
 #
 add_fixed_loadings = function(data,
                               LL,
@@ -144,6 +145,43 @@ add_fixed_loadings = function(data,
   }
 
   return(list(f = f, history = history))
+}
+
+add_fixed_factors = function(data,
+                             FF,
+                             f_init,
+                             fixf,
+                             var_type,
+                             ebnm_fn,
+                             ebnm_param,
+                             stopping_rule,
+                             tol,
+                             verbose_output,
+                             nullcheck,
+                             maxiter,
+                             init_tol = 1e-3) {
+  if (stopping_rule == "loadings") {
+    stopping_rule = "factors"
+  } else if (stopping_rule == "factors") {
+    stopping_rule = "loadings"
+  }
+
+  res = add_fixed_loadings(flash_transpose_data(data),
+                           FF,
+                           flash_transpose(f_init),
+                           fixf,
+                           var_type,
+                           list(l = ebnm_fn$f, f = ebnm_fn$l),
+                           list(l = ebnm_param$f, f = ebnm_param$l),
+                           stopping_rule,
+                           tol,
+                           verbose_output,
+                           nullcheck,
+                           maxiter,
+                           init_tol)
+  res$f = flash_transpose(res$f)
+
+  return(res)
 }
 
 #' @title Add a set of fixed factors to a flash fit object
