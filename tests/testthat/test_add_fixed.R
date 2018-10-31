@@ -1,51 +1,91 @@
-# test_that("adding sparse factors/loadings works", {
-#   set.seed(1)
-#   n = 20
-#   p = 50
-#
-#   n_ll = 1
-#   ll1 = matrix(0, ncol=n_ll, nrow=n)
-#   ll1[1:5, 1] = c(1, 2, 3, 4, 5)
-#   ff1 = matrix(rnorm(n_ll*p), ncol=n_ll, nrow=p)
-#   Y = ll1 %*% t(ff1) + rnorm(n*p)
-#
-#
-#   # Add a factor with only one missing element:
-#   FF = matrix(c(NA, rep(1, p-1)), ncol=1)
-#   fl = flash_add_fixed_factors(Y, FF, f_init=fl, backfit = FALSE)$fit
-#   fixf = fl$fixf
-#   expect_equal(sum(fixf[,(n_ll+n_ff+1):ncol(fixf)][!is.na(FF)] == FALSE), 0)
-#   expect_equal(sum(fixf[,(n_ll+n_ff+1):ncol(fixf)][is.na(FF)] == TRUE), 0)
-#
-#   # Add a bunch of loadings with all fixed elements:
-#   LL = diag(1, nrow=n, ncol=n)
-#   fl = flash_add_fixed_loadings(Y, LL, f_init=fl, backfit=FALSE)$fit
-#   expect_equal(sum(fl$fixl[,(n_ll+n_ff+2):ncol(fl$fixl)] == FALSE), 0)
-#   # factors not fixed:
-#   expect_equal(sum(fl$fixf[,(n_ll+n_ff+2):ncol(fl$fixf)] == TRUE), 0)
-#
-#   # Add vector:
-#   LL = rep(1, n)
-#   fl = flash_add_fixed_loadings(Y, LL, backfit=FALSE)$fit
-#   # Try to add vector of wrong dimension:
-#   LL = rep(1, n + 1)
-#   expect_error(fl = flash_add_fixed_loadings(Y, LL, fl))
-#   # Try to add fixl that doesn't match LL:
-#   LL = matrix(1, nrow=n, ncol=2)
-#   fixl = rep(1, n)
-#   expect_error(fl = flash_add_fixed_loadings(Y, LL, fl, fixl))
-#
-#   # Test with missing data:
-#   Y.na = Y
-#   Y.na[sample(n*p, floor(0.1*n*p), replace = FALSE)] = NA
-#
-#   LL = diag(1, nrow=n, ncol=n)
-#   fl = flash_add_fixed_loadings(Y.na, LL, backfit=FALSE)
-#   fl = flash(Y.na, f_init=fl, backfit=TRUE, greedy=FALSE, nullcheck=FALSE, tol=1)
-#   expect_equal(fl$fit$fixl, matrix(TRUE, nrow=n, ncol=n))
-#
-#   FF = c(rep(1, 5), rep(NA, p - 5))
-#   fl = flash_add_fixed_factors(Y.na, FF, backfit=FALSE)
-#   fl = flash(Y.na, f_init=fl, backfit=TRUE, greedy=FALSE, nullcheck=FALSE, tol=1)
-#   expect_equal(fl$fit$fixf, matrix(c(rep(TRUE, 5), rep(FALSE, p - 5)), ncol=1))
-# })
+context("fixed factors and loadings")
+
+set.seed(1)
+
+# rank-one matrix with sparse loading and some missing data:
+LL = c(rep(1, 3), rep(0, 7))
+FF = rep(1, 20)
+Y = outer(LL, FF) + rnorm(200)
+Y[2, 2] = NA
+Y[7, 8] = NA
+
+test_that("fixed loadings and factors are successfully added", {
+  fl = flash(Y, fixed_loadings = LL, var_type = "constant")
+  expect_equivalent(fl$fit$EL, LL)
+
+  fl2 = flash(t(Y), fixed_factors = LL, var_type = "constant")
+  expect_equivalent(fl2$fit$EF, LL)
+  expect_equal(fl$fit$EF, fl2$fit$EL)
+})
+
+test_that("fixed loadings and factors respect is_fixed parameter", {
+  is_fixed = c(rep(TRUE, 5), rep(FALSE, 5))
+
+  fl = flash(Y,
+             fixed_loadings = list(vals = LL, is_fixed = is_fixed),
+             var_type = "constant")
+  expect_true(all(fl$fit$EL[is_fixed, 1] == LL[is_fixed]))
+  expect_false(any(fl$fit$EL[!is_fixed, 1] == LL[!is_fixed]))
+
+  fl2 = flash(t(Y),
+              fixed_factors = list(vals = LL, is_fixed = is_fixed),
+              var_type = "constant")
+  expect_equal(fl2$fit$EF, fl$fit$EL)
+  expect_equal(fl2$fit$EL, fl$fit$EF)
+})
+
+test_that("loadings and factors with missing elements are successfully added", {
+  missing = c(rep(FALSE, 2), rep(TRUE, 3), rep(FALSE, 5))
+  LL_missing = LL
+  LL_missing[missing] = NA
+
+  fl = flash(Y, fixed_loadings = LL_missing, var_type = "constant")
+  expect_true(all(fl$fit$EL[!missing, 1] == LL[!missing]))
+
+  fl2 = flash(t(Y), fixed_factors = LL_missing, var_type = "constant")
+  expect_equal(fl2$fit$EF, fl$fit$EL)
+  expect_equal(fl2$fit$EL, fl$fit$EF)
+})
+
+test_that("sparse loadings and factors are successfully added", {
+  LL_sparse = c(rep(NA, 3), rep(0, 7))
+
+  fl = flash(Y, fixed_loadings = LL_sparse, var_type = "constant")
+  expect_true(all(fl$fit$EL[!is.na(LL_sparse), 1] == 0))
+  expect_false(any(fl$fit$EL[is.na(LL_sparse), 1] == 0))
+
+  fl2 = flash(t(Y), fixed_factors = LL_sparse, var_type = "constant")
+  expect_equal(fl2$fit$EF, fl$fit$EL)
+  expect_equal(fl2$fit$EL, fl$fit$EF)
+})
+
+test_that("very sparse loadings and factors are successfully added", {
+  LL_sparse = c(NA, rep(0, 9))
+
+  fl = flash(Y, fixed_loadings = LL_sparse, var_type = "constant")
+  expect_true(all(fl$fit$EL[!is.na(LL_sparse), 1] == 0))
+  expect_false(any(fl$fit$EL[is.na(LL_sparse), 1] == 0))
+
+  fl2 = flash(t(Y), fixed_factors = LL_sparse, var_type = "constant")
+  expect_equal(fl2$fit$EF, fl$fit$EL)
+  expect_equal(fl2$fit$EL, fl$fit$EF)
+})
+
+test_that("fixed loadings and factors are successfully added to existing fits", {
+  LL1 = c(rep(NA, 2), rep(0, 8))
+  LL2 = c(rep(0, 2), rep(1, 2), rep(0, 6))
+  fl = flash(Y, fixed_loadings = LL1)
+
+  fl2 = flash(Y, f_init = fl, fixed_loadings = LL2, var_type = "constant")
+  expect_equal(fl2$fit$EL[, 2], LL2)
+
+  fl3 = flash(Y, f_init = fl, fixed_factors = FF, var_type = "constant")
+  expect_equal(fl3$fit$EF[, 2], FF)
+})
+
+test_that("fixed loadings and factors can be added in a single go", {
+  fl = flash(Y, fixed_loadings = LL, fixed_factors = FF,
+             var_type = "constant")
+  expect_equal(fl$fit$EL[, 1], LL)
+  expect_equal(fl$fit$EF[, 2], FF)
+})
