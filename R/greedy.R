@@ -148,6 +148,10 @@ add_greedy = function(data,
   prev_K = flash_get_k(f_init)
   history = list()
 
+  if (length(verbose_output) > 0) {
+    verbose_greedy_announce()
+  }
+
   for (k in 1:Kmax) {
     if (length(verbose_output) > 0) {
       verbose_next_fl(prev_K + k, stopping_rule, tol)

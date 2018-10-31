@@ -212,6 +212,8 @@ flash = function(Y,
   history = list()
 
   if (LL_init$K > 0) {
+    verbose_fixed_loadings_announce(LL_init$K)
+
     res = add_fixed_loadings(data = data,
                              f_init = fl,
                              LL = LL_init$vals,
@@ -229,6 +231,8 @@ flash = function(Y,
   }
 
   if (FF_init$K > 0) {
+    verbose_fixed_factors_announce(FF_init$K)
+
     res = add_fixed_factors(data = data,
                             f_init = fl,
                             FF = FF_init$vals,

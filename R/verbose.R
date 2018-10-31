@@ -13,13 +13,25 @@
 # **Currently only works with point-normal priors. Calculated as pi0_l
 #   (that is, the mixture proportion of the "point" component.)
 
-verbose_next_fl = function(k, stopping_rule, tol) {
-  message("Fitting factor/loading ", k, " (",
-          stopping_criterion_string(stopping_rule, tol), "):")
+verbose_fixed_loadings_announce = function(K) {
+  message("Adding ", K, " fixed loading(s)...")
+}
+
+verbose_fixed_factors_announce = function(K) {
+  message("Adding ", K, " fixed factor(s)...")
+}
+
+verbose_greedy_announce = function() {
+  message("Greedily adding factors...")
 }
 
 verbose_backfit_announce = function(n, stopping_rule, tol) {
   message("Backfitting ", n, " factor/loading(s) (",
+          stopping_criterion_string(stopping_rule, tol), "):")
+}
+
+verbose_next_fl = function(k, stopping_rule, tol) {
+  message("Fitting factor/loading ", k, " (",
           stopping_criterion_string(stopping_rule, tol), "):")
 }
 
