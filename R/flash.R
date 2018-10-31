@@ -185,7 +185,7 @@ flash = function(Y,
   }
 
   data = handle_Y_and_S(Y, S)
-  var_type = match.arg(var_type)
+  var_type = handle_var_type(match.arg(var_type), data)
   method = match.arg(method)
   fl = handle_f(f_init, init_null_f = TRUE)
   LL_init = handle_fixed(fixed_loadings, flash_get_n(f_init))
