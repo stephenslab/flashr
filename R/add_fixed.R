@@ -1,3 +1,5 @@
+# TODO: fix up public function
+
 #' @title Add a set of fixed loadings to a flash fit object
 #'
 #' @inheritParams flash
@@ -24,73 +26,36 @@ flash_add_fixed_loadings = function(data,
                                     LL,
                                     f_init = NULL,
                                     fixl = NULL,
-                                    init_fn = "udv_si",
-                                    backfit = TRUE,
-                                    ...) {
+                                    var_type,
+                                    ebnm_fn,
+                                    ebnm_param,
+                                    stopping_rule,
+                                    tol,
+                                    verbose_output,
+                                    nullcheck,
+                                    maxiter) {
   f = handle_f(f_init, init_null_f = TRUE)
   data = handle_data(data, f)
   LL = handle_LL(LL, expected_nrow = flash_get_n(f))
   fixl = handle_fix(fixl, LL, default_val = TRUE)
-  init_fn = handle_init_fn(init_fn)
+  var_type = handle_var_type(match.arg(var_type), data)
+  ebnm_fn = handle_ebnm_fn(ebnm_fn)
+  ebnm_param = handle_ebnm_param(ebnm_param, ebnm_fn, n)
+  verbose_output = unlist(strsplit(verbose_output, split = NULL))
+  stopping_rule = match.arg(stopping_rule)
 
-  LL_init = LL
-  FF_init = matrix(0, nrow=ncol(data$Y), ncol=ncol(LL))
-
-  k_offset = ncol(f$EL)
-  if (is.null(k_offset)) {
-    k_offset = 0
-  }
-
-  # Group columns of LL into blocks, each of which has the same
-  # missing data.
-  blocks = find_col_blocks(is.na(LL))
-
-  for (i in 1:length(blocks)) {
-    block_cols = blocks[[i]]
-    missing_rows = is.na(LL[, block_cols[1]])
-
-    # If we're only missing one element, just replace it with the
-    # column mean.
-    if (sum(missing_rows) == 1) {
-      LL_init[missing_rows, block_cols] =
-        colMeans(LL[!missing_rows, block_cols, drop=F])
-    } else if (sum(missing_rows) > 1) {
-      # If we're missing more, initialize via a subsetted flash object.
-      subf = flash_subset_l(f, missing_rows)
-      subdata = flash_subset_data(data, row_subset=missing_rows)
-      flash_object = flash_add_factors_from_data(subdata,
-                                                 length(block_cols),
-                                                 subf,
-                                                 init_fn,
-                                                 backfit = FALSE)
-      subf = get_flash_fit(flash_object)
-      LL_init[missing_rows, block_cols] = subf$EL[,k_offset + block_cols]
-      FF_init[, block_cols] = subf$EF[,k_offset + block_cols]
-    }
-
-    f = flash_add_lf(data,
-                     LL_init[,block_cols, drop=F],
-                     FF_init[,block_cols, drop=F],
-                     f,
-                     fixl=fixl[,block_cols, drop=F])
-  }
-
-  history = NULL
-  if (backfit) {
-    # the default is to not do a nullcheck here:
-    dot_params = list(...)
-    if (is.null(dot_params$n)) {
-      dot_params = c(dot_params, list(nullcheck = FALSE))
-    }
-
-    flash_object = do.call(flash_backfit_workhorse,
-                           c(list(data = data,
-                                  f = f,
-                                  kset = (k_offset + 1):ncol(f$EF)),
-                             dot_params))
-    f = get_flash_fit(flash_object)
-    history = get_flash_fit_history(flash_object)
-  }
+  f = add_fixed_loadings(data,
+                         LL,
+                         f,
+                         fixl,
+                         var_type,
+                         ebnm_fn,
+                         ebnm_param,
+                         stopping_rule,
+                         tol,
+                         verbose_output,
+                         nullcheck,
+                         maxiter)
 
   flash_object = construct_flash_object(data = data,
                                         fit = f,
@@ -101,6 +66,85 @@ flash_add_fixed_loadings = function(data,
   return(flash_object)
 }
 
+# Private function without parameter checks. Returns fit only.
+#
+add_fixed_loadings = function(data,
+                              LL,
+                              f_init,
+                              fixl,
+                              var_type,
+                              ebnm_fn,
+                              ebnm_param,
+                              stopping_rule,
+                              tol,
+                              verbose_output,
+                              nullcheck,
+                              maxiter,
+                              init_tol = 1e-3) {
+  f = f_init
+
+  k_offset = ncol(f$EL)
+  if (is.null(k_offset)) {
+    k_offset = 0
+  }
+
+  history = list()
+
+  for (k in 1:ncol(LL)) {
+    # Use matrix of residuals with NAs set to zero:
+    R = flash_get_R(data, f)
+
+    ll = LL[, k, drop = FALSE]
+
+    if (all(fixl)) {
+      ff = crossprod(R, ll) / as.numeric(crossprod(ll))
+    } else {
+      # First impute the missing data:
+      missing = is.na(ll)
+      if (all(ll[!missing] == 0)) { # sparse case
+        ll[missing] = 1
+      } else { # not sparse
+        ll[missing] = mean(ll[!missing])
+      }
+
+      # Then estimate ll and ff via alternating least squares:
+      ff = crossprod(R, ll) / as.numeric(crossprod(ll))
+      oldvals = c(ll[!fixl], ff)
+      rel_chg = Inf
+      while (rel_chg > init_tol) {
+        ll[!fixl] = tcrossprod(R[!fixl, ], t(ff)) / as.numeric(crossprod(ff))
+        ff = crossprod(R, ll) / as.numeric(crossprod(ll))
+        newvals = c(ll[!fixl], ff)
+        rel_chg = max(abs(1 - newvals / oldvals))
+        oldvals = newvals
+      }
+    }
+
+    f2 = flash_init_lf(ll, ff, fixl = fixl)
+    f = flash_combine(f, f2)
+
+    if (maxiter > 0) {
+      opt_res = flash_optimize_single_fl(data,
+                                         f,
+                                         k_offset + k,
+                                         var_type,
+                                         tol,
+                                         ebnm_fn$l,
+                                         ebnm_param$l[[k_offset + k]],
+                                         ebnm_fn$f,
+                                         ebnm_param$f[[k_offset + k]],
+                                         verbose_output,
+                                         maxiter,
+                                         stopping_rule)
+
+      f = opt_res$f
+      opt_res$history$type = "add-fixed"
+      history = c(history, list(opt_res$history))
+    }
+  }
+
+  return(list(f = f, history = history))
+}
 
 #' @title Add a set of fixed factors to a flash fit object
 #'
@@ -189,36 +233,4 @@ flash_add_lf = function(data,
   f = flash_combine(f_init, f2)
 
   return(f)
-}
-
-
-# @title Partition a matrix into blocks of identical columns.
-#
-# @param X the matrix to be partitioned (note that X should not have NAs).
-#
-# @return A list, each element of which contains the indices of a
-#   single block of identical columns.
-#
-find_col_blocks = function(X) {
-  n = nrow(X)
-  K = ncol(X)
-
-  if (K == 1) { # just one column, so just one block
-    return(as.list(1))
-  }
-
-  # Check to see whether column j in X has the same data as column j+1.
-  is_col_same = (colSums(X[,1:(K-1),drop=F] == X[,2:K,drop=F]) == n)
-
-  # Group into blocks of columns; all columns in a single block have
-  # the same data.
-  block_ends = which(is_col_same == FALSE)
-  start_idx = c(1, block_ends + 1)
-  end_idx = c(block_ends, K)
-  blocks = vector("list", length(start_idx))
-  for (i in 1:length(start_idx)) {
-    blocks[[i]] = start_idx[i]:end_idx[i]
-  }
-
-  return(blocks)
 }

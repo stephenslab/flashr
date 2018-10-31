@@ -158,7 +158,7 @@ handle_fixed = function(fixed, expected_nrow) {
   default_nullcheck = FALSE
 
   if (is.null(fixed)) {
-    return(NULL)
+    return(list(K = 0))
   } else if (is.numeric(fixed)) {
     fixed = list(vals = fixed)
   } else if (!is.list(fixed)) {
@@ -174,6 +174,7 @@ handle_fixed = function(fixed, expected_nrow) {
   fixed$vals = handle_LL(fixed$vals, expected_nrow)
   fixed$is_fixed = handle_fix(fixed$is_fixed, fixed$vals,
                                 default_val = TRUE)
+  fixed$K = ncol(fixed$vals)
 
   if (is.null(fixed$maxiter)) {
     fixed$maxiter = default_maxiter
@@ -182,6 +183,8 @@ handle_fixed = function(fixed, expected_nrow) {
   if (is.null(fixed$nullcheck)) {
     fixed$nullcheck = default_nullcheck
   }
+
+  # TODO: handle case where user tries to fix NA (just unfix it)
 
   return(fixed)
 }

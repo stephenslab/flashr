@@ -168,45 +168,65 @@ flash = function(Y,
                  f_init = NULL,
                  fixed_loadings = NULL,
                  fixed_factors = NULL,
-                 greedy_Kmax = 100,
-                 greedy_maxiter = 500,
+                 greedy_Kmax = 0,
                  backfit_maxiter = 0,
                  nullcheck = TRUE,
                  verbose = TRUE,
+                 r1_maxiter = 500,
                  custom_params = list()) {
+  if (is.null(fixed_loadings)
+      && is.null(fixed_factors)
+      && greedy_Kmax < 1
+      && (backfit_maxiter < 1 || is.null(f_init))) {
+    stop(paste("Nothing to do. Set greedy_Kmax > 0 to add factors from",
+               "data. Set fixed_loadings or fixed_factors to add",
+               "specified factors. Set backfit_maxiter > 0 to backfit",
+               "a new or existing flash object."))
+  }
+
   data = flash_set_data(Y, S)
   var_type = match.arg(var_type)
   method = match.arg(method)
+  f = handle_f(f_init, init_null_f = TRUE)
   LL_init = handle_fixed(fixed_loadings, flash_get_n(f_init))
   FF_init = handle_fixed(fixed_factors, flash_get_p(f_init))
+  Kmax = LL_init$K + FF_init$K + greedy_Kmax
 
   params = get_method_defaults(method)
   params = modifyList(params, custom_params, keep.null = TRUE)
 
+  ebnm_fn = handle_ebnm_fn(params$ebnm_fn)
+  ebnm_param = handle_ebnm_param(params$ebnm_param, ebnm_fn, Kmax)
+  # TODO: handle stopping rule, verbose_output, tol, Kmax, maxiter, custom_params
+  stopping_rule = params$stopping_rule
+  tol = params$tol
+
+  verbose_output = unlist(strsplit(params$verbose_output, split = NULL))
   if (!verbose) {
-    params$verbose_output = ""
+    verbose_output = ""
   }
 
   fl = f_init
+  history = list()
 
-  if (!is.null(LL_init)) {
-    fl = flash_add_fixed_loadings(data = data,
-                                  f_init = fl,
-                                  LL = LL_init$vals,
-                                  fixl = LL_init$is_fixed,
-                                  init_fn = params$init_fn,
-                                  backfit = TRUE,
-                                  var_type = var_type,
-                                  ebnm_fn = params$ebnm_fn,
-                                  ebnm_param = params$ebnm_param,
-                                  stopping_rule = params$stopping_rule,
-                                  tol = params$tol,
-                                  verbose_output = params$verbose_output,
-                                  nullcheck = LL_init$nullcheck,
-                                  maxiter = LL_init$maxiter)
+  if (LL_init$K > 0) {
+    res = add_fixed_loadings(data = data,
+                             f_init = fl,
+                             LL = LL_init$vals,
+                             fixl = LL_init$is_fixed,
+                             var_type = var_type,
+                             ebnm_fn = ebnm_fn,
+                             ebnm_param = ebnm_param,
+                             stopping_rule = stopping_rule,
+                             tol = tol,
+                             verbose_output = verbose_output,
+                             nullcheck = nullcheck,
+                             maxiter = r1_maxiter)
+    fl = res$f
+    history = c(history, res$history)
   }
 
-  if (!is.null(FF_init)) {
+  if (FF_init$K > 0) {
     fl = flash_add_fixed_factors(data = data,
                                  f_init = fl,
                                  FF = FF_init$vals,
@@ -252,5 +272,16 @@ flash = function(Y,
                                  maxiter = backfit_maxiter)
   }
 
-  return(fl)
+  if (Kmax > 0 && r1_maxiter < 1 && backfit_maxiter < 1) {
+    compute_obj = FALSE
+  } else {
+    compute_obj = TRUE
+  }
+  flash_object = construct_flash_object(data = data,
+                                        fit = fl,
+                                        history = history,
+                                        f_init = f_init,
+                                        compute_obj = compute_obj)
+
+  return(flash_object)
 }
