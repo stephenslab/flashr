@@ -70,7 +70,7 @@ handle_f = function(f, allow_null = TRUE, init_null_f = FALSE) {
   if (!is.null(f) && is(f, "flash")) {
     return(get_flash_fit(f))
   }
-  if (!allow_null && is(f, "flash_fit")) {
+  if (!allow_null && !is(f, "flash_fit")) {
     stop("f must be a flash object or a flash fit object.")
   }
   if (!is.null(f) && !is(f, "flash_fit")) {
