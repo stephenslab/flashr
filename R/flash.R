@@ -190,22 +190,24 @@ flash = function(Y,
   fl = handle_f(f_init, init_null_f = TRUE)
   LL_init = handle_fixed(fixed_loadings, flash_get_n(f_init))
   FF_init = handle_fixed(fixed_factors, flash_get_p(f_init))
-  Kmax = LL_init$K + FF_init$K + greedy_Kmax
+  Kmax = flash_get_k(fl) + LL_init$K + FF_init$K + greedy_Kmax
 
   params = get_method_defaults(method)
   params = modifyList(params, custom_params, keep.null = TRUE)
 
   init_fn = handle_init_fn(params$init_fn)
   ebnm_fn = handle_ebnm_fn(params$ebnm_fn)
+  # TODO: currently awkward handling of ebnm_param; allow list with
+  #   greedy, backfit, fixed_factors, fixed_loadings?
   ebnm_param = handle_ebnm_param(params$ebnm_param, ebnm_fn, Kmax)
   # TODO: handle stopping rule, verbose_output, tol, Kmax, maxiter, custom_params
   stopping_rule = params$stopping_rule
   tol = params$tol
 
-  verbose_output = unlist(strsplit(params$verbose_output, split = NULL))
   if (!verbose) {
-    verbose_output = ""
+    params$verbose_output = ""
   }
+  verbose_output = unlist(strsplit(params$verbose_output, split = NULL))
 
   history = list()
 
@@ -262,16 +264,19 @@ flash = function(Y,
   }
 
   if (backfit_maxiter > 0) {
-    fl = flash_backfit_workhorse(data = data,
-                                 f_init = fl,
-                                 var_type = var_type,
-                                 ebnm_fn = params$ebnm_fn,
-                                 ebnm_param = params$ebnm_param,
-                                 stopping_rule = params$stopping_rule,
-                                 tol = params$tol,
-                                 verbose_output = params$verbose_output,
-                                 nullcheck = nullcheck,
-                                 maxiter = backfit_maxiter)
+    res = backfit(data = data,
+                  f = fl,
+                  kset = 1:flash_get_k(fl),
+                  var_type = var_type,
+                  ebnm_fn = ebnm_fn,
+                  ebnm_param = ebnm_param,
+                  stopping_rule = stopping_rule,
+                  tol = tol,
+                  verbose_output = verbose_output,
+                  nullcheck = nullcheck,
+                  maxiter = backfit_maxiter)
+    fl = res$f
+    history = c(history, res$history)
   }
 
   # If a factor is added without doing any optimization, then the

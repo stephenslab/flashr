@@ -115,6 +115,40 @@ flash_backfit_workhorse = function(data,
   verbose_output = unlist(strsplit(verbose_output, split = NULL))
   stopping_rule = match.arg(stopping_rule)
 
+  res = backfit(data,
+                f,
+                kset,
+                var_type,
+                tol,
+                ebnm_fn,
+                ebnm_param,
+                verbose_output,
+                nullcheck,
+                maxiter,
+                stopping_rule)
+
+  flash_object = construct_flash_object(data = data,
+                                        fit = res$f,
+                                        history = res$history,
+                                        f_init = f_init)
+
+  return(flash_object)
+}
+
+# Private function without parameter checks. Returns fit and history rather
+#   than full flash object.
+#
+backfit = function(data,
+                   f,
+                   kset,
+                   var_type,
+                   tol,
+                   ebnm_fn,
+                   ebnm_param,
+                   verbose_output,
+                   nullcheck,
+                   maxiter,
+                   stopping_rule) {
   history = list()
 
   if (length(verbose_output) > 0) {
@@ -213,10 +247,5 @@ flash_backfit_workhorse = function(data,
     history = c(history, list(next_history))
   }
 
-  flash_object = construct_flash_object(data = data,
-                                        fit = f,
-                                        history = history,
-                                        f_init = f_init)
-
-  return(flash_object)
+  return(list(f = f, history = history))
 }

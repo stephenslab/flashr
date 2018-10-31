@@ -10,7 +10,7 @@ Y = LF + rnorm(5 * 20)
 fl = flash(Y,
            method = "fastest",
            greedy_Kmax = 1,
-           greedy_maxiter = 0,
+           r1_maxiter = 0,
            nullcheck = FALSE,
            verbose = FALSE,
            custom_params = list(init_fn = "udv_random"))
@@ -20,7 +20,6 @@ mse1 = mean((LF - fl$fitted_values)^2)
 fl2 = flash(Y,
             f_init = fl,
             method = "fastest",
-            greedy_Kmax = 0,
             backfit_maxiter = 1,
             nullcheck = FALSE,
             verbose = FALSE)
