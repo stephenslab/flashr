@@ -150,7 +150,7 @@ add_greedy = function(data,
 
   for (k in 1:Kmax) {
     if (length(verbose_output) > 0) {
-      verbose_greedy_next_fl(prev_K + k, stopping_rule, tol)
+      verbose_next_fl(prev_K + k, stopping_rule, tol)
     }
 
     old_f = f

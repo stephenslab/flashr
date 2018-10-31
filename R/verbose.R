@@ -13,7 +13,7 @@
 # **Currently only works with point-normal priors. Calculated as pi0_l
 #   (that is, the mixture proportion of the "point" component.)
 
-verbose_greedy_next_fl = function(k, stopping_rule, tol) {
+verbose_next_fl = function(k, stopping_rule, tol) {
   message("Fitting factor/loading ", k, " (",
           stopping_criterion_string(stopping_rule, tol), "):")
 }

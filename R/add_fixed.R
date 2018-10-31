@@ -88,6 +88,10 @@ add_fixed_loadings = function(data,
   history = list()
 
   for (k in 1:ncol(LL)) {
+    if (length(verbose_output) > 0) {
+      verbose_next_fl(prev_K + k, stopping_rule, tol)
+    }
+
     # Use matrix of residuals with NAs set to zero:
     R = flash_get_R(data, f)
 
