@@ -1,3 +1,45 @@
+handle_Y_and_S = function(Y, S) {
+  if(is(Y, "flash_data")) {
+    return(Y)
+  }
+
+  if(!is.matrix(Y) || !is.numeric(Y)) {
+    stop("Y must be a matrix or a flash data object.")
+  }
+  if (any(is.infinite(Y))) {
+    stop("Y must not contain infinite values.")
+  }
+  if (any(is.nan(Y))) {
+    stop("Y must not contain NaNs.")
+  }
+
+  if (!is.null(S)) {
+    if (!is.numeric(S)) {
+      stop("Invalid input to S.")
+    }
+    if (length(S) > 1 && (!is.matrix(S) || !identical(dim(Y), dim(S)))) {
+      stop("S must be a scalar or a matrix of the same dimensions as Y.")
+    }
+
+    if (is.matrix(S)) {
+      S[is.na(Y)] = Inf
+    }
+
+    if (any(is.na(S))) {
+      stop("S must not contain NAs where Y has data.")
+    }
+    if (any(is.nan(S))) {
+      stop("S must not contain NaNs.")
+    }
+    if (any(S < 0)) {
+      stop("S must not contain negative values.")
+    }
+  }
+
+  return(flash_set_data(Y = Y, S = S))
+}
+
+
 # @title Handle flash object parameter
 #
 # @description Checks that input to f is valid and initializes a null

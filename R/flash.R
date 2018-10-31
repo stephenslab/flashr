@@ -184,7 +184,7 @@ flash = function(Y,
                "a new or existing flash object."))
   }
 
-  data = flash_set_data(Y, S)
+  data = handle_Y_and_S(Y, S)
   var_type = match.arg(var_type)
   method = match.arg(method)
   fl = handle_f(f_init, init_null_f = TRUE)

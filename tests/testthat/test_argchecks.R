@@ -1,3 +1,42 @@
+context("argument checking")
+
+test_that("bad inputs to Y and S are rejected", {
+  Y = rep(1, 4) # vector
+  expect_error(flashr:::handle_Y_and_S(Y, S = NULL))
+
+  Y = matrix(Y, nrow = 2, ncol = 2)
+  Y[1, 1] = Inf
+  expect_error(flashr:::handle_Y_and_S(Y, S = NULL))
+
+  Y[1, 1] = NaN
+  expect_error(flashr:::handle_Y_and_S(Y, S = NULL))
+
+  Y[1, 1] = NA # OK
+  expect_is(flashr:::handle_Y_and_S(Y, S = NULL), "flash_data")
+
+  S = 1 # OK to pass in scalar
+  expect_is(flashr:::handle_Y_and_S(Y, S), "flash_data")
+
+  S = rep(1, 2) # vector
+  expect_error(flashr:::handle_Y_and_S(Y, S))
+
+  S = matrix(1, nrow = 2, ncol = 3) # incorrect dimensions
+  expect_error(flashr:::handle_Y_and_S(Y, S))
+
+  S = matrix(1, nrow = 2, ncol = 2)
+  expect_is(flashr:::handle_Y_and_S(Y, S), "flash_data")
+
+  S[2, 2] = -1
+  expect_error(flashr:::handle_Y_and_S(Y, S))
+
+  S[2, 2] = NA
+  expect_error(flashr:::handle_Y_and_S(Y, S))
+
+  S[2, 2] = Inf # OK
+  expect_is(flashr:::handle_Y_and_S(Y, S), "flash_data")
+})
+
+
 # test_that("argument checking works", {
 #   set.seed(1)
 #   l1 = 5*c(rnorm(2), rep(0, 3))
