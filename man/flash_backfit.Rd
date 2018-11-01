@@ -9,9 +9,6 @@ flash_backfit(data, f_init, kset = NULL, var_type = c("by_column", "by_row",
   ebnm_param = NULL, verbose = TRUE, nullcheck = TRUE, maxiter = 1000)
 }
 \arguments{
-\item{data}{An n by p matrix or a flash data object created using
-\code{flash_set_data}.}
-
 \item{f_init}{A flash object or flash fit object to be refined.}
 
 \item{kset}{The indices of factors to be optimized (\code{NULL}
@@ -28,27 +25,9 @@ residuals. Options include:
     same variance.}
   \item{\code{"zero"}}{The variance of the residuals is fixed. To
     use this variance type, the standard errors must be
-    specified via parameter \code{S} when using
-    \code{flash_set_data} to set the flash data object.}
+    specified via parameter \code{S}.}
   \item{\code{"kroneker"}}{This variance type has not yet been
     implemented.}
-}}
-
-\item{tol}{Specifies how much the objective can change in a single
-iteration to be considered not converged.}
-
-\item{ebnm_fn}{The function used to solve the Empirical Bayes Normal
-Means problem. Either a single character string (giving the name of
-of the function) or a list with fields \code{l} and \code{f}
-(specifying different functions to be used for loadings and factors)
-are acceptable arguments. Options include:
-\describe{
-  \item{\code{"ebnm_ash"}}{A wrapper to the function
-    \code{\link[ashr]{ash}}.}
-  \item{\code{"ebnm_pn"}}{A wrapper to function
-    \code{\link[ebnm]{ebnm_point_normal}} in package \pkg{ebnm}.}
-  \item{\code{"ebnm_pl"}}{A wrapper to function
-    \code{\link[ebnm]{ebnm_point_laplace}} in \pkg{ebnm}.}
 }}
 
 \item{ebnm_param}{A named list containing parameters to be passed to
@@ -64,11 +43,6 @@ for each distinct loading and each distinct factor. Set to
 
 \item{verbose}{If \code{TRUE}, various progress updates will be
 printed.}
-
-\item{nullcheck}{If \code{TRUE}, then after running hill-climbing
-updates \code{flash} will check whether the achieved optimum is
-better than setting the factor to zero. If the check is performed
-and fails then the factor will be set to zero in the returned fit.}
 
 \item{maxiter}{A maximum number of iterations to perform (not
 including repeated fittings if \code{nullcheck} fails). To perform

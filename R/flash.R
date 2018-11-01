@@ -5,15 +5,12 @@
 #'   is simply to run the greedy algorithm and return the result.  To
 #'   follow it by backfitting set \code{backfit = TRUE}.
 #'
-#' @param data An n by p matrix or a flash data object created using
-#'   \code{flash_set_data}.
+#' @param Y An n by p data matrix.
 #'
-#' @param Kmax The maximum number of factors to be added to the flash
-#'   object.
-#'
-#' @param f_init The flash object or flash fit object to which new
-#'   factors are to be added. If \code{f_init = NULL}, then a new flash
-#'   object is created.
+#' @param S An n by p matrix of the standard errors of the observations in
+#'   Y. (Can be a scalar if all standard errors are equal.) If
+#'   \code{S = NULL}, then the standard errors will be estimated during
+#'   fitting.
 #'
 #' @param var_type The type of variance structure to assume for
 #'   residuals. Options include:
@@ -26,84 +23,118 @@
 #'       same variance.}
 #'     \item{\code{"zero"}}{The variance of the residuals is fixed. To
 #'       use this variance type, the standard errors must be
-#'       specified via parameter \code{S} when using
-#'       \code{flash_set_data} to set the flash data object.}
+#'       specified via parameter \code{S}.}
 #'     \item{\code{"kroneker"}}{This variance type has not yet been
 #'       implemented.}
 #'   }
 #'
-#' @param init_fn The function used to initialize factors. Options
-#'   include:
+#' @param method The type of prior to use when fitting factor/loading
+#'   pairs. Options include:
 #'   \describe{
-#'     \item{\code{"udv_si"}}{Provides a simple wrapper to
-#'       \code{\link[softImpute]{softImpute}} to provide a rank-one
-#'       initialization. Uses option \code{type = "als"}.}
-#'     \item{\code{"udv_si_svd"}}{Uses
-#'       \code{\link[softImpute]{softImpute}} with option
-#'       \code{type = "svd"}.}
-#'     \item{\code{"udv_svd"}}{Provides a simple wrapper to \code{svd}.}
-#'     \item{\code{"udv_random"}}{Provides a random initialization of
-#'       factors.}
-#'   }
-#'   A user-specified function can also be used. This function should
-#'   take parameters \code{(Y, K)}, where \code{Y} is an n by p matrix of
-#'   data (or a flash data object) and \code{K} is the number of factors.
-#'   It should output a list with elements \code{(u, d, v)}, where
-#'   \code{u} is a n by K matrix, \code{v} is a p by K matrix, and
-#'   \code{d} is a K vector. (If the input data includes missing values,
-#'   then the function must be able to deal with missing values in its
-#'   input matrix.)
-#'
-#' @param tol Specifies how much the objective can change in a single
-#'   iteration to be considered not converged.
-#'
-#' @param ebnm_fn The function used to solve the Empirical Bayes Normal
-#'   Means problem. Either a single character string (giving the name of
-#'   of the function) or a list with fields \code{l} and \code{f}
-#'   (specifying different functions to be used for loadings and factors)
-#'   are acceptable arguments. Options include:
-#'   \describe{
-#'     \item{\code{"ebnm_ash"}}{A wrapper to the function
-#'       \code{\link[ashr]{ash}}.}
-#'     \item{\code{"ebnm_pn"}}{A wrapper to function
-#'       \code{\link[ebnm]{ebnm_point_normal}} in package \pkg{ebnm}.}
-#'     \item{\code{"ebnm_pl"}}{A wrapper to function
-#'       \code{\link[ebnm]{ebnm_point_laplace}} in \pkg{ebnm}.}
+#'     \item{\code{"fastest"}}{This method uses point-normal priors, which
+#'       can be fit quickly.}
+#'     \item{\code{"normalmix"}}{A more flexible class of normal-mixture
+#'       ash priors.}
+#'     \item{\code{"nonnegative"}}{Nonnegative uniform-mixture ash priors
+#'       on factors and loadings.}
+#'     \item{\code{"nnfactors"}}{Nonnegative priors on factors and
+#'       normal-mixture priors on loadings.}
+#'     \item{\code{"nnloadings"}}{Nonnegative priors on loadings and
+#'       normal-mixture priors on factors.}
 #'   }
 #'
-#' @param ebnm_param A named list containing parameters to be passed to
-#'   \code{ebnm_fn} when optimizing. A list with fields \code{l} and
-#'   \code{f} (each of which is a named list) will separately supply
-#'   parameters for loadings and factors. If parameter \code{warmstart}
-#'   is used, the current value of \code{g} (if available) will be
-#'   passed to \code{ebnm_fn}. (So, \code{ebnm_fn} should accept a
-#'   parameter named \code{g}, not one named \code{warmstart}.) Set
-#'   \code{ebnm_param} to \code{NULL} to use defaults.
+#' @param f_init The flash object or flash fit object to which new
+#'   factors are to be added. If \code{f_init = NULL}, then a new flash
+#'   object is created.
+#'
+#' @param fixed_loadings An n x K matrix of loadings to be added. The
+#'   default behavior is to fix supplied values and to allow missing
+#'   values to be re-estimated during fitting. If a different behavior is
+#'   desired, a list that includes fields \code{vals} and \code{is_fixed}
+#'   can be passed in. Both fields must be n x K matrices.
+#'
+#' @param fixed_factors A p x K matrix of factors or a list that includes
+#'   fields \code{vals} and \code{is_fixed} (both of which must be p x K
+#'   matrices).
+#'
+#' @param greedy_Kmax The maximum number of factors to be greedily added to
+#'   the flash object. (This does not include any fixed loadings or
+#'   factors.)
+#'
+#' @param backfit If \code{TRUE}, factors are refined via the backfitting
+#'   algorithm. The default behavior is to backfit all factors. Optionally,
+#'   a vector may be passed in containing the indices of factors to
+#'   backfit.
 #'
 #' @param verbose If \code{TRUE}, various progress updates will be
 #'   printed.
 #'
-#' @param nullcheck If \code{TRUE}, then after running hill-climbing
-#'   updates \code{flash} will check whether the achieved optimum is
-#'   better than setting the factor to zero. If the check is performed
-#'   and fails then the factor will be set to zero in the returned fit.
+#' @param control A list of additional parameters used during optimization.
+#'  The following parameters may be specified:
+#'  \describe{
+#'    \item{\code{init_fn}}{The function used to initialize factors.
+#'      Options include:
+#'      \describe{
+#'        \item{\code{"udv_si"}}{Provides a simple wrapper to
+#'          \code{\link[softImpute]{softImpute}} to provide a rank-one
+#'          initialization. Uses option \code{type = "als"}.}
+#'        \item{\code{"udv_si_svd"}}{Uses
+#'          \code{\link[softImpute]{softImpute}} with option
+#'          \code{type = "svd"}.}
+#'        \item{\code{"udv_svd"}}{Provides a simple wrapper to \code{svd}.}
+#'        \item{\code{"udv_random"}}{Provides a random initialization of
+#'          factors.}
+#'      }
+#'      A user-specified function can also be passed in. This function should
+#'      take parameters \code{(Y, K)}, where \code{Y} is an n by p matrix of
+#'      data (or a flash data object) and \code{K} is the number of factors.
+#'      It should output a list with elements \code{(u, d, v)}, where
+#'      \code{u} is a n by K matrix, \code{v} is a p by K matrix, and
+#'      \code{d} is a K vector. (If the input data includes missing values,
+#'      then the function must be able to deal with missing values in its
+#'      input matrix.)
+#'    }
+#'    \item{\code{ebnm_fn}}{The function used to solve the Empirical Bayes
+#'      Normal Means problem. Either a single character string (giving the
+#'      name of the function) or a list with fields \code{l} and \code{f}
+#'      (specifying different functions to be used for loadings and factors)
+#'      are acceptable arguments. Options include:
+#'      \describe{
+#'        \item{\code{"ebnm_ash"}}{A wrapper to the function
+#'          \code{\link[ashr]{ash}}.}
+#'        \item{\code{"ebnm_pn"}}{A wrapper to function
+#'          \code{\link[ebnm]{ebnm_point_normal}} in package \pkg{ebnm}.}
+#'        \item{\code{"ebnm_pl"}}{A wrapper to function
+#'          \code{\link[ebnm]{ebnm_point_laplace}} in \pkg{ebnm}.}
+#'      }
+#'    }
+#'    \item{\code{ebnm_param}}{A named list containing parameters to be
+#'      passed to \code{ebnm_fn} when optimizing. A list with fields
+#'      \code{l} and \code{f} (each of which is a named list) will
+#'      separately supply parameters for loadings and factors. If parameter
+#'      \code{warmstart} is used, the current value of \code{g} (if
+#'      available) will be passed to \code{ebnm_fn}. (So, \code{ebnm_fn}
+#'      should accept a parameter named \code{g}, not one named
+#'      \code{warmstart}.) Set \code{ebnm_param} to \code{NULL} to use
+#'      defaults.}
+#'    \item{\code{stopping_rule}}{TODO.}
+#'    \item{\code{tol}}{Specifies how much the objective can change in a
+#'      single iteration to be considered not converged.}
+#'    \item{\code{r1opt_maxiter}}{TODO.}
+#'    \item{\code{backfit_maxiter}}{TODO.}
+#'    \item{\code{nullcheck}}{If \code{TRUE}, then after running
+#'      hill-climbing updates \code{flash} will check whether the achieved
+#'      optimum is better than setting the factor to zero. If the check is
+#'      performed and fails then the factor will be set to zero in the
+#'      returned fit.}
+#'    \item{\code{verbose_output}}{TODO.}
+#'    \item{\code{seed}}{A random number seed to use before running
+#'      \code{flash} - for reproducibility. Set to \code{NULL} if you
+#'      don't want the seed set. (The seed can affect initialization when
+#'      there is missing data; otherwise the algorithm is deterministic.)}
+#'  }
 #'
-#' @param seed A random number seed to use before running \code{flash}
-#'   - for reproducibility. Set to \code{NULL} if you don't want the
-#'   seed set. (The seed can affect initialization when there are
-#'   missing data; otherwise the algorithm is deterministic.)
-#'
-#' @param greedy If \code{TRUE}, factors are added via the greedy
-#'   algorithm. If \code{FALSE}, then \code{f_init} must be supplied.
-#'
-#' @param backfit If \code{TRUE}, factors are refined via the backfitting
-#'   algorithm.
-#'
-#' @seealso \code{\link{flash_add_greedy}}, \code{\link{flash_backfit}}
-#'
-#' @return A flash object. Use \code{flash_get_ldf} to access
-#'   standardized loadings and factors; use
-#'   \code{flash_get_fitted_values} to access fitted LF'.
+#' @return A flash object.
 #'
 #' @examples
 #'
@@ -113,7 +144,7 @@
 #' ltrue[1:10, 1] = 0 # set up some sparsity
 #' ltrue[11:20, 2] = 0
 #' Y = ltrue %*% t(ftrue) + rnorm(2000) # set up a simulated matrix
-#' f = flash(Y)
+#' f = flash(Y, greedy_Kmax=1)
 #' ldf = f$ldf
 #'
 #' # Show the weights, analogous to singular values showing importance
@@ -132,24 +163,25 @@
 #' plot(ltrue %*% t(ftrue), f$fitted_values)
 #'
 #' # Example to use the more flexible ebnm function in ashr.
-#' f2 = flash(Y, ebnm_fn="ebnm_ash")
+#' f2 = flash(Y, method="normalmix")
 #'
 #' # Example to show how to pass parameters to ashr (may be most
 #' # useful for research use).
-#' f3 = flash(Y,
-#'            ebnm_fn="ebnm_ash",
-#'            ebnm_param=list(mixcompdist="normal", method="fdr"))
+#' f3 = flash(Y, control=list(ebnm_fn="ebnm_ash",
+#'                            ebnm_param=list(mixcompdist="normal",
+#'                                            method="fdr")))
 #'
 #' # Example to show how to separately specify parameters for factors
 #' # and loadings.
-#' f4 = flash(Y,
-#'            ebnm_fn=list(l="ebnm_pn", f="ebnm_ash"),
-#'            ebnm_param=list(l=list(),
-#'                            f=list(g=ashr::normalmix(1,0,1), fixg=TRUE)))
+#' f4 = flash(Y, control=list(ebnm_fn=list(l="ebnm_pn", f="ebnm_ash"),
+#'                            ebnm_param=list(l=list(),
+#'                                            f=list(g=ashr::normalmix(1,0,1),
+#'                                                   fixg=TRUE))))
 #'
 #' # Example to show how to use a different initialization function.
 #' library(softImpute)
-#' f5 = flash(Y, init_fn=function(x, K=1){softImpute(x, K, lambda=10)})
+#' init_fn = function(x, K=1) {softImpute(x, K, lambda=10)}
+#' f5 = flash(Y, control=list(init_fn=init_fn))
 #'
 #' @export
 #'
@@ -226,6 +258,7 @@ flash = function(Y,
   r1opt_maxiter = params$r1opt_maxiter
   backfit_maxiter = params$backfit_maxiter
   nullcheck = params$nullcheck
+  seed = params$seed
 
   if (!verbose) {
     params$verbose_output = ""

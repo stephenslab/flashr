@@ -8,39 +8,16 @@ flash_add_factors_from_data(data, K, f_init = NULL, init_fn = "udv_si",
   backfit = TRUE, ...)
 }
 \arguments{
-\item{data}{An n by p matrix or a flash data object created using
-\code{flash_set_data}.}
-
 \item{K}{The number of factors to add.}
 
 \item{f_init}{The flash object or flash fit object to which new
 factors are to be added. If \code{f_init = NULL}, then a new flash
 object is created.}
 
-\item{init_fn}{The function used to initialize factors. Options
-include:
-\describe{
-  \item{\code{"udv_si"}}{Provides a simple wrapper to
-    \code{\link[softImpute]{softImpute}} to provide a rank-one
-    initialization. Uses option \code{type = "als"}.}
-  \item{\code{"udv_si_svd"}}{Uses
-    \code{\link[softImpute]{softImpute}} with option
-    \code{type = "svd"}.}
-  \item{\code{"udv_svd"}}{Provides a simple wrapper to \code{svd}.}
-  \item{\code{"udv_random"}}{Provides a random initialization of
-    factors.}
-}
-A user-specified function can also be used. This function should
-take parameters \code{(Y, K)}, where \code{Y} is an n by p matrix of
-data (or a flash data object) and \code{K} is the number of factors.
-It should output a list with elements \code{(u, d, v)}, where
-\code{u} is a n by K matrix, \code{v} is a p by K matrix, and
-\code{d} is a K vector. (If the input data includes missing values,
-then the function must be able to deal with missing values in its
-input matrix.)}
-
 \item{backfit}{If \code{TRUE}, factors are refined via the backfitting
-algorithm.}
+algorithm. The default behavior is to backfit all factors. Optionally,
+a vector may be passed in containing the indices of factors to
+backfit.}
 
 \item{...}{Additional parameters to be passed to \code{flash_backfit}.}
 }

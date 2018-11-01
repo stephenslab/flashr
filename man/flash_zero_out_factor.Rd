@@ -7,9 +7,6 @@
 flash_zero_out_factor(data, f_init, k)
 }
 \arguments{
-\item{data}{An n by p matrix or a flash data object created using
-\code{flash_set_data}.}
-
 \item{f_init}{The flash object or flash fit object to which new
 factors are to be added. If \code{f_init = NULL}, then a new flash
 object is created.}

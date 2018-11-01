@@ -7,9 +7,6 @@
 flash_fill(data, f)
 }
 \arguments{
-\item{data}{An n by p matrix or a flash data object created using
-\code{flash_set_data}.}
-
 \item{f}{A fitted flash object obtained from running \code{flash} on
 \code{data}.}
 }

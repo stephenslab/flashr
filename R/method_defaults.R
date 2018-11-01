@@ -29,7 +29,8 @@ get_control_defaults <- function(method) {
                               r1opt_maxiter = 500,
                               backfit_maxiter = 200,
                               nullcheck = TRUE,
-                              verbose_output = "odn"))
+                              verbose_output = "odn",
+                              seed = 1))
 
   return(defaults)
 }

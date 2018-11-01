@@ -10,12 +10,6 @@ flash_add_greedy(data, Kmax = 100, f_init = NULL,
   ebnm_param = NULL, verbose = TRUE, nullcheck = TRUE, seed = 123)
 }
 \arguments{
-\item{data}{An n by p matrix or a flash data object created using
-\code{flash_set_data}.}
-
-\item{Kmax}{The maximum number of factors to be added to the flash
-object.}
-
 \item{f_init}{The flash object or flash fit object to which new
 factors are to be added. If \code{f_init = NULL}, then a new flash
 object is created.}
@@ -31,72 +25,13 @@ residuals. Options include:
     same variance.}
   \item{\code{"zero"}}{The variance of the residuals is fixed. To
     use this variance type, the standard errors must be
-    specified via parameter \code{S} when using
-    \code{flash_set_data} to set the flash data object.}
+    specified via parameter \code{S}.}
   \item{\code{"kroneker"}}{This variance type has not yet been
     implemented.}
 }}
 
-\item{init_fn}{The function used to initialize factors. Options
-include:
-\describe{
-  \item{\code{"udv_si"}}{Provides a simple wrapper to
-    \code{\link[softImpute]{softImpute}} to provide a rank-one
-    initialization. Uses option \code{type = "als"}.}
-  \item{\code{"udv_si_svd"}}{Uses
-    \code{\link[softImpute]{softImpute}} with option
-    \code{type = "svd"}.}
-  \item{\code{"udv_svd"}}{Provides a simple wrapper to \code{svd}.}
-  \item{\code{"udv_random"}}{Provides a random initialization of
-    factors.}
-}
-A user-specified function can also be used. This function should
-take parameters \code{(Y, K)}, where \code{Y} is an n by p matrix of
-data (or a flash data object) and \code{K} is the number of factors.
-It should output a list with elements \code{(u, d, v)}, where
-\code{u} is a n by K matrix, \code{v} is a p by K matrix, and
-\code{d} is a K vector. (If the input data includes missing values,
-then the function must be able to deal with missing values in its
-input matrix.)}
-
-\item{tol}{Specifies how much the objective can change in a single
-iteration to be considered not converged.}
-
-\item{ebnm_fn}{The function used to solve the Empirical Bayes Normal
-Means problem. Either a single character string (giving the name of
-of the function) or a list with fields \code{l} and \code{f}
-(specifying different functions to be used for loadings and factors)
-are acceptable arguments. Options include:
-\describe{
-  \item{\code{"ebnm_ash"}}{A wrapper to the function
-    \code{\link[ashr]{ash}}.}
-  \item{\code{"ebnm_pn"}}{A wrapper to function
-    \code{\link[ebnm]{ebnm_point_normal}} in package \pkg{ebnm}.}
-  \item{\code{"ebnm_pl"}}{A wrapper to function
-    \code{\link[ebnm]{ebnm_point_laplace}} in \pkg{ebnm}.}
-}}
-
-\item{ebnm_param}{A named list containing parameters to be passed to
-\code{ebnm_fn} when optimizing. A list with fields \code{l} and
-\code{f} (each of which is a named list) will separately supply
-parameters for loadings and factors. If parameter \code{warmstart}
-is used, the current value of \code{g} (if available) will be
-passed to \code{ebnm_fn}. (So, \code{ebnm_fn} should accept a
-parameter named \code{g}, not one named \code{warmstart}.) Set
-\code{ebnm_param} to \code{NULL} to use defaults.}
-
 \item{verbose}{If \code{TRUE}, various progress updates will be
 printed.}
-
-\item{nullcheck}{If \code{TRUE}, then after running hill-climbing
-updates \code{flash} will check whether the achieved optimum is
-better than setting the factor to zero. If the check is performed
-and fails then the factor will be set to zero in the returned fit.}
-
-\item{seed}{A random number seed to use before running \code{flash}
-- for reproducibility. Set to \code{NULL} if you don't want the
-seed set. (The seed can affect initialization when there are
-missing data; otherwise the algorithm is deterministic.)}
 }
 \value{
 A flash object.
