@@ -213,7 +213,7 @@ flash_single_l_sampler = function(data, f, k, ebnm_fn, ebnm_param) {
                                        ebnm_param,
                                        output = "post_sampler"))
 
-  if (class(post_sampler) != "function") {
+  if (!is(post_sampler, "function")) {
     stop("No sampler implemented for that ebnm function.")
   }
 

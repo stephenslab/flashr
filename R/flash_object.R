@@ -18,7 +18,7 @@ construct_flash_object = function(data,
     flash_object$objective = NA
   }
 
-  if (class(f_init) == "flash") {
+  if (is(f_init, "flash")) {
     flash_object$fit_history = c(f_init$fit_history, history)
   } else {
     flash_object$fit_history = history
