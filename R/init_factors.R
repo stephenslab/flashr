@@ -30,12 +30,12 @@ flash_init_lf = function(LL, FF, fixl = NULL, fixf = NULL) {
 
   f$gl = list()
   f$gf = list()
-  f$ebnm_fn_l = list()
-  f$ebnm_fn_f = list()
-  f$ebnm_param_l = list()
-  f$ebnm_param_f = list()
-  f$KL_l = as.list(rep(0, flash_get_k(f)))
-  f$KL_f = as.list(rep(0, flash_get_k(f)))
+  f$ebnm_fn_l = list("")
+  f$ebnm_fn_f = list("")
+  f$ebnm_param_l = list(list())
+  f$ebnm_param_f = list(list())
+  f$KL_l = list(0)
+  f$KL_f = list(0)
   f = c(f, list(tau = NULL))
   class(f) = "flash_fit"
 

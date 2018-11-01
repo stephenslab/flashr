@@ -13,6 +13,7 @@ construct_flash_object = function(data,
 
   if (compute_obj) {
     flash_object$objective = flash_get_objective(data, fit)
+    flash_object$sampler = flash_lf_sampler(data, fit, 1:flash_get_k(fit))
   } else {
     flash_object$objective = NA
   }
