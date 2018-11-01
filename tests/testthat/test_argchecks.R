@@ -140,23 +140,23 @@ test_that("ebnm_param handling works as expected", {
 test_that("ebnm_param only accepts lists of lists when appropriate", {
   ebnm_param = list(list(warmstart = TRUE), list(warmstart = FALSE))
   expect_error(flash(Y, f_init = fl2, greedy_Kmax = 1, backfit = TRUE,
-                     custom_param = list(ebnm_param = ebnm_param)))
+                     control = list(ebnm_param = ebnm_param)))
   expect_error(flash(Y, f_init = fl2, fixed_factors = rep(1, 10),
                      backfit = TRUE,
-                     custom_param = list(ebnm_param = ebnm_param)))
+                     control = list(ebnm_param = ebnm_param)))
   expect_error(flash(Y, f_init = fl2, fixed_factors = rep(1, 10),
                      fixed_loadings = 1:5,
-                     custom_param = list(ebnm_param = ebnm_param)))
+                     control = list(ebnm_param = ebnm_param)))
 
   fl3 = flash(Y, f_init = fl2, greedy_Kmax = 2,
-              custom_param = list(ebnm_param = ebnm_param))
+              control = list(ebnm_param = ebnm_param))
   expect_is(fl3, "flash")
 
   fl3 = flash(Y, f_init = fl2, backfit = TRUE,
-              custom_param = list(ebnm_param = ebnm_param))
+              control = list(ebnm_param = ebnm_param))
   expect_is(fl3, "flash")
 
   fl3 = flash(Y, f_init = fl2, fixed_factors = matrix(1:20, ncol = 2),
-              custom_param = list(ebnm_param = ebnm_param))
+              control = list(ebnm_param = ebnm_param))
   expect_is(fl3, "flash")
 })

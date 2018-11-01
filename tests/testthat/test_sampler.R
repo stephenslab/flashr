@@ -15,7 +15,7 @@ test_that(paste("sampling functions produce objects of correct",
     Y = Y + outer(l, f)
     Y = Y + rnorm(20*30)
     fl = flash(Y, greedy_Kmax = 2, var_type = "constant",
-               custom_param = list(ebnm_fn = ebnm_fn))
+               control = list(ebnm_fn = ebnm_fn))
 
     data = flash_set_data(Y)
     fit = fl$fit
@@ -71,7 +71,7 @@ test_that(paste("sampling functions produce objects of correct",
   # Test fixed = "none" (and sampled variances):
   Y = matrix(5, nrow=5, ncol=20) + rnorm(100)
   fl = flash(Y, greedy_Kmax = 1,
-             custom_param = list(ebnm_fn = "ebnm_pn",
+             control = list(ebnm_fn = "ebnm_pn",
                                  ebnm_param = list(g = list(pi0 = 0, a = 1))))
   # Check posterior distribution of LF'_{1, 1}
   pmean_l = fl$fit$EL[1, 1]

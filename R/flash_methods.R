@@ -1,4 +1,4 @@
-get_method_defaults <- function(method) {
+get_control_defaults <- function(method) {
   nn_param <- list(mixcompdist = "+uniform",
                    optmethod = "mixSQP")
   ash_param <- list(mixcompdist = "normal",
@@ -11,6 +11,9 @@ get_method_defaults <- function(method) {
                                stopping_rule = "objective",
                                tol = 1e-2,
                                verbose_output = "odn"),
+                normalmix = list(init_fn = "udv_si",
+                                 ebnm_fn = "ebnm_ash",
+                                 ebnm_param = ash_param),
                 nonnegative = list(init_fn = "udv_nn",
                                    ebnm_fn = "ebnm_ash",
                                    ebnm_param = list(l = nn_param,

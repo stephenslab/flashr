@@ -13,7 +13,7 @@ fl = flash(Y,
            r1opt_maxiter = 0,
            nullcheck = FALSE,
            verbose = FALSE,
-           custom_params = list(init_fn = "udv_random"))
+           control = list(init_fn = "udv_random"))
 mse1 = mean((LF - fl$fitted_values)^2)
 
 # Do a single backfitting iteration.

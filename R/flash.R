@@ -174,7 +174,7 @@ flash = function(Y,
                  verbose = TRUE,
                  r1opt_maxiter = 500,
                  backfit_maxiter = 200,
-                 custom_params = list()) {
+                 control = list()) {
   if (is.null(fixed_loadings)
       && is.null(fixed_factors)
       && greedy_Kmax < 1
@@ -194,8 +194,8 @@ flash = function(Y,
   Kmax = LL_init$K + FF_init$K + greedy_Kmax
   backfit_kset = handle_backfit(backfit)
 
-  params = get_method_defaults(match.arg(method))
-  params = modifyList(params, custom_params, keep.null = TRUE)
+  params = get_control_defaults(match.arg(method))
+  params = modifyList(params, control, keep.null = TRUE)
 
   init_fn = handle_init_fn(params$init_fn)
   ebnm_fn = handle_ebnm_fn(params$ebnm_fn)

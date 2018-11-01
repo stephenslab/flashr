@@ -8,7 +8,7 @@ Y = LF + rnorm(5*20)
 
 test_that("passing in and saving ebnm parameters works as expected", {
   f = flash(Y, greedy_Kmax = 1, var_type = "constant", nullcheck = FALSE,
-            custom_params = list(ebnm_fn = "ebnm_ash"))
+            control = list(ebnm_fn = "ebnm_ash"))
 
   flash_defaults = list(mixcompdist = "normal", method = "shrink")
   expect_equal(f$fit$ebnm_param_l[[1]], flash_defaults)
@@ -19,9 +19,8 @@ test_that("passing in and saving ebnm parameters works as expected", {
                       g = f$gl[[1]],
                       fixg = TRUE)
   f = flash(Y, greedy_Kmax=1, var_type = "constant", nullcheck = FALSE,
-            custom_param = list(ebnm_fn = list(l = "ebnm_ash", f = "ebnm_pn"),
-                                ebnm_param = list(l = ebnm_param_l,
-                                                  f = list())))
+            control = list(ebnm_fn = list(l = "ebnm_ash", f = "ebnm_pn"),
+                           ebnm_param = list(l = ebnm_param_l, f = list())))
   expect_equal(f$fit$ebnm_fn_l[[1]], "ebnm_ash")
   expect_equal(f$fit$ebnm_fn_f[[1]], "ebnm_pn")
   expect_equal(f$fit$ebnm_param_l[[1]], ebnm_param_l)
