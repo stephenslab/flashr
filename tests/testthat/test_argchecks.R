@@ -3,9 +3,9 @@ context("argument checking")
 set.seed(1)
 
 Y = matrix(5, nrow = 5, ncol = 10) + rnorm(50)
-fl = flash(Y, greedy_Kmax = 1, var_type = "constant", nullcheck = FALSE)
+fl = flash(Y, greedy_Kmax = 1, var_type = "constant")
 fl2 = flash(Y, f_init = fl, fixed_loadings = rep(1, 5),
-            var_type = "constant", nullcheck = FALSE)
+            var_type = "constant")
 
 test_that("bad inputs to Y and S are rejected", {
   Y = rep(1, 4) # vector

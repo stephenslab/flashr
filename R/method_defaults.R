@@ -28,6 +28,7 @@ get_control_defaults <- function(method) {
                               tol = 1e-2,
                               r1opt_maxiter = 500,
                               backfit_maxiter = 200,
+                              nullcheck = TRUE,
                               verbose_output = "odn"))
 
   return(defaults)

@@ -161,16 +161,15 @@ flash = function(Y,
                               "zero",
                               "kroneker"),
                  method = c("fastest",
+                            "normalmix",
                             "nonnegative",
                             "nnfactors",
-                            "nnloadings",
-                            "custom"),
+                            "nnloadings"),
                  f_init = NULL,
                  fixed_loadings = NULL,
                  fixed_factors = NULL,
                  greedy_Kmax = 0,
                  backfit = FALSE,
-                 nullcheck = TRUE,
                  verbose = TRUE,
                  control = list()) {
   if (is.null(fixed_loadings)
@@ -226,6 +225,7 @@ flash = function(Y,
   tol = params$tol
   r1opt_maxiter = params$r1opt_maxiter
   backfit_maxiter = params$backfit_maxiter
+  nullcheck = params$nullcheck
 
   if (!verbose) {
     params$verbose_output = ""
