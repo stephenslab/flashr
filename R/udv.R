@@ -93,15 +93,15 @@ udv_partialnn <- function(Y, K = 1, nn = c("factors", "loadings")) {
   nn <- match.arg(nn)
 
   udv <- flashr:::udv_si(Y, K)
-  vector_to_check <- switch(nn, factors = udv$u, loadings = udv$v)
+  vector_to_check <- switch(nn, loadings = udv$u, factors = udv$v)
   if (is_neg_part_larger(vector_to_check)) {
     udv$u <- -udv$u
     udv$v <- -udv$v
   }
 
-  if (identical(nn, "factors")) {
+  if (identical(nn, "loadings")) {
     udv$u <- get_pos_part(udv$u)
-  } else if (identical(nn, "loadings")) {
+  } else if (identical(nn, "factors")) {
     udv$v <- get_pos_part(udv$v)
   }
 

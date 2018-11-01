@@ -1,6 +1,6 @@
 context("flash methods")
 
-set.seed(1)
+set.seed(3)
 
 test_that("nonnegative method works as expected", {
   Y = matrix(5 + abs(rnorm(20)), nrow = 5, ncol = 10)
@@ -12,7 +12,7 @@ test_that("nonnegative method works as expected", {
 })
 
 test_that("nnloadings and nnfactors methods work as expected", {
-  Y = outer(c(rep(-3, 2), rep(3, 3)), c(rep(-1, 5), rep(1, 5))) + rnorm(50)
+  Y = outer(c(rep(-1, 2), rep(3, 3)), c(rep(-1, 5), rep(3, 5))) + rnorm(50)
 
   fl_nnl = flash(Y, greedy_Kmax = 1, method = "nnloadings",
                  var_type = "constant")

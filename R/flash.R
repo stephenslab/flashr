@@ -172,14 +172,11 @@ flash = function(Y,
                  backfit = FALSE,
                  nullcheck = TRUE,
                  verbose = TRUE,
-                 r1opt_maxiter = 500,
-                 backfit_maxiter = 200,
                  control = list()) {
   if (is.null(fixed_loadings)
       && is.null(fixed_factors)
       && greedy_Kmax < 1
-      && (identical(backfit, FALSE) || backfit_maxiter < 1
-          || is.null(f_init))) {
+      && (identical(backfit, FALSE) || is.null(f_init))) {
     stop(paste("Nothing to do. Set greedy_Kmax > 0 to add factors from",
                "data. Set fixed_loadings or fixed_factors to add",
                "specified factors. Set backfit to backfit a new or",
@@ -195,6 +192,9 @@ flash = function(Y,
   backfit_kset = handle_backfit(backfit)
 
   params = get_control_defaults(match.arg(method))
+  if (any(!is.element(names(control), names(params)))) {
+    stop("Control argument contains unknown parameter names.")
+  }
   params = modifyList(params, control, keep.null = TRUE)
 
   init_fn = handle_init_fn(params$init_fn)
@@ -221,9 +221,11 @@ flash = function(Y,
   ebnm_param = handle_ebnm_param(params$ebnm_param, ebnm_fn, n_expected,
                                  allow_lists_of_lists)
 
-  # TODO: handle stopping rule, verbose_output, tol, Kmax, maxiter, custom_params
+  # TODO: handle stopping rule, verbose_output, tol, Kmax, maxiter
   stopping_rule = params$stopping_rule
   tol = params$tol
+  r1opt_maxiter = params$r1opt_maxiter
+  backfit_maxiter = params$backfit_maxiter
 
   if (!verbose) {
     params$verbose_output = ""

@@ -10,10 +10,9 @@ Y = LF + rnorm(5 * 20)
 fl = flash(Y,
            method = "fastest",
            greedy_Kmax = 1,
-           r1opt_maxiter = 0,
            nullcheck = FALSE,
            verbose = FALSE,
-           control = list(init_fn = "udv_random"))
+           control = list(init_fn = "udv_random", r1opt_maxiter = 0))
 mse1 = mean((LF - fl$fitted_values)^2)
 
 # Do a single backfitting iteration.
@@ -21,9 +20,9 @@ fl2 = flash(Y,
             f_init = fl,
             method = "fastest",
             backfit = TRUE,
-            backfit_maxiter = 1,
             nullcheck = FALSE,
-            verbose = FALSE)
+            verbose = FALSE,
+            control = list(backfit_maxiter = 1))
 mse2 = mean((LF - fl2$fitted_values)^2)
 
 test_that("flash update improves mean squared error in simple situation", {

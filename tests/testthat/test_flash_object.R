@@ -40,7 +40,8 @@ test_that("flash object fields are set as expected", {
 
   # Add two factors without optimizing and backfit together:
   fo5 = flash(Y, f_init = fo4, greedy_Kmax = 2, backfit = TRUE,
-              r1opt_maxiter = 0, var_type = "constant")
+              var_type = "constant",
+              control = list(r1opt_maxiter = 0))
   expect_equal(length(fo5$fit_history), 8) # nullcheck causes second backfit
 
   # Attempt to add another factor (it will be zeroed out):
@@ -51,7 +52,7 @@ test_that("flash object fields are set as expected", {
 
 test_that("flash object objective is set to NA when appropriate", {
   fo2 = flash(Y, fixed_loadings = rep(1, 10), f_init = fo,
-              r1opt_maxiter = 0)
+              control = list(r1opt_maxiter = 0))
   expect_true(is.na(fo2$objective))
 
   fo3 = flashr:::flash_zero_out_factor(flash_set_data(Y), f_init = fo2, k = 3)
