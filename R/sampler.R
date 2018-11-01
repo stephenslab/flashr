@@ -14,7 +14,8 @@
 #'   all factors).
 #'
 #' @param fixed Indicates whether to fix factors or loadings at their
-#'   posterior mean.
+#'   posterior mean. If "none", then both factors and loadings are
+#'   sampled from their respective posterior means.
 #'
 #' @return A function that takes a single parameter \code{nsamp}, the
 #'   number of samples of LF to be produced by the sampler. Care should
@@ -26,7 +27,7 @@
 flash_sampler = function(data,
                          f,
                          kset = NULL,
-                         fixed = c("factors", "loadings")) {
+                         fixed = c("factors", "loadings", "none")) {
   f = handle_f(f, allow_null = FALSE)
   data = handle_data(data, f)
   kset = handle_kset(kset, f)
@@ -36,7 +37,35 @@ flash_sampler = function(data,
     return(flash_lf_sampler_fixedf(data, f, kset))
   } else if (fixed == "loadings") {
     return(flash_lf_sampler_fixedl(data, f, kset))
+  } else { # fixed == "none"
+    return(flash_lf_sampler(data, f, kset))
   }
+}
+
+
+# @title Generates LF sampler that samples both L and F
+#
+# @description Generates function that samples LF from a flash fit
+#   object, with both L and F sampled independently from their marginal
+#   posteriors.
+#
+# @inheritParams flash_sampler
+#
+# @return A function that takes a single parameter nsamp, the number of
+#   samples of LF to be produced by the sampler.
+#
+flash_lf_sampler = function(data, f, kset) {
+  l_sampler = flash_l_sampler(data, f, kset)
+  f_sampler = flash_f_sampler(data, f, kset)
+
+  return(function(nsamp) {
+    lsamp = l_sampler(nsamp)
+    fsamp = f_sampler(nsamp)
+    return(mapply(function(L, F) {L %*% t(F)},
+                  lsamp,
+                  fsamp,
+                  SIMPLIFY = FALSE))
+  })
 }
 
 

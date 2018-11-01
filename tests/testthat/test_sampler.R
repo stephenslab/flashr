@@ -61,4 +61,30 @@ test_that(paste("sampling functions produce objects of correct",
     expect_length(flsamp, 10)
     expect_equal(dim(flsamp[[1]]), c(20, 30))
   }
+
+  # Test fixed = "none" (and sampled variances):
+  Y = matrix(5, nrow=5, ncol=20) + rnorm(100)
+  fl = flash_add_greedy(Y, 1, ebnm_fn="ebnm_pn",
+                        ebnm_param=list(g=list(pi0 = 0, a = 1)))
+  # Check posterior distribution of LF'_{1, 1}
+  pmean_l = fl$fit$EL[1, 1]
+  pvar_l = fl$fit$EL2[1, 1] - fl$fit$EL[1, 1]^2
+  pmean_f = fl$fit$EF[1, 1]
+  pvar_f = fl$fit$EF2[1, 1] - fl$fit$EF[1, 1]^2
+
+  flsampler_l = flash_sampler(Y, fl, fixed="l")
+  flsamp_l = flsampler_l(1000)
+  samp_l = sapply(flsamp_l, function(x) x[1,1])
+  var_l = var(samp_l)
+  expect_equal(var_l, pmean_l^2 * pvar_f, tolerance = .01)
+
+  flsampler_n = flash_sampler(Y, fl, fixed="none")
+  flsamp_n = flsampler_n(1000)
+  samp_n = sapply(flsamp_n, function(x) x[1,1])
+  var_n = var(samp_n)
+  expect_equal(mean(samp_n), pmean_l * pmean_f, tolerance = .01)
+  expect_equal(var_n,
+               pmean_l^2 * pvar_f + pmean_f^2 * pvar_l + pvar_l * pvar_f,
+               tolerance = .01)
+
 })

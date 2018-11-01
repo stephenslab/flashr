@@ -4,7 +4,8 @@
 \alias{flash_sampler}
 \title{Generate posterior sampling function}
 \usage{
-flash_sampler(data, f, kset = NULL, fixed = c("factors", "loadings"))
+flash_sampler(data, f, kset = NULL, fixed = c("factors", "loadings",
+  "none"))
 }
 \arguments{
 \item{data}{An n by p matrix or a flash data object created using
@@ -16,7 +17,8 @@ flash_sampler(data, f, kset = NULL, fixed = c("factors", "loadings"))
 all factors).}
 
 \item{fixed}{Indicates whether to fix factors or loadings at their
-posterior mean.}
+posterior mean. If "none", then both factors and loadings are
+sampled from their respective posterior means.}
 }
 \value{
 A function that takes a single parameter \code{nsamp}, the
