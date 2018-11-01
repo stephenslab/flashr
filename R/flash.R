@@ -169,37 +169,58 @@ flash = function(Y,
                  fixed_loadings = NULL,
                  fixed_factors = NULL,
                  greedy_Kmax = 0,
-                 backfit_maxiter = 0,
+                 backfit = FALSE,
                  nullcheck = TRUE,
                  verbose = TRUE,
-                 r1_maxiter = 500,
+                 r1opt_maxiter = 500,
+                 backfit_maxiter = 200,
                  custom_params = list()) {
   if (is.null(fixed_loadings)
       && is.null(fixed_factors)
       && greedy_Kmax < 1
-      && (backfit_maxiter < 1 || is.null(f_init))) {
+      && (identical(backfit, FALSE) || backfit_maxiter < 1
+          || is.null(f_init))) {
     stop(paste("Nothing to do. Set greedy_Kmax > 0 to add factors from",
                "data. Set fixed_loadings or fixed_factors to add",
-               "specified factors. Set backfit_maxiter > 0 to backfit",
-               "a new or existing flash object."))
+               "specified factors. Set backfit to backfit a new or",
+               "existing flash object."))
   }
 
-  data = handle_Y_and_S(Y, S)
+  data = handle_data(flash_set_data(Y, S), f_init)
   var_type = handle_var_type(match.arg(var_type), data)
-  method = match.arg(method)
   fl = handle_f(f_init, init_null_f = TRUE)
-  LL_init = handle_fixed(fixed_loadings, flash_get_n(f_init))
-  FF_init = handle_fixed(fixed_factors, flash_get_p(f_init))
-  Kmax = flash_get_k(fl) + LL_init$K + FF_init$K + greedy_Kmax
+  LL_init = handle_fixed(fixed_loadings, flash_get_n(fl))
+  FF_init = handle_fixed(fixed_factors, flash_get_p(fl))
+  Kmax = LL_init$K + FF_init$K + greedy_Kmax
+  backfit_kset = handle_backfit(backfit)
 
-  params = get_method_defaults(method)
+  params = get_method_defaults(match.arg(method))
   params = modifyList(params, custom_params, keep.null = TRUE)
 
   init_fn = handle_init_fn(params$init_fn)
   ebnm_fn = handle_ebnm_fn(params$ebnm_fn)
-  # TODO: currently awkward handling of ebnm_param; allow list with
-  #   greedy, backfit, fixed_factors, fixed_loadings?
-  ebnm_param = handle_ebnm_param(params$ebnm_param, ebnm_fn, Kmax)
+
+  # Do not allow different ebnm_params for each factor/loading if more than
+  #   one type of fit (among add_fixed_loadings, add_fixed_factors,
+  #   add_greedy, and backfit) is being performed (otherwise the indexing
+  #   gets too confusing):
+  allow_lists_of_lists = ((LL_init$K > 0) +
+                            (FF_init$K > 0) +
+                            (greedy_Kmax > 0) +
+                            (!identical(backfit, FALSE)) == 1)
+
+  if (allow_lists_of_lists) {
+    if (identical(backfit, TRUE)) {
+      n_expected = flash_get_k(fl) # backfitting the entire flash object
+    } else {
+      n_expected = max(Kmax, length(backfit_kset))
+    }
+  } else {
+    n_expected = flash_get_k(fl) + Kmax
+  }
+  ebnm_param = handle_ebnm_param(params$ebnm_param, ebnm_fn, n_expected,
+                                 allow_lists_of_lists)
+
   # TODO: handle stopping rule, verbose_output, tol, Kmax, maxiter, custom_params
   stopping_rule = params$stopping_rule
   tol = params$tol
@@ -225,7 +246,7 @@ flash = function(Y,
                              tol = tol,
                              verbose_output = verbose_output,
                              nullcheck = nullcheck,
-                             maxiter = r1_maxiter)
+                             maxiter = r1opt_maxiter)
     fl = res$f
     history = c(history, res$history)
   }
@@ -244,7 +265,7 @@ flash = function(Y,
                             tol = tol,
                             verbose_output = verbose_output,
                             nullcheck = nullcheck,
-                            maxiter = r1_maxiter)
+                            maxiter = r1opt_maxiter)
     fl = res$f
     history = c(history, res$history)
   }
@@ -261,16 +282,17 @@ flash = function(Y,
                      tol = tol,
                      verbose_output = verbose_output,
                      nullcheck = nullcheck,
-                     maxiter = r1_maxiter,
+                     maxiter = r1opt_maxiter,
                      seed = 1)
     fl = res$f
     history = c(history, res$history)
   }
 
-  if (backfit_maxiter > 0) {
+  if (!identical(backfit, FALSE) && backfit_maxiter > 0) {
+    backfit_kset = handle_kset(backfit_kset, fl)
     res = backfit(data = data,
                   f = fl,
-                  kset = 1:flash_get_k(fl),
+                  kset = backfit_kset,
                   var_type = var_type,
                   ebnm_fn = ebnm_fn,
                   ebnm_param = ebnm_param,
@@ -285,7 +307,8 @@ flash = function(Y,
 
   # If a factor is added without doing any optimization, then the
   #   objective will be not valid.
-  if (Kmax > 0 && r1_maxiter < 1 && backfit_maxiter < 1) {
+  if (Kmax > 0 && r1opt_maxiter < 1 &&
+      (identical(backfit, FALSE) || backfit_maxiter < 1)) {
     compute_obj = FALSE
   } else {
     compute_obj = TRUE

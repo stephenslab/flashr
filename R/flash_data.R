@@ -21,50 +21,39 @@
 #' @export
 #'
 flash_set_data = function(Y, S = NULL) {
+  if (is(Y, "flash_data")) {
+    return(Y)
+  }
 
-    # Initialize data.
-    data = list(Yorig = Y, S = S, anyNA = anyNA(Y), missing = is.na(Y))
+  Y = handle_Y(Y)
+  S = handle_S(S, Y)
 
-    if (anyNA(Y)) {
-        # Replace missing data with 0s.
-        if (any(rowSums(!data$missing) == 0)) {
-            stop("Data must not have all missing rows.")
-        }
-        if (any(colSums(!data$missing) == 0)) {
-            stop("Data must not have all missing columns.")
-        }
-        Y[data$missing] = 0
+  data = list(Yorig = Y, S = S, anyNA = anyNA(Y), missing = is.na(Y))
+
+  if (anyNA(Y)) {
+    # Replace missing data with 0s.
+    if (any(rowSums(!data$missing) == 0)) {
+      stop("Data must not have all missing rows.")
     }
-
-    data$Y = Y
-
-    if (!is.null(S) && is.matrix(S)) {
-      if (nrow(S) != nrow(Y) || ncol(S) != ncol(Y)) {
-        stop(paste("If S is a matrix, dimensions of S must match",
-                   "dimensions of Y."))
-      }
-    } else if (!is.null(S) && length(S) != 1) {
-      stop("S must be a matrix or a scalar.")
-    } else {
-      if (requireNamespace("ebnm", quietly = TRUE) &&
-          packageVersion("ebnm") < "0.1.13") {
-        # Earlier versions of ebnm do not support scalar arguments for S
-        data$S = matrix(S, nrow = nrow(Y), ncol = ncol(Y))
-      }
+    if (any(colSums(!data$missing) == 0)) {
+      stop("Data must not have all missing columns.")
     }
+    Y[data$missing] = 0
+  }
+  data$Y = Y
 
-    class(data) = "flash_data"
+  class(data) = "flash_data"
 
-    return(data)
+  return(data)
 }
 
 
 get_Yorig = function(data) {
-    if (data$anyNA) {
-        return(data$Yorig)
-    }
+  if (data$anyNA) {
+    return(data$Yorig)
+  }
 
-    return(data$Y)
+  return(data$Y)
 }
 
 

@@ -121,7 +121,7 @@ add_fixed_loadings = function(data,
       }
     }
 
-    f2 = flash_init_lf(ll, ff, fixl = fixl)
+    f2 = flash_init_lf(ll, ff, fixl = fixl[, k])
     f = flash_combine(f, f2)
 
     if (maxiter > 0) {
@@ -131,9 +131,9 @@ add_fixed_loadings = function(data,
                                          var_type,
                                          tol,
                                          ebnm_fn$l,
-                                         ebnm_param$l[[prev_K + k]],
+                                         ebnm_param$l[[k]],
                                          ebnm_fn$f,
-                                         ebnm_param$f[[prev_K + k]],
+                                         ebnm_param$f[[k]],
                                          verbose_output,
                                          maxiter,
                                          stopping_rule)

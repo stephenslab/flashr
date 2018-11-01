@@ -1,4 +1,4 @@
-context("Propagation of column and row names")
+context("propagation of column and row names")
 
 set.seed(1)
 

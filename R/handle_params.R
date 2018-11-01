@@ -1,58 +1,7 @@
-# Argument checks for main flash function.
-
-# @title Handles parameter Y and S
-#
-# @description Checks that inputs to Y and S are valid.
-#
-# @param Y A data matrix or a flash data object.
-#
-# @param S A scalar or matrix containing standard errors for Y. Can be NULL.
-#
-# @return A valid flash data object.
-#
-handle_Y_and_S = function(Y, S) {
-  if(is(Y, "flash_data")) {
-    return(Y)
-  }
-
-  if(!is.matrix(Y) || !is.numeric(Y)) {
-    stop("Y must be a matrix or a flash data object.")
-  }
-  if (any(is.infinite(Y))) {
-    stop("Y must not contain infinite values.")
-  }
-  if (any(is.nan(Y))) {
-    stop("Y must not contain NaNs.")
-  }
-
-  if (!is.null(S)) {
-    if (!is.numeric(S)) {
-      stop("Invalid input to S.")
-    }
-    if (length(S) > 1 && (!is.matrix(S) || !identical(dim(Y), dim(S)))) {
-      stop("S must be a scalar or a matrix of the same dimensions as Y.")
-    }
-
-    if (is.matrix(S)) {
-      S[is.na(Y)] = Inf
-    }
-
-    if (any(is.na(S))) {
-      stop("S must not contain NAs where Y has data.")
-    }
-    if (any(is.nan(S))) {
-      stop("S must not contain NaNs.")
-    }
-    if (any(S < 0)) {
-      stop("S must not contain negative values.")
-    }
-  }
-
-  return(flash_set_data(Y = Y, S = S))
-}
+# Argument checks for main flash function -------------------------------
 
 
-# @title Handle flash object parameter
+# Handle flash object parameter
 #
 # @description Checks that input to f is valid and initializes a null
 #   flash fit object when necessary.
@@ -84,9 +33,73 @@ handle_f = function(f, allow_null = TRUE, init_null_f = FALSE) {
 }
 
 
-# @title Handle data parameter
+# Check that inputs to Y are valid
 #
-# @description If data is a matrix, calls flash_set_data.
+# @param Y A data matrix.
+#
+# @return Y
+#
+handle_Y = function(Y) {
+  if(!is.matrix(Y) || !is.numeric(Y)) {
+    stop("Y must be a matrix or a flash data object.")
+  }
+  if (any(is.infinite(Y))) {
+    stop("Y must not contain infinite values.")
+  }
+  if (any(is.nan(Y))) {
+    stop("Y must not contain NaNs.")
+  }
+
+  return(Y)
+}
+
+
+# Check that inputs to S are valid (given Y)
+#
+# @param S A scalar or matrix of standard errors for Y. Can be NULL.
+#
+# @param Y A data matrix.
+#
+# @return A valid flash data object.
+#
+handle_S = function(S, Y) {
+  if (is.null(S)) {
+    return(S)
+  }
+
+  if (!is.numeric(S)) {
+    stop("Invalid input to S.")
+  }
+  if (length(S) > 1 && (!is.matrix(S) || !identical(dim(Y), dim(S)))) {
+    stop("S must be a scalar or a matrix of the same dimensions as Y.")
+  }
+  if (requireNamespace("ebnm", quietly = TRUE) &&
+      packageVersion("ebnm") < "0.1.13") {
+    # Earlier versions of ebnm do not support scalar arguments for S
+    S = matrix(S, nrow = nrow(Y), ncol = ncol(Y))
+  }
+
+  if (is.matrix(S)) {
+    S[is.na(Y)] = Inf
+  }
+
+  if (any(is.na(S))) {
+    stop("S must not contain NAs where Y has data.")
+  }
+  if (any(is.nan(S))) {
+    stop("S must not contain NaNs.")
+  }
+  if (any(S < 0)) {
+    stop("S must not contain negative values.")
+  }
+
+  return(S)
+}
+
+
+# Handle data parameter
+#
+# @description Checks that data object is valid (given f).
 #
 # @param data An n by p matrix or a flash data object.
 #
@@ -98,19 +111,25 @@ handle_f = function(f, allow_null = TRUE, init_null_f = FALSE) {
 # @return A matrix or flash data object.
 #
 handle_data = function(data, f, output = "flash_data") {
-  if (!is.matrix(data) && class(data) != "flash_data") {
+  if (!is.matrix(data) && !is(data, "flash_data")) {
     stop("Data must be a matrix or a flash data object.")
   }
+
   if (is.matrix(data) && output == "flash_data") {
     data = flash_set_data(data)
   }
-  if (class(data) == "flash_data" && output == "matrix") {
+  if (is(data, "flash_data") && output == "matrix") {
     data = get_Yorig(data)
   }
 
   if (!is.null(f)) {
-    n = ifelse(is.matrix(data), nrow(data), nrow(data$Y))
-    p = ifelse(is.matrix(data), ncol(data), ncol(data$Y))
+    if (is.matrix(data)) {
+      n = nrow(data)
+      p = ncol(data)
+    } else {
+      n = nrow(data$Y)
+      p = ncol(data$Y)
+    }
 
     if ((!is.null(f$EL) && nrow(f$EL) != n) ||
         (!is.null(f$EF) && nrow(f$EF) != p) ||
@@ -124,53 +143,14 @@ handle_data = function(data, f, output = "flash_data") {
 }
 
 
-# @title Handle k parameter
+# Check that choice of var_type is valid (given data)
 #
-# @description Checks that factor k exists.
+# @param var_type
 #
-# @param k The factor index.
+# @param data A flash data object.
 #
-# @param f A fitted flash object.
+# @return var_type
 #
-# @return k
-#
-handle_k = function(k, f) {
-  if (flash_get_k(f) < k) {
-    stop("Factor k does not exist.")
-  }
-
-  return(k)
-}
-
-
-# @title Handle kset parameter
-#
-# @description Checks that kset is numeric and not out of bounds for the
-#   flash object. Defaults to kset = 1:flash_get_k(f).
-#
-# @param kset A vector of factor indices.
-#
-# @param f A fitted flash object.
-#
-# @return kset (with values possibly defaulted in).
-#
-handle_kset = function(kset, f) {
-  if (flash_get_k(f) == 0) {
-    stop("No factors have been added to the flash object yet.")
-  }
-
-  if (is.null(kset)) {
-    # Default:
-    kset = 1:flash_get_k(f)
-  } else if (!is.numeric(kset) || max(kset) > flash_get_k(f)) {
-    stop(paste("Invalid kset. Kset should be a vector containing the",
-               "indices of the factors to be optimized."))
-  }
-
-  return(kset)
-}
-
-
 handle_var_type = function(var_type, data) {
   if (!(var_type %in% c("by_column", "by_row", "constant", "zero"))) {
     stop("That var_type has not yet been implemented.")
@@ -187,37 +167,26 @@ handle_var_type = function(var_type, data) {
   return(var_type)
 }
 
-# @title Handle init_fn parameter
-#
-# @description Checks that init_fn is a valid function.
-#
-# @param init_fn An initialization function. Either the name of a
-#   function or the function itself (as a character string) are
-#   acceptable arguments.
-#
-# @return init_fn
-#
-handle_init_fn = function(init_fn) {
-  if (!is.function(init_fn) && !exists(init_fn, mode="function")) {
-    stop("The specified init_fn does not exist.")
-  }
-
-  return(init_fn)
-}
 
 # Handle fixed_loadings and fixed_factors
 #
+# @param fixed A matrix (or vector) of loadings or a list that includes
+#   fields vals and is_fixed.
+#
+# @param expected_nrow The expected number of rows in the loadings matrix.
+#
+# @return A list with fields vals, is_fixed, and K.
+#
 handle_fixed = function(fixed, expected_nrow) {
-  default_maxiter = 100
-  default_nullcheck = FALSE
-
   if (is.null(fixed)) {
     return(list(K = 0))
-  } else if (is.numeric(fixed)) {
+  }
+
+  if (is.numeric(fixed)) {
     fixed = list(vals = fixed)
   } else if (!is.list(fixed)) {
-    stop(paste("If nonnull, then fixed_ parameters must be matrices",
-               "or lists. See flash documentation for details."))
+    stop(paste("If nonnull, then fixed_ parameters must be matrices or",
+               "lists."))
   }
 
   if (is.null(fixed$vals)) {
@@ -226,24 +195,16 @@ handle_fixed = function(fixed, expected_nrow) {
   }
 
   fixed$vals = handle_LL(fixed$vals, expected_nrow)
-  fixed$is_fixed = handle_fix(fixed$is_fixed, fixed$vals,
-                                default_val = TRUE)
+  fixed$is_fixed = handle_fix(fixed$is_fixed,
+                              fixed$vals,
+                              default_val = TRUE)
   fixed$K = ncol(fixed$vals)
-
-  if (is.null(fixed$maxiter)) {
-    fixed$maxiter = default_maxiter
-  }
-
-  if (is.null(fixed$nullcheck)) {
-    fixed$nullcheck = default_nullcheck
-  }
-
-  # TODO: handle case where user tries to fix NA (just unfix it)
 
   return(fixed)
 }
 
-# @title Handle LL parameter (and FF)
+
+# Handle LL parameter (and FF)
 #
 # @description Checks that LL has the correct dimensions and converts
 #   it from a vector to a matrix if necessary.
@@ -263,6 +224,16 @@ handle_LL = function(LL, expected_nrow) {
     rownames(LL) = LL_names
   }
 
+  if (!is.numeric(LL) || !is.matrix(LL)) {
+    stop("Invalid matrix of loadings/factors.")
+  }
+  if (any(is.infinite(LL))) {
+    stop("The matrix of loadings/factors must not include infinite values.")
+  }
+  if (any(is.nan(LL))) {
+    stop("The matrix of loadings/factors must not include NaNs.")
+  }
+
   if (!is.null(expected_nrow) && nrow(LL) != expected_nrow) {
     stop(paste("The matrix of loadings/factors does not have the",
                "correct dimensions."))
@@ -272,7 +243,7 @@ handle_LL = function(LL, expected_nrow) {
 }
 
 
-# @title Handle parameter fixl (and fixf)
+# Handle parameter fixl (and fixf)
 #
 # @description Checks that fixl has the correct dimensions and converts
 #   it from a vector to a matrix if necessary.
@@ -295,19 +266,64 @@ handle_fix = function(fixl, LL, default_val) {
     fixl = !is.na(LL)
   }
 
-  if (is.vector(fixl)) {
-    fixl = matrix(fixl, nrow = nrow(LL), ncol = ncol(LL))
-  }
-
-  if (!identical(dim(fixl), dim(LL))) {
+  if (!identical(length(fixl), length(LL))) {
     stop("The dimensions of LL/FF and fixl/fixf do not match.")
   }
+
+  fixl = matrix(as.logical(fixl), nrow = nrow(LL), ncol = ncol(LL))
+
+  # If user tries to fix a NA, just unfix it:
+  fixl[is.na(LL)] = FALSE
 
   return(fixl)
 }
 
 
-# @title Handle ebnm_fn parameter
+# Handle backfit parameter
+#
+# @param backfit Can be a logical value or a vector containing the indices
+#   of the factor/loading pairs to backfit.
+#
+# @return backfit
+#
+handle_backfit = function(backfit) {
+  if (!(is.logical(backfit) && length(backfit) == 1)
+      && !(is.numeric(backfit) && is.vector(backfit) && all(backfit > 0))) {
+    stop(paste("backfit must be TRUE/FALSE or a vector containing the",
+               "indices of the factor/loading pairs to backfit."))
+  }
+
+  if (identical(backfit, FALSE)) {
+    return(numeric(0))
+  }
+  if (identical(backfit, TRUE)) {
+    return(NULL) # will be subsequently set to 1:flash_get_k(fl)
+  }
+
+  return(backfit)
+}
+
+
+# Handle init_fn parameter
+#
+# @description Checks that init_fn is a valid function.
+#
+# @param init_fn An initialization function. Either the name of a
+#   function or the function itself (as a character string) are
+#   acceptable arguments.
+#
+# @return init_fn
+#
+handle_init_fn = function(init_fn) {
+  if (!is.function(init_fn) && !exists(init_fn, mode = "function")) {
+    stop("The specified init_fn does not exist.")
+  }
+
+  return(init_fn)
+}
+
+
+# Handle ebnm_fn parameter
 #
 # @description Checks that the argument to ebnm_fn refers to a valid
 #   function. If ebnm_pn is used, checks that package ebnm is installed.
@@ -395,7 +411,10 @@ handle_ebnm_fn = function(ebnm_fn) {
 #   list of n_expected lists. When available, default parameters are
 #   added.
 #
-handle_ebnm_param = function(ebnm_param, ebnm_fn, n_expected) {
+handle_ebnm_param = function(ebnm_param,
+                             ebnm_fn,
+                             n_expected,
+                             allow_lists_of_lists = TRUE) {
   if (!is.null(ebnm_param) && !is.list(ebnm_param)) {
     stop(paste("Invalid argument for parameter ebnm_param. A list (or",
                "NULL) was expected."))
@@ -426,18 +445,29 @@ handle_ebnm_param = function(ebnm_param, ebnm_fn, n_expected) {
     ebnm_param_l = rep(list(ebnm_param_l), n_expected)
   }
   # And an unnamed list gives parameters separately for each loading:
+  else if (!allow_lists_of_lists) {
+    stop(paste("Different ebnm parameters can only be used for each",
+               "loading if at most one type of fit (add_fixed_loadings,",
+               "add_fixed_factors, add_greedy, or backfit) is being",
+               "performed."))
+  }
   else if (length(ebnm_param_l) != n_expected) {
     stop(paste("If different ebnm parameters are used for each loading",
                "then ebnm_param$l must be a list of", n_expected,
                "lists."))
   }
+
   if (length(ebnm_param_f) == 0) {
     ebnm_param_f = rep(list(list()), n_expected)
 
   } else if (!is.null(names(ebnm_param_f))) {
     ebnm_param_f = rep(list(ebnm_param_f), n_expected)
-  }
-  else if (length(ebnm_param_f) != n_expected) {
+  } else if (!allow_lists_of_lists) {
+    stop(paste("Different ebnm parameters can only be used for each",
+               "factor if at most one type of fit (add_fixed_loadings,",
+               "add_fixed_factors, add_greedy, or backfit) is being",
+               "performed."))
+  } else if (length(ebnm_param_f) != n_expected) {
     stop(paste("If different ebnm parameters are used for each factor",
                "then ebnm_param$f must be a list of", n_expected,
                "lists."))
@@ -521,4 +551,52 @@ add_ebnm_pn_defaults = function(ebnm_param) {
     ebnm_param$warmstart = TRUE
   }
   return(ebnm_param)
+}
+
+
+
+# @title Handle k parameter
+#
+# @description Checks that factor k exists.
+#
+# @param k The factor index.
+#
+# @param f A fitted flash object.
+#
+# @return k
+#
+handle_k = function(k, f) {
+  if (flash_get_k(f) < k) {
+    stop("Factor k does not exist.")
+  }
+
+  return(k)
+}
+
+
+# @title Handle kset parameter
+#
+# @description Checks that kset is numeric and not out of bounds for the
+#   flash object. Defaults to kset = 1:flash_get_k(f).
+#
+# @param kset A vector of factor indices.
+#
+# @param f A fitted flash object.
+#
+# @return kset (with values possibly defaulted in).
+#
+handle_kset = function(kset, f) {
+  if (flash_get_k(f) == 0) {
+    stop("No factors have been added to the flash object yet.")
+  }
+
+  if (is.null(kset)) {
+    # Default:
+    kset = 1:flash_get_k(f)
+  } else if (!is.numeric(kset) || max(kset) > flash_get_k(f)) {
+    stop(paste("Invalid kset. Kset should be a vector containing the",
+               "indices of the factors to be optimized."))
+  }
+
+  return(kset)
 }
