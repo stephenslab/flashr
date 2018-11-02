@@ -1,3 +1,10 @@
+get_default_verbose_output = function(stopping_rule) {
+  return(switch(stopping_rule,
+                factors = "odFn",
+                loadings = "odLn",
+                "odn"))
+}
+
 get_control_defaults <- function(method) {
   defaults = list(stopping_rule = "objective",
                   tol = 1e-2,

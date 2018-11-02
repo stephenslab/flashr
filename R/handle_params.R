@@ -2,7 +2,6 @@
 
 
 valid_var_types = c("by_column", "by_row", "constant", "zero")
-default_verbose_output = "odn"
 valid_verbose_options = "odLFlfn"
 
 # Handle flash object parameter
@@ -318,9 +317,9 @@ handle_fix = function(fixl, LL, default_val) {
 #
 # @return verbose_output
 #
-handle_verbose = function(verbose) {
+handle_verbose = function(verbose, stopping_rule) {
   if (identical(verbose, TRUE)) {
-    verbose_output = default_verbose_output
+    verbose_output = get_default_verbose_output(stopping_rule)
   } else if (identical(verbose, FALSE)) {
     verbose_output = ""
   } else if (!is.character(verbose)) {

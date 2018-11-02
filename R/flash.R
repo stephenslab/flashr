@@ -222,7 +222,6 @@ flash = function(Y,
   FF_init = handle_fixed(fixed_factors, flash_get_p(fl))
   Kmax = LL_init$K + FF_init$K + greedy_Kmax
 
-  verbose_output = handle_verbose(verbose)
 
   params = get_control_defaults(match.arg(method))
   if (any(!is.element(names(control), names(params)))) {
@@ -256,6 +255,8 @@ flash = function(Y,
 
   # TODO: handle stopping rule, verbose_output, tol, Kmax, maxiter
   stopping_rule = params$stopping_rule
+  verbose_output = handle_verbose(verbose, stopping_rule)
+
   tol = params$tol
   r1opt_maxiter = params$r1opt_maxiter
   backfit_maxiter = params$backfit_maxiter
