@@ -67,7 +67,7 @@
 #'   matrices).
 #'
 #' @param verbose If \code{TRUE}, various progress updates will be
-#'   printed.
+#'   printed. {TODO.}
 #'
 #' @param control A list of additional parameters used during optimization.
 #'  The following parameters may be specified:
@@ -127,7 +127,6 @@
 #'      optimum is better than setting the factor to zero. If the check is
 #'      performed and fails then the factor will be set to zero in the
 #'      returned fit.}
-#'    \item{\code{verbose_output}}{TODO.}
 #'    \item{\code{seed}}{A random number seed to use before running
 #'      \code{flash} - for reproducibility. Set to \code{NULL} if you
 #'      don't want the seed set. (The seed can affect initialization when
@@ -215,12 +214,15 @@ flash = function(Y,
   }
 
   data = handle_data(flash_set_data(Y, S), f_init)
+  backfit_kset = handle_backfit(backfit)
   var_type = handle_var_type(match.arg(var_type), data)
   fl = handle_f(f_init, init_null_f = TRUE)
+
   LL_init = handle_fixed(fixed_loadings, flash_get_n(fl))
   FF_init = handle_fixed(fixed_factors, flash_get_p(fl))
   Kmax = LL_init$K + FF_init$K + greedy_Kmax
-  backfit_kset = handle_backfit(backfit)
+
+  verbose_output = handle_verbose(verbose)
 
   params = get_control_defaults(match.arg(method))
   if (any(!is.element(names(control), names(params)))) {
@@ -259,11 +261,6 @@ flash = function(Y,
   backfit_maxiter = params$backfit_maxiter
   nullcheck = params$nullcheck
   seed = params$seed
-
-  if (!verbose) {
-    params$verbose_output = ""
-  }
-  verbose_output = unlist(strsplit(params$verbose_output, split = NULL))
 
   history = list()
 

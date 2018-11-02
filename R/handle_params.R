@@ -1,6 +1,10 @@
 # Argument checks for main flash function -------------------------------
 
 
+valid_var_types = c("by_column", "by_row", "constant", "zero")
+default_verbose_output = "odn"
+valid_verbose_options = "odLFlfn"
+
 # Handle flash object parameter
 #
 # @description Checks that input to f is valid and initializes a null
@@ -143,6 +147,31 @@ handle_data = function(data, f, output = "flash_data") {
 }
 
 
+# Handle backfit parameter
+#
+# @param backfit Can be a logical value or a vector containing the indices
+#   of the factor/loading pairs to backfit.
+#
+# @return backfit
+#
+handle_backfit = function(backfit) {
+  if (!(is.logical(backfit) && length(backfit) == 1)
+      && !(is.numeric(backfit) && is.vector(backfit) && all(backfit > 0))) {
+    stop(paste("backfit must be TRUE/FALSE or a vector containing the",
+               "indices of the factor/loading pairs to backfit."))
+  }
+
+  if (identical(backfit, FALSE)) {
+    return(numeric(0))
+  }
+  if (identical(backfit, TRUE)) {
+    return(NULL) # will be subsequently set to 1:flash_get_k(fl)
+  }
+
+  return(backfit)
+}
+
+
 # Check that choice of var_type is valid (given data)
 #
 # @param var_type
@@ -152,7 +181,7 @@ handle_data = function(data, f, output = "flash_data") {
 # @return var_type
 #
 handle_var_type = function(var_type, data) {
-  if (!(var_type %in% c("by_column", "by_row", "constant", "zero"))) {
+  if (!(var_type %in% valid_var_types)) {
     stop("That var_type has not yet been implemented.")
   }
 
@@ -279,28 +308,34 @@ handle_fix = function(fixl, LL, default_val) {
 }
 
 
-# Handle backfit parameter
+# Handle verbose parameter
 #
-# @param backfit Can be a logical value or a vector containing the indices
-#   of the factor/loading pairs to backfit.
+# @description Converts verbose (which can be TRUE/FALSE or a character
+#   string) to a vector of characters indicating which columns should be
+#   printed during progress updates.
 #
-# @return backfit
+# @param verbose
 #
-handle_backfit = function(backfit) {
-  if (!(is.logical(backfit) && length(backfit) == 1)
-      && !(is.numeric(backfit) && is.vector(backfit) && all(backfit > 0))) {
-    stop(paste("backfit must be TRUE/FALSE or a vector containing the",
-               "indices of the factor/loading pairs to backfit."))
+# @return verbose_output
+#
+handle_verbose = function(verbose) {
+  if (identical(verbose, TRUE)) {
+    verbose_output = default_verbose_output
+  } else if (identical(verbose, FALSE)) {
+    verbose_output = ""
+  } else if (!is.character(verbose)) {
+    stop("verbose must be TRUE/FALSE or a character string.")
+  } else {
+    verbose_output = verbose
   }
 
-  if (identical(backfit, FALSE)) {
-    return(numeric(0))
-  }
-  if (identical(backfit, TRUE)) {
-    return(NULL) # will be subsequently set to 1:flash_get_k(fl)
+  verbose_output = unlist(strsplit(verbose_output, split = NULL))
+  valid_options = unlist(strsplit(valid_verbose_options, split = NULL))
+  if (!all(verbose_output %in% valid_options)) {
+    stop("At least one verbose output option is unrecognized.")
   }
 
-  return(backfit)
+  return(verbose_output)
 }
 
 
@@ -383,7 +418,7 @@ handle_ebnm_fn = function(ebnm_fn) {
 }
 
 
-# @title Handle ebnm_param parameter
+# Handle ebnm_param parameter
 #
 # @description Checks that the argument to ebnm_param makes sense and
 #   adds default parameters when available.
@@ -482,7 +517,7 @@ handle_ebnm_param = function(ebnm_param,
 }
 
 
-# @title Add defaults to ebnm_param
+# Add defaults to ebnm_param
 #
 # @description Adds default parameters to ebnm_param, depending on
 #   which function is used for the EBNM problem. At present, defaults
@@ -507,7 +542,7 @@ add_ebnm_fn_defaults = function(ebnm_param, ebnm_fn) {
 }
 
 
-# @title Add ebnm_ash defaults to ebnm_param
+# Add ebnm_ash defaults to ebnm_param
 #
 # @description Adds default ebnm_ash parameters to ebnm_param.
 #
@@ -528,7 +563,7 @@ add_ebnm_ash_defaults = function(ebnm_param) {
 }
 
 
-# @title Add ebnm_pn defaults to ebnm_param
+# Add ebnm_pn defaults to ebnm_param
 #
 # @description Adds default ebnm_pn parameters to ebnm_param.
 #
@@ -554,8 +589,7 @@ add_ebnm_pn_defaults = function(ebnm_param) {
 }
 
 
-
-# @title Handle k parameter
+# Handle k parameter
 #
 # @description Checks that factor k exists.
 #
@@ -574,7 +608,7 @@ handle_k = function(k, f) {
 }
 
 
-# @title Handle kset parameter
+# Handle kset parameter
 #
 # @description Checks that kset is numeric and not out of bounds for the
 #   flash object. Defaults to kset = 1:flash_get_k(f).
