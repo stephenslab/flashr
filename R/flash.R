@@ -318,7 +318,7 @@ flash = function(Y,
                      verbose_output = verbose_output,
                      nullcheck = nullcheck,
                      maxiter = r1opt_maxiter,
-                     seed = 1)
+                     seed = seed)
     fl = res$f
     history = c(history, res$history)
   }
