@@ -12,6 +12,15 @@
 #'   \code{S = NULL}, then the standard errors will be estimated during
 #'   fitting.
 #'
+#' @param greedy_Kmax The maximum number of factors to be greedily added to
+#'   the flash object. (This does not include any fixed loadings or
+#'   factors.)
+#'
+#' @param backfit If \code{TRUE}, factors are refined via the backfitting
+#'   algorithm. The default behavior is to backfit all factors. Optionally,
+#'   a vector may be passed in containing the indices of factors to
+#'   backfit.
+#'
 #' @param var_type The type of variance structure to assume for
 #'   residuals. Options include:
 #'   \describe{
@@ -56,15 +65,6 @@
 #' @param fixed_factors A p x K matrix of factors or a list that includes
 #'   fields \code{vals} and \code{is_fixed} (both of which must be p x K
 #'   matrices).
-#'
-#' @param greedy_Kmax The maximum number of factors to be greedily added to
-#'   the flash object. (This does not include any fixed loadings or
-#'   factors.)
-#'
-#' @param backfit If \code{TRUE}, factors are refined via the backfitting
-#'   algorithm. The default behavior is to backfit all factors. Optionally,
-#'   a vector may be passed in containing the indices of factors to
-#'   backfit.
 #'
 #' @param verbose If \code{TRUE}, various progress updates will be
 #'   printed.
@@ -187,6 +187,8 @@
 #'
 flash = function(Y,
                  S = NULL,
+                 greedy_Kmax = 0,
+                 backfit = FALSE,
                  var_type = c("by_column",
                               "by_row",
                               "constant",
@@ -200,8 +202,6 @@ flash = function(Y,
                  f_init = NULL,
                  fixed_loadings = NULL,
                  fixed_factors = NULL,
-                 greedy_Kmax = 0,
-                 backfit = FALSE,
                  verbose = TRUE,
                  control = list()) {
   if (is.null(fixed_loadings)
