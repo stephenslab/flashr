@@ -77,4 +77,12 @@ test_that("output level parameter works as expected", {
 
   fo8 = flash(Y, greedy_Kmax = 1, var_type = "constant", output_level = 4)
   expect_true("sampler" %in% names(fo8))
+
+  test_fields = c("nfactors", "pve", "sampler")
+  fo9 = flash(Y, greedy_Kmax = 1, var_type = "constant",
+              output_level = test_fields)
+  expect_equal(names(fo9), test_fields)
+
+  bad_fields = c("nfactors", "bad")
+  expect_error(flash(Y, greedy_Kmax = 1, output_level = bad_fields))
 })

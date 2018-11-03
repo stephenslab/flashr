@@ -340,17 +340,21 @@ handle_verbose = function(verbose, stopping_rule) {
 
 handle_output_level = function(output_level) {
   summary_stats = c("nfactors", "pve", "ldf", "objective")
+  valid_fields = c("fit", summary_stats, "fitted_values", "fit_history",
+                 "sampler")
 
-  output = switch(as.character(output_level),
-                  "0" = "fit",
-                  "1" = c("fit", summary_stats),
-                  "2" = c("fit", summary_stats, "fitted_values"),
-                  "3" = c("fit", summary_stats, "fitted_values",
-                          "fit_history"),
-                  "4" = c("fit", summary_stats, "fitted_values",
-                          "fit_history", "sampler"))
-
-  if (is.null(output)) {
+  if (is.vector(output_level) && length(output_level) == 1) {
+    output = switch(as.character(output_level),
+                    "0" = "fit",
+                    "1" = c("fit", summary_stats),
+                    "2" = c("fit", summary_stats, "fitted_values"),
+                    "3" = c("fit", summary_stats, "fitted_values",
+                            "fit_history"),
+                    "4" = valid_fields)
+  } else if (is.vector(output_level)
+             && all(output_level %in% valid_fields)) {
+    output = output_level
+  } else {
     stop("Invalid output level.")
   }
 
