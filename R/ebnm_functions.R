@@ -33,9 +33,19 @@ ebnm_ash = function(x, s, ash_param, output = NULL) {
     ash_param$output = "flash_data"
   }
 
-  a = do.call(ash,
-              c(list(betahat = as.vector(x), sebetahat = as.vector(s)),
-                ash_param))
+  a = try(do.call(ash,
+                  c(list(betahat = as.vector(x), sebetahat = as.vector(s)),
+                    ash_param)),
+          silent = TRUE)
+
+  if (is(a, "try-error") && ash_param$optmethod != "mixIP") {
+      ash_param$method = "mixIP"
+      a = do.call(ash,
+                  c(list(betahat = as.vector(x), sebetahat = as.vector(s)),
+                    ash_param))
+  } else if (is(a, "try-error")) {
+    stop(paste("Error occurred while calling ashr:", a))
+  }
 
   if (identical(output, "post_sampler")) {
     out = a$post_sampler
