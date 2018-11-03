@@ -39,7 +39,7 @@ ebnm_ash = function(x, s, ash_param, output = NULL) {
           silent = TRUE)
 
   if (is(a, "try-error") && ash_param$optmethod != "mixIP") {
-      ash_param$method = "mixIP"
+      ash_param$optmethod = "mixIP"
       a = do.call(ash,
                   c(list(betahat = as.vector(x), sebetahat = as.vector(s)),
                     ash_param))
