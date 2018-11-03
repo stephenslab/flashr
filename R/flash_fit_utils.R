@@ -49,12 +49,18 @@ flash_zero_out_factor = function(data, f_init, k) {
   # The objective will be valid afterwards if and only if it was
   #   valid beforehand:
   compute_obj = !is.na(f_init$objective)
+  if (is(f_init, "flash")) {
+    output = names(f_init)
+  } else {
+    output = "fit"
+  }
 
   flash_object = construct_flash_object(data = data,
                                         fit = f,
                                         history = NULL,
                                         f_init = f_init,
-                                        compute_obj = compute_obj)
+                                        compute_obj = compute_obj,
+                                        output = output)
 
   return(flash_object)
 }

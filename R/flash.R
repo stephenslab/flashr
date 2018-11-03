@@ -202,6 +202,7 @@ flash = function(Y,
                  fixed_loadings = NULL,
                  fixed_factors = NULL,
                  verbose = TRUE,
+                 output_level = 4,
                  control = list()) {
   if (is.null(fixed_loadings)
       && is.null(fixed_factors)
@@ -216,14 +217,14 @@ flash = function(Y,
   data = handle_data(flash_set_data(Y, S), f_init)
   backfit_kset = handle_backfit(backfit)
   var_type = handle_var_type(match.arg(var_type), data)
+  method = match.arg(method)
   fl = handle_f(f_init, init_null_f = TRUE)
 
   LL_init = handle_fixed(fixed_loadings, flash_get_n(fl))
   FF_init = handle_fixed(fixed_factors, flash_get_p(fl))
   Kmax = LL_init$K + FF_init$K + greedy_Kmax
 
-
-  params = get_control_defaults(match.arg(method))
+  params = get_control_defaults(method)
   if (any(!is.element(names(control), names(params)))) {
     stop("Control argument contains unknown parameter names.")
   }
@@ -255,13 +256,14 @@ flash = function(Y,
 
   # TODO: handle stopping rule, verbose_output, tol, Kmax, maxiter
   stopping_rule = params$stopping_rule
-  verbose_output = handle_verbose(verbose, stopping_rule)
-
   tol = params$tol
   r1opt_maxiter = params$r1opt_maxiter
   backfit_maxiter = params$backfit_maxiter
   nullcheck = params$nullcheck
   seed = params$seed
+
+  verbose_output = handle_verbose(verbose, stopping_rule)
+  output = handle_output_level(output_level)
 
   history = list()
 
@@ -351,7 +353,8 @@ flash = function(Y,
                                         fit = fl,
                                         history = history,
                                         f_init = f_init,
-                                        compute_obj = compute_obj)
+                                        compute_obj = compute_obj,
+                                        output = output)
 
   return(flash_object)
 }

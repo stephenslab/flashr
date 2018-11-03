@@ -58,3 +58,23 @@ test_that("flash object objective is set to NA when appropriate", {
   fo3 = flashr:::flash_zero_out_factor(flash_set_data(Y), f_init = fo2, k = 3)
   expect_true(is.na(fo3$objective))
 })
+
+test_that("output level parameter works as expected", {
+  fo4 = flash(Y, greedy_Kmax = 1, var_type = "constant", output_level = 0)
+  expect_equal(names(fo4), "fit")
+
+  fo5 = flash(Y, greedy_Kmax = 1, var_type = "constant", output_level = 1)
+  expect_true("nfactors" %in% names(fo5))
+  expect_false("fitted_values" %in% names(fo5))
+
+  fo6 = flash(Y, greedy_Kmax = 1, var_type = "constant", output_level = 2)
+  expect_true("fitted_values" %in% names(fo6))
+  expect_false("fit_history" %in% names(fo6))
+
+  fo7 = flash(Y, greedy_Kmax = 1, var_type = "constant", output_level = 3)
+  expect_true("fit_history" %in% names(fo7))
+  expect_false("sampler" %in% names(fo7))
+
+  fo8 = flash(Y, greedy_Kmax = 1, var_type = "constant", output_level = 4)
+  expect_true("sampler" %in% names(fo8))
+})

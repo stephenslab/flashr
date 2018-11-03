@@ -2,29 +2,48 @@ construct_flash_object = function(data,
                                   fit,
                                   history,
                                   f_init,
-                                  compute_obj = TRUE) {
+                                  compute_obj = TRUE,
+                                  output) {
   flash_object = list()
 
   summary_stats = compute_summary_statistics(data, fit)
-  flash_object$nfactors = summary_stats$nfactors
-  flash_object$pve = summary_stats$pve
-  flash_object$fitted_values = summary_stats$fitted_values
-  flash_object$ldf = summary_stats$ldf
 
-  if (compute_obj) {
-    flash_object$objective = flash_get_objective(data, fit)
-    flash_object$sampler = flash_lf_sampler(data, fit, 1:flash_get_k(fit))
-  } else {
-    flash_object$objective = NA
+  if ("nfactors" %in% output) {
+    flash_object$nfactors = summary_stats$nfactors
   }
-
-  if (is(f_init, "flash")) {
-    flash_object$fit_history = c(f_init$fit_history, history)
-  } else {
-    flash_object$fit_history = history
+  if ("pve" %in% output) {
+    flash_object$pve = summary_stats$pve
   }
-
-  flash_object$fit = fit
+  if ("ldf" %in% output) {
+    flash_object$ldf = summary_stats$ldf
+  }
+  if ("objective" %in% output) {
+    if (compute_obj) {
+      flash_object$objective = flash_get_objective(data, fit)
+    } else {
+      flash_object$objective = NA
+    }
+  }
+  if ("fitted_values" %in% output) {
+    flash_object$fitted_values = summary_stats$fitted_values
+  }
+  if ("sampler" %in% output) {
+    if (compute_obj) {
+      flash_object$sampler = flash_lf_sampler(data, fit, 1:flash_get_k(fit))
+    } else {
+      flash_object$sampler = NA
+    }
+  }
+  if ("fit_history" %in% output) {
+    if (is(f_init, "flash")) {
+      flash_object$fit_history = c(f_init$fit_history, history)
+    } else {
+      flash_object$fit_history = history
+    }
+  }
+  if ("fit" %in% output) {
+    flash_object$fit = fit
+  }
 
   class(flash_object) = "flash"
 

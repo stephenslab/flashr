@@ -338,6 +338,26 @@ handle_verbose = function(verbose, stopping_rule) {
 }
 
 
+handle_output_level = function(output_level) {
+  summary_stats = c("nfactors", "pve", "ldf", "objective")
+
+  output = switch(as.character(output_level),
+                  "0" = "fit",
+                  "1" = c("fit", summary_stats),
+                  "2" = c("fit", summary_stats, "fitted_values"),
+                  "3" = c("fit", summary_stats, "fitted_values",
+                          "fit_history"),
+                  "4" = c("fit", summary_stats, "fitted_values",
+                          "fit_history", "sampler"))
+
+  if (is.null(output)) {
+    stop("Invalid output level.")
+  }
+
+  return(output)
+}
+
+
 # Handle init_fn parameter
 #
 # @description Checks that init_fn is a valid function.
