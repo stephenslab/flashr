@@ -43,8 +43,10 @@ ebnm_ash = function(x, s, ash_param, output = NULL) {
       a = do.call(ash,
                   c(list(betahat = as.vector(x), sebetahat = as.vector(s)),
                     ash_param))
-  } else if (is(a, "try-error")) {
-    stop(paste("Error occurred while calling ashr:", a))
+  }
+
+  if (is(a, "try-error")) {
+    stop(paste("Error occurred while calling ebnm_ash:", a))
   }
 
   if (identical(output, "post_sampler")) {
