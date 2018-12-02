@@ -1,3 +1,5 @@
+context("test_add_fixed")
+
 test_that("adding sparse factors/loadings works", {
   set.seed(1)
   n = 20

@@ -1,3 +1,5 @@
+context("test_flashfill")
+
 test_that("flash_fill works", {
   l = rep(1,5)
   f = rnorm(20)

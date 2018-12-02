@@ -1,3 +1,5 @@
+context("test_sampler")
+
 test_that(paste("sampling functions produce objects of correct",
                 "dimensions and give reasonable results"), {
   set.seed(1)
@@ -73,13 +75,13 @@ test_that(paste("sampling functions produce objects of correct",
   pvar_f = fl$fit$EF2[1, 1] - fl$fit$EF[1, 1]^2
 
   flsampler_l = flash_sampler(Y, fl, fixed="l")
-  flsamp_l = flsampler_l(1000)
+  flsamp_l = flsampler_l(2000)
   samp_l = sapply(flsamp_l, function(x) x[1,1])
   var_l = var(samp_l)
   expect_equal(var_l, pmean_l^2 * pvar_f, tolerance = .01)
 
   flsampler_n = flash_sampler(Y, fl, fixed="none")
-  flsamp_n = flsampler_n(1000)
+  flsamp_n = flsampler_n(2000)
   samp_n = sapply(flsamp_n, function(x) x[1,1])
   var_n = var(samp_n)
   expect_equal(mean(samp_n), pmean_l * pmean_f, tolerance = .01)

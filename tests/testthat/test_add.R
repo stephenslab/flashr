@@ -1,3 +1,5 @@
+context("test_add")
+
 test_that("various additions work", {
   set.seed(1)
   l = rep(1,5)

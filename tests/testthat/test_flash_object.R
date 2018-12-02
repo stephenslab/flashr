@@ -1,3 +1,5 @@
+context("test_flash_object")
+
 test_that("flash object interface works as expected", {
   set.seed(666)
   n = 10

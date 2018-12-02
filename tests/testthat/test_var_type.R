@@ -1,3 +1,5 @@
+context("test_var_type")
+
 test_that("various var_types work as expected", {
   set.seed(1)
   l = rep(5,5)

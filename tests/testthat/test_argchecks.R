@@ -1,3 +1,5 @@
+context("test_argchecks")
+
 test_that("argument checking works", {
   set.seed(1)
   l1 = 5*c(rnorm(2), rep(0, 3))
@@ -92,4 +94,3 @@ test_that("argument checking works", {
 
   expect_error(handle_ebnm_param(c(mixcompdist="uniform", method="fdr")))
 })
-

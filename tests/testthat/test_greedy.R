@@ -1,3 +1,5 @@
+context("test_greedy")
+
 test_that("greedy works a simple example as expected", {
   set.seed(1)
   l = rnorm(5)

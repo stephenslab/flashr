@@ -1,3 +1,5 @@
+context("test_plots")
+
 test_that("plotting functions work", {
   set.seed(1)
   l = cbind(c(1, 1, 1, 0, 0), c(0, 0, 1, 1, 1))

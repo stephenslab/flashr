@@ -1,3 +1,5 @@
+context("test_ebnm_param")
+
 test_that("passing in and saving ebnm parameters works", {
   set.seed(1)
   l = rnorm(5)

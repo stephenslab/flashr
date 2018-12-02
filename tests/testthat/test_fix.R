@@ -1,3 +1,5 @@
+context("test_fix")
+
 test_that("fixing a loading it does not change", {
   set.seed(1)
   LL = matrix(1,nrow=10,ncol=1)

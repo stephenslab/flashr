@@ -1,3 +1,5 @@
+context("test_scalar_tau")
+
 test_that("storing tau as a scalar works", {
   set.seed(1)
   l = rnorm(5)

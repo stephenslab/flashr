@@ -61,7 +61,7 @@ flash_lf_sampler = function(data, f, kset) {
   return(function(nsamp) {
     lsamp = l_sampler(nsamp)
     fsamp = f_sampler(nsamp)
-    return(mapply(function(L, F) {L %*% t(F)},
+    return(mapply(function(LL, FF) {LL %*% t(FF)},
                   lsamp,
                   fsamp,
                   SIMPLIFY = FALSE))
