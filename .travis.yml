@@ -9,9 +9,13 @@ env:
   global:
     - _R_CHECK_FORCE_SUGGESTS_: false
 
-r_github_packages: stephens999/ashr
-r_github_packages: stephenslab/ebnm
-
+# This is the minimal set of R packages needed to run "R CMD check" on
+# the package.
+install:
+  - R -e 'install.packages(c("testthat","devtools","knitr","rmarkdown","ggplot2","reshape2","softImpute"))'
+  - R -e 'devtools::install_github("stephens999/ashr")'
+  - R -e 'devtools::install_github("stephenslab/ebnm")'
+  
 after_success:
   - Rscript -e 'covr::codecov()'
 
