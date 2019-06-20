@@ -1,13 +1,13 @@
 # Functions for extracting useful information about the object.
 
-# @title Get fitted values.
-#
-# @description Return the estimated LF' matrix.
-#
-# @inheritParams flash_get_ldf
-#
-# @return The estimated value of LF', an n by p matrix.
-#
+#' @title Get fitted values.
+#'
+#' @description Return the estimated LF' matrix.
+#'
+#' @inheritParams flash_get_ldf
+#'
+#' @return The estimated value of LF', an n by p matrix.
+#' @export
 flash_get_fitted_values = function(f) {
   f = handle_f(f, allow_null = FALSE)
   if (is.null(f$EL)) {
@@ -17,31 +17,31 @@ flash_get_fitted_values = function(f) {
 }
 
 
-# @title Get LDF from a flash object
-#
-# @description Returns standardized loadings, factors, and weights from
-#   a flash object.
-#
-# @param f A flash fit object.
-#
-# @param kset Indices of loadings/factors to be returned.
-#
-# @param drop_zero_factors If \code{TRUE}, then any factor/loadings
-#   that are zero will be removed.
-#
-# @return A list with the following elements. These are analogous to
-#   the \code{u}, \code{d} and \code{v} returned by \code{svd}, but
-#   the columns of \code{l} and \code{f} are not orthogonal.
-#
-#   \item{\code{l}}{A matrix whose columns contain the standardized
-#     loadings (i.e., with norm 1).}
-#
-#   \item{\code{d}}{A vector of weights (analogous to the singular
-#     values in an SVD).}
-#
-#   \item{\code{f}}{A matrix whose columns contain the standardized
-#     factors (i.e., with norm 1).}
-#
+#' @title Get LDF from a flash object
+#'
+#' @description Returns standardized loadings, factors, and weights from
+#'   a flash object.
+#'
+#' @param f A flash fit object.
+#'
+#' @param kset Indices of loadings/factors to be returned.
+#'
+#' @param drop_zero_factors If \code{TRUE}, then any factor/loadings
+#'   that are zero will be removed.
+#'
+#' @return A list with the following elements. These are analogous to
+#'   the \code{u}, \code{d} and \code{v} returned by \code{svd}, but
+#'   the columns of \code{l} and \code{f} are not orthogonal.
+#'
+#'   \item{\code{l}}{A matrix whose columns contain the standardized
+#'     loadings (i.e., with norm 1).}
+#'
+#'   \item{\code{d}}{A vector of weights (analogous to the singular
+#'     values in an SVD).}
+#'
+#'   \item{\code{f}}{A matrix whose columns contain the standardized
+#'     factors (i.e., with norm 1).}
+#' @export
 flash_get_ldf = function(f, kset = NULL, drop_zero_factors = TRUE) {
   f = handle_f(f, allow_null = FALSE)
   kset = handle_kset(kset, f)
@@ -65,13 +65,13 @@ flash_get_ldf = function(f, kset = NULL, drop_zero_factors = TRUE) {
 }
 
 
-# @title Get number of factors in a flash object
-#
-# @description Returns the number of factors in a flash object.
-#   Factors that have been zeroed out are not counted.
-#
-# @inheritParams flash_get_ldf
-#
+#' @title Get number of factors in a flash object
+#'
+#' @description Returns the number of factors in a flash object.
+#'   Factors that have been zeroed out are not counted.
+#'
+#' @inheritParams flash_get_ldf
+#' @export
 flash_get_nfactors = function(f) {
   f = handle_f(f, allow_null = FALSE)
   ldf = flash_get_ldf(f)
@@ -79,16 +79,16 @@ flash_get_nfactors = function(f) {
 }
 
 
-# @title Get PVE from a flash object
-#
-# @description Returns the factor contributions (proportion of
-#   variance explained) for each factor/loading combination in flash
-#   fit \code{f}. Because the factors are not required to be orthogonal,
-#   this should be interpreted loosely: e.g., PVE could total more
-#   than 1.
-#
-# @inheritParams flash_get_ldf
-#
+#' @title Get PVE from a flash object
+#'
+#' @description Returns the factor contributions (proportion of
+#'   variance explained) for each factor/loading combination in flash
+#'   fit \code{f}. Because the factors are not required to be orthogonal,
+#'   this should be interpreted loosely: e.g., PVE could total more
+#'   than 1.
+#'
+#' @inheritParams flash_get_ldf
+#' @export
 flash_get_pve = function(data, f, drop_zero_factors = TRUE) {
   f = handle_f(f, allow_null = FALSE)
 
