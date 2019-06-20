@@ -1,7 +1,7 @@
 Package: flashr
 Encoding: UTF-8
 Type: Package
-Version: 0.6-4
+Version: 0.6-5
 Date: 2019-06-20
 Title: Empirical Bayes Matrix Factorization
 Authors@R: c(person("Matthew","Stephens",role=c("aut","cre"),

@@ -7,6 +7,8 @@
 flash_get_pve(data, f, drop_zero_factors = TRUE)
 }
 \arguments{
+\item{data}{Describe this input argument here.}
+
 \item{f}{A flash fit object.}
 
 \item{drop_zero_factors}{If \code{TRUE}, then any factor/loadings
