@@ -1,8 +1,8 @@
 Package: flashr
 Encoding: UTF-8
 Type: Package
-Version: 0.6-3
-Date: 2018-09-28
+Version: 0.6-4
+Date: 2019-06-20
 Title: Empirical Bayes Matrix Factorization
 Authors@R: c(person("Matthew","Stephens",role=c("aut","cre"),
                     email="mstephens@uchicago.edu"),
@@ -37,7 +37,7 @@ URL: http://github.com/stephenslab/flashr
 BugReports: http://github.com/stephenslab/flashr/issues
 VignetteBuilder: knitr
 LazyData: true
-RoxygenNote: 6.0.1.9000
+RoxygenNote: 6.1.1
 Remotes: 
     stephens999/ashr,
     stephenslab/ebnm
