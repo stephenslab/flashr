@@ -63,7 +63,19 @@ ebnm_ash = function(x, s, ash_param, output = NULL) {
 #
 ebnm_pn = function(x, s, ebnm_param, output = NULL) {
   if (identical(output, "post_sampler")) {
-    ebnm_param$output = "post_sampler"
+    ebnm_param$output = "posterior_sampler"
+  } else {
+    ebnm_param$output = c("posterior_mean", "posterior_second_moment",
+                          "fitted_g", "log_likelihood")
+  }
+
+  if (!is.null(ebnm_param$g)) {
+    ebnm_param$g_init = ebnm_param$g
+    ebnm_param$g = NULL
+  }
+  if (!is.null(ebnm_param$fixg)) {
+    ebnm_param$fix_g = ebnm_param$fixg
+    ebnm_param$fixg = NULL
   }
 
   res = do.call(ebnm::ebnm_point_normal,
@@ -71,12 +83,12 @@ ebnm_pn = function(x, s, ebnm_param, output = NULL) {
                   ebnm_param))
 
   if (identical(output, "post_sampler")) {
-    out = res$post_sampler
+    out = res$posterior_sampler
   } else {
-    out = list(postmean = res$result$PosteriorMean,
-               postmean2 = res$result$PosteriorMean2,
+    out = list(postmean = res$posterior$mean,
+               postmean2 = res$posterior$second_moment,
                fitted_g = res$fitted_g,
-               penloglik = res$loglik)
+               penloglik = res$log_likelihood)
   }
 
   return(out)

@@ -29,12 +29,12 @@ test_that("flash object interface works as expected", {
 
   fo = flash_add_fixed_factors(Y, c(rep(1, 10), rep(0, 40)), fo,
                                nullcheck = FALSE)
-  expect_equal(fo$nfactors, 3)
+  expect_equal(fo$nfactors, 2) # two are zero factors
   expect_equal(length(fo$fit_history), 4)
 
   fo = flash_zero_out_factor(Y, fo, 1)
   expect_s3_class(fo, "flash")
-  expect_equal(fo$nfactors, 2)
+  expect_equal(fo$nfactors, 1)
   expect_false(is.na(fo$objective))
 
   fo = flash_add_factors_from_data(Y, 2, fo)

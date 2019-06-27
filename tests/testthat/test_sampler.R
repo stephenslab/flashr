@@ -67,7 +67,9 @@ test_that(paste("sampling functions produce objects of correct",
   # Test fixed = "none" (and sampled variances):
   Y = matrix(5, nrow=5, ncol=20) + rnorm(100)
   fl = flash_add_greedy(Y, 1, ebnm_fn="ebnm_pn",
-                        ebnm_param=list(g=list(pi0 = 0, a = 1)))
+                        ebnm_param=list(g=ashr::normalmix(pi = c(0, 1),
+                                                          mean = c(0, 0),
+                                                          sd = c(0, 1))))
   # Check posterior distribution of LF'_{1, 1}
   pmean_l = fl$fit$EL[1, 1]
   pvar_l = fl$fit$EL2[1, 1] - fl$fit$EL[1, 1]^2
