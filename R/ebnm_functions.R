@@ -112,7 +112,19 @@ ebnm_pn = function(x, s, ebnm_param, output = NULL) {
 #
 ebnm_pl = function(x, s, ebnm_param, output = NULL) {
   if (identical(output, "post_sampler")) {
-    stop("Sampling from the posterior not yet implemented for ebnm_pl.")
+    ebnm_param$output = "posterior_sampler"
+  } else {
+    ebnm_param$output = c("posterior_mean", "posterior_second_moment",
+                          "fitted_g", "log_likelihood")
+  }
+
+  if (!is.null(ebnm_param$g)) {
+    ebnm_param$g_init = ebnm_param$g
+    ebnm_param$g = NULL
+  }
+  if (!is.null(ebnm_param$fixg)) {
+    ebnm_param$fix_g = ebnm_param$fixg
+    ebnm_param$fixg = NULL
   }
 
   res = do.call(ebnm::ebnm_point_laplace,
