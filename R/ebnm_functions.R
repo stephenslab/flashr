@@ -131,8 +131,8 @@ ebnm_pl = function(x, s, ebnm_param, output = NULL) {
                 c(list(x = as.vector(x), s = as.vector(s)),
                   ebnm_param))
 
-  return(list(postmean = res$result$PosteriorMean,
-              postmean2 = res$result$PosteriorMean2,
+  return(list(postmean = res$posterior$mean,
+              postmean2 = res$posterior$second_moment,
               fitted_g = res$fitted_g,
-              penloglik = res$loglik))
+              penloglik = res$log_likelihood))
 }
