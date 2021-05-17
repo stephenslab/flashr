@@ -82,7 +82,6 @@ flash_get_nfactors = function(f) {
   return(length(ldf$d))
 }
 
-
 #' @title Get PVE from a flash object
 #'
 #' @description Returns the factor contributions (proportion of
