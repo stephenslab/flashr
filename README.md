@@ -8,9 +8,12 @@ Methods for matrix factorization based on
 [Empirical Bayes Matrix Factorization](https://arxiv.org/abs/1802.06931).
 The name of the package, "flashr," comes from "Factors and Loadings by
 Adaptive SHrinkage in R".
-	
-*Note:* This code is in development. The interface is fairly stable
-but not guaranteed to stay the same.
+
+**IMPORTANT NOTE:** Please consider using the newer R package,
+[flashier](https://github.com/willwerscheid/flashier), which
+contains most of the features of flash, plus many important
+improvements, including a new interface, more priors, faster
+algorithms, and more detailed statistical outputs.
 
 ## License
 
