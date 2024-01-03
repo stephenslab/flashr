@@ -9,11 +9,13 @@ Methods for matrix factorization based on
 The name of the package, "flashr," comes from "Factors and Loadings by
 Adaptive SHrinkage in R".
 
-**IMPORTANT NOTE:** Please consider using the newer R package,
-[flashier](https://github.com/willwerscheid/flashier), which
-contains most of the features of flash, plus many important
-improvements, including a new interface, more priors, faster
-algorithms, and more detailed statistical outputs.
+# Important note
+
+Please consider using the newer R package,
+[flashier](https://github.com/willwerscheid/flashier), which contains
+most of the features of flash, plus many important improvements,
+including a new, user-friendly interface, more modeling options,
+faster algorithms, and more detailed statistical outputs.
 
 ## License
 
