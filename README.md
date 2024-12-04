@@ -11,11 +11,13 @@ Adaptive SHrinkage in R".
 
 ## Important note
 
-Please consider using the newer R package,
+We are no longer supporting or developing flashr: 
+we have switched to supporting a replacement R package,
 [flashier](https://github.com/willwerscheid/flashier), which contains
-most of the features of flash, plus many important improvements,
+most of the features of flashr, plus many important improvements,
 including a new, user-friendly interface, more modeling options,
-faster algorithms, and more detailed statistical outputs.
+faster algorithms, and more detailed statistical outputs. **Please use
+flashier rather than flashr**!  
 
 ## License
 
